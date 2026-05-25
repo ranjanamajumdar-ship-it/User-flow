@@ -47,7 +47,18 @@ body{display:flex;justify-content:center;min-height:100vh;}
 .alert-chip .pulse{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s infinite;}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.4}}
 
-.focal{margin:10px 0 0;background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow);}
+.focal{position:relative;margin:10px 0 0;background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px 18px 18px 22px;box-shadow:var(--shadow);overflow:hidden;}
+.focal::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red);border-radius:4px 0 0 4px;}
+.focal-cause{font-size:22px;font-weight:800;color:var(--brand);line-height:1.2;letter-spacing:-.02em;margin-top:4px;}
+.focal-line{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink-2);line-height:1.4;font-weight:500;margin-top:10px;}
+.focal-line .ic{width:20px;flex-shrink:0;text-align:center;}
+.focal-secondary{display:flex;gap:8px;margin-top:14px;}
+.focal-secondary .sec-link{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--surface);border:1px solid var(--line);color:var(--ink);font-family:inherit;font-size:12.5px;font-weight:700;padding:11px 8px;border-radius:12px;cursor:pointer;text-align:center;line-height:1.25;min-height:44px;transition:.15s;}
+.focal-secondary .sec-link:hover{background:#fff;border-color:var(--brand-tint-2);}
+.focal-secondary .sec-link:active{transform:scale(.985);}
+.focal-primary-wrap{margin-top:14px;}
+.focal-primary-wrap .btn.primary{width:100%;}
+.inline-phase-hint{font-size:11px;color:var(--ink-3);font-weight:700;text-align:center;letter-spacing:.04em;padding:8px 20px 0;}
 .focal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
 .focal-eyebrow{font-size:11px;color:var(--ink-3);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
 .focal-title{font-size:24px;font-weight:800;line-height:1.15;color:var(--brand);margin-top:4px;letter-spacing:-.02em;}
@@ -248,7 +259,12 @@ body{display:flex;justify-content:center;min-height:100vh;}
 .mttr .it .v{font-size:18px;font-weight:800;color:var(--brand);}
 .mttr .it .l{font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;font-weight:700;}
 .confirm-q{font-size:14px;color:var(--ink-2);margin:14px 0 10px;text-align:left;font-weight:600;}
-.confirm-list{display:flex;flex-direction:column;gap:8px;text-align:left;}
+.confirm-list{display:flex;flex-direction:column;gap:10px;text-align:left;}
+.confirm-big{display:flex;align-items:center;gap:12px;width:100%;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:16px 16px;min-height:60px;font-family:inherit;font-size:15px;font-weight:700;color:var(--ink);text-align:left;cursor:pointer;transition:.15s;}
+.confirm-big .ic{font-size:22px;flex-shrink:0;}
+.confirm-big:hover{border-color:var(--brand-tint-2);box-shadow:var(--shadow);}
+.confirm-big:active{transform:scale(.99);}
+.confirm-big.yes{border-color:#B7DFC8;background:var(--green-tint);color:#0F5A30;}
 
 /* Escalate */
 .escalate-hero{padding:40px 20px 0;text-align:center;}
@@ -1204,9 +1220,9 @@ body{display:flex;justify-content:center;min-height:100vh;}
     <div class="scroll">
       <div class="focal">
         <div class="focal-head">
-          <div>
+          <div style="flex:1;min-width:0">
             <div class="focal-eyebrow" data-i18n="eyebrow">Aeration Section · Primary</div>
-            <div class="focal-title"><span data-i18n="focal_title">Aeration Tank</span><span class="hi" data-i18n="focal_sub">Oxygen is low</span></div>
+            <div class="focal-cause" data-i18n="focal_cause">Aeration Tank में हवा बहुत कम है</div>
           </div>
           <span class="status-pill"><span class="d"></span><span data-i18n="status_pill">DO Low</span></span>
         </div>
@@ -1247,10 +1263,14 @@ body{display:flex;justify-content:center;min-height:100vh;}
             <div class="norm" data-i18n="mlss_normal">Normal: 3,000 — 4,000</div>
           </div>
         </div>
-        <div class="ccu">
-          <div class="row cause"><span class="ic">🔴</span><span data-i18n="ccu_cause">Low oxygen in the tank</span></div>
-          <div class="row"><span class="ic">⚠️</span><span data-i18n="ccu_cons">Bacteria can die · effluent will degrade</span></div>
-          <div class="row"><span class="ic">⏱️</span><span data-i18n="ccu_urg">Running 8 min · check now</span></div>
+        <div class="focal-line"><span class="ic">⚠</span><span data-i18n="ccu_cons">Bacteria can die · effluent will degrade</span></div>
+        <div class="focal-line"><span class="ic">⏱</span><span data-i18n="ccu_urg">Running 8 min · check now</span></div>
+        <div class="focal-secondary">
+          <button class="sec-link" onclick="go('photo')"><span>📷</span><span data-i18n="sec_photo">फ़ोटो भेजें</span></button>
+          <button class="sec-link" onclick="callSupervisor()"><span>📞</span><span data-i18n="sec_call_super">Supervisor को बुलाएं — Sharma जी</span></button>
+        </div>
+        <div class="focal-primary-wrap">
+          <button class="btn primary" onclick="startDiagnostic()" data-i18n="cta_start">Start the check</button>
         </div>
       </div>
       <div class="mascot-row">
@@ -1259,7 +1279,6 @@ body{display:flex;justify-content:center;min-height:100vh;}
       </div>
     </div>
     <div class="cta-bar">
-      <button class="btn primary" onclick="startDiagnostic()" data-i18n="cta_start">Start the check</button>
       <button class="btn sec" id="more-btn" onclick="openMore()" data-i18n="cta_more">⋯ More actions</button>
     </div>
   </section>
@@ -1292,7 +1311,7 @@ body{display:flex;justify-content:center;min-height:100vh;}
     </div>
 
     <div class="stephead">
-      <span class="steptype" data-i18n="diagnose">Diagnose</span>
+      <span class="steptype" data-i18n="diagnose" style="display:none">Diagnose</span>
       <div class="dots" id="stepDots"></div>
       <button class="listen">🔊</button>
     </div>
@@ -1371,9 +1390,10 @@ body{display:flex;justify-content:center;min-height:100vh;}
         <button class="ynbtn no" onclick="nextStep()"><span class="ic">✗</span><span data-i18n="found_no">No, looks normal</span></button>
       </div>
 
-      <!-- Prominent skip-step button (F3 pattern available on every step) -->
-      <div class="skip-step-wrap">
+      <!-- F3 — low-stakes skip-step button (small, neutral) -->
+      <div class="skip-step-wrap" style="flex-direction:column;gap:6px">
         <button class="skip-step-btn" onclick="skipStep()">⤳ <span data-i18n="skip_step">Skip this step</span></button>
+        <div style="font-size:11.5px;color:var(--ink-3);font-weight:500;text-align:center" data-i18n="skip_helper">कोई बात नहीं — आगे बढ़ें</div>
       </div>
     </div>
   </section>
@@ -1382,8 +1402,9 @@ body{display:flex;justify-content:center;min-height:100vh;}
   <section class="screen" id="s-solution">
     <div class="statusbar"><a class="back" onclick="go('step')">‹</a><span data-i18n="now_fix">Now let's fix it</span></div>
     <div class="eqchip"><span class="dot amber"></span><span id="solEq">Aeration Blower-1</span></div>
+    <div class="inline-phase-hint" data-i18n="phase_hint_fix">— अब फ़िक्स करते हैं —</div>
     <div class="stephead">
-      <span class="steptype" style="background:var(--amber-tint);color:#8B5A0A" data-i18n="action_label">Action</span>
+      <span class="steptype" style="background:var(--amber-tint);color:#8B5A0A;display:none" data-i18n="action_label">Action</span>
       <div class="dots" id="solDots"></div>
       <button class="listen">🔊</button>
     </div>
@@ -1406,7 +1427,7 @@ body{display:flex;justify-content:center;min-height:100vh;}
 
   <!-- ============ STOP / Supervisor escalation ============ -->
   <section class="screen" id="s-stop">
-    <div class="statusbar"><a class="back" onclick="go('step')">‹</a><span data-i18n="escalation_label">Escalation</span></div>
+    <div class="statusbar"><a class="back" onclick="go('step')">‹</a><span data-i18n="escalation_label">📞 Supervisor को बुलाएं</span></div>
     <div class="scroll">
       <div class="escalate-hero">
         <div class="icon">📞</div>
@@ -1432,7 +1453,7 @@ body{display:flex;justify-content:center;min-height:100vh;}
     <div class="statusbar"><span></span><span data-i18n="verification">Verification</span></div>
     <div class="eqchip"><span class="dot green"></span><span data-i18n="eqchip_aeration">Aeration Tank · AT-01</span></div>
     <div class="stephead">
-      <span class="steptype" data-i18n="type_verify">Verification</span>
+      <span class="steptype" data-i18n="type_verify" style="display:none">Verification</span>
       <div class="dots"><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="cur"></span></div>
       <button class="listen">🔊</button>
     </div>
@@ -1478,11 +1499,16 @@ body{display:flex;justify-content:center;min-height:100vh;}
           <div class="row"><span data-i18n="ctx_cause">Root cause</span><span id="finalCause">Blower was off</span></div>
           <div class="row"><span data-i18n="ctx_action">Action taken</span><span id="finalAction" style="text-align:right;max-width:60%">Started the blower</span></div>
         </div>
-        <div class="confirm-q" data-i18n="confirm_q">Was this the right cause?</div>
-        <div class="confirm-list">
-          <button class="btn ghost" style="justify-content:flex-start" onclick="go('home')"><span style="margin-right:8px">✅</span><span data-i18n="confirm_yes">Yes — that was it</span></button>
-          <button class="btn ghost" style="justify-content:flex-start" onclick="go('home')"><span style="margin-right:8px">🤔</span><span data-i18n="confirm_partial">Yes, but something else too</span></button>
-          <button class="btn ghost" style="justify-content:flex-start" onclick="go('home')"><span style="margin-right:8px">❌</span><span data-i18n="confirm_no">No — different cause</span></button>
+        <div class="confirm-q" style="font-size:17px;font-weight:800;color:var(--brand);margin:18px 0 12px" data-i18n="confirm_headline">बढ़िया! क्या Issue हल हो गया?</div>
+        <div class="confirm-list" id="confirmList">
+          <button class="confirm-big yes" onclick="confirmResolved('yes')"><span class="ic">✅</span><span data-i18n="confirm_yes">हाँ — यही कारण था</span></button>
+          <button class="confirm-big" onclick="confirmResolved('partial')"><span class="ic">🤔</span><span data-i18n="confirm_partial">हाँ, लेकिन कुछ और भी था</span></button>
+          <button class="confirm-big" onclick="confirmResolved('no')"><span class="ic">❌</span><span data-i18n="confirm_no">नहीं — दूसरा कारण था</span></button>
+        </div>
+        <textarea id="confirmNote" rows="2" data-i18n-placeholder="confirm_note_placeholder" placeholder="क्या किया?" style="width:100%;margin-top:14px;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:13.5px;color:var(--ink);resize:none;box-sizing:border-box;"></textarea>
+        <div id="shabaashCelebration" style="display:none;text-align:center;padding:18px 0 4px;">
+          <div style="font-size:54px;line-height:1">🎉</div>
+          <div style="font-size:22px;font-weight:800;color:var(--green);margin-top:4px;letter-spacing:-.01em" data-i18n="shabaash">शाबाश!</div>
         </div>
       </div>
     </div>
@@ -1792,7 +1818,7 @@ const FLOW_TYPES = {
 const STR = {
   en: {
     crumb_plant:"Plant", crumb_section:"Aeration", crumb_issue:"Tank · Issue",
-    crumb_back:"Aeration Tank", crumb_plan:"Diagnostic plan",
+    crumb_back:"Aeration Tank", crumb_plan:"Steps to check",
     new_alert:"New alert · 8 min ago",
     eyebrow:"Aeration Section · Primary",
     focal_title:"Aeration Tank", focal_sub:"Oxygen is low",
@@ -1831,10 +1857,20 @@ const STR = {
     cap_question:"Found this issue?",
     cap_after_action:"After completing the action",
     now_fix:"Now let's fix it",
+    phase_hint_fix:"— now let's fix it —",
+    focal_cause:"Aeration Tank is critically low on oxygen",
+    sec_photo:"Send photo",
+    sec_call_super:"Call Supervisor — Sharma ji",
+    calling_super:"Calling Sharma ji…",
+    skip_helper:"No problem — move on",
+    skip_confirm_friendly:"OK, let's skip this step",
+    confirm_headline:"Well done! Was the issue resolved?",
+    confirm_note_placeholder:"What did you do?",
+    shabaash:"Well done!",
     action_label:"Action",
     action_worked:"Done · DO is rising",
     action_failed:"Tried but DO is still low",
-    escalation_label:"Escalation",
+    escalation_label:"📞 Call Supervisor",
     stop_title:"Time to call supervisor",
     stop_reason:"This step needs expertise or tools you don't have. Sharma ji will take it from here.",
     context_label:"Auto-shared context",
@@ -1891,7 +1927,7 @@ const STR = {
 
     /* F6 Escalation */
     ft_esc_title:"This one needs supervisor",
-    ft_esc_sub:"Confirming a shock load needs a COD kit which isn't available on-site. Visual check + escalate is the standard path.",
+    ft_esc_sub:"Confirming a shock load needs a COD kit which isn't available on-site. Visual check + 📞 calling supervisor is the standard path.",
 
     /* Skip step button */
     skip_step:"Skip this step",
@@ -1957,7 +1993,7 @@ const STR = {
     alert_an_s:"Acidic shock from inlet · lime dosing increased temporarily",
 
     /* Stub */
-    cap_details:"Details", cap_diag_plan:"Diagnostic flows",
+    cap_details:"Details", cap_diag_plan:"Steps to check",
     detail_sensor:"Trigger sensor", detail_value:"Current reading",
     detail_normal:"Normal range", detail_assigned:"Assigned to",
     cta_start_stub:"Start the check",
@@ -2053,7 +2089,7 @@ const STR = {
     step6_sol_sub:"Support the biology while incoming load stabilizes.",
     sol6_1:"Visually log colour and smell of incoming effluent",
     sol6_2:"Add nutrients (urea + DAP) per dosing schedule",
-    info_step6:"COD test isn't possible on-site. If load is still abnormal in 2 hours, escalate to supervisor.",
+    info_step6:"COD test isn't possible on-site. If load is still abnormal in 2 hours, 📞 call supervisor.",
 
     /* Preview list strings */
     prev_1_blurb:"Check the panel light",
@@ -2065,7 +2101,7 @@ const STR = {
   },
   hi: {
     crumb_plant:"प्लांट", crumb_section:"Aeration", crumb_issue:"टैंक · Issue",
-    crumb_back:"Aeration Tank", crumb_plan:"जाँच की योजना",
+    crumb_back:"Aeration Tank", crumb_plan:"जाँच के steps",
     new_alert:"नया Alert · 8 मिनट पहले",
     eyebrow:"Aeration Section · Primary",
     focal_title:"Aeration Tank", focal_sub:"पानी में हवा कम है",
@@ -2104,6 +2140,16 @@ const STR = {
     cap_question:"यह problem मिली?",
     cap_after_action:"Action पूरा होने के बाद",
     now_fix:"अब फ़िक्स करें",
+    phase_hint_fix:"— अब फ़िक्स करते हैं —",
+    focal_cause:"Aeration Tank में हवा बहुत कम है",
+    sec_photo:"फ़ोटो भेजें",
+    sec_call_super:"Supervisor को बुलाएं — Sharma जी",
+    calling_super:"Sharma जी को call जा रहा है…",
+    skip_helper:"कोई बात नहीं — आगे बढ़ें",
+    skip_confirm_friendly:"ठीक है, इस step को छोड़ देते हैं",
+    confirm_headline:"बढ़िया! क्या Issue हल हो गया?",
+    confirm_note_placeholder:"क्या किया?",
+    shabaash:"शाबाश!",
     action_label:"करें",
     action_worked:"हो गया · DO बढ़ रहा है",
     action_failed:"किया लेकिन DO अभी भी कम है",
@@ -2230,7 +2276,7 @@ const STR = {
     alert_an_s:"Inlet से acidic shock · lime dosing temporarily बढ़ाई",
 
     /* Stub */
-    cap_details:"Details", cap_diag_plan:"Diagnostic flows",
+    cap_details:"Details", cap_diag_plan:"Steps to check",
     detail_sensor:"Trigger sensor", detail_value:"अभी का reading",
     detail_normal:"सामान्य range", detail_assigned:"असाइन है",
     cta_start_stub:"जाँच शुरू करें",
@@ -2346,6 +2392,10 @@ function setLang(l){
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const key = el.getAttribute('data-i18n');
     if(T[key] !== undefined) el.innerHTML = T[key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-placeholder');
+    if(T[key] !== undefined) el.setAttribute('placeholder', T[key]);
   });
   document.documentElement.lang = l;
   renderPreview();
@@ -2698,6 +2748,26 @@ function nextStep(){
   }
   currentStepIdx++;
   renderStep();
+}
+
+/* E5 — Issue close confirmation: celebrate on "yes — that was it" */
+function confirmResolved(kind){
+  if(kind==='yes'){
+    const list = document.getElementById('confirmList');
+    const note = document.getElementById('confirmNote');
+    const cel  = document.getElementById('shabaashCelebration');
+    if(list) list.style.display='none';
+    if(note) note.style.display='none';
+    if(cel)  cel.style.display='block';
+    setTimeout(()=>{ go('home'); }, 1600);
+  } else {
+    go('home');
+  }
+}
+
+/* F11/E3 — Quick photo + call from alert card */
+function callSupervisor(){
+  alert((T && T.calling_super) || 'Sharma जी को call जा रहा है…');
 }
 
 /* F3 — Skip this step (logged as SKIPPED, no judgment) */
