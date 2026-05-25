@@ -3604,5 +3604,296 @@ renderPreview();
 })();
 </script>
 
+<!-- ============================================================
+     CALM LAYER — progressive disclosure + microanimations
+     Appended last so it overrides earlier visual density.
+     ============================================================ -->
+<style>
+/* ---------- Calm palette / muting ---------- */
+.calm .stack-strip{
+  background:transparent !important; border:0 !important; padding:4px 2px !important;
+  color:#6b7280 !important; font-weight:600 !important; font-size:11px !important;
+  box-shadow:none !important; gap:6px !important;
+}
+.calm .stack-strip .ss-ic{display:none !important;}
+.calm .stack-strip .ss-rel{color:#6b7280 !important;}
+
+/* Threshold bars hidden by default behind accordion */
+.calm .threshold-bars[data-collapsed="1"]{display:none !important;}
+.calm .threshold-toggle{
+  display:inline-flex;align-items:center;gap:6px;background:transparent;border:0;
+  color:#6b7280;font:600 12px/1 inherit;padding:6px 0;margin-top:6px;cursor:pointer;
+}
+.calm .threshold-toggle .chev{transition:transform .2s ease-out;display:inline-block;}
+.calm .threshold-toggle.open .chev{transform:rotate(90deg);}
+
+/* Equipment chip → compact pill in corner on step / solution / verify / photo / stop */
+.calm-eq-pill .eqchip-bar{
+  position:absolute !important; top:10px; right:12px; left:auto !important;
+  width:auto !important; max-width:120px; padding:4px 10px !important;
+  border-radius:14px !important; height:28px; font-size:11px !important;
+  background:#f3f4f6 !important; border:1px solid #e5e7eb !important;
+  color:#374151 !important; box-shadow:none !important; z-index:5;
+}
+.calm-eq-pill .eqchip-bar .eq-section,
+.calm-eq-pill .eqchip-bar .eq-chev{display:none !important;}
+.calm-eq-pill .eqchip-bar .eq-ic{font-size:11px !important;}
+.calm-eq-pill .eqchip-bar .eq-main{font-weight:700 !important;color:#374151 !important;font-size:11px !important;}
+
+/* Hide eq pill entirely where not the focus */
+.calm-hide-eq .eqchip-bar{display:none !important;}
+
+/* Mini-map shown only on home alert */
+.calm-no-minimap .mini-map{display:none !important;}
+
+/* Mascot only on home + success */
+.calm-no-mascot .mascot-corner{display:none !important;}
+
+/* Listen only on step screens */
+.calm-no-listen .listen-corner,
+.calm-no-listen .listen-btn{display:none !important;}
+
+/* Voice strip hidden by default; reveals when input is focused */
+body.calm .voice-strip{display:none !important;}
+body.calm.voice-reveal .voice-strip{display:flex !important;animation:vsSlideUp .22s ease-out;}
+@keyframes vsSlideUp{from{transform:translateY(120%);opacity:0;}to{transform:none;opacity:1;}}
+
+/* Skill toggle → dev only, hidden behind 3-dot menu */
+body.calm .skill-toggle{display:none !important;}
+body.calm.dev-menu-open .skill-toggle{display:inline-flex !important;}
+
+/* Mute captions globally inside calm screens */
+.calm .skill-sub,
+.calm .crumbs,
+.calm .meta,
+.calm .sub{color:#6b7280 !important;}
+
+/* Step dots — thinner & muted */
+.calm .step-dots .dot,
+.calm .dots .dot{opacity:.5;}
+.calm .step-dots .dot.on,
+.calm .dots .dot.on{opacity:1;}
+
+/* Single bold per screen — soften secondary weights */
+.calm .scroll h2, .calm .scroll h3{font-weight:700;}
+.calm .scroll p, .calm .scroll li{font-weight:400;}
+
+/* ---------- Microanimations (respect reduced motion) ---------- */
+@media (prefers-reduced-motion: no-preference){
+  /* 1. Screen transitions — crossfade + 8px upward slide */
+  .screen.on{animation:scrIn 200ms ease-out;}
+  @keyframes scrIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  /* 2. CTA press + home primary pulse */
+  .cta-primary{transition:transform .12s ease-out, box-shadow .2s ease-out;}
+  .cta-primary:active{transform:scale(.97) !important;}
+  body.calm #s-home .cta-primary{animation:ctaPulse 1.5s ease-in-out infinite;}
+  @keyframes ctaPulse{
+    0%,100%{transform:scale(1);box-shadow:0 2px 6px rgba(0,0,0,.08);}
+    50%{transform:scale(1.015);box-shadow:0 8px 18px rgba(0,0,0,.14);}
+  }
+
+  /* 3. Severity strip breathing */
+  .calm .sev-strip.critical,
+  .calm .alert-strip.critical,
+  .calm [data-sev="critical"] .sev-strip{animation:sevBreath 2s ease-in-out infinite;}
+  @keyframes sevBreath{0%,100%{filter:saturate(1);}50%{filter:saturate(.78);}}
+
+  /* 4. Threshold bar marker slide-in */
+  .calm .threshold-bars:not([data-collapsed="1"]) .marker,
+  .calm .threshold-bars:not([data-collapsed="1"]) .bar-fill{animation:markerSlide .4s ease-out;}
+  @keyframes markerSlide{from{transform:translateX(-100%);}to{transform:none;}}
+
+  /* 5. Step dots advance pop */
+  .calm .step-dots .dot.on,
+  .calm .dots .dot.on{animation:dotPop .3s ease-out;}
+  @keyframes dotPop{0%{transform:scale(1);}50%{transform:scale(1.2);}100%{transform:scale(1);}}
+
+  /* 6. Confirmation buttons stagger fade-in */
+  .calm #s-success .confirm-row .btn,
+  .calm #s-success .cta-bar .btn{opacity:0;animation:confFade .2s ease-out forwards;}
+  .calm #s-success .confirm-row .btn:nth-child(1),
+  .calm #s-success .cta-bar .btn:nth-child(1){animation-delay:.06s;}
+  .calm #s-success .confirm-row .btn:nth-child(2),
+  .calm #s-success .cta-bar .btn:nth-child(2){animation-delay:.12s;}
+  .calm #s-success .confirm-row .btn:nth-child(3),
+  .calm #s-success .cta-bar .btn:nth-child(3){animation-delay:.18s;}
+  @keyframes confFade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  /* Celebration burst */
+  .celebrate-burst{animation:celebBurst .35s cubic-bezier(.2,1.6,.4,1);}
+  @keyframes celebBurst{0%{transform:scale(.5);opacity:0;}60%{transform:scale(1.1);opacity:1;}100%{transform:scale(1);opacity:1;}}
+  .celebrate-burst::after{
+    content:"";position:absolute;inset:-30px;border-radius:50%;
+    background:radial-gradient(circle,rgba(34,197,94,.35),transparent 70%);
+    animation:celebGlow .6s ease-out;pointer-events:none;
+  }
+  @keyframes celebGlow{from{opacity:0;transform:scale(.6);}to{opacity:0;transform:scale(1.4);}}
+
+  /* 7. Bottom sheets / modals */
+  .more-bg .more-sheet,
+  .sheet.on,
+  .modal.on .modal-card{animation:sheetUp .22s ease-out;}
+  @keyframes sheetUp{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}
+
+  /* 8. Skip slide-out */
+  .skip-out{animation:skipOut .25s ease-out forwards;}
+  @keyframes skipOut{to{transform:translateX(-20px);opacity:0;}}
+
+  /* 9. Mascot idle breathing */
+  .calm .mascot-corner{animation:mascotBreath 3s ease-in-out infinite;transform-origin:center;}
+  @keyframes mascotBreath{0%,100%{transform:scale(1);}50%{transform:scale(1.02);}}
+
+  /* 10. Listen ripple */
+  .listen-corner, .listen-btn{position:relative;overflow:visible;}
+  .listen-corner.rippling::after,
+  .listen-btn.rippling::after{
+    content:"";position:absolute;inset:0;border-radius:50%;
+    border:2px solid currentColor;animation:listenRipple .3s ease-out;pointer-events:none;
+  }
+  @keyframes listenRipple{from{transform:scale(.6);opacity:.6;}to{transform:scale(2);opacity:0;}}
+}
+</style>
+
+<script>
+/* ============================================================
+   applyCalm() — runs after every screen change.
+   Hides/collapses non-hero elements per screen.
+   ============================================================ */
+(function(){
+  document.body.classList.add('calm');
+
+  // Per-screen disclosure rules
+  const RULES = {
+    plant:       {eqPill:false, hideEq:true,  minimap:false, mascot:false, listen:false},
+    alerts:      {eqPill:false, hideEq:true,  minimap:false, mascot:false, listen:false},
+    'issue-stub':{eqPill:false, hideEq:true,  minimap:false, mascot:false, listen:false},
+    tasks:       {eqPill:false, hideEq:true,  minimap:false, mascot:false, listen:false},
+    profile:     {eqPill:false, hideEq:true,  minimap:false, mascot:false, listen:false},
+    home:        {eqPill:false, hideEq:true,  minimap:true,  mascot:true,  listen:false},
+    preview:     {eqPill:true,  hideEq:false, minimap:false, mascot:false, listen:false},
+    step:        {eqPill:true,  hideEq:false, minimap:false, mascot:true,  listen:true},
+    solution:    {eqPill:false, hideEq:true,  minimap:false, mascot:false, listen:false},
+    stop:        {eqPill:true,  hideEq:false, minimap:false, mascot:false, listen:false},
+    verify:      {eqPill:false, hideEq:true,  minimap:false, mascot:false, listen:false},
+    success:     {eqPill:false, hideEq:true,  minimap:false, mascot:true,  listen:false},
+    reassign:    {eqPill:false, hideEq:true,  minimap:false, mascot:false, listen:false},
+    photo:       {eqPill:true,  hideEq:false, minimap:false, mascot:false, listen:false}
+  };
+
+  function applyCalm(name){
+    const sec = document.getElementById('s-'+name);
+    if(!sec) return;
+    const r = RULES[name] || {};
+    sec.classList.toggle('calm-eq-pill', !!r.eqPill);
+    sec.classList.toggle('calm-hide-eq', !!r.hideEq);
+    sec.classList.toggle('calm-no-minimap', !r.minimap);
+    sec.classList.toggle('calm-no-mascot', !r.mascot);
+    sec.classList.toggle('calm-no-listen', !r.listen);
+
+    // Home: collapse threshold bars behind accordion
+    if(name === 'home'){ collapseThresholds(sec); muteStackStrip(sec); }
+
+    // Step: wire voice-strip reveal on input focus
+    if(name === 'step'){ wireVoiceReveal(sec); }
+
+    // Success: trigger celebration burst on the check icon if present
+    if(name === 'success'){ triggerCelebration(sec); }
+
+    // Listen ripple wiring
+    wireListenRipple(sec);
+  }
+
+  function collapseThresholds(sec){
+    const tb = sec.querySelector('.threshold-bars');
+    if(!tb || tb.dataset.calmInit) return;
+    tb.dataset.calmInit = '1';
+    tb.dataset.collapsed = '1';
+    const btn = document.createElement('button');
+    btn.className = 'threshold-toggle';
+    btn.type = 'button';
+    btn.innerHTML = '<span class="chev">›</span><span>विवरण देखें · See details</span>';
+    btn.addEventListener('click', ()=>{
+      const open = tb.dataset.collapsed === '1';
+      tb.dataset.collapsed = open ? '0' : '1';
+      btn.classList.toggle('open', open);
+    });
+    tb.parentNode.insertBefore(btn, tb);
+  }
+
+  function muteStackStrip(sec){
+    const ss = sec.querySelector('.stack-strip');
+    if(!ss || ss.dataset.calmInit) return;
+    ss.dataset.calmInit = '1';
+    // strip its chip styling already handled via CSS; ensure text reads as caption
+    const rel = ss.querySelector('.ss-rel');
+    if(rel && !rel.textContent.trim()) rel.textContent = '3rd this week';
+  }
+
+  function wireVoiceReveal(sec){
+    if(sec.dataset.voiceWired) return;
+    sec.dataset.voiceWired = '1';
+    sec.querySelectorAll('input,textarea,[contenteditable]').forEach(el=>{
+      el.addEventListener('focus', ()=>document.body.classList.add('voice-reveal'));
+      el.addEventListener('blur',  ()=>setTimeout(()=>document.body.classList.remove('voice-reveal'),120));
+    });
+    // also reveal when tapping a "voice" affordance if present
+    sec.querySelectorAll('[data-voice], .voice-cue').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        document.body.classList.add('voice-reveal');
+        setTimeout(()=>document.body.classList.remove('voice-reveal'), 3000);
+      });
+    });
+  }
+
+  function wireListenRipple(sec){
+    sec.querySelectorAll('.listen-corner, .listen-btn').forEach(btn=>{
+      if(btn.dataset.rippleWired) return;
+      btn.dataset.rippleWired = '1';
+      btn.addEventListener('click', ()=>{
+        btn.classList.remove('rippling');
+        void btn.offsetWidth;
+        btn.classList.add('rippling');
+        setTimeout(()=>btn.classList.remove('rippling'), 320);
+      });
+    });
+  }
+
+  function triggerCelebration(sec){
+    const target = sec.querySelector('.success-icon, .check-pop, .celebrate, .big-check');
+    if(target && !target.dataset.burst){
+      target.dataset.burst = '1';
+      target.style.position = target.style.position || 'relative';
+      target.classList.add('celebrate-burst');
+    }
+  }
+
+  // Skip slide-out animation hook
+  document.addEventListener('click', function(e){
+    const t = e.target.closest('[data-skip], .skip-btn');
+    if(!t) return;
+    const card = t.closest('.step-card, .card, .scroll');
+    if(card){ card.classList.add('skip-out'); }
+  }, true);
+
+  // Wrap go() to apply per-screen calm rules
+  const _go = window.go;
+  if(typeof _go === 'function'){
+    window.go = function(name){
+      _go.apply(this, arguments);
+      setTimeout(()=>applyCalm(name), 60);
+    };
+  }
+
+  // Initial pass — apply to every known screen so it sticks regardless of which is "on"
+  setTimeout(()=>{
+    Object.keys(RULES).forEach(applyCalm);
+    // current visible
+    const on = document.querySelector('.screen.on');
+    if(on) applyCalm(on.id.replace('s-',''));
+  }, 160);
+})();
+</script>
+
 </body>
 </html>
