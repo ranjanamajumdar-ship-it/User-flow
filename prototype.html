@@ -1,0 +1,2837 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
+<title>Dr. Paani · Aeration Tank Diagnostic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#193458;
+  --brand-2:#2A4D7F;
+  --brand-tint:#EEF2F8;
+  --brand-tint-2:#DCE4F0;
+  --bg:#FFFFFF;
+  --surface:#F7F8FB;
+  --ink:#0E1A2E;
+  --ink-2:#3F4D66;
+  --ink-3:#7A8497;
+  --line:#E4E8EF;
+  --line-2:#C8D0DD;
+  --red:#D64545;
+  --red-d:#7A1F1F;
+  --red-tint:#FBEAEA;
+  --amber:#E8941A;
+  --amber-tint:#FDF1DC;
+  --green:#1F9D55;
+  --green-tint:#E1F4EA;
+  --shadow:0 1px 2px rgba(25,52,88,.05), 0 6px 18px rgba(25,52,88,.08);
+  --shadow-lg:0 8px 30px rgba(25,52,88,.18);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:#E8ECF2;color:var(--ink);font-family:'Plus Jakarta Sans','Noto Sans Devanagari',system-ui,sans-serif;}
+body{display:flex;justify-content:center;min-height:100vh;}
+.device{width:100%;max-width:420px;min-height:100vh;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden;box-shadow:0 0 0 1px var(--line);}
+
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:14px 20px 4px;font-size:13px;font-weight:600;color:var(--ink);}
+.statusbar .back{font-weight:600;color:var(--ink);text-decoration:none;font-size:18px;cursor:pointer;}
+.crumbs{display:flex;align-items:center;gap:6px;padding:8px 20px;font-size:12px;color:var(--ink-3);font-weight:500;}
+.crumbs a{color:var(--ink-3);text-decoration:none;cursor:pointer;}
+.crumbs .sep{opacity:.5;}
+.crumbs .cur{color:var(--brand);font-weight:700;}
+.scroll{flex:1;overflow-y:auto;padding:0 20px 140px;-webkit-overflow-scrolling:touch;}
+
+.alert-chip{display:inline-flex;align-items:center;gap:8px;background:var(--red-tint);color:var(--red-d);font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;margin:4px 20px 6px;}
+.alert-chip .pulse{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.4}}
+
+.focal{margin:10px 0 0;background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow);}
+.focal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.focal-eyebrow{font-size:11px;color:var(--ink-3);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.focal-title{font-size:24px;font-weight:800;line-height:1.15;color:var(--brand);margin-top:4px;letter-spacing:-.02em;}
+.focal-title .hi{display:block;font-size:16px;font-weight:600;color:var(--ink-2);margin-top:2px;}
+.status-pill{display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:6px 11px;border-radius:999px;white-space:nowrap;}
+.status-pill .d{width:6px;height:6px;border-radius:50%;background:#fff;}
+
+.illus{width:100%;height:220px;display:block;margin:14px 0 8px;}
+.readouts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.readout{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;}
+.readout .lbl{font-size:10px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.readout .val{font-size:22px;font-weight:800;color:var(--brand);margin-top:4px;display:flex;align-items:baseline;gap:4px;letter-spacing:-.02em;}
+.readout .val .u{font-size:11px;font-weight:600;color:var(--ink-3);}
+.readout.bad{background:var(--red-tint);border-color:#F2C9C9;}
+.readout.bad .val{color:var(--red-d);}
+.readout .norm{font-size:10px;color:var(--ink-3);margin-top:2px;font-weight:600;}
+.ccu{margin:14px 0 0;display:flex;flex-direction:column;gap:8px;}
+.ccu .row{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.4;color:var(--ink-2);}
+.ccu .row .ic{width:22px;text-align:center;flex-shrink:0;}
+.ccu .row.cause{font-size:14px;color:var(--ink);font-weight:600;}
+
+.cta-bar{position:absolute;left:0;right:0;bottom:0;padding:14px 20px 22px;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,#fff 35%);display:flex;flex-direction:column;gap:8px;}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:16px;padding:16px 18px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;width:100%;letter-spacing:-.01em;}
+.btn.primary{background:var(--brand);color:#fff;box-shadow:0 6px 16px rgba(25,52,88,.25);}
+.btn.primary:active{transform:scale(.98);}
+.btn.ghost{background:#fff;color:var(--brand);border:1.5px solid var(--line);}
+.btn.sec{background:var(--brand-tint);color:var(--brand);}
+.btn.danger{background:var(--red);color:#fff;box-shadow:0 6px 16px rgba(214,69,69,.3);}
+.btn-row{display:flex;gap:8px;}
+.btn-row .btn{flex:1;padding:12px;font-size:13px;}
+.skip{display:block;text-align:center;font-size:13px;color:var(--ink-3);padding:12px;text-decoration:underline;text-decoration-style:dotted;cursor:pointer;}
+
+.stephead{display:flex;justify-content:space-between;align-items:center;padding:6px 20px;gap:8px;}
+.steptype{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--brand);background:var(--brand-tint);padding:5px 10px;border-radius:999px;white-space:nowrap;}
+.dots{display:flex;gap:5px;flex:1;justify-content:center;}
+.dots span{width:6px;height:6px;border-radius:50%;background:var(--line-2);transition:.2s;}
+.dots span.done{background:var(--green);}
+.dots span.cur{background:var(--brand);width:20px;border-radius:3px;}
+.listen{width:38px;height:38px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;cursor:pointer;font-size:16px;flex-shrink:0;}
+
+.q{font-size:22px;font-weight:800;line-height:1.25;padding:8px 20px 4px;color:var(--brand);letter-spacing:-.02em;}
+.q-sub{font-size:13px;color:var(--ink-3);padding:0 20px;margin-top:4px;font-weight:500;}
+
+.eqchip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 14px 7px 10px;font-size:12px;font-weight:700;color:var(--brand);box-shadow:var(--shadow);margin:0 20px;}
+.eqchip .dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(214,69,69,.18);}
+.eqchip .dot.amber{background:var(--amber);box-shadow:0 0 0 4px rgba(232,148,26,.18);}
+.eqchip .dot.brand{background:var(--brand);box-shadow:0 0 0 4px rgba(25,52,88,.15);}
+.eqchip .dot.green{background:var(--green);box-shadow:0 0 0 4px rgba(31,157,85,.18);}
+
+.mascot-row{padding:10px 20px 0;display:flex;align-items:flex-start;gap:10px;}
+.mascot{width:42px;height:42px;border-radius:50%;background:var(--brand-tint);display:grid;place-items:center;flex-shrink:0;border:1.5px solid var(--brand-tint-2);}
+.bubble{background:var(--brand);color:#fff;border-radius:14px;border-top-left-radius:4px;padding:10px 14px;font-size:13px;line-height:1.4;font-weight:500;}
+
+.yn{display:flex;flex-direction:column;gap:10px;padding:14px 20px 0;}
+.ynbtn{display:flex;align-items:center;gap:14px;padding:18px;border-radius:16px;border:1.5px solid var(--line);background:#fff;font-size:16px;font-weight:700;cursor:pointer;text-align:left;font-family:inherit;color:var(--ink);}
+.ynbtn .ic{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;font-size:20px;font-weight:800;}
+.ynbtn.yes .ic{background:var(--green-tint);color:var(--green);}
+.ynbtn.no .ic{background:var(--red-tint);color:var(--red);}
+.ynbtn:active{transform:scale(.99);}
+
+/* Step cards */
+.step-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin:0 20px;box-shadow:var(--shadow);}
+.step-card + .step-card{margin-top:12px;}
+.step-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;background:var(--brand);color:#fff;font-weight:800;font-size:14px;flex-shrink:0;}
+.step-title{font-size:17px;font-weight:800;color:var(--brand);letter-spacing:-.01em;line-height:1.3;}
+.freq-pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;padding:4px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;}
+.freq-low{background:var(--green-tint);color:#0F5A30;}
+.freq-mod{background:var(--amber-tint);color:#8B5A0A;}
+.freq-high{background:var(--red-tint);color:var(--red-d);}
+
+.section-h{font-size:11px;color:var(--ink-3);font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin:14px 0 6px;display:flex;align-items:center;gap:6px;}
+.section-h .dot{width:5px;height:5px;background:var(--brand);border-radius:50%;}
+.identify{font-size:13.5px;color:var(--ink);line-height:1.5;font-weight:500;}
+.identify ul{margin:6px 0 0;padding-left:18px;}
+.identify ul li{margin:4px 0;}
+.identify b{color:var(--brand);font-weight:700;}
+
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.tool{display:inline-flex;align-items:center;gap:5px;background:var(--brand-tint);color:var(--brand);font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;border:1px solid var(--brand-tint-2);}
+.no-tools{display:inline-flex;align-items:center;gap:6px;background:var(--green-tint);color:#0F5A30;font-size:12px;font-weight:700;padding:6px 10px;border-radius:999px;}
+
+/* ===== Flow type badge ===== */
+.flow-type-row{display:flex;align-items:center;gap:8px;padding:6px 20px 4px;}
+.flow-type-badge{display:inline-flex;align-items:center;gap:6px;background:var(--brand);color:#fff;font-size:10px;font-weight:800;padding:5px 10px;border-radius:999px;letter-spacing:.06em;text-transform:uppercase;}
+.flow-type-badge .code{background:rgba(255,255,255,.22);padding:2px 6px;border-radius:999px;font-size:9px;}
+.flow-type-badge.f1{background:var(--brand);}
+.flow-type-badge.f2{background:#0F5A50;}
+.flow-type-badge.f3{background:#735C0A;}
+.flow-type-badge.f4{background:#5B3B8B;}
+.flow-type-badge.f5{background:var(--green);}
+.flow-type-badge.f6{background:var(--red);}
+.flow-type-desc{font-size:11px;color:var(--ink-3);font-weight:600;}
+
+/* ===== F2: Auto-check banner ===== */
+.autocheck-card{background:linear-gradient(180deg,#E1F4F0 0%,#F7FAFA 100%);border:1.5px solid #6FB5A5;border-radius:18px;padding:18px;margin:0 20px;}
+.autocheck-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.autocheck-head .ic{width:36px;height:36px;border-radius:10px;background:#0F5A50;color:#fff;display:grid;place-items:center;font-size:18px;}
+.autocheck-head .title{font-size:13px;font-weight:800;color:#0F5A50;letter-spacing:.04em;text-transform:uppercase;}
+.autocheck-head .sub{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:2px;}
+.autocheck-readout{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.autocheck-readout .item{background:#fff;border:1px solid #C8E2DC;border-radius:10px;padding:10px 12px;}
+.autocheck-readout .item .l{font-size:10px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.autocheck-readout .item .v{font-size:20px;font-weight:800;color:#0F5A50;margin-top:3px;letter-spacing:-.01em;}
+.autocheck-readout .item .n{font-size:10px;color:var(--ink-3);font-weight:600;margin-top:2px;}
+.autocheck-readout .item.warn{background:#FFF7E8;border-color:#F5D9A6;}
+.autocheck-readout .item.warn .v{color:#8B5A0A;}
+.countdown-bar{height:6px;background:#fff;border:1px solid #C8E2DC;border-radius:3px;overflow:hidden;margin:8px 0;}
+.countdown-bar > i{display:block;height:100%;background:#0F5A50;width:0;transition:width 5s linear;}
+.autocheck-foot{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--ink-3);font-weight:600;}
+.flag-btn{background:#fff;border:1.5px solid var(--red);color:var(--red);font-size:12px;font-weight:700;padding:8px 14px;border-radius:999px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
+.flag-btn:active{background:var(--red-tint);}
+
+/* ===== F3: Skip-friendly card ===== */
+.skipfriendly-card{background:#FFF7E8;border:1.5px dashed #E8941A;border-radius:14px;padding:14px;margin:8px 20px 0;display:flex;gap:12px;align-items:flex-start;}
+.skipfriendly-card .ic{font-size:22px;flex-shrink:0;}
+.skipfriendly-card .body{flex:1;}
+.skipfriendly-card .title{font-size:13.5px;font-weight:800;color:#8B5A0A;line-height:1.3;}
+.skipfriendly-card .sub{font-size:12px;color:#735C0A;margin-top:3px;font-weight:600;line-height:1.45;}
+
+/* ===== F4: Skill-tier badge ===== */
+.skill-card{background:#F3EEFA;border:1.5px solid #C9B8E8;border-radius:14px;padding:14px;margin:8px 20px 0;}
+.skill-head{display:flex;align-items:center;gap:10px;}
+.skill-head .ic{width:32px;height:32px;border-radius:10px;background:#5B3B8B;color:#fff;display:grid;place-items:center;font-size:14px;font-weight:800;flex-shrink:0;}
+.skill-head .title{font-size:13.5px;font-weight:800;color:#5B3B8B;}
+.skill-head .tier{background:#5B3B8B;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;margin-left:auto;letter-spacing:.04em;text-transform:uppercase;}
+.skill-sub{font-size:12px;color:#3F3458;margin-top:6px;font-weight:600;line-height:1.45;}
+.skill-shortcut-btn{display:flex;justify-content:space-between;align-items:center;width:100%;background:#fff;border:1.5px solid #5B3B8B;color:#5B3B8B;font-size:13px;font-weight:800;padding:10px 14px;border-radius:10px;margin-top:10px;cursor:pointer;font-family:inherit;}
+.skill-shortcut-btn:active{background:#F3EEFA;}
+
+/* ===== F5: Issue-close confirm pattern (used on success) ===== */
+.close-confirm-banner{background:var(--green-tint);border:1.5px solid #B7DFC8;border-radius:14px;padding:14px;margin:8px 20px 0;display:flex;gap:12px;align-items:flex-start;}
+.close-confirm-banner .ic{font-size:22px;flex-shrink:0;}
+.close-confirm-banner .body{flex:1;}
+.close-confirm-banner .title{font-size:13.5px;font-weight:800;color:#0F5A30;line-height:1.3;}
+.close-confirm-banner .sub{font-size:12px;color:#0F5A30;margin-top:3px;font-weight:600;line-height:1.45;}
+
+/* ===== F6: Escalation banner ===== */
+.escalate-banner{background:var(--red-tint);border:1.5px solid #F2C9C9;border-radius:14px;padding:14px;margin:8px 20px 0;display:flex;gap:12px;align-items:flex-start;}
+.escalate-banner .ic{font-size:22px;flex-shrink:0;}
+.escalate-banner .body{flex:1;}
+.escalate-banner .title{font-size:13.5px;font-weight:800;color:var(--red-d);line-height:1.3;}
+.escalate-banner .sub{font-size:12px;color:var(--red-d);margin-top:3px;font-weight:600;line-height:1.45;}
+
+/* ===== Skip-step prominent button ===== */
+.skip-step-wrap{padding:14px 20px 6px;display:flex;justify-content:center;}
+.skip-step-btn{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1.5px dashed var(--line-2);color:var(--ink-3);font-family:inherit;font-size:13px;font-weight:700;padding:11px 18px;border-radius:14px;cursor:pointer;transition:.15s;}
+.skip-step-btn:hover{border-color:var(--ink-3);color:var(--ink-2);}
+.skip-step-btn:active{background:var(--surface);}
+
+.solution{background:var(--green-tint);border:1px solid #B7DFC8;border-radius:12px;padding:12px 14px;font-size:13.5px;color:#0F5A30;line-height:1.5;font-weight:600;}
+.solution.warning{background:var(--amber-tint);border-color:#F5D9A6;color:#7C4A0A;}
+
+/* Method toggle (for blower check: panel vs DP software) */
+.methods{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.method{padding:14px 12px;border:1.5px solid var(--line);border-radius:14px;background:#fff;cursor:pointer;font-family:inherit;text-align:left;}
+.method.active{border-color:var(--brand);background:var(--brand-tint);}
+.method .m-ic{font-size:24px;display:block;}
+.method .m-t{font-size:12px;font-weight:700;color:var(--brand);margin-top:6px;}
+.method .m-s{font-size:10px;color:var(--ink-3);margin-top:2px;font-weight:500;}
+
+/* Progress overview */
+.progress-overview{margin:0 20px 14px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;}
+.po-head{font-size:11px;color:var(--ink-3);font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.po-list{display:flex;flex-direction:column;gap:8px;}
+.po-item{display:flex;gap:10px;align-items:center;font-size:12.5px;color:var(--ink-2);font-weight:500;}
+.po-item .pn{width:22px;height:22px;border-radius:50%;background:var(--line);color:var(--ink-3);display:grid;place-items:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.po-item.done .pn{background:var(--green);color:#fff;}
+.po-item.done{color:var(--ink-3);text-decoration:line-through;}
+.po-item.cur .pn{background:var(--brand);color:#fff;}
+.po-item.cur{color:var(--brand);font-weight:700;}
+
+/* Solution screen */
+.sol-hero{width:96px;height:96px;border-radius:24px;background:var(--brand-tint);display:grid;place-items:center;margin:0 auto 16px;font-size:46px;}
+.sol-title{font-size:22px;text-align:center;font-weight:800;color:var(--brand);letter-spacing:-.02em;line-height:1.25;}
+.sol-sub{font-size:14px;color:var(--ink-2);text-align:center;margin:10px 0 0;line-height:1.5;font-weight:500;}
+.sol-steps{margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.sol-step{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--surface);border-radius:12px;font-size:13px;color:var(--ink);line-height:1.45;font-weight:500;}
+.sol-step .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:800;flex-shrink:0;}
+
+.safety{background:var(--amber-tint);border:1px solid #F5D9A6;border-radius:12px;padding:10px 12px;margin-top:14px;font-size:12px;color:#7C4A0A;display:flex;gap:8px;align-items:flex-start;line-height:1.4;font-weight:600;}
+.info-banner{background:var(--brand-tint);border:1px solid var(--brand-tint-2);border-radius:12px;padding:10px 12px;margin-top:12px;font-size:12px;color:var(--brand);display:flex;gap:8px;align-items:flex-start;line-height:1.4;font-weight:600;}
+
+/* Verify gauge */
+.gauge{display:flex;flex-direction:column;align-items:center;padding:18px 0;}
+.gauge svg{width:220px;height:130px;}
+.timer{font-size:32px;color:var(--brand);margin-top:10px;font-weight:800;letter-spacing:-.02em;}
+.timer-lbl{font-size:12px;color:var(--ink-3);margin-top:2px;font-weight:600;}
+.verify-info{background:var(--brand-tint);border:1px solid var(--brand-tint-2);border-radius:14px;padding:12px 14px;margin:14px 20px;font-size:13px;color:var(--brand);display:flex;gap:10px;align-items:center;font-weight:600;}
+
+/* Success */
+.success{padding:40px 20px 0;text-align:center;}
+.success .check{width:96px;height:96px;border-radius:50%;background:var(--green-tint);display:grid;place-items:center;margin:0 auto 16px;}
+.success h2{font-size:28px;margin:0 0 6px;font-weight:800;color:var(--brand);letter-spacing:-.02em;}
+.success p{font-size:14px;color:var(--ink-2);margin:0 0 18px;font-weight:500;}
+.mttr{display:flex;justify-content:space-around;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin:16px 0;}
+.mttr .it{text-align:center;}
+.mttr .it .v{font-size:18px;font-weight:800;color:var(--brand);}
+.mttr .it .l{font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px;font-weight:700;}
+.confirm-q{font-size:14px;color:var(--ink-2);margin:14px 0 10px;text-align:left;font-weight:600;}
+.confirm-list{display:flex;flex-direction:column;gap:8px;text-align:left;}
+
+/* Escalate */
+.escalate-hero{padding:40px 20px 0;text-align:center;}
+.escalate-hero .icon{width:96px;height:96px;border-radius:24px;background:var(--amber-tint);display:grid;place-items:center;margin:0 auto 16px;font-size:46px;}
+.escalate-hero h2{font-size:24px;margin:0 0 8px;font-weight:800;color:var(--brand);letter-spacing:-.02em;}
+.escalate-hero p{font-size:14px;color:var(--ink-2);font-weight:500;line-height:1.5;}
+.context-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin:18px 20px 0;text-align:left;}
+.context-card .label{font-size:10px;color:var(--ink-3);font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.context-card .row{display:flex;justify-content:space-between;font-size:13px;color:var(--ink);margin-top:4px;font-weight:600;}
+.context-card .row span:first-child{color:var(--ink-3);font-weight:500;}
+
+.rlist{padding:8px 20px 0;display:flex;flex-direction:column;gap:8px;}
+.ritem{display:flex;align-items:center;gap:12px;padding:16px;background:#fff;border:1.5px solid var(--line);border-radius:14px;cursor:pointer;font-family:inherit;color:var(--ink);text-align:left;width:100%;}
+.ritem .ic{width:40px;height:40px;border-radius:12px;background:var(--brand-tint);display:grid;place-items:center;flex-shrink:0;font-size:20px;}
+.ritem .t{font-weight:700;font-size:14px;color:var(--brand);}
+.ritem .s{font-size:11px;color:var(--ink-3);margin-top:2px;font-weight:500;}
+
+.photo-frame{width:100%;aspect-ratio:1;background:var(--brand);border-radius:18px;display:grid;place-items:center;color:#fff;margin-top:20px;}
+
+.screen{display:none;flex-direction:column;flex:1;min-height:0;}
+.screen.on{display:flex;}
+
+.cap{font-size:11px;color:var(--ink-3);font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:0 20px;margin:18px 0 8px;}
+
+/* Language modal */
+.modal-bg{position:fixed;inset:0;background:rgba(14,26,46,.55);display:flex;justify-content:center;align-items:flex-end;z-index:100;backdrop-filter:blur(4px);}
+.modal{width:100%;max-width:420px;background:#fff;border-radius:24px 24px 0 0;padding:28px 24px 32px;box-shadow:var(--shadow-lg);animation:slideUp .3s ease-out;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal h2{font-size:22px;font-weight:800;color:var(--brand);margin:0 0 6px;letter-spacing:-.02em;}
+.modal p{font-size:13px;color:var(--ink-3);margin:0 0 20px;font-weight:500;}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.lang{padding:18px;border:2px solid var(--line);border-radius:16px;background:#fff;cursor:pointer;text-align:left;font-family:inherit;}
+.lang.active{border-color:var(--brand);background:var(--brand-tint);}
+.lang .big{font-size:22px;font-weight:800;color:var(--brand);letter-spacing:-.02em;}
+.lang .small{font-size:12px;color:var(--ink-3);margin-top:2px;font-weight:600;}
+
+.lang-switch{position:absolute;top:14px;right:20px;font-size:11px;font-weight:700;color:var(--brand);background:var(--brand-tint);padding:5px 10px;border-radius:999px;border:none;cursor:pointer;font-family:inherit;z-index:10;}
+
+/* ============ Plant homepage ============ */
+.plant-header{padding:12px 20px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.plant-header .name{font-size:18px;font-weight:800;color:var(--brand);letter-spacing:-.02em;line-height:1.2;}
+.plant-header .sub{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:2px;}
+.plant-header .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#2A4D7F,#193458);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px;flex-shrink:0;box-shadow:0 2px 8px rgba(25,52,88,.25);}
+
+/* Home scroll container - everything below header scrolls */
+.home-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:90px;}
+
+/* Stat cards (KPI redesign) */
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 20px 16px;}
+.stat{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 12px 10px;
+  position:relative;overflow:hidden;cursor:pointer;transition:.15s;
+}
+.stat:active{transform:scale(.98);}
+.stat .l{font-size:10px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:4px;}
+.stat .l .ic{font-size:11px;}
+.stat .v{font-size:22px;font-weight:800;color:var(--brand);margin-top:4px;letter-spacing:-.02em;line-height:1;}
+.stat .d{font-size:10px;color:var(--ink-3);font-weight:600;margin-top:3px;}
+.stat.danger{background:linear-gradient(135deg,#FFF1F0,#FBEAEA);border-color:#F2C9C9;}
+.stat.danger .v{color:var(--red);}
+.stat.warn{background:linear-gradient(135deg,#FFF7E8,#FDF1DC);border-color:#F5D9A6;}
+.stat.warn .v{color:#8B5A0A;}
+.stat.ok{background:linear-gradient(135deg,#EAFBEF,#E1F4EA);border-color:#B7DFC8;}
+.stat.ok .v{color:var(--green);}
+
+/* Section wrapper used throughout the home feed */
+.section-block{padding:6px 20px 8px;}
+.section-h-row{display:flex;align-items:center;justify-content:space-between;margin:14px 0 10px;}
+.section-h-row h3{margin:0;font-size:14px;font-weight:800;color:var(--brand);letter-spacing:-.01em;}
+.section-h-row .view-all{font-size:12px;font-weight:700;color:var(--brand);text-decoration:none;background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 6px;border-radius:6px;}
+.section-h-row .view-all:hover{background:var(--brand-tint);}
+
+/* Plant canvas — bounded height now, scrollable internally */
+.plant-canvas-wrap{
+  position:relative;background:linear-gradient(180deg,#F4F6FA 0%,#FFFFFF 100%);
+  border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  height:360px;
+}
+.plant-canvas{width:100%;height:100%;overflow:auto;-webkit-overflow-scrolling:touch;}
+.plant-canvas::-webkit-scrollbar{width:6px;height:6px;}
+.plant-canvas::-webkit-scrollbar-thumb{background:rgba(25,52,88,.18);border-radius:3px;}
+.plant-canvas-hint{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(25,52,88,.92);color:#fff;font-size:10px;font-weight:700;padding:6px 12px;border-radius:999px;letter-spacing:.04em;text-transform:uppercase;pointer-events:none;animation:fadeOut 5s forwards;z-index:5;display:flex;align-items:center;gap:6px;}
+@keyframes fadeOut{0%,65%{opacity:1}100%{opacity:0}}
+.plant-svg{display:block;}
+
+/* Plant legend chips */
+.plant-legend{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.legend-chip{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);font-size:11px;font-weight:600;color:var(--ink-2);padding:4px 9px;border-radius:999px;}
+.legend-chip .d{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.legend-chip .d.red{background:var(--red);}
+.legend-chip .d.amber{background:var(--amber);}
+.legend-chip .d.green{background:var(--green);}
+.legend-chip .d.info{background:var(--brand);}
+
+/* Live sensor grid */
+.sensor-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sensor-card{
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;cursor:pointer;transition:.15s;position:relative;overflow:hidden;
+}
+.sensor-card:active{transform:scale(.99);}
+.sensor-card .sc-top{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.sensor-card .sc-eq{font-size:10px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.sensor-card .sc-name{font-size:13px;font-weight:800;color:var(--brand);margin-top:2px;letter-spacing:-.01em;}
+.sensor-card .sc-val{font-size:22px;font-weight:800;color:var(--brand);margin-top:6px;letter-spacing:-.02em;display:flex;align-items:baseline;gap:4px;line-height:1;}
+.sensor-card .sc-val .u{font-size:11px;font-weight:600;color:var(--ink-3);}
+.sensor-card .sc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+.sensor-card .sc-trend{font-size:11px;color:var(--ink-3);font-weight:600;display:flex;align-items:center;gap:3px;}
+.sensor-card .sc-trend.up{color:var(--red);}
+.sensor-card .sc-trend.down{color:var(--green);}
+.sensor-card .sc-trend.flat{color:var(--ink-3);}
+.sensor-card.bad{background:linear-gradient(135deg,#FFF1F0,#FBEAEA);border-color:#F2C9C9;}
+.sensor-card.bad .sc-val{color:var(--red);}
+.sensor-card.warn{background:linear-gradient(135deg,#FFF7E8,#FDF1DC);border-color:#F5D9A6;}
+.sensor-card.warn .sc-val{color:#8B5A0A;}
+.sensor-card .spark{height:18px;margin-top:6px;}
+
+/* Activity feed */
+.activity-list{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);}
+.activity-item:last-child{border-bottom:none;}
+.activity-item .ic{
+  width:32px;height:32px;border-radius:10px;display:grid;place-items:center;
+  font-size:14px;flex-shrink:0;
+}
+.activity-item .ic.alert{background:var(--red-tint);color:var(--red);}
+.activity-item .ic.ok{background:var(--green-tint);color:var(--green);}
+.activity-item .ic.info{background:var(--brand-tint);color:var(--brand);}
+.activity-item .ic.task{background:#FEF6D9;color:#735C0A;}
+.activity-item .body{flex:1;min-width:0;}
+.activity-item .t{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.005em;line-height:1.35;}
+.activity-item .s{font-size:11px;color:var(--ink-3);margin-top:3px;font-weight:500;display:flex;align-items:center;gap:6px;}
+.activity-item .s .who{color:var(--brand);font-weight:700;}
+
+/* Tasks */
+.tasks-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;}
+.tasks-progress{display:flex;align-items:center;gap:10px;}
+.tasks-progress .num{font-size:24px;font-weight:800;color:var(--brand);letter-spacing:-.02em;line-height:1;}
+.tasks-progress .denom{font-size:13px;color:var(--ink-3);font-weight:600;}
+.tasks-progress .bar{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-left:6px;}
+.tasks-progress .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--green),#2BC062);border-radius:4px;width:62%;}
+.task-list{margin-top:12px;display:flex;flex-direction:column;gap:6px;}
+.task-row{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13px;color:var(--ink-2);font-weight:600;}
+.task-row .check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line-2);display:grid;place-items:center;flex-shrink:0;font-size:11px;color:transparent;}
+.task-row.done .check{background:var(--green);border-color:var(--green);color:#fff;}
+.task-row.done{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--ink-4);}
+.task-row .time{margin-left:auto;font-size:10px;color:var(--ink-3);font-weight:600;}
+
+/* Equipment info bottom sheet */
+.eq-sheet-bg{position:fixed;inset:0;background:rgba(14,26,46,.5);z-index:80;display:none;justify-content:center;align-items:flex-end;backdrop-filter:blur(2px);animation:fadeIn .15s;}
+.eq-sheet-bg.on{display:flex;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.eq-sheet{width:100%;max-width:420px;background:#fff;border-radius:24px 24px 0 0;padding:18px 20px 24px;box-shadow:var(--shadow-lg);animation:slideUp .25s ease-out;max-height:80vh;overflow-y:auto;}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.eq-sheet .handle{width:36px;height:4px;background:var(--line-2);border-radius:2px;margin:0 auto 14px;}
+.eq-sheet-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.eq-sheet-head .icon{width:46px;height:46px;border-radius:14px;background:var(--brand-tint);display:grid;place-items:center;font-size:22px;flex-shrink:0;}
+.eq-sheet-head .icon.bad{background:var(--red-tint);}
+.eq-sheet-head .icon.warn{background:var(--amber-tint);}
+.eq-sheet-head .icon.ok{background:var(--green-tint);}
+.eq-sheet-head .name{font-size:17px;font-weight:800;color:var(--brand);letter-spacing:-.01em;line-height:1.2;}
+.eq-sheet-head .sub{font-size:11px;color:var(--ink-3);margin-top:2px;font-weight:600;}
+.eq-sheet-head .status{margin-top:6px;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;}
+.eq-sheet-head .status.bad{background:var(--red-tint);color:var(--red-d);}
+.eq-sheet-head .status.warn{background:var(--amber-tint);color:#8B5A0A;}
+.eq-sheet-head .status.ok{background:var(--green-tint);color:#0F5A30;}
+.eq-readings{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.eq-reading{background:var(--surface-2,#F7F8FB);border:1px solid var(--line);border-radius:10px;padding:8px 10px;}
+.eq-reading .l{font-size:10px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.eq-reading .v{font-size:16px;font-weight:800;color:var(--brand);margin-top:2px;letter-spacing:-.01em;display:flex;align-items:baseline;gap:3px;}
+.eq-reading .v .u{font-size:10px;font-weight:600;color:var(--ink-3);}
+.eq-reading.bad{background:var(--red-tint);border-color:#F2C9C9;}
+.eq-reading.bad .v{color:var(--red-d);}
+.eq-info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:600;}
+.eq-info-row:last-of-type{border-bottom:none;}
+.eq-info-row span:first-child{color:var(--ink-3);}
+.eq-info-row span:last-child{color:var(--brand);text-align:right;}
+.eq-sheet-actions{display:flex;gap:8px;margin-top:14px;}
+.eq-sheet-actions .btn{flex:1;}
+
+/* Bottom nav */
+.bnav{display:flex;background:#fff;border-top:1px solid var(--line);padding:6px 8px 14px;flex-shrink:0;}
+.bnav-item{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;cursor:pointer;font-family:inherit;color:var(--ink-3);transition:color .12s;}
+.bnav-item .ic{font-size:20px;line-height:1;}
+.bnav-item .l{font-size:10px;font-weight:700;letter-spacing:.02em;}
+.bnav-item.on{color:var(--brand);}
+.bnav-item .badge{position:absolute;background:var(--red);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:999px;display:grid;place-items:center;padding:0 4px;margin-left:14px;margin-top:-2px;border:2px solid #fff;}
+.bnav-icon-wrap{position:relative;}
+
+/* Alerts list */
+.alerts-head{padding:14px 20px 4px;}
+.alerts-head h1{margin:0;font-size:24px;font-weight:800;color:var(--brand);letter-spacing:-.02em;}
+.alerts-head .sub{font-size:12px;color:var(--ink-3);font-weight:600;margin-top:2px;}
+
+.seg{display:flex;background:var(--brand-tint);border-radius:12px;padding:4px;margin:14px 20px 0;}
+.seg-btn{flex:1;background:none;border:none;padding:10px 12px;font-family:inherit;font-size:13px;font-weight:700;color:var(--ink-3);cursor:pointer;border-radius:9px;transition:.15s;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:-.01em;}
+.seg-btn.on{background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(25,52,88,.1);}
+.seg-btn .count{background:rgba(25,52,88,.08);color:var(--brand);font-size:11px;font-weight:800;padding:1px 6px;border-radius:8px;min-width:18px;}
+.seg-btn.on .count{background:var(--brand);color:#fff;}
+
+.alert-list{padding:12px 20px 8px;display:flex;flex-direction:column;gap:10px;}
+.alert-card{display:flex;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:.15s;text-align:left;font-family:inherit;width:100%;padding:0;}
+.alert-card:hover{border-color:var(--brand-tint-2);box-shadow:var(--shadow);}
+.alert-card:active{transform:scale(.99);}
+.alert-stripe{width:4px;flex-shrink:0;}
+.alert-stripe.crit{background:var(--red);}
+.alert-stripe.high{background:var(--amber);}
+.alert-stripe.med{background:#E8C547;}
+.alert-stripe.done{background:var(--green);}
+.alert-body{flex:1;min-width:0;padding:12px 14px;}
+.alert-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.alert-eq{font-size:10px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+.alert-time{font-size:10px;color:var(--ink-3);font-weight:600;white-space:nowrap;}
+.alert-title{font-size:15px;font-weight:800;color:var(--brand);margin-top:3px;line-height:1.25;letter-spacing:-.01em;}
+.alert-summary{font-size:12px;color:var(--ink-2);margin-top:4px;font-weight:500;line-height:1.4;}
+.alert-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+.severity-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;}
+.severity-crit{background:var(--red-tint);color:var(--red-d);}
+.severity-high{background:var(--amber-tint);color:#8B5A0A;}
+.severity-med{background:#FEF6D9;color:#735C0A;}
+.severity-done{background:var(--green-tint);color:#0F5A30;}
+.alert-foot .arrow{color:var(--ink-3);font-size:14px;}
+.alert-card.live .alert-eq::before{content:"●";color:var(--red);margin-right:5px;animation:pulse 1.4s infinite;}
+
+.empty-state{padding:60px 20px;text-align:center;color:var(--ink-3);}
+.empty-state .ic{font-size:48px;margin-bottom:10px;opacity:.5;}
+.empty-state .t{font-size:14px;font-weight:600;color:var(--ink-2);}
+
+/* Stub issue page */
+.stub-hero{padding:24px 20px 16px;background:linear-gradient(180deg,var(--brand-tint) 0%,#FFFFFF 100%);}
+.stub-hero .eyebrow{font-size:11px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.stub-hero h1{margin:6px 0 6px;font-size:22px;font-weight:800;color:var(--brand);line-height:1.2;letter-spacing:-.02em;}
+.stub-hero .sub{font-size:13px;color:var(--ink-2);font-weight:500;line-height:1.5;}
+.stub-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;}
+.stub-row:last-child{border-bottom:none;}
+.stub-row span:first-child{color:var(--ink-3);}
+.stub-row span:last-child{color:var(--brand);text-align:right;}
+.stub-flows{margin:0 20px;}
+
+/* Tasks / Profile stubs */
+.coming-soon{padding:80px 20px;text-align:center;}
+.coming-soon .ic{font-size:56px;margin-bottom:12px;opacity:.6;}
+.coming-soon h2{margin:0 0 6px;font-size:20px;font-weight:800;color:var(--brand);letter-spacing:-.02em;}
+.coming-soon p{margin:0;font-size:13px;color:var(--ink-3);font-weight:500;line-height:1.5;}
+
+/* ============================================================
+   ===== UX LAWS LAYER · applied across the prototype =====
+   ============================================================ */
+
+/* Global motion tokens (Doherty: <400ms responses) */
+:root{
+  --t-fast:120ms cubic-bezier(.4,0,.2,1);
+  --t-med:220ms cubic-bezier(.4,0,.2,1);
+  --t-slow:320ms cubic-bezier(.4,0,.2,1);
+}
+.screen{animation:screenFade 220ms ease-out;}
+@keyframes screenFade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* Press feedback (Doherty + Aesthetic Usability) */
+.btn:active, .ynbtn:active, .stat:active, .sensor-card:active, .alert-card:active, .tile:active, .ritem:active, .flow-row:active, .ynbtn:active, .ritem:active, .previtem:active{transform:scale(.985);}
+.btn, .ynbtn, .stat, .sensor-card, .alert-card, .tile, .ritem, .ynbtn, .previtem{transition:transform var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);}
+
+/* Fitt's Law: bigger primary CTA + bottom nav within thumb reach */
+.cta-bar .btn.primary{min-height:56px;font-size:16px;}
+.bnav-item{min-height:60px;padding:10px 4px 14px;}
+.bnav-item .ic{font-size:22px;}
+.btn{min-height:44px;}
+
+/* Von Restorff: critical alert breathing glow on home stat */
+.stat.danger{position:relative;}
+.stat.danger::after{content:"";position:absolute;inset:-2px;border-radius:14px;border:2px solid var(--red);opacity:0;animation:vrGlow 2.4s ease-in-out infinite;pointer-events:none;}
+@keyframes vrGlow{0%,100%{opacity:0;transform:scale(1);}50%{opacity:.45;transform:scale(1.02);}}
+
+/* Pull-to-refresh hint (Jakob: familiar mobile pattern) */
+.pull-hint{display:flex;justify-content:center;align-items:center;gap:8px;padding:10px 20px 4px;font-size:11px;color:var(--ink-3);font-weight:600;opacity:.7;}
+.pull-hint .arr{display:inline-block;animation:pullArrow 1.6s ease-in-out infinite;}
+@keyframes pullArrow{0%,100%{transform:translateY(0);}50%{transform:translateY(3px);}}
+
+/* Count-up animation for stats (Aesthetic Usability) */
+.stat .v{font-variant-numeric:tabular-nums;}
+
+/* Skeleton shimmer (Doherty + Aesthetic) */
+@keyframes shimmer{from{background-position:-200px 0;}to{background-position:200px 0;}}
+
+/* Suggested label (Tesler's Law: smart defaults made visible) */
+.suggested{display:inline-flex;align-items:center;gap:4px;background:var(--brand-tint);color:var(--brand);font-size:9px;font-weight:800;padding:2px 6px;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;margin-left:6px;vertical-align:middle;}
+.suggested::before{content:"✦";}
+
+/* More-actions sheet (Hick + Cognitive load: collapsed by default) */
+.more-bg{position:fixed;inset:0;background:rgba(14,26,46,.45);z-index:65;display:none;justify-content:center;align-items:flex-end;backdrop-filter:blur(2px);animation:screenFade .15s;}
+.more-bg.on{display:flex;}
+.more-sheet{width:100%;max-width:420px;background:#fff;border-radius:24px 24px 0 0;padding:18px 20px 28px;box-shadow:var(--shadow-lg);animation:slideUp .22s ease-out;}
+.more-sheet .handle{width:36px;height:4px;background:var(--line-2);border-radius:2px;margin:0 auto 16px;}
+.more-sheet h3{margin:0 0 14px;font-size:16px;font-weight:800;color:var(--brand);letter-spacing:-.01em;}
+.more-row{display:flex;align-items:center;gap:14px;padding:14px;background:#fff;border:1.5px solid var(--line);border-radius:14px;margin-bottom:8px;font-family:inherit;width:100%;cursor:pointer;text-align:left;color:var(--ink);}
+.more-row:active{transform:scale(.99);}
+.more-row .ic{width:40px;height:40px;border-radius:12px;background:var(--brand-tint);display:grid;place-items:center;font-size:20px;flex-shrink:0;}
+.more-row .t{font-weight:800;font-size:14px;color:var(--brand);}
+.more-row .s{font-size:11px;color:var(--ink-3);margin-top:2px;font-weight:600;}
+
+/* Peak-end: confetti on success */
+.confetti{position:absolute;width:8px;height:14px;top:-20px;border-radius:2px;opacity:0;animation:confettiFall 1800ms ease-in forwards;pointer-events:none;}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0deg);}100%{opacity:0;transform:translateY(420px) rotate(540deg);}}
+.success .check{animation:checkPop 600ms cubic-bezier(.34,1.56,.64,1);}
+@keyframes checkPop{0%{transform:scale(0);}60%{transform:scale(1.15);}100%{transform:scale(1);}}
+.success h2{animation:fadeUp .6s .2s both;}
+.success p{animation:fadeUp .6s .35s both;}
+.success .mttr{animation:fadeUp .6s .5s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* UX Lab toggle button (floating) */
+.uxlab-toggle{position:fixed;bottom:96px;right:18px;width:48px;height:48px;border-radius:24px;background:linear-gradient(135deg,#2A4D7F,#193458);color:#fff;border:none;cursor:pointer;display:grid;place-items:center;font-weight:800;font-size:13px;letter-spacing:.04em;box-shadow:0 8px 22px rgba(25,52,88,.32);z-index:60;font-family:inherit;transition:transform var(--t-fast);}
+.uxlab-toggle:active{transform:scale(.94);}
+.uxlab-toggle.on{background:linear-gradient(135deg,#E8941A,#C97812);}
+
+/* UX Lab annotations (badges that pin to elements when lab is on) */
+.uxbadge{position:absolute;background:#1B1F2E;color:#fff;font-size:9px;font-weight:800;padding:3px 7px 3px 6px;border-radius:6px;letter-spacing:.02em;text-transform:uppercase;z-index:55;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.18);display:none;opacity:0;transition:opacity var(--t-fast);}
+.uxbadge::before{content:"●";color:#FFD43A;margin-right:3px;font-size:8px;}
+.uxlab-on .uxbadge{display:inline-block;opacity:1;}
+
+/* UX Lab info sheet */
+.uxsheet-bg{position:fixed;inset:0;background:rgba(14,26,46,.55);z-index:75;display:none;justify-content:center;align-items:flex-end;backdrop-filter:blur(3px);}
+.uxsheet-bg.on{display:flex;}
+.uxsheet{width:100%;max-width:420px;background:#fff;border-radius:24px 24px 0 0;padding:18px 20px 28px;box-shadow:var(--shadow-lg);max-height:84vh;overflow-y:auto;animation:slideUp .25s ease-out;}
+.uxsheet .handle{width:36px;height:4px;background:var(--line-2);border-radius:2px;margin:0 auto 14px;}
+.uxsheet h2{margin:0 0 4px;font-size:20px;font-weight:800;color:var(--brand);letter-spacing:-.02em;}
+.uxsheet .sub{font-size:12px;color:var(--ink-3);font-weight:500;margin-bottom:16px;}
+.uxsheet .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--brand-tint);border-radius:12px;margin-bottom:14px;}
+.uxsheet .toggle-row .lbl{font-size:13px;font-weight:700;color:var(--brand);}
+.uxsheet .toggle{position:relative;width:44px;height:26px;background:var(--line-2);border-radius:13px;transition:background var(--t-fast);cursor:pointer;}
+.uxsheet .toggle.on{background:var(--brand);}
+.uxsheet .toggle .nub{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform var(--t-fast);box-shadow:0 1px 3px rgba(0,0,0,.15);}
+.uxsheet .toggle.on .nub{transform:translateX(18px);}
+
+.uxlaw-list{display:flex;flex-direction:column;gap:8px;}
+.uxlaw-item{padding:12px 14px;background:#fff;border:1px solid var(--line);border-radius:12px;}
+.uxlaw-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:800;margin-right:8px;}
+.uxlaw-h{font-size:13.5px;font-weight:800;color:var(--brand);letter-spacing:-.01em;}
+.uxlaw-h .badge{background:var(--green-tint);color:var(--green);font-size:9px;font-weight:800;padding:2px 6px;border-radius:8px;margin-left:6px;text-transform:uppercase;letter-spacing:.04em;}
+.uxlaw-d{font-size:12px;color:var(--ink-2);font-weight:500;margin-top:5px;line-height:1.45;}
+.uxlaw-d b{color:var(--brand);font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="device" id="device">
+  <button class="lang-switch" onclick="openLang()" id="langSwitch">EN</button>
+
+  <!-- ============ PLANT HOMEPAGE ============ -->
+  <section class="screen on" id="s-plant">
+    <div class="statusbar"><span>9:42</span><span>●●●● 4G</span></div>
+    <div class="plant-header">
+      <div>
+        <div class="name" data-i18n="plant_name">Honda Manesar STP</div>
+        <div class="sub" data-i18n="plant_sub">Today · Day shift · Ramesh K.</div>
+      </div>
+      <div class="avatar">R</div>
+    </div>
+
+    <div class="home-scroll">
+      <!-- Pull-to-refresh hint (Jakob's Law: familiar mobile pattern) -->
+      <div class="pull-hint"><span class="arr">↓</span><span data-i18n="pull_refresh">Pull down to refresh</span></div>
+
+      <!-- Quick stats -->
+      <div class="stat-row">
+        <div class="stat danger" onclick="go('alerts')">
+          <div class="l"><span class="ic">🔔</span><span data-i18n="kpi_open">Open</span></div>
+          <div class="v">3</div>
+          <div class="d" data-i18n="stat_open_d">2 critical</div>
+        </div>
+        <div class="stat warn" onclick="go('tasks')">
+          <div class="l"><span class="ic">⏱</span><span data-i18n="kpi_tasks">Tasks</span></div>
+          <div class="v">5/8</div>
+          <div class="d" data-i18n="stat_tasks_d">3 pending</div>
+        </div>
+        <div class="stat ok">
+          <div class="l"><span class="ic">⚡</span><span data-i18n="kpi_uptime">Uptime</span></div>
+          <div class="v">94%</div>
+          <div class="d" data-i18n="stat_uptime_d">7-day avg</div>
+        </div>
+      </div>
+
+      <!-- Plant overview -->
+      <div class="section-block">
+        <div class="section-h-row">
+          <h3 data-i18n="sec_plant">Plant overview</h3>
+          <button class="view-all" onclick="alert(T.fit_to_view)" data-i18n="fit_view">⛶ Fit to view</button>
+        </div>
+        <div class="plant-canvas-wrap">
+          <div class="plant-canvas-hint" data-i18n="pan_hint">↔ Drag · tap equipment</div>
+          <div class="plant-canvas">
+        <!-- Larger SVG to enable scrolling in both directions -->
+        <svg class="plant-svg" width="780" height="900" viewBox="0 0 780 900" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#7A8497"/>
+            </marker>
+            <linearGradient id="gWater" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#C9E0EC"/>
+              <stop offset="1" stop-color="#9CC0D6"/>
+            </linearGradient>
+            <linearGradient id="gTank" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#FFFFFF"/>
+              <stop offset="1" stop-color="#F4F6FA"/>
+            </linearGradient>
+            <linearGradient id="gTankBad" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#FFF1F0"/>
+              <stop offset="1" stop-color="#FBEAEA"/>
+            </linearGradient>
+            <linearGradient id="gTankWarn" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#FFF7E8"/>
+              <stop offset="1" stop-color="#FDF1DC"/>
+            </linearGradient>
+            <linearGradient id="gMembrane" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0" stop-color="#8B6F47"/>
+              <stop offset="1" stop-color="#5C4326"/>
+            </linearGradient>
+            <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+              <feOffset dx="0" dy="1"/>
+              <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+              <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Plant boundary -->
+          <rect x="20" y="20" width="740" height="860" rx="14" fill="#FFFFFF" stroke="#C8D0DD" stroke-width="2" stroke-dasharray="6 6"/>
+          <text x="40" y="48" font-family="Plus Jakarta Sans" font-size="11" font-weight="700" fill="#7A8497" letter-spacing="1">PRIMARY TREATMENT</text>
+          <text x="40" y="338" font-family="Plus Jakarta Sans" font-size="11" font-weight="700" fill="#7A8497" letter-spacing="1">SECONDARY TREATMENT</text>
+          <text x="40" y="638" font-family="Plus Jakarta Sans" font-size="11" font-weight="700" fill="#7A8497" letter-spacing="1">TERTIARY / DISPOSAL</text>
+
+          <!-- Section divider lines -->
+          <line x1="40" y1="320" x2="740" y2="320" stroke="#E4E8EF" stroke-width="1.5" stroke-dasharray="3 5"/>
+          <line x1="40" y1="620" x2="740" y2="620" stroke="#E4E8EF" stroke-width="1.5" stroke-dasharray="3 5"/>
+
+          <!-- Pipe lines (connections) -->
+          <path d="M170 130 L290 130" stroke="#A8B0BE" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M410 130 L530 130" stroke="#A8B0BE" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M610 170 L610 230" stroke="#A8B0BE" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M610 290 L150 290 L150 380" stroke="#A8B0BE" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M270 440 L370 440" stroke="#A8B0BE" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M490 440 L590 440" stroke="#A8B0BE" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M650 500 L650 570 L150 570 L150 670" stroke="#A8B0BE" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M270 720 L370 720" stroke="#A8B0BE" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M490 720 L590 720" stroke="#A8B0BE" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+
+          <!-- Bar Screen -->
+          <g onclick="openEq('barscreen')" style="cursor:pointer" filter="url(#dropShadow)">
+            <rect x="50" y="90" width="120" height="80" rx="12" fill="url(#gTank)" stroke="#193458" stroke-width="2"/>
+            <g stroke="#193458" stroke-width="2.5" stroke-linecap="round"><line x1="80" y1="108" x2="80" y2="152"/><line x1="95" y1="108" x2="95" y2="152"/><line x1="110" y1="108" x2="110" y2="152"/><line x1="125" y1="108" x2="125" y2="152"/><line x1="140" y1="108" x2="140" y2="152"/></g>
+            <text x="110" y="184" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">Bar Screen</text>
+            <circle cx="156" cy="106" r="7" fill="#1F9D55" stroke="#fff" stroke-width="2"/>
+            <circle cx="60" cy="100" r="9" fill="#fff" stroke="#193458" stroke-width="1.5"/><text x="60" y="104" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">i</text>
+          </g>
+
+          <!-- EQ Tank -->
+          <g onclick="openEq('eqtank')" style="cursor:pointer" filter="url(#dropShadow)">
+            <rect x="290" y="90" width="120" height="80" rx="12" fill="url(#gTank)" stroke="#193458" stroke-width="2"/>
+            <rect x="298" y="112" width="104" height="50" rx="4" fill="url(#gWater)"/>
+            <line x1="298" y1="112" x2="402" y2="112" stroke="#7AABC4" stroke-width="2"/>
+            <path d="M298,118 Q310,114 322,118 T346,118 T370,118 T394,118 L394,124 L298,124 Z" fill="#7AABC4" opacity=".5"/>
+            <text x="350" y="184" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">EQ Tank · EQ-01</text>
+            <circle cx="396" cy="106" r="7" fill="#1F9D55" stroke="#fff" stroke-width="2"/>
+            <circle cx="300" cy="100" r="9" fill="#fff" stroke="#193458" stroke-width="1.5"/><text x="300" y="104" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">i</text>
+          </g>
+
+          <!-- Blower-1 -->
+          <g onclick="openEq('blower1')" style="cursor:pointer" filter="url(#dropShadow)">
+            <rect x="540" y="70" width="140" height="80" rx="12" fill="url(#gTank)" stroke="#193458" stroke-width="2"/>
+            <circle cx="610" cy="110" r="20" fill="#EEF2F8" stroke="#193458" stroke-width="2.5"/>
+            <g transform="translate(610,110)"><path d="M0 -12 L4 0 L0 12 L-4 0 Z M-12 0 L0 -4 L12 0 L0 4 Z" fill="#193458"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="2s" repeatCount="indefinite"/></path></g>
+            <text x="610" y="140" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">Blower-1</text>
+            <circle cx="666" cy="86" r="7" fill="#1F9D55" stroke="#fff" stroke-width="2"/>
+            <circle cx="550" cy="80" r="9" fill="#fff" stroke="#193458" stroke-width="1.5"/><text x="550" y="84" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">i</text>
+          </g>
+
+          <!-- Anaerobic Tank -->
+          <g onclick="openEq('anaerobic')" style="cursor:pointer" filter="url(#dropShadow)">
+            <rect x="540" y="230" width="140" height="80" rx="12" fill="url(#gTank)" stroke="#193458" stroke-width="2"/>
+            <rect x="548" y="250" width="124" height="52" rx="4" fill="#3F4D66"/>
+            <text x="610" y="282" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="700" fill="#fff">no O₂</text>
+            <text x="610" y="324" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">Anaerobic · AN-01</text>
+            <circle cx="666" cy="246" r="7" fill="#1F9D55" stroke="#fff" stroke-width="2"/>
+            <circle cx="550" cy="240" r="9" fill="#fff" stroke="#193458" stroke-width="1.5"/><text x="550" y="244" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">i</text>
+          </g>
+
+          <!-- AERATION TANK (active issue) -->
+          <g onclick="openEq('aeration')" style="cursor:pointer" filter="url(#dropShadow)">
+            <rect x="50" y="380" width="220" height="120" rx="14" fill="url(#gTankBad)" stroke="#D64545" stroke-width="3"/>
+            <rect x="58" y="412" width="204" height="76" rx="6" fill="url(#gWater)"/>
+            <line x1="58" y1="412" x2="262" y2="412" stroke="#7AABC4" stroke-width="2"/>
+            <rect x="70" y="478" width="180" height="7" rx="3" fill="#193458"/>
+            <circle cx="100" cy="478" r="1.5" fill="#fff"/><circle cx="130" cy="478" r="1.5" fill="#fff"/><circle cx="160" cy="478" r="1.5" fill="#fff"/><circle cx="190" cy="478" r="1.5" fill="#fff"/><circle cx="220" cy="478" r="1.5" fill="#fff"/>
+            <!-- DO badge -->
+            <rect x="170" y="384" width="88" height="24" rx="12" fill="#D64545" filter="url(#dropShadow)"/>
+            <circle cx="183" cy="396" r="3.5" fill="#fff"/>
+            <text x="223" y="400" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#fff">DO 0.8 mg/L</text>
+            <text x="160" y="528" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="13" font-weight="800" fill="#7A1F1F">Aeration Tank · AT-01</text>
+            <!-- pulsing alert -->
+            <circle cx="64" cy="392" r="10" fill="#D64545"><animate attributeName="r" values="10;16;10" dur="1.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.2;1" dur="1.4s" repeatCount="indefinite"/></circle>
+            <circle cx="64" cy="392" r="8" fill="#D64545" stroke="#fff" stroke-width="2"/>
+            <text x="64" y="396" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#fff">!</text>
+          </g>
+
+          <!-- MBR-1 Tank (active issue) -->
+          <g onclick="openEq('mbr1')" style="cursor:pointer" filter="url(#dropShadow)">
+            <rect x="370" y="380" width="220" height="120" rx="14" fill="url(#gTankBad)" stroke="#D64545" stroke-width="3"/>
+            <rect x="378" y="412" width="204" height="76" rx="6" fill="url(#gMembrane)"/>
+            <rect x="396" y="418" width="22" height="64" rx="3" fill="#475569" stroke="#334155" stroke-width="1"/>
+            <rect x="436" y="418" width="22" height="64" rx="3" fill="#475569" stroke="#334155" stroke-width="1"/>
+            <rect x="476" y="418" width="22" height="64" rx="3" fill="#475569" stroke="#334155" stroke-width="1"/>
+            <rect x="516" y="418" width="22" height="64" rx="3" fill="#475569" stroke="#334155" stroke-width="1"/>
+            <!-- crust on top of modules -->
+            <path d="M394,420 Q407,414 420,420 L420,428 L394,428 Z" fill="#5C4326"/>
+            <path d="M434,420 Q447,414 460,420 L460,428 L434,428 Z" fill="#5C4326"/>
+            <path d="M474,420 Q487,414 500,420 L500,428 L474,428 Z" fill="#5C4326"/>
+            <path d="M514,420 Q527,414 540,420 L540,428 L514,428 Z" fill="#5C4326"/>
+            <!-- turbidity badge -->
+            <rect x="494" y="384" width="84" height="24" rx="12" fill="#D64545" filter="url(#dropShadow)"/>
+            <circle cx="507" cy="396" r="3.5" fill="#fff"/>
+            <text x="543" y="400" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#fff">28 NTU</text>
+            <text x="480" y="528" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="13" font-weight="800" fill="#7A1F1F">MBR-1 Tank</text>
+            <circle cx="384" cy="392" r="10" fill="#D64545"><animate attributeName="r" values="10;16;10" dur="1.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.2;1" dur="1.4s" repeatCount="indefinite"/></circle>
+            <circle cx="384" cy="392" r="8" fill="#D64545" stroke="#fff" stroke-width="2"/>
+            <text x="384" y="396" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#fff">!</text>
+          </g>
+
+          <!-- Blower-2 -->
+          <g onclick="openEq('blower2')" style="cursor:pointer" filter="url(#dropShadow)">
+            <rect x="590" y="400" width="120" height="80" rx="12" fill="url(#gTank)" stroke="#193458" stroke-width="2"/>
+            <circle cx="650" cy="440" r="20" fill="#EEF2F8" stroke="#193458" stroke-width="2.5"/>
+            <g transform="translate(650,440)"><path d="M0 -12 L4 0 L0 12 L-4 0 Z M-12 0 L0 -4 L12 0 L0 4 Z" fill="#193458"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="1.6s" repeatCount="indefinite"/></path></g>
+            <text x="650" y="470" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">Blower-2</text>
+            <circle cx="696" cy="416" r="7" fill="#1F9D55" stroke="#fff" stroke-width="2"/>
+            <circle cx="600" cy="410" r="9" fill="#fff" stroke="#193458" stroke-width="1.5"/><text x="600" y="414" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">i</text>
+          </g>
+
+          <!-- Clarifier (amber issue) -->
+          <g onclick="openEq('clarifier')" style="cursor:pointer" filter="url(#dropShadow)">
+            <rect x="50" y="670" width="220" height="120" rx="14" fill="url(#gTankWarn)" stroke="#E8941A" stroke-width="3"/>
+            <path d="M70 690 L250 690 L210 770 L110 770 Z" fill="url(#gWater)" stroke="#7AABC4" stroke-width="2"/>
+            <line x1="70" y1="690" x2="250" y2="690" stroke="#7AABC4" stroke-width="2"/>
+            <rect x="70" y="690" width="180" height="7" fill="#A98563"/>
+            <circle cx="80" cy="690" r="2" fill="#7C4A0A"/><circle cx="120" cy="690" r="2.5" fill="#7C4A0A"/><circle cx="170" cy="690" r="2" fill="#7C4A0A"/><circle cx="210" cy="690" r="2.5" fill="#7C4A0A"/>
+            <text x="160" y="818" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="13" font-weight="800" fill="#7A4A0A">Clarifier · CL-01</text>
+            <circle cx="64" cy="682" r="9" fill="#E8941A"><animate attributeName="r" values="9;14;9" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;.3;1" dur="1.8s" repeatCount="indefinite"/></circle>
+            <circle cx="64" cy="682" r="7" fill="#E8941A" stroke="#fff" stroke-width="2"/>
+            <text x="64" y="686" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#fff">!</text>
+          </g>
+
+          <!-- Sludge holding tank -->
+          <g onclick="openEq('sludge')" style="cursor:pointer" filter="url(#dropShadow)">
+            <rect x="370" y="670" width="220" height="120" rx="14" fill="url(#gTank)" stroke="#193458" stroke-width="2"/>
+            <rect x="378" y="700" width="204" height="80" rx="6" fill="#6B5436"/>
+            <circle cx="410" cy="730" r="2" fill="#8B6F47"/><circle cx="440" cy="740" r="2" fill="#8B6F47"/><circle cx="470" cy="725" r="2" fill="#8B6F47"/><circle cx="510" cy="745" r="2" fill="#8B6F47"/><circle cx="540" cy="730" r="2" fill="#8B6F47"/>
+            <text x="480" y="818" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="13" font-weight="800" fill="#193458">Sludge Tank · SL-01</text>
+            <circle cx="576" cy="676" r="7" fill="#1F9D55" stroke="#fff" stroke-width="2"/>
+            <circle cx="380" cy="676" r="9" fill="#fff" stroke="#193458" stroke-width="1.5"/><text x="380" y="680" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">i</text>
+          </g>
+
+          <!-- Outlet/Disposal -->
+          <g onclick="openEq('disposal')" style="cursor:pointer" filter="url(#dropShadow)">
+            <rect x="630" y="700" width="80" height="60" rx="12" fill="#193458"/>
+            <path d="M650 720 L680 720 M650 730 L680 730 M650 740 L680 740" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+            <text x="670" y="780" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#193458">Disposal</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="plant-legend">
+      <span class="legend-chip"><span class="d red"></span><span data-i18n="leg_active">Active issue</span></span>
+      <span class="legend-chip"><span class="d amber"></span><span data-i18n="leg_watch">Needs watch</span></span>
+      <span class="legend-chip"><span class="d green"></span><span data-i18n="leg_healthy">Healthy</span></span>
+      <span class="legend-chip"><span class="d info"></span><span data-i18n="leg_tap">Tap any equipment</span></span>
+    </div>
+  </div>
+
+  <!-- Live sensor readings -->
+  <div class="section-block">
+    <div class="section-h-row">
+      <h3 data-i18n="sec_live">Live readings</h3>
+      <span class="view-all" style="color:var(--ink-3);font-weight:600;font-size:11px;cursor:default">● <span data-i18n="updated_now">Updated just now</span></span>
+    </div>
+    <div class="sensor-grid">
+      <div class="sensor-card bad" onclick="openEq('aeration')">
+        <div class="sc-top"><span class="sc-eq">AT-01</span></div>
+        <div class="sc-name" data-i18n="sens_do">Dissolved Oxygen</div>
+        <div class="sc-val">0.8<span class="u">mg/L</span></div>
+        <svg class="spark" viewBox="0 0 100 18" preserveAspectRatio="none"><polyline points="0,4 12,5 24,6 36,8 48,9 60,11 72,13 84,15 100,16" fill="none" stroke="#D64545" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div class="sc-foot"><span class="sc-trend up">▲ <span data-i18n="trend_falling">falling 30 min</span></span></div>
+      </div>
+      <div class="sensor-card bad" onclick="openEq('mbr1')">
+        <div class="sc-top"><span class="sc-eq">MBR-1</span></div>
+        <div class="sc-name" data-i18n="sens_tur">Turbidity</div>
+        <div class="sc-val">28<span class="u">NTU</span></div>
+        <svg class="spark" viewBox="0 0 100 18" preserveAspectRatio="none"><polyline points="0,14 14,12 28,10 42,8 56,7 70,6 84,4 100,3" fill="none" stroke="#D64545" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div class="sc-foot"><span class="sc-trend up">▲ <span data-i18n="trend_rising">rising 22 min</span></span></div>
+      </div>
+      <div class="sensor-card" onclick="openEq('aeration')">
+        <div class="sc-top"><span class="sc-eq">AT-01</span></div>
+        <div class="sc-name" data-i18n="sens_mlss">MLSS</div>
+        <div class="sc-val">3,200<span class="u">mg/L</span></div>
+        <svg class="spark" viewBox="0 0 100 18" preserveAspectRatio="none"><polyline points="0,9 14,8 28,10 42,9 56,9 70,10 84,9 100,9" fill="none" stroke="#1F9D55" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div class="sc-foot"><span class="sc-trend flat">— <span data-i18n="trend_stable">stable</span></span></div>
+      </div>
+      <div class="sensor-card" onclick="openEq('anaerobic')">
+        <div class="sc-top"><span class="sc-eq">AN-01</span></div>
+        <div class="sc-name" data-i18n="sens_ph">pH</div>
+        <div class="sc-val">7.1<span class="u">pH</span></div>
+        <svg class="spark" viewBox="0 0 100 18" preserveAspectRatio="none"><polyline points="0,11 14,10 28,9 42,10 56,9 70,8 84,9 100,9" fill="none" stroke="#1F9D55" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div class="sc-foot"><span class="sc-trend flat">— <span data-i18n="trend_stable">stable</span></span></div>
+      </div>
+      <div class="sensor-card" onclick="openEq('eqtank')">
+        <div class="sc-top"><span class="sc-eq">EQ-01</span></div>
+        <div class="sc-name" data-i18n="sens_flow">Inlet Flow</div>
+        <div class="sc-val">450<span class="u">m³/hr</span></div>
+        <svg class="spark" viewBox="0 0 100 18" preserveAspectRatio="none"><polyline points="0,12 14,10 28,8 42,10 56,9 70,8 84,7 100,8" fill="none" stroke="#1F9D55" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div class="sc-foot"><span class="sc-trend down">▼ <span data-i18n="trend_normal">within normal</span></span></div>
+      </div>
+      <div class="sensor-card" onclick="openEq('blower1')">
+        <div class="sc-top"><span class="sc-eq">BL-1/2</span></div>
+        <div class="sc-name" data-i18n="sens_power">Total Power</div>
+        <div class="sc-val">142<span class="u">kW</span></div>
+        <svg class="spark" viewBox="0 0 100 18" preserveAspectRatio="none"><polyline points="0,10 14,9 28,10 42,11 56,10 70,9 84,10 100,10" fill="none" stroke="#1F9D55" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div class="sc-foot"><span class="sc-trend flat">— <span data-i18n="trend_stable">stable</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent activity -->
+  <div class="section-block">
+    <div class="section-h-row">
+      <h3 data-i18n="sec_activity">Recent activity</h3>
+      <button class="view-all" data-i18n="view_all">View all</button>
+    </div>
+    <div class="activity-list">
+      <div class="activity-item">
+        <div class="ic alert">!</div>
+        <div class="body">
+          <div class="t" data-i18n="act_1_t">Aeration Tank · DO alert opened</div>
+          <div class="s"><span class="who" data-i18n="act_1_w">System</span> · <span data-i18n="time_8m">8 min ago</span></div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="ic alert">!</div>
+        <div class="body">
+          <div class="t" data-i18n="act_2_t">MBR-1 · Turbidity alert opened</div>
+          <div class="s"><span class="who" data-i18n="act_2_w">System</span> · <span data-i18n="time_22m">22 min ago</span></div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="ic task">✓</div>
+        <div class="body">
+          <div class="t" data-i18n="act_3_t">Aeration Tank · MLSS reading logged</div>
+          <div class="s"><span class="who" data-i18n="act_3_w">You</span> · <span data-i18n="time_45m">45 min ago</span></div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="ic ok">✓</div>
+        <div class="body">
+          <div class="t" data-i18n="act_4_t">Blower-2 trip · resolved</div>
+          <div class="s"><span class="who" data-i18n="act_4_w">You</span> · <span data-i18n="time_yest">Yesterday</span></div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="ic info">i</div>
+        <div class="body">
+          <div class="t" data-i18n="act_5_t">DO sensor calibration · due in 5 days</div>
+          <div class="s"><span class="who" data-i18n="act_5_w">Scheduler</span> · <span data-i18n="time_2h">2 hr ago</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tasks completed -->
+  <div class="section-block" style="padding-bottom:20px">
+    <div class="section-h-row">
+      <h3 data-i18n="sec_tasks">Today's tasks</h3>
+      <button class="view-all" onclick="go('tasks')" data-i18n="view_all">View all</button>
+    </div>
+    <div class="tasks-card">
+      <div class="tasks-progress">
+        <span class="num">5</span><span class="denom">/ 8</span>
+        <div class="bar"><i></i></div>
+      </div>
+      <div class="task-list">
+        <div class="task-row done"><span class="check">✓</span><span data-i18n="task_1">Morning rounds · Bar Screen check</span><span class="time">07:15</span></div>
+        <div class="task-row done"><span class="check">✓</span><span data-i18n="task_2">EQ Tank level reading</span><span class="time">08:00</span></div>
+        <div class="task-row done"><span class="check">✓</span><span data-i18n="task_3">Blower hours log</span><span class="time">08:30</span></div>
+        <div class="task-row"><span class="check"></span><span data-i18n="task_4">SV-30 test · 11:00</span><span class="time"></span></div>
+        <div class="task-row"><span class="check"></span><span data-i18n="task_5">Sludge wasting · 14:00</span><span class="time"></span></div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+  <div class="bnav">
+      <button class="bnav-item on" onclick="go('plant')"><span class="ic">🏭</span><span class="l" data-i18n="nav_plant">Plant</span></button>
+      <button class="bnav-item" onclick="go('alerts')"><div class="bnav-icon-wrap"><span class="ic">🔔</span><span class="badge">3</span></div><span class="l" data-i18n="nav_alerts">Alerts</span></button>
+      <button class="bnav-item" onclick="go('tasks')"><span class="ic">✓</span><span class="l" data-i18n="nav_tasks">Tasks</span></button>
+      <button class="bnav-item" onclick="go('profile')"><span class="ic">👤</span><span class="l" data-i18n="nav_profile">Me</span></button>
+    </div>
+  </section>
+
+  <!-- ============ Equipment info bottom sheet ============ -->
+  <div class="eq-sheet-bg" id="eqSheetBg" onclick="closeEqSheet(event)">
+    <div class="eq-sheet" onclick="event.stopPropagation()">
+      <div class="handle"></div>
+      <div class="eq-sheet-head">
+        <div class="icon" id="eqIcon">🏭</div>
+        <div style="flex:1;min-width:0">
+          <div class="name" id="eqName">Equipment</div>
+          <div class="sub" id="eqSub">—</div>
+          <span class="status" id="eqStatus">Healthy</span>
+        </div>
+      </div>
+      <div class="eq-readings" id="eqReadings"></div>
+      <div style="background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:10px" id="eqInfoBlock">
+        <div class="eq-info-row"><span data-i18n="eq_uptime">Uptime today</span><span id="eqUptime">12h 24m</span></div>
+        <div class="eq-info-row"><span data-i18n="eq_last_service">Last service</span><span id="eqService">14 days ago</span></div>
+        <div class="eq-info-row"><span data-i18n="eq_assigned">Assigned to</span><span id="eqAssigned">Ramesh K.</span></div>
+      </div>
+      <div class="eq-sheet-actions">
+        <button class="btn ghost" onclick="closeEqSheet()" data-i18n="eq_close">Close</button>
+        <button class="btn primary" id="eqAction" onclick="eqAction()" data-i18n="eq_view_issue">View open issue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ALERTS ============ -->
+  <section class="screen" id="s-alerts">
+    <div class="statusbar"><span>9:42</span><span>●●●● 4G</span></div>
+    <div class="alerts-head">
+      <h1 data-i18n="alerts_h">Alerts</h1>
+      <div class="sub" data-i18n="alerts_sub">Honda Manesar STP</div>
+    </div>
+    <div class="seg">
+      <button class="seg-btn on" id="seg-open" onclick="switchAlertTab('open')"><span data-i18n="seg_open">Open</span><span class="count">3</span></button>
+      <button class="seg-btn" id="seg-closed" onclick="switchAlertTab('closed')"><span data-i18n="seg_closed">Closed</span><span class="count">3</span></button>
+    </div>
+
+    <div class="scroll" style="padding-bottom:80px">
+      <!-- OPEN -->
+      <div id="alerts-open">
+        <div class="alert-list">
+          <button class="alert-card live" onclick="openIssue('aeration-do')">
+            <div class="alert-stripe crit"></div>
+            <div class="alert-body">
+              <div class="alert-top">
+                <div class="alert-eq" data-i18n="alert_eq_at01">Aeration Tank · AT-01</div>
+                <div class="alert-time" data-i18n="time_8m">8 min ago</div>
+              </div>
+              <div class="alert-title" data-i18n="alert_aeration_t">DO Low (0.8 mg/L)</div>
+              <div class="alert-summary" data-i18n="alert_aeration_s">Oxygen is low · bacteria can die · effluent will degrade</div>
+              <div class="alert-foot">
+                <span class="severity-pill severity-crit" data-i18n="sev_crit">Critical</span>
+                <span class="arrow">›</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="alert-card live" onclick="openIssue('mbr-turbidity')">
+            <div class="alert-stripe crit"></div>
+            <div class="alert-body">
+              <div class="alert-top">
+                <div class="alert-eq" data-i18n="alert_eq_mbr">MBR-1 Tank</div>
+                <div class="alert-time" data-i18n="time_22m">22 min ago</div>
+              </div>
+              <div class="alert-title" data-i18n="alert_mbr_t">Turbidity High (28 NTU)</div>
+              <div class="alert-summary" data-i18n="alert_mbr_s">Membrane outlet water is dirty · discharge quality at risk</div>
+              <div class="alert-foot">
+                <span class="severity-pill severity-crit" data-i18n="sev_crit">Critical</span>
+                <span class="arrow">›</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="alert-card" onclick="openIssue('clarifier-scum')">
+            <div class="alert-stripe high"></div>
+            <div class="alert-body">
+              <div class="alert-top">
+                <div class="alert-eq" data-i18n="alert_eq_cl">Clarifier · CL-01</div>
+                <div class="alert-time" data-i18n="time_1h">1 hr ago</div>
+              </div>
+              <div class="alert-title" data-i18n="alert_clarifier_t">Scum layer formation</div>
+              <div class="alert-summary" data-i18n="alert_clarifier_s">Floating brown layer on clarifier surface · skimmer check needed</div>
+              <div class="alert-foot">
+                <span class="severity-pill severity-high" data-i18n="sev_high">High</span>
+                <span class="arrow">›</span>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- CLOSED -->
+      <div id="alerts-closed" style="display:none">
+        <div class="alert-list">
+          <button class="alert-card" onclick="openIssue('blower2-trip')">
+            <div class="alert-stripe done"></div>
+            <div class="alert-body">
+              <div class="alert-top">
+                <div class="alert-eq" data-i18n="alert_eq_bl2">Blower-2</div>
+                <div class="alert-time" data-i18n="time_yest">Yesterday</div>
+              </div>
+              <div class="alert-title" data-i18n="alert_blower_t">Blower trip · resolved</div>
+              <div class="alert-summary" data-i18n="alert_blower_s">Thermal trip after 6 hr continuous run · cooled and restarted</div>
+              <div class="alert-foot">
+                <span class="severity-pill severity-done" data-i18n="sev_done">Resolved</span>
+                <span class="arrow">›</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="alert-card" onclick="openIssue('eq-level')">
+            <div class="alert-stripe done"></div>
+            <div class="alert-body">
+              <div class="alert-top">
+                <div class="alert-eq" data-i18n="alert_eq_eq">EQ Tank · EQ-01</div>
+                <div class="alert-time" data-i18n="time_2d">2 days ago</div>
+              </div>
+              <div class="alert-title" data-i18n="alert_eq_t">Level High · resolved</div>
+              <div class="alert-summary" data-i18n="alert_eq_s">Inlet surge from upstream · feed pump auto-throttled</div>
+              <div class="alert-foot">
+                <span class="severity-pill severity-done" data-i18n="sev_done">Resolved</span>
+                <span class="arrow">›</span>
+              </div>
+            </div>
+          </button>
+
+          <button class="alert-card" onclick="openIssue('anaerobic-ph')">
+            <div class="alert-stripe done"></div>
+            <div class="alert-body">
+              <div class="alert-top">
+                <div class="alert-eq" data-i18n="alert_eq_an">Anaerobic · AN-01</div>
+                <div class="alert-time" data-i18n="time_5d">5 days ago</div>
+              </div>
+              <div class="alert-title" data-i18n="alert_an_t">pH Low · resolved</div>
+              <div class="alert-summary" data-i18n="alert_an_s">Acidic shock from inlet · lime dosing increased temporarily</div>
+              <div class="alert-foot">
+                <span class="severity-pill severity-done" data-i18n="sev_done">Resolved</span>
+                <span class="arrow">›</span>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bnav">
+      <button class="bnav-item" onclick="go('plant')"><span class="ic">🏭</span><span class="l" data-i18n="nav_plant">Plant</span></button>
+      <button class="bnav-item on" onclick="go('alerts')"><div class="bnav-icon-wrap"><span class="ic">🔔</span><span class="badge">3</span></div><span class="l" data-i18n="nav_alerts">Alerts</span></button>
+      <button class="bnav-item" onclick="go('tasks')"><span class="ic">✓</span><span class="l" data-i18n="nav_tasks">Tasks</span></button>
+      <button class="bnav-item" onclick="go('profile')"><span class="ic">👤</span><span class="l" data-i18n="nav_profile">Me</span></button>
+    </div>
+  </section>
+
+  <!-- ============ DUMMY ISSUE STUB ============ -->
+  <section class="screen" id="s-issue-stub">
+    <div class="statusbar"><a class="back" onclick="go('alerts')" style="color:var(--ink);text-decoration:none;font-size:18px;cursor:pointer">‹</a><span id="stubTime">22 min ago</span></div>
+    <div class="crumbs">
+      <a onclick="go('plant')">Plant</a><span class="sep">›</span>
+      <a onclick="go('alerts')">Alerts</a><span class="sep">›</span>
+      <span class="cur" id="stubCrumb">MBR-1</span>
+    </div>
+
+    <div class="scroll" style="padding-bottom:120px">
+      <div class="stub-hero">
+        <div class="eyebrow" id="stubEq">MBR-1 Tank</div>
+        <h1 id="stubTitle">Turbidity High (28 NTU)</h1>
+        <div class="sub" id="stubDesc">Membrane outlet water is dirty · discharge quality at risk.</div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <span class="severity-pill severity-crit" id="stubSev">Critical</span>
+          <span class="severity-pill" style="background:var(--brand-tint);color:var(--brand)" id="stubStatus">Open</span>
+        </div>
+      </div>
+
+      <div style="padding:16px 20px 8px">
+        <div class="cap" data-i18n="cap_details" style="margin:0 0 10px">Details</div>
+        <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px">
+          <div class="stub-row"><span data-i18n="detail_sensor">Trigger sensor</span><span id="stubSensor">Turbidity AT-01-TUR</span></div>
+          <div class="stub-row"><span data-i18n="detail_value">Current reading</span><span id="stubValue">28 NTU</span></div>
+          <div class="stub-row"><span data-i18n="detail_normal">Normal range</span><span id="stubNormal">&lt; 5 NTU</span></div>
+          <div class="stub-row"><span data-i18n="detail_assigned">Assigned to</span><span id="stubAssigned">You · Ramesh K.</span></div>
+        </div>
+
+        <div class="cap" data-i18n="cap_diag_plan">Diagnostic flows</div>
+      </div>
+      <div class="stub-flows" id="stubFlows"></div>
+    </div>
+
+    <div class="cta-bar" style="position:absolute">
+      <button class="btn primary" onclick="alert(T.coming_soon_flow)" data-i18n="cta_start_stub">Start the check</button>
+      <button class="btn sec" onclick="openMore()" data-i18n="cta_more">⋯ More actions</button>
+    </div>
+  </section>
+
+  <!-- ============ TASKS STUB ============ -->
+  <section class="screen" id="s-tasks">
+    <div class="statusbar"><span>9:42</span><span>●●●● 4G</span></div>
+    <div class="alerts-head">
+      <h1 data-i18n="tasks_h">Tasks</h1>
+      <div class="sub" data-i18n="tasks_sub">Routine checks for today</div>
+    </div>
+    <div class="scroll" style="padding-bottom:80px">
+      <div class="coming-soon"><div class="ic">📋</div><h2 data-i18n="cs_tasks_h">Daily tasks</h2><p data-i18n="cs_tasks_p">5 routine checks scheduled · feature coming soon.</p></div>
+    </div>
+    <div class="bnav">
+      <button class="bnav-item" onclick="go('plant')"><span class="ic">🏭</span><span class="l" data-i18n="nav_plant">Plant</span></button>
+      <button class="bnav-item" onclick="go('alerts')"><div class="bnav-icon-wrap"><span class="ic">🔔</span><span class="badge">3</span></div><span class="l" data-i18n="nav_alerts">Alerts</span></button>
+      <button class="bnav-item on" onclick="go('tasks')"><span class="ic">✓</span><span class="l" data-i18n="nav_tasks">Tasks</span></button>
+      <button class="bnav-item" onclick="go('profile')"><span class="ic">👤</span><span class="l" data-i18n="nav_profile">Me</span></button>
+    </div>
+  </section>
+
+  <!-- ============ PROFILE STUB ============ -->
+  <section class="screen" id="s-profile">
+    <div class="statusbar"><span>9:42</span><span>●●●● 4G</span></div>
+    <div class="alerts-head">
+      <h1 data-i18n="profile_h">Profile</h1>
+      <div class="sub">Ramesh K. · Operator</div>
+    </div>
+    <div class="scroll" style="padding-bottom:80px">
+      <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px">
+          <div class="avatar" style="width:48px;height:48px;font-size:18px">R</div>
+          <div><div style="font-weight:800;color:var(--brand);font-size:15px">Ramesh K.</div><div style="font-size:11px;color:var(--ink-3);font-weight:600;margin-top:2px">Honda Manesar STP · Day shift</div></div>
+        </div>
+        <button class="ritem" onclick="openLang()"><div class="ic">🌐</div><div><div class="t" data-i18n="prof_lang">Language</div><div class="s" id="profLangVal">English</div></div></button>
+        <button class="ritem"><div class="ic">🔔</div><div><div class="t" data-i18n="prof_notif">Notifications</div><div class="s">3 active alerts</div></div></button>
+        <button class="ritem"><div class="ic">📜</div><div><div class="t" data-i18n="prof_history">My history</div><div class="s">14 issues resolved this month</div></div></button>
+        <button class="ritem"><div class="ic">↩</div><div><div class="t" data-i18n="prof_logout">Sign out</div><div class="s">End shift</div></div></button>
+      </div>
+    </div>
+    <div class="bnav">
+      <button class="bnav-item" onclick="go('plant')"><span class="ic">🏭</span><span class="l" data-i18n="nav_plant">Plant</span></button>
+      <button class="bnav-item" onclick="go('alerts')"><div class="bnav-icon-wrap"><span class="ic">🔔</span><span class="badge">3</span></div><span class="l" data-i18n="nav_alerts">Alerts</span></button>
+      <button class="bnav-item" onclick="go('tasks')"><span class="ic">✓</span><span class="l" data-i18n="nav_tasks">Tasks</span></button>
+      <button class="bnav-item on" onclick="go('profile')"><span class="ic">👤</span><span class="l" data-i18n="nav_profile">Me</span></button>
+    </div>
+  </section>
+
+  <!-- ============ HOME (issue detail for active Aeration DO Low) ============ -->
+  <section class="screen" id="s-home">
+    <div class="statusbar"><a class="back" onclick="go('alerts')" style="color:var(--ink);text-decoration:none;font-size:18px;cursor:pointer">‹</a><span>9:42</span></div>
+    <div class="crumbs">
+      <a onclick="go('plant')" data-i18n="crumb_plant">Plant</a><span class="sep">›</span>
+      <a onclick="go('alerts')" data-i18n="crumb_section">Alerts</a><span class="sep">›</span>
+      <span class="cur" data-i18n="crumb_issue">Aeration · DO Low</span>
+    </div>
+    <div class="alert-chip"><span class="pulse"></span><span data-i18n="new_alert">New alert · 8 min ago</span></div>
+    <div class="scroll">
+      <div class="focal">
+        <div class="focal-head">
+          <div>
+            <div class="focal-eyebrow" data-i18n="eyebrow">Aeration Section · Primary</div>
+            <div class="focal-title"><span data-i18n="focal_title">Aeration Tank</span><span class="hi" data-i18n="focal_sub">Oxygen is low</span></div>
+          </div>
+          <span class="status-pill"><span class="d"></span><span data-i18n="status_pill">DO Low</span></span>
+        </div>
+        <svg class="illus" viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+          <line x1="20" y1="200" x2="300" y2="200" stroke="#C8D0DD" stroke-width="1.5" stroke-dasharray="3 4"/>
+          <rect x="40" y="40" width="240" height="160" rx="8" fill="#EEF2F8" stroke="#193458" stroke-width="2.5"/>
+          <rect x="44" y="76" width="232" height="120" rx="4" fill="#B8D4E3"/>
+          <line x1="44" y1="76" x2="276" y2="76" stroke="#7AABC4" stroke-width="2"/>
+          <rect x="60" y="186" width="200" height="10" rx="3" fill="#193458"/>
+          <circle cx="80" cy="191" r="1.5" fill="#fff"/><circle cx="110" cy="191" r="1.5" fill="#fff"/><circle cx="140" cy="191" r="1.5" fill="#fff"/><circle cx="170" cy="191" r="1.5" fill="#fff"/><circle cx="200" cy="191" r="1.5" fill="#fff"/><circle cx="230" cy="191" r="1.5" fill="#fff"/>
+          <circle cx="110" cy="170" r="3" fill="#fff" stroke="#7AABC4" stroke-width="1.5">
+            <animate attributeName="cy" values="186;76" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;0.9;0" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="200" cy="150" r="3" fill="#fff" stroke="#7AABC4" stroke-width="1.5">
+            <animate attributeName="cy" values="186;76" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0;0.9;0" dur="3s" begin="1.5s" repeatCount="indefinite"/>
+          </circle>
+          <line x1="240" y1="44" x2="240" y2="100" stroke="#193458" stroke-width="3" stroke-linecap="round"/>
+          <rect x="234" y="98" width="12" height="14" rx="2" fill="#193458"/>
+          <rect x="246" y="34" width="60" height="24" rx="12" fill="#D64545"/>
+          <circle cx="256" cy="46" r="3" fill="#fff"/>
+          <text x="263" y="50" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#fff">0.8 mg/L</text>
+          <rect x="40" y="40" width="86" height="22" fill="#193458"/>
+          <text x="48" y="55" font-family="Plus Jakarta Sans" font-size="11" font-weight="800" fill="#fff">AT-01</text>
+          <rect x="14" y="62" width="28" height="14" fill="#193458"/>
+          <rect x="278" y="160" width="28" height="14" fill="#193458"/>
+        </svg>
+        <div class="readouts">
+          <div class="readout bad">
+            <div class="lbl"><span data-i18n="do_label">DO (Sensor A)</span><span class="suggested" data-i18n="suggested">Auto</span></div>
+            <div class="val">0.8<span class="u">mg/L</span></div>
+            <div class="norm" data-i18n="do_normal">Normal: 2.0 — 4.0</div>
+          </div>
+          <div class="readout">
+            <div class="lbl" data-i18n="mlss_label">MLSS</div>
+            <div class="val">3,200<span class="u">mg/L</span></div>
+            <div class="norm" data-i18n="mlss_normal">Normal: 3,000 — 4,000</div>
+          </div>
+        </div>
+        <div class="ccu">
+          <div class="row cause"><span class="ic">🔴</span><span data-i18n="ccu_cause">Low oxygen in the tank</span></div>
+          <div class="row"><span class="ic">⚠️</span><span data-i18n="ccu_cons">Bacteria can die · effluent will degrade</span></div>
+          <div class="row"><span class="ic">⏱️</span><span data-i18n="ccu_urg">Running 8 min · check now</span></div>
+        </div>
+      </div>
+      <div class="mascot-row">
+        <div class="mascot"><svg viewBox="0 0 40 40" width="32" height="32"><use href="#mascot"/></svg></div>
+        <div class="bubble" data-i18n="home_bubble">Oxygen is low in the Aeration Tank. Let's check together — start the diagnosis.</div>
+      </div>
+    </div>
+    <div class="cta-bar">
+      <button class="btn primary" onclick="startDiagnostic()" data-i18n="cta_start">Start the check</button>
+      <button class="btn sec" id="more-btn" onclick="openMore()" data-i18n="cta_more">⋯ More actions</button>
+    </div>
+  </section>
+
+  <!-- ============ PREVIEW (all 6 checks) ============ -->
+  <section class="screen" id="s-preview">
+    <div class="statusbar"><a class="back" onclick="go('home')">‹</a><span>9:43</span></div>
+    <div class="crumbs"><a onclick="go('home')" data-i18n="crumb_back">Aeration Tank</a><span class="sep">›</span><span class="cur" data-i18n="crumb_plan">Diagnostic plan</span></div>
+    <div class="mascot-row">
+      <div class="mascot"><svg viewBox="0 0 40 40" width="32" height="32"><use href="#mascot"/></svg></div>
+      <div class="bubble" data-i18n="preview_bubble">We'll go through 6 checks — from easiest to hardest. Stop when we find the cause.</div>
+    </div>
+    <div class="scroll">
+      <div class="q" data-i18n="preview_q">6 things to check</div>
+      <div class="q-sub" data-i18n="preview_sub">Estimated time: 10-15 minutes</div>
+      <div id="previewList" style="padding:14px 20px 0;display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+    <div class="cta-bar"><button class="btn primary" onclick="startStep(0)" data-i18n="cta_begin_1">Start with Step 1</button></div>
+  </section>
+
+  <!-- ============ DIAGNOSTIC STEP (data-driven) ============ -->
+  <section class="screen" id="s-step">
+    <div class="statusbar"><a class="back" onclick="backFromStep()">‹</a><span id="stepCounter">Step 1 of 6</span><span style="width:18px"></span></div>
+    <div class="eqchip" id="stepEqchip"><span class="dot brand"></span><span id="stepEq">Aeration Tank · AT-01</span></div>
+
+    <!-- Flow type badge -->
+    <div class="flow-type-row" id="flowTypeRow">
+      <span class="flow-type-badge" id="flowTypeBadge"><span class="code">F1</span><span id="flowTypeName">Standard guided</span></span>
+      <span class="flow-type-desc" id="flowTypeDesc">Walk through each step</span>
+    </div>
+
+    <div class="stephead">
+      <span class="steptype" data-i18n="diagnose">Diagnose</span>
+      <div class="dots" id="stepDots"></div>
+      <button class="listen">🔊</button>
+    </div>
+    <div class="scroll" id="stepScroll">
+
+      <!-- Flow-type-specific section (only one is shown at a time) -->
+      <div id="ftAutocheck" style="display:none" class="autocheck-card">
+        <div class="autocheck-head">
+          <div class="ic">🤖</div>
+          <div>
+            <div class="title" data-i18n="ft_auto_title">Auto-check · system reading</div>
+            <div class="sub" id="ftAutoSub">Header pressure + flow on the blower line</div>
+          </div>
+        </div>
+        <div class="autocheck-readout" id="ftAutoReadout"></div>
+        <div class="countdown-bar"><i id="ftAutoTimer"></i></div>
+        <div class="autocheck-foot">
+          <span data-i18n="ft_auto_advance">Continues in 5 sec</span>
+          <button class="flag-btn" onclick="flagAutocheck()">🚩 <span data-i18n="ft_auto_flag">Looks wrong</span></button>
+        </div>
+      </div>
+
+      <div id="ftSkipFriendly" style="display:none" class="skipfriendly-card">
+        <span class="ic">💛</span>
+        <div class="body">
+          <div class="title" data-i18n="ft_skip_title">It's OK to skip this one</div>
+          <div class="sub" data-i18n="ft_skip_sub">Visual checks like this can be tricky in low light. Skip won't be held against you — we'll move to the next cause.</div>
+        </div>
+      </div>
+
+      <div id="ftSkill" style="display:none" class="skill-card">
+        <div class="skill-head">
+          <div class="ic">★</div>
+          <div class="title" data-i18n="ft_skill_title">Skill required</div>
+          <span class="tier" id="ftSkillTier">Intermediate</span>
+        </div>
+        <div class="skill-sub" data-i18n="ft_skill_sub">This check needs you to inspect the probe and use a manual DO kit. Experienced operators can skip the on-screen scaffolding.</div>
+        <button class="skill-shortcut-btn" onclick="useShortcut()"><span data-i18n="ft_skill_shortcut">I've done this before — skip ahead</span><span>›</span></button>
+      </div>
+
+      <div id="ftEscalate" style="display:none" class="escalate-banner">
+        <span class="ic">📞</span>
+        <div class="body">
+          <div class="title" data-i18n="ft_esc_title">This one needs supervisor</div>
+          <div class="sub" data-i18n="ft_esc_sub">Confirming a shock load needs a COD kit which isn't available on-site. Visual check + escalate is the standard path.</div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-h">
+          <div style="display:flex;gap:10px;align-items:center;flex:1;min-width:0">
+            <div class="step-num" id="stepNum">1</div>
+            <div class="step-title" id="stepTitle">Blower is OFF</div>
+          </div>
+        </div>
+
+        <div class="section-h"><span class="dot"></span><span data-i18n="tools_needed">Tools needed</span></div>
+        <div id="stepTools"></div>
+
+        <div class="section-h" id="howH"><span class="dot"></span><span data-i18n="how_to_check">How to check</span></div>
+        <div class="identify" id="stepIdentify"></div>
+
+        <div id="stepMethodsWrap" style="display:none">
+          <div class="methods" id="stepMethods"></div>
+        </div>
+      </div>
+
+      <div class="mascot-row" style="padding-top:14px">
+        <div class="mascot"><svg viewBox="0 0 40 40" width="32" height="32"><use href="#mascot"/></svg></div>
+        <div class="bubble" id="stepBubble">Let's check the panel first.</div>
+      </div>
+
+      <div class="cap" data-i18n="cap_question">Found this issue?</div>
+      <div class="yn">
+        <button class="ynbtn yes" onclick="foundIt()"><span class="ic">✓</span><span data-i18n="found_yes">Yes, this is the cause</span></button>
+        <button class="ynbtn no" onclick="nextStep()"><span class="ic">✗</span><span data-i18n="found_no">No, looks normal</span></button>
+      </div>
+
+      <!-- Prominent skip-step button (F3 pattern available on every step) -->
+      <div class="skip-step-wrap">
+        <button class="skip-step-btn" onclick="skipStep()">⤳ <span data-i18n="skip_step">Skip this step</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SOLUTION (data-driven) ============ -->
+  <section class="screen" id="s-solution">
+    <div class="statusbar"><a class="back" onclick="go('step')">‹</a><span data-i18n="now_fix">Now let's fix it</span></div>
+    <div class="eqchip"><span class="dot amber"></span><span id="solEq">Aeration Blower-1</span></div>
+    <div class="stephead">
+      <span class="steptype" style="background:var(--amber-tint);color:#8B5A0A" data-i18n="action_label">Action</span>
+      <div class="dots" id="solDots"></div>
+      <button class="listen">🔊</button>
+    </div>
+    <div class="scroll">
+      <div class="step-card">
+        <div class="sol-hero" id="solIcon">⚡</div>
+        <div class="sol-title" id="solTitle">Turn on the blower</div>
+        <div class="sol-sub" id="solSub">Switch ON Aeration Blower-1 on the panel.</div>
+        <div class="sol-steps" id="solSteps"></div>
+        <div class="safety" id="solSafety" style="display:none"><span>⚠️</span><span id="solSafetyText"></span></div>
+        <div class="info-banner" id="solInfo" style="display:none"><span>💡</span><span id="solInfoText"></span></div>
+      </div>
+      <div class="cap" data-i18n="cap_after_action">After completing the action</div>
+      <div class="yn">
+        <button class="ynbtn yes" onclick="actionWorked()"><span class="ic">✓</span><span data-i18n="action_worked">Done · DO is rising</span></button>
+        <button class="ynbtn no" onclick="actionFailed()"><span class="ic">✗</span><span data-i18n="action_failed">Tried but DO is still low</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STOP / Supervisor escalation ============ -->
+  <section class="screen" id="s-stop">
+    <div class="statusbar"><a class="back" onclick="go('step')">‹</a><span data-i18n="escalation_label">Escalation</span></div>
+    <div class="scroll">
+      <div class="escalate-hero">
+        <div class="icon">📞</div>
+        <h2 id="stopTitle" data-i18n="stop_title">Time to call supervisor</h2>
+        <p id="stopReason" data-i18n="stop_reason">This step needs expertise or tools you don't have. Sharma ji will take it from here.</p>
+      </div>
+      <div class="context-card">
+        <div class="label" data-i18n="context_label">Auto-shared context</div>
+        <div class="row"><span data-i18n="ctx_equipment">Equipment</span><span>Aeration Tank · AT-01</span></div>
+        <div class="row"><span data-i18n="ctx_issue">Issue</span><span data-i18n="ctx_issue_val">DO Low (0.8 mg/L)</span></div>
+        <div class="row"><span data-i18n="ctx_checks">Checks done</span><span id="ctxChecks">0 of 6</span></div>
+        <div class="row"><span data-i18n="ctx_finding">Finding</span><span id="ctxFinding" style="text-align:right;max-width:60%">—</span></div>
+      </div>
+    </div>
+    <div class="cta-bar">
+      <button class="btn danger" onclick="alert(T.call_done)" data-i18n="cta_call_super">📞 Call Sharma ji</button>
+      <button class="btn ghost" onclick="go('photo')" data-i18n="cta_photo_super">📷 Send photo first</button>
+    </div>
+  </section>
+
+  <!-- ============ VERIFICATION ============ -->
+  <section class="screen" id="s-verify">
+    <div class="statusbar"><span></span><span data-i18n="verification">Verification</span></div>
+    <div class="eqchip"><span class="dot green"></span><span data-i18n="eqchip_aeration">Aeration Tank · AT-01</span></div>
+    <div class="stephead">
+      <span class="steptype" data-i18n="type_verify">Verification</span>
+      <div class="dots"><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="cur"></span></div>
+      <button class="listen">🔊</button>
+    </div>
+    <div class="q" data-i18n="verify_q">Waiting for DO to return to normal…</div>
+    <div class="scroll">
+      <div class="gauge">
+        <svg viewBox="0 0 220 130">
+          <path d="M20,110 A90,90 0 0,1 200,110" fill="none" stroke="#E4E8EF" stroke-width="16" stroke-linecap="round"/>
+          <path d="M20,110 A90,90 0 0,1 75,30" fill="none" stroke="#D64545" stroke-width="16" stroke-linecap="round"/>
+          <path d="M75,30 A90,90 0 0,1 145,30" fill="none" stroke="#1F9D55" stroke-width="16" stroke-linecap="round"/>
+          <path d="M145,30 A90,90 0 0,1 200,110" fill="none" stroke="#E8941A" stroke-width="16" stroke-linecap="round"/>
+          <g id="needle" transform="rotate(-60 110 110)" style="transition:transform 1.2s ease-out">
+            <line x1="110" y1="110" x2="110" y2="38" stroke="#193458" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="110" cy="110" r="7" fill="#193458"/>
+          </g>
+          <text x="110" y="128" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="22" font-weight="800" fill="#193458" id="verVal">0.8 mg/L</text>
+        </svg>
+        <div class="timer" id="verTimer">02:00</div>
+        <div class="timer-lbl" data-i18n="verify_target">Target: 2.0 mg/L or higher</div>
+      </div>
+      <div class="verify-info">
+        <span style="font-size:22px">💨</span>
+        <span id="verifyInfoText" data-i18n="verify_info">Blower is on. Bacteria need 1-2 min to recover.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SUCCESS ============ -->
+  <section class="screen" id="s-success">
+    <div class="statusbar"><span></span><span></span></div>
+    <div class="scroll">
+      <div class="success">
+        <div class="check"><svg viewBox="0 0 60 60" width="56" height="56"><circle cx="30" cy="30" r="28" fill="#1F9D55"/><path d="M18 30 L27 39 L44 22" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h2 data-i18n="success_title">Well done!</h2>
+        <p data-i18n="success_sub">Issue resolved · DO is now 2.4 mg/L</p>
+        <div class="mttr">
+          <div class="it"><div class="v" id="diagTime">1:24</div><div class="l" data-i18n="mttr_diag">Diagnosis</div></div>
+          <div class="it"><div class="v">2:10</div><div class="l" data-i18n="mttr_fix">Fix</div></div>
+          <div class="it"><div class="v">1:45</div><div class="l" data-i18n="mttr_norm">Normalize</div></div>
+        </div>
+        <div class="context-card" style="margin:0">
+          <div class="label" data-i18n="context_label">Auto-shared context</div>
+          <div class="row"><span data-i18n="ctx_cause">Root cause</span><span id="finalCause">Blower was off</span></div>
+          <div class="row"><span data-i18n="ctx_action">Action taken</span><span id="finalAction" style="text-align:right;max-width:60%">Started the blower</span></div>
+        </div>
+        <div class="confirm-q" data-i18n="confirm_q">Was this the right cause?</div>
+        <div class="confirm-list">
+          <button class="btn ghost" style="justify-content:flex-start" onclick="go('home')"><span style="margin-right:8px">✅</span><span data-i18n="confirm_yes">Yes — that was it</span></button>
+          <button class="btn ghost" style="justify-content:flex-start" onclick="go('home')"><span style="margin-right:8px">🤔</span><span data-i18n="confirm_partial">Yes, but something else too</span></button>
+          <button class="btn ghost" style="justify-content:flex-start" onclick="go('home')"><span style="margin-right:8px">❌</span><span data-i18n="confirm_no">No — different cause</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REASSIGN ============ -->
+  <section class="screen" id="s-reassign">
+    <div class="statusbar"><a class="back" onclick="go('home')">‹</a><span data-i18n="reassign">Reassign</span></div>
+    <div class="q" data-i18n="reassign_q">Who should take this?</div>
+    <div class="scroll">
+      <div class="rlist">
+        <button class="ritem"><div class="ic">👷</div><div><div class="t" data-i18n="reassign_1_t">Next Shift</div><div class="s" data-i18n="reassign_1_s">8 PM · Rajesh</div></div></button>
+        <button class="ritem"><div class="ic">🧑‍🔧</div><div><div class="t" data-i18n="reassign_2_t">Site Engineer</div><div class="s" data-i18n="reassign_2_s">Sharma ji · available now</div></div></button>
+        <button class="ritem"><div class="ic">👨‍💼</div><div><div class="t" data-i18n="reassign_3_t">Supervisor</div><div class="s" data-i18n="reassign_3_s">Call immediately</div></div></button>
+      </div>
+    </div>
+    <div class="cta-bar"><button class="btn primary" onclick="go('home')" data-i18n="cta_send">Send</button></div>
+  </section>
+
+  <!-- ============ PHOTO ============ -->
+  <section class="screen" id="s-photo">
+    <div class="statusbar"><a class="back" onclick="go('home')">‹</a><span data-i18n="cta_photo_short">Send photo</span></div>
+    <div class="scroll">
+      <div style="padding:0 20px">
+        <div class="photo-frame"><div style="text-align:center"><div style="font-size:64px">📷</div><div style="font-size:13px;opacity:.8;margin-top:8px;font-weight:600" data-i18n="tap_capture">Tap to capture</div></div></div>
+        <p style="font-size:13px;color:var(--ink-2);margin-top:14px;font-weight:500" data-i18n="photo_hint">Show the Aeration Tank surface and bubbles. Supervisor will see this with alert context.</p>
+      </div>
+    </div>
+    <div class="cta-bar"><button class="btn primary" onclick="go('home');setTimeout(()=>alert(T.photo_sent),200)" data-i18n="cta_send_super">Send to Supervisor</button></div>
+  </section>
+
+  <svg width="0" height="0" style="position:absolute"><defs>
+    <symbol id="mascot" viewBox="0 0 40 40">
+      <path d="M20 4 C12 14 6 22 6 28 a14 14 0 0 0 28 0 c0-6-6-14-14-24z" fill="#193458"/>
+      <circle cx="15" cy="24" r="2" fill="#fff"/><circle cx="25" cy="24" r="2" fill="#fff"/>
+      <path d="M16 30 Q20 33 24 30" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </symbol>
+  </defs></svg>
+</div>
+
+<div class="modal-bg" id="langModal">
+  <div class="modal">
+    <h2>Choose your language</h2>
+    <p>अपनी भाषा चुनें</p>
+    <div class="lang-grid">
+      <button class="lang active" id="lang-en" onclick="setLang('en')"><div class="big">English</div><div class="small">Default</div></button>
+      <button class="lang" id="lang-hi" onclick="setLang('hi')"><div class="big">हिंदी</div><div class="small">Hindi</div></button>
+    </div>
+    <button class="btn primary" onclick="closeLang()" id="langContinue">Continue</button>
+  </div>
+</div>
+
+<!-- ============ MORE ACTIONS sheet (Hick + Cognitive load) ============ -->
+<div class="more-bg" id="moreBg" onclick="closeMore(event)">
+  <div class="more-sheet" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <h3 data-i18n="more_h">More actions</h3>
+    <button class="more-row" onclick="closeMore();go('reassign')">
+      <div class="ic">↪</div>
+      <div><div class="t" data-i18n="more_reassign">Reassign</div><div class="s" data-i18n="more_reassign_s">Send to next shift, engineer, or supervisor</div></div>
+    </button>
+    <button class="more-row" onclick="closeMore();go('photo')">
+      <div class="ic">📷</div>
+      <div><div class="t" data-i18n="more_photo">Send photo to supervisor</div><div class="s" data-i18n="more_photo_s">Auto-attaches alert context</div></div>
+    </button>
+    <button class="more-row" onclick="closeMore();alert(T.mute_msg)">
+      <div class="ic">🔕</div>
+      <div><div class="t" data-i18n="more_mute">Mute notifications · 30 min</div><div class="s" data-i18n="more_mute_s">If you're already on it</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- ============ UX LAB toggle + sheet ============ -->
+<button class="uxlab-toggle" id="uxlabToggle" onclick="openUx()">UX</button>
+<div class="uxsheet-bg" id="uxsheetBg" onclick="closeUx(event)">
+  <div class="uxsheet" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <h2 data-i18n="uxlab_h">UX Lab</h2>
+    <div class="sub" data-i18n="uxlab_sub">12 UX laws applied across this prototype. Toggle annotations to see them pinned to elements.</div>
+    <div class="toggle-row">
+      <span class="lbl" data-i18n="uxlab_show">Show annotations on screen</span>
+      <div class="toggle" id="uxToggleNub" onclick="toggleUxAnnotations(this)"><div class="nub"></div></div>
+    </div>
+    <div class="uxlaw-list" id="uxlawList"></div>
+  </div>
+</div>
+
+<script>
+/* ============ UX LAB DATA & LOGIC ============ */
+const UX_LAWS = [
+  {n:'1', law:'Fitt\'s Law', applied:'Primary CTAs are 56px tall · bottom nav 60px · all buttons ≥44px. Sticky CTAs sit in the thumb zone at the bottom of every screen.'},
+  {n:'2', law:'Jakob\'s Law', applied:'Familiar mobile patterns: bottom tab bar, segmented controls for Open/Closed, pull-down hints, slide-up bottom sheets, breadcrumbs.'},
+  {n:'3', law:'Hick\'s Law', applied:'Issue page consolidates secondary actions (Reassign · Photo · Mute) under one More button. Homepage stat tiles compress 3 KPIs into one glance.'},
+  {n:'4', law:'Law of Similarity', applied:'All cards share the same radius/shadow/padding. All status pills follow one pattern: severity stripe + colour + uppercase label.'},
+  {n:'5', law:'Von Restorff Effect', applied:'Each screen has one breathing accent: critical alert glow on the home Open stat, the pulsing red ! on equipment with active issues, the primary CTA tinted.'},
+  {n:'6', law:'Miller\'s Law', applied:'Diagnostic tree limited to 6 root causes (within 7±2). Bottom nav holds 4 items. Stat row holds 3. Homepage chunked into 4 named sections.'},
+  {n:'7', law:'Tesler\'s Law', applied:'Complexity moved to the system: auto-translation, auto-assigned issues, auto-routing on equipment tap, "Suggested" labels mark smart defaults.'},
+  {n:'8', law:'Doherty Threshold', applied:'All screen transitions 220ms · button press feedback 120ms · pull-to-refresh confirm <300ms. No spinner appears for sub-400ms work.'},
+  {n:'9', law:'Law of Proximity', applied:'Spacing scale: 6/8/14/20px. Within-card 8px · between cards 14px · between sections 20px. Stats grouped by colour, sensors by 2-col grid.'},
+  {n:'10', law:'Cognitive Load Theory', applied:'One headline per screen · one primary CTA · plain Hindi-first text · technical jargon replaced (e.g., "Call supervisor" not "Escalation").'},
+  {n:'11', law:'Peak-end Rule', applied:'Success screen has confetti, animated check pop, sequenced fade-up of MTTR + confirm options. Memorable ending to every resolved issue.'},
+  {n:'12', law:'Aesthetic-Usability Effect', applied:'Polish: gradient stat tiles · count-up on numbers · sub-300ms transitions · subtle press scale · drop-shadows on equipment · breathing pulses.'}
+];
+
+function openUx(){
+  const list = document.getElementById('uxlawList');
+  list.innerHTML = UX_LAWS.map(L => `
+    <div class="uxlaw-item">
+      <div class="uxlaw-h"><span class="uxlaw-num">${L.n}</span>${L.law}<span class="badge">applied</span></div>
+      <div class="uxlaw-d">${L.applied}</div>
+    </div>
+  `).join('');
+  document.getElementById('uxsheetBg').classList.add('on');
+}
+function closeUx(e){
+  if(e && e.target.id !== 'uxsheetBg' && e.target !== undefined) return;
+  document.getElementById('uxsheetBg').classList.remove('on');
+}
+
+let uxAnnotationsOn = false;
+function toggleUxAnnotations(el){
+  uxAnnotationsOn = !uxAnnotationsOn;
+  el.classList.toggle('on', uxAnnotationsOn);
+  document.body.classList.toggle('uxlab-on', uxAnnotationsOn);
+  document.getElementById('uxlabToggle').classList.toggle('on', uxAnnotationsOn);
+  if(uxAnnotationsOn){ renderUxBadges(); } else { clearUxBadges(); }
+}
+
+const UX_BADGES = [
+  // selector, label, position (top/bottom + left/right offsets)
+  {sel:'#s-plant .stat.danger', label:'5 · Von Restorff', t:-10, l:-2},
+  {sel:'#s-plant .stat-row', label:'6 · Miller (3 chunks)', t:-22, l:0, container:true},
+  {sel:'#s-plant .sensor-grid', label:'9 · Proximity', t:-22, l:0, container:true},
+  {sel:'#s-plant .bnav', label:'1 · Fitt', t:-22, l:0, container:true},
+  {sel:'#s-home .cta-bar .btn.primary', label:'1 · Fitt (56px)', t:-22, l:0, container:true},
+  {sel:'#s-home .focal', label:'10 · Cognitive load', t:-22, l:0, container:true},
+  {sel:'#more-btn', label:'3 · Hick', t:-22, l:0, container:true},
+  {sel:'#s-alerts .seg', label:'2 · Jakob', t:-22, l:0, container:true},
+  {sel:'#s-success .check', label:'11 · Peak-end', t:-22, l:0, container:true},
+  {sel:'#s-success .success', label:'12 · Aesthetic', t:-22, l:120, container:true},
+  {sel:'.pull-hint', label:'2 · Jakob', t:0, l:0, container:true},
+  {sel:'#s-home .suggested', label:'7 · Tesler', t:-22, l:0, container:true},
+  {sel:'#stepDots', label:'8 · Doherty (<300ms)', t:-22, l:0, container:true},
+  {sel:'.uxlab-toggle', label:'4 · Similarity (every card)', t:-26, l:-130, container:true}
+];
+
+function renderUxBadges(){
+  clearUxBadges();
+  UX_BADGES.forEach(b => {
+    document.querySelectorAll(b.sel).forEach(el => {
+      const badge = document.createElement('span');
+      badge.className = 'uxbadge';
+      badge.textContent = b.label;
+      const parent = el.offsetParent || el.parentElement || document.body;
+      parent.style.position = parent.style.position || 'relative';
+      el.style.position = el.style.position || 'relative';
+      el.appendChild(badge);
+      const t = (b.t!=null)?b.t:-22;
+      const l = (b.l!=null)?b.l:0;
+      badge.style.top = (t<0?'':'') + t + 'px';
+      badge.style.left = l + 'px';
+    });
+  });
+}
+function clearUxBadges(){
+  document.querySelectorAll('.uxbadge').forEach(b => b.remove());
+}
+
+/* ============ MORE actions sheet ============ */
+function openMore(){
+  document.getElementById('moreBg').classList.add('on');
+}
+function closeMore(e){
+  if(e && e.target && e.target.id !== 'moreBg') return;
+  document.getElementById('moreBg').classList.remove('on');
+}
+
+/* ============ Stat count-up (Aesthetic Usability) ============ */
+function countUp(el, to, suffix){
+  const start = performance.now();
+  const dur = 700;
+  const isPct = (to+'').includes('%');
+  const target = parseFloat((to+'').replace(/[^0-9.]/g,''));
+  if(isNaN(target)) return;
+  function tick(now){
+    const p = Math.min(1, (now-start)/dur);
+    const eased = 1 - Math.pow(1-p, 3);
+    const cur = target * eased;
+    el.textContent = (target % 1 === 0 ? Math.round(cur) : cur.toFixed(1)) + (isPct ? '%' : suffix||'');
+    if(p<1) requestAnimationFrame(tick);
+    else el.textContent = to;
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ============ Confetti on success (Peak-end) ============ */
+function fireConfetti(){
+  const successEl = document.querySelector('#s-success .success');
+  if(!successEl) return;
+  successEl.style.position = 'relative';
+  const colors = ['#1F9D55','#E8941A','#D64545','#193458','#2A4D7F','#FFD43A'];
+  for(let i=0;i<26;i++){
+    const c = document.createElement('span');
+    c.className = 'confetti';
+    c.style.left = (10 + Math.random()*80) + '%';
+    c.style.background = colors[i % colors.length];
+    c.style.animationDelay = (Math.random()*200) + 'ms';
+    c.style.transform = `rotate(${Math.random()*360}deg)`;
+    successEl.appendChild(c);
+    setTimeout(()=>c.remove(), 2400);
+  }
+}
+
+</script>
+
+<script>
+/* ========== DIAGNOSTIC TREE (from xlsx) ========== */
+const STEPS = [
+  {
+    id:'blower-off', freq:'low',
+    eqchip_key:'eqchip_blower', eq_dot:'amber',
+    icon:'⚡',
+    bubble_key:'bubble_step1',
+    methods:[
+      {ic:'🎛️', t_key:'method_panel', s_key:'method_panel_sub'},
+      {ic:'📱', t_key:'method_dp', s_key:'method_dp_sub'}
+    ],
+    sol_steps_keys:['sol1_1','sol1_2','sol1_3'],
+    safety_key:'safety_blower',
+    canResolve:true,
+    flowType:'F1' /* Standard guided path */
+  },
+  {
+    id:'blower-perf', freq:'low',
+    eqchip_key:'eqchip_blower', eq_dot:'amber',
+    icon:'📊',
+    bubble_key:'bubble_step2',
+    tools:['tool_filter','tool_pressure','tool_rotameter'],
+    sol_steps_keys:['sol2_1','sol2_2','sol2_3'],
+    info_key:'info_step2',
+    canResolve:true,
+    failsToSupervisor:true,
+    flowType:'F2', /* Auto-check passive flow */
+    autocheck:{
+      sub_key:'auto2_sub',
+      readouts:[
+        {l_key:'auto2_r1', v:'0.18 bar', n_key:'auto2_r1n', kind:'warn'},
+        {l_key:'auto2_r2', v:'42 m³/hr', n_key:'auto2_r2n', kind:'warn'}
+      ]
+    }
+  },
+  {
+    id:'bubbling', freq:'low-mod',
+    eqchip_key:'eqchip_aeration', eq_dot:'brand',
+    icon:'💨',
+    bubble_key:'bubble_step3',
+    sol_steps_keys:['sol3_1','sol3_2'],
+    canResolve:false, /* terminal: always escalates */
+    flowType:'F3' /* Skip a step */
+  },
+  {
+    id:'do-sensor', freq:'low-mod',
+    eqchip_key:'eqchip_sensor', eq_dot:'brand',
+    icon:'🔬',
+    bubble_key:'bubble_step4',
+    tools:['tool_water','tool_dokit','tool_tissue'],
+    sol_steps_keys:['sol4_1','sol4_2','sol4_3','sol4_4'],
+    info_key:'info_step4',
+    canResolve:true,
+    failsToSupervisor:true,
+    flowType:'F4', /* Skill-tier shortcut */
+    skillTier:'INTERMEDIATE'
+  },
+  {
+    id:'sludge-bulking', freq:'mod-high',
+    eqchip_key:'eqchip_aeration', eq_dot:'brand',
+    icon:'🧪',
+    bubble_key:'bubble_step5',
+    tools:['tool_sv30','tool_mlss','tool_dewater'],
+    sol_steps_keys:['sol5_1','sol5_2'],
+    canResolve:true,
+    flowType:'F5' /* Issue close confirmation pattern */
+  },
+  {
+    id:'shock-load', freq:'high',
+    eqchip_key:'eqchip_inlet', eq_dot:'amber',
+    icon:'⚠️',
+    bubble_key:'bubble_step6',
+    tools:['tool_cod'],
+    tools_warn:true,
+    sol_steps_keys:['sol6_1','sol6_2'],
+    info_key:'info_step6',
+    canResolve:true,
+    flowType:'F6' /* Call supervisor */
+  }
+];
+
+const FLOW_TYPES = {
+  F1: {name_key:'ft_f1_name', desc_key:'ft_f1_desc', cls:'f1'},
+  F2: {name_key:'ft_f2_name', desc_key:'ft_f2_desc', cls:'f2'},
+  F3: {name_key:'ft_f3_name', desc_key:'ft_f3_desc', cls:'f3'},
+  F4: {name_key:'ft_f4_name', desc_key:'ft_f4_desc', cls:'f4'},
+  F5: {name_key:'ft_f5_name', desc_key:'ft_f5_desc', cls:'f5'},
+  F6: {name_key:'ft_f6_name', desc_key:'ft_f6_desc', cls:'f6'}
+};
+
+const STR = {
+  en: {
+    crumb_plant:"Plant", crumb_section:"Aeration", crumb_issue:"Tank · Issue",
+    crumb_back:"Aeration Tank", crumb_plan:"Diagnostic plan",
+    new_alert:"New alert · 8 min ago",
+    eyebrow:"Aeration Section · Primary",
+    focal_title:"Aeration Tank", focal_sub:"Oxygen is low",
+    status_pill:"DO Low",
+    do_label:"DO (Sensor A)", do_normal:"Normal: 2.0 — 4.0",
+    mlss_label:"MLSS", mlss_normal:"Normal: 3,000 — 4,000",
+    ccu_cause:"Low oxygen in the tank",
+    ccu_cons:"Bacteria can die · effluent will degrade",
+    ccu_urg:"Running 8 min · check now",
+    home_bubble:"Oxygen is low in the Aeration Tank. Let's check together — start the diagnosis.",
+    cta_start:"Start the check", cta_reassign:"↪ Reassign", cta_photo:"📷 Send photo",
+    cta_more:"⋯ More actions",
+    pull_refresh:"Pull down to refresh",
+    suggested:"Auto",
+    more_h:"More actions",
+    more_reassign:"Reassign", more_reassign_s:"Send to next shift, engineer, or supervisor",
+    more_photo:"Send photo to supervisor", more_photo_s:"Auto-attaches alert context",
+    more_mute:"Mute notifications · 30 min", more_mute_s:"If you're already on it",
+    mute_msg:"Notifications muted for 30 minutes.",
+    uxlab_h:"UX Lab", uxlab_sub:"12 UX laws applied across this prototype. Toggle annotations to see them pinned to elements.",
+    uxlab_show:"Show annotations on screen",
+    preview_bubble:"We'll go through 6 checks — from easiest to hardest. Stop when we find the cause.",
+    preview_q:"6 things to check", preview_sub:"Estimated time: 10-15 minutes",
+    cta_begin_1:"Start with Step 1",
+    skip:"Skip",
+    diagnose:"Diagnose",
+    eqchip_blower:"Aeration Blower-1",
+    eqchip_aeration:"Aeration Tank · AT-01",
+    eqchip_sensor:"DO Sensor · AT-01",
+    eqchip_inlet:"Inlet Effluent",
+    tools_needed:"Tools needed",
+    how_to_check:"How to check",
+    no_tools_needed:"No tools needed",
+    found_yes:"Yes, this is the cause",
+    found_no:"No, looks normal",
+    cap_question:"Found this issue?",
+    cap_after_action:"After completing the action",
+    now_fix:"Now let's fix it",
+    action_label:"Action",
+    action_worked:"Done · DO is rising",
+    action_failed:"Tried but DO is still low",
+    escalation_label:"Escalation",
+    stop_title:"Time to call supervisor",
+    stop_reason:"This step needs expertise or tools you don't have. Sharma ji will take it from here.",
+    context_label:"Auto-shared context",
+    ctx_equipment:"Equipment", ctx_issue:"Issue", ctx_issue_val:"DO Low (0.8 mg/L)",
+    ctx_checks:"Checks done", ctx_finding:"Finding",
+    ctx_cause:"Root cause", ctx_action:"Action taken",
+    cta_call_super:"📞 Call Sharma ji",
+    cta_photo_super:"📷 Send photo first",
+    call_done:"Calling Sharma ji…",
+    verification:"Verification", type_verify:"Verification",
+    verify_q:"Waiting for DO to return to normal…",
+    verify_target:"Target: 2.0 mg/L or higher",
+    verify_info:"Blower is on. Bacteria need 1-2 min to recover.",
+    success_title:"Well done!", success_sub:"Issue resolved · DO is now 2.4 mg/L",
+    mttr_diag:"Diagnosis", mttr_fix:"Fix", mttr_norm:"Normalize",
+    confirm_q:"Was this the right cause?",
+    confirm_yes:"Yes — that was it",
+    confirm_partial:"Yes, but something else too",
+    confirm_no:"No — different cause",
+    reassign:"Reassign", reassign_q:"Who should take this?",
+    reassign_1_t:"Next Shift", reassign_1_s:"8 PM · Rajesh",
+    reassign_2_t:"Site Engineer", reassign_2_s:"Sharma ji · available now",
+    reassign_3_t:"Supervisor", reassign_3_s:"Call immediately",
+    cta_send:"Send", cta_photo_short:"Send photo", tap_capture:"Tap to capture",
+    photo_hint:"Show the Aeration Tank surface and bubbles. Supervisor will see this with alert context.",
+    cta_send_super:"Send to Supervisor", photo_sent:"Sent to Sharma ji ✓",
+    modal_title:"Choose your language", modal_sub:"Select your preferred language", lang_continue:"Continue",
+
+    /* Flow type badges */
+    ft_f1_name:"Standard guided", ft_f1_desc:"Walk through every step",
+    ft_f2_name:"Auto-check", ft_f2_desc:"System reads · you only flag",
+    ft_f3_name:"Skip-friendly", ft_f3_desc:"Visual check · easy to skip",
+    ft_f4_name:"Skill shortcut", ft_f4_desc:"Skip ahead if experienced",
+    ft_f5_name:"Verify & close", ft_f5_desc:"Confirm the fix worked",
+    ft_f6_name:"Call supervisor", ft_f6_desc:"Needs expertise or tools",
+
+    /* F2 Auto-check (used in Blower performance) */
+    auto2_sub:"Header pressure + flow on Blower-2 line",
+    auto2_r1:"Header pressure", auto2_r1n:"Normal: 0.35 – 0.50 bar",
+    auto2_r2:"Air flow rate", auto2_r2n:"Normal: 80 – 120 m³/hr",
+    ft_auto_title:"Auto-check · system reading",
+    ft_auto_advance:"Continues in 5 sec",
+    ft_auto_flag:"Looks wrong",
+    flagged_msg:"Sensor reading flagged. A supervisor will be notified.",
+
+    /* F3 Skip-friendly */
+    ft_skip_title:"It's OK to skip this one",
+    ft_skip_sub:"Visual checks like this can be tricky in low light. Skip won't be held against you — we'll move to the next cause.",
+
+    /* F4 Skill shortcut */
+    ft_skill_title:"Skill required",
+    ft_skill_sub:"This check needs you to inspect the probe and use a manual DO kit. Experienced operators can skip the on-screen scaffolding.",
+    ft_skill_shortcut:"I've done this before — skip ahead",
+
+    /* F6 Escalation */
+    ft_esc_title:"This one needs supervisor",
+    ft_esc_sub:"Confirming a shock load needs a COD kit which isn't available on-site. Visual check + escalate is the standard path.",
+
+    /* Skip step button */
+    skip_step:"Skip this step",
+
+    /* Plant homepage */
+    plant_name:"Honda Manesar STP", plant_sub:"Today · Day shift · Ramesh K.",
+    kpi_open:"Open", kpi_tasks:"Tasks", kpi_uptime:"Uptime",
+    stat_open_d:"2 critical", stat_tasks_d:"3 pending", stat_uptime_d:"7-day avg",
+    pan_hint:"↔ Drag · tap equipment",
+    nav_plant:"Plant", nav_alerts:"Alerts", nav_tasks:"Tasks", nav_profile:"Me",
+    sec_plant:"Plant overview", fit_view:"⛶ Fit to view", fit_to_view:"Centred to Aeration Tank",
+    leg_active:"Active issue", leg_watch:"Needs watch", leg_healthy:"Healthy", leg_tap:"Tap any equipment",
+
+    /* Sensors */
+    sec_live:"Live readings", updated_now:"Updated just now",
+    sens_do:"Dissolved Oxygen", sens_tur:"Turbidity", sens_mlss:"MLSS",
+    sens_ph:"pH", sens_flow:"Inlet Flow", sens_power:"Total Power",
+    trend_rising:"rising 22 min", trend_falling:"falling 30 min",
+    trend_stable:"stable", trend_normal:"within normal",
+
+    /* Activity */
+    sec_activity:"Recent activity", view_all:"View all",
+    act_1_t:"Aeration Tank · DO alert opened", act_1_w:"System",
+    act_2_t:"MBR-1 · Turbidity alert opened", act_2_w:"System",
+    act_3_t:"Aeration Tank · MLSS reading logged", act_3_w:"You",
+    act_4_t:"Blower-2 trip · resolved", act_4_w:"You",
+    act_5_t:"DO sensor calibration · due in 5 days", act_5_w:"Scheduler",
+    time_45m:"45 min ago", time_2h:"2 hr ago",
+
+    /* Tasks */
+    sec_tasks:"Today's tasks",
+    task_1:"Morning rounds · Bar Screen check",
+    task_2:"EQ Tank level reading",
+    task_3:"Blower hours log",
+    task_4:"SV-30 test · 11:00",
+    task_5:"Sludge wasting · 14:00",
+
+    /* Equipment sheet */
+    eq_uptime:"Uptime today", eq_last_service:"Last service", eq_assigned:"Assigned to",
+    eq_close:"Close", eq_view_issue:"View open issue", eq_view_history:"View history",
+    healthy:"Healthy",
+
+    /* Alerts */
+    alerts_h:"Alerts", alerts_sub:"Honda Manesar STP",
+    seg_open:"Open", seg_closed:"Closed",
+    sev_crit:"Critical", sev_high:"High", sev_med:"Medium", sev_done:"Resolved",
+    time_8m:"8 min ago", time_22m:"22 min ago", time_1h:"1 hr ago",
+    time_yest:"Yesterday", time_2d:"2 days ago", time_5d:"5 days ago",
+    alert_eq_at01:"Aeration Tank · AT-01", alert_eq_mbr:"MBR-1 Tank",
+    alert_eq_cl:"Clarifier · CL-01", alert_eq_bl2:"Blower-2",
+    alert_eq_eq:"EQ Tank · EQ-01", alert_eq_an:"Anaerobic · AN-01",
+    alert_aeration_t:"DO Low (0.8 mg/L)",
+    alert_aeration_s:"Oxygen is low · bacteria can die · effluent will degrade",
+    alert_mbr_t:"Turbidity High (28 NTU)",
+    alert_mbr_s:"Membrane outlet water is dirty · discharge quality at risk",
+    alert_clarifier_t:"Scum layer formation",
+    alert_clarifier_s:"Floating brown layer on clarifier surface · skimmer check needed",
+    alert_blower_t:"Blower trip · resolved",
+    alert_blower_s:"Thermal trip after 6 hr continuous run · cooled and restarted",
+    alert_eq_t:"Level High · resolved",
+    alert_eq_s:"Inlet surge from upstream · feed pump auto-throttled",
+    alert_an_t:"pH Low · resolved",
+    alert_an_s:"Acidic shock from inlet · lime dosing increased temporarily",
+
+    /* Stub */
+    cap_details:"Details", cap_diag_plan:"Diagnostic flows",
+    detail_sensor:"Trigger sensor", detail_value:"Current reading",
+    detail_normal:"Normal range", detail_assigned:"Assigned to",
+    cta_start_stub:"Start the check",
+    coming_soon_flow:"This flow is not yet configured for the demo.",
+
+    /* Tasks / Profile */
+    tasks_h:"Tasks", tasks_sub:"Routine checks for today",
+    cs_tasks_h:"Daily tasks", cs_tasks_p:"5 routine checks scheduled · feature coming soon.",
+    profile_h:"Profile",
+    prof_lang:"Language", prof_notif:"Notifications",
+    prof_history:"My history", prof_logout:"Sign out",
+
+    /* Step titles */
+    step1_title:"Blower is OFF",
+    step2_title:"Blower performance",
+    step3_title:"Even bubbling in tank",
+    step4_title:"DO sensor failure",
+    step5_title:"Sludge bulking",
+    step6_title:"High shock load",
+
+    /* Identify text */
+    step1_identify:"<b>Two quick ways</b> to check — pick whichever is easier from where you are:",
+    step2_identify:"Check the <b>header pressure</b> and <b>flow</b> on the blower line. If both are below normal, blower performance is degraded.",
+    step3_identify:"Walk around the tank. Look at the surface — are bubbles coming up <b>evenly</b> across the whole tank? Or are there <b>dead zones</b> (areas with no bubbles)?",
+    step4_identify:"Pull out the DO probe and inspect it:<ul><li>Is there <b>scaling</b> or buildup on the probe tip?</li><li>Is the <b>sensor cap</b> scratched, cracked, or has the black paint come off?</li></ul>",
+    step5_identify:"Run <b>MLSS</b> and <b>SV-30</b> tests. If both are higher than the desired range, sludge bulking is happening. Also check the tank surface — is there <b>floating sludge</b>? That means dead sludge has accumulated.",
+    step6_identify:"Look at the incoming effluent visually — any unusual <b>colour</b>, <b>smell</b>, or characteristics compared to normal? A COD test would confirm but the kit isn't available here.",
+
+    /* Methods (step 1) */
+    method_panel:"From the panel", method_panel_sub:"Light shows OFF or TRIP",
+    method_dp:"On DP software", method_dp_sub:"Open Blower-1 status",
+
+    /* Frequency */
+    freq_low:"Low frequency",
+    freq_low_mod:"Low–Moderate",
+    freq_mod_high:"Moderate–High",
+    freq_high:"High frequency",
+
+    /* Bubbles per step */
+    bubble_step1:"Easiest first — just check if the blower is running.",
+    bubble_step2:"OK, the blower's on. Let's see if it's performing well.",
+    bubble_step3:"Now let's look at the tank itself — are bubbles spread evenly?",
+    bubble_step4:"Maybe the sensor is wrong. Let's check the probe.",
+    bubble_step5:"Let's test the biology — MLSS and SV-30.",
+    bubble_step6:"Last one — check what's coming into the tank.",
+
+    /* Tools */
+    tool_filter:"Filter cleaning material",
+    tool_pressure:"Pressure transmitter",
+    tool_rotameter:"Flow meter (Rotameter)",
+    tool_water:"Clean water",
+    tool_dokit:"Manual DO kit",
+    tool_tissue:"Tissue paper",
+    tool_sv30:"SV-30 testing kit",
+    tool_mlss:"MLSS measuring system",
+    tool_dewater:"Sludge dewatering system",
+    tool_cod:"COD kit (not available)",
+
+    /* Solutions */
+    step1_sol_title:"Turn on the blower",
+    step1_sol_sub:"Start Aeration Blower-1 and air will return to the tank.",
+    sol1_1:"Go to the blower panel",
+    sol1_2:"Reset the trip if the indicator shows TRIP",
+    sol1_3:"Switch ON Aeration Blower-1",
+    safety_blower:"<b>Safety:</b> The panel green light must be on before switching ON. Photo required.",
+
+    step2_sol_title:"Clean the blower filter",
+    step2_sol_sub:"Clean filter and wait 1 hour to see if DO recovers.",
+    sol2_1:"Stop the blower",
+    sol2_2:"Open the filter housing and clean it",
+    sol2_3:"Restart blower · wait 1 hour, then check DO again",
+    info_step2:"If DO is still low after 1 hour, the issue is deeper — supervisor will take over.",
+
+    step3_sol_title:"Diffusers are choked",
+    step3_sol_sub:"Diffuser cleaning needs to be planned. Call supervisor to schedule it.",
+    sol3_1:"Call supervisor and report dead zones found",
+    sol3_2:"Supervisor will plan diffuser cleaning during next shutdown",
+
+    step4_sol_title:"Clean the DO sensor",
+    step4_sol_sub:"Clean the probe and verify with manual DO kit.",
+    sol4_1:"Pull out the DO probe carefully",
+    sol4_2:"Wipe with tissue paper · rinse in clean water",
+    sol4_3:"Place probe in clean water — should read 7–8 ppm",
+    sol4_4:"Compare with manual DO kit reading",
+    info_step4:"If the cap looks scratched or black paint is gone, the cap needs replacement — call supervisor.",
+
+    step5_sol_title:"Perform sludge wasting",
+    step5_sol_sub:"Remove excess or dead sludge from the system.",
+    sol5_1:"Operate sludge wasting valve as per SOP",
+    sol5_2:"Re-test MLSS and SV-30 after 30 min",
+
+    step6_sol_title:"Add nutrients · log incoming load",
+    step6_sol_sub:"Support the biology while incoming load stabilizes.",
+    sol6_1:"Visually log colour and smell of incoming effluent",
+    sol6_2:"Add nutrients (urea + DAP) per dosing schedule",
+    info_step6:"COD test isn't possible on-site. If load is still abnormal in 2 hours, escalate to supervisor.",
+
+    /* Preview list strings */
+    prev_1_blurb:"Check the panel light",
+    prev_2_blurb:"Header pressure + flow",
+    prev_3_blurb:"Look for dead zones",
+    prev_4_blurb:"Inspect probe + cap",
+    prev_5_blurb:"MLSS / SV-30 test",
+    prev_6_blurb:"Visual + nutrients"
+  },
+  hi: {
+    crumb_plant:"प्लांट", crumb_section:"Aeration", crumb_issue:"टैंक · Issue",
+    crumb_back:"Aeration Tank", crumb_plan:"जाँच की योजना",
+    new_alert:"नया Alert · 8 मिनट पहले",
+    eyebrow:"Aeration Section · Primary",
+    focal_title:"Aeration Tank", focal_sub:"पानी में हवा कम है",
+    status_pill:"DO कम",
+    do_label:"हवा (Sensor A)", do_normal:"सामान्य: 2.0 — 4.0",
+    mlss_label:"MLSS", mlss_normal:"सामान्य: 3,000 — 4,000",
+    ccu_cause:"टैंक में हवा कम है",
+    ccu_cons:"Bacteria मर सकते हैं · पानी ख़राब होगा",
+    ccu_urg:"8 मिनट से चल रहा है · अभी देखें",
+    home_bubble:"Aeration टैंक में हवा कम है। चलिए मिलकर देखते हैं — जाँच शुरू करते हैं।",
+    cta_start:"जाँच शुरू करें", cta_reassign:"↪ किसी और को दें", cta_photo:"📷 फ़ोटो भेजें",
+    cta_more:"⋯ और options",
+    pull_refresh:"Refresh के लिए नीचे खींचें",
+    suggested:"अपने आप",
+    more_h:"और options",
+    more_reassign:"किसी और को दें", more_reassign_s:"Next shift, engineer या supervisor को भेजें",
+    more_photo:"Supervisor को फ़ोटो भेजें", more_photo_s:"Alert context अपने आप attach होगा",
+    more_mute:"Notifications 30 मिनट के लिए बंद", more_mute_s:"पहले से काम पर हैं तो",
+    mute_msg:"Notifications 30 मिनट के लिए बंद कर दिए।",
+    uxlab_h:"UX Lab", uxlab_sub:"12 UX laws इस prototype में लागू हैं। Annotations toggle करके देखें।",
+    uxlab_show:"Screen पर annotations दिखाएँ",
+    preview_bubble:"6 चीज़ें check करेंगे — आसान से मुश्किल तक। कारण मिलते ही रुक जाएंगे।",
+    preview_q:"6 चीज़ें check करनी हैं", preview_sub:"अनुमानित समय: 10-15 मिनट",
+    cta_begin_1:"Step 1 से शुरू करें",
+    skip:"छोड़ें",
+    diagnose:"जाँच",
+    eqchip_blower:"Aeration Blower-1",
+    eqchip_aeration:"Aeration टैंक · AT-01",
+    eqchip_sensor:"DO Sensor · AT-01",
+    eqchip_inlet:"आने वाला पानी",
+    tools_needed:"क्या-क्या चाहिए",
+    how_to_check:"कैसे check करें",
+    no_tools_needed:"कुछ नहीं चाहिए",
+    found_yes:"हाँ, यही कारण है",
+    found_no:"नहीं, सब ठीक है",
+    cap_question:"यह problem मिली?",
+    cap_after_action:"Action पूरा होने के बाद",
+    now_fix:"अब फ़िक्स करें",
+    action_label:"करें",
+    action_worked:"हो गया · DO बढ़ रहा है",
+    action_failed:"किया लेकिन DO अभी भी कम है",
+    escalation_label:"Supervisor को बुलाएँ",
+    stop_title:"अब Supervisor को बुलाएँ",
+    stop_reason:"इस step के लिए expertise या tools चाहिए जो आपके पास नहीं हैं। Sharma जी आगे संभाल लेंगे।",
+    context_label:"साझा की जाने वाली जानकारी",
+    ctx_equipment:"Equipment", ctx_issue:"Issue", ctx_issue_val:"DO कम (0.8 mg/L)",
+    ctx_checks:"Checks हुए", ctx_finding:"क्या मिला",
+    ctx_cause:"कारण", ctx_action:"क्या किया",
+    cta_call_super:"📞 Sharma जी को call करें",
+    cta_photo_super:"📷 पहले फ़ोटो भेजें",
+    call_done:"Sharma जी को call जा रहा है…",
+    verification:"पुष्टि", type_verify:"पुष्टि",
+    verify_q:"DO normal आती है क्या — रुकें…",
+    verify_target:"Target: 2.0 mg/L या ज़्यादा",
+    verify_info:"Blower चालू हो गया है। Bacteria को 1-2 मिनट लगेंगे।",
+    success_title:"शाबाश!", success_sub:"Issue हल हो गया · DO अब 2.4 mg/L है",
+    mttr_diag:"जाँच", mttr_fix:"Fix", mttr_norm:"सामान्य",
+    confirm_q:"क्या यही कारण था?",
+    confirm_yes:"हाँ — यही कारण था",
+    confirm_partial:"हाँ, लेकिन कुछ और भी था",
+    confirm_no:"नहीं — दूसरा कारण था",
+    reassign:"किसी और को दें", reassign_q:"किसको देना है?",
+    reassign_1_t:"अगली Shift", reassign_1_s:"रात 8 बजे · Rajesh",
+    reassign_2_t:"Site Engineer", reassign_2_s:"Sharma जी · अभी available",
+    reassign_3_t:"Supervisor", reassign_3_s:"तुरंत call करें",
+    cta_send:"भेजें", cta_photo_short:"फ़ोटो भेजें", tap_capture:"Tap to capture",
+    photo_hint:"Aeration टैंक की सतह और बुलबुले दिखाएँ। Supervisor को alert context के साथ भेजा जाएगा।",
+    cta_send_super:"Supervisor को भेजें", photo_sent:"Sharma जी को भेज दिया ✓",
+    modal_title:"अपनी भाषा चुनें", modal_sub:"पसंदीदा भाषा चुनें", lang_continue:"आगे बढ़ें",
+
+    /* Flow type badges */
+    ft_f1_name:"Standard guided", ft_f1_desc:"हर step पर guide",
+    ft_f2_name:"Auto-check", ft_f2_desc:"System खुद reading लेगा",
+    ft_f3_name:"Skip-friendly", ft_f3_desc:"Visual check · छोड़ सकते हैं",
+    ft_f4_name:"Skill shortcut", ft_f4_desc:"Experience है तो आगे बढ़ें",
+    ft_f5_name:"Verify & close", ft_f5_desc:"Fix की पुष्टि करें",
+    ft_f6_name:"Supervisor को call", ft_f6_desc:"Expertise या tools चाहिए",
+
+    /* F2 Auto-check */
+    auto2_sub:"Blower-2 line का header pressure और flow",
+    auto2_r1:"Header pressure", auto2_r1n:"सामान्य: 0.35 – 0.50 bar",
+    auto2_r2:"Air flow rate", auto2_r2n:"सामान्य: 80 – 120 m³/hr",
+    ft_auto_title:"Auto-check · system reading",
+    ft_auto_advance:"5 सेकंड में आगे",
+    ft_auto_flag:"सही नहीं लग रहा",
+    flagged_msg:"Sensor reading flag कर दी। Supervisor को बताया जाएगा।",
+
+    /* F3 Skip-friendly */
+    ft_skip_title:"इसे छोड़ना ठीक है",
+    ft_skip_sub:"रोशनी कम है तो visual check मुश्किल है। छोड़ने में कोई दिक्कत नहीं — अगले कारण पर जाते हैं।",
+
+    /* F4 Skill shortcut */
+    ft_skill_title:"Skill चाहिए",
+    ft_skill_sub:"Probe देखना और manual DO kit use करना है। Experience है तो scaffolding skip कर सकते हैं।",
+    ft_skill_shortcut:"पहले कर चुका हूँ — आगे जाएं",
+
+    /* F6 Escalation */
+    ft_esc_title:"Supervisor चाहिए",
+    ft_esc_sub:"Shock load confirm करने के लिए COD kit चाहिए जो यहाँ नहीं है। Visual check + escalate ही रास्ता है।",
+
+    /* Skip step button */
+    skip_step:"यह step छोड़ें",
+
+    /* Plant homepage */
+    plant_name:"Honda Manesar STP", plant_sub:"आज · दिन की shift · Ramesh K.",
+    kpi_open:"खुले", kpi_tasks:"Tasks", kpi_uptime:"Uptime",
+    stat_open_d:"2 critical", stat_tasks_d:"3 बाकी", stat_uptime_d:"7-दिन average",
+    pan_hint:"↔ Drag करें · equipment पर tap करें",
+    nav_plant:"Plant", nav_alerts:"Alerts", nav_tasks:"Tasks", nav_profile:"मैं",
+    sec_plant:"Plant overview", fit_view:"⛶ Fit करें", fit_to_view:"Aeration Tank पर centre किया",
+    leg_active:"Active issue", leg_watch:"देखना है", leg_healthy:"ठीक है", leg_tap:"किसी भी equipment पर tap करें",
+
+    /* Sensors */
+    sec_live:"Live readings", updated_now:"अभी updated",
+    sens_do:"हवा (DO)", sens_tur:"Turbidity", sens_mlss:"MLSS",
+    sens_ph:"pH", sens_flow:"Inlet Flow", sens_power:"कुल Power",
+    trend_rising:"22 मिनट से बढ़ रहा", trend_falling:"30 मिनट से गिर रहा",
+    trend_stable:"stable", trend_normal:"normal में",
+
+    /* Activity */
+    sec_activity:"हाल की activity", view_all:"सब देखें",
+    act_1_t:"Aeration Tank · DO alert खुला", act_1_w:"System",
+    act_2_t:"MBR-1 · Turbidity alert खुला", act_2_w:"System",
+    act_3_t:"Aeration Tank · MLSS reading लिखा", act_3_w:"आपने",
+    act_4_t:"Blower-2 trip · हो गया", act_4_w:"आपने",
+    act_5_t:"DO sensor calibration · 5 दिन में due", act_5_w:"Scheduler",
+    time_45m:"45 मिनट पहले", time_2h:"2 घंटे पहले",
+
+    /* Tasks */
+    sec_tasks:"आज के tasks",
+    task_1:"सुबह की रोंडs · Bar Screen check",
+    task_2:"EQ Tank level reading",
+    task_3:"Blower hours log",
+    task_4:"SV-30 test · 11:00",
+    task_5:"Sludge wasting · 14:00",
+
+    /* Equipment sheet */
+    eq_uptime:"आज uptime", eq_last_service:"पिछली service", eq_assigned:"असाइन है",
+    eq_close:"बंद करें", eq_view_issue:"खुला issue देखें", eq_view_history:"History देखें",
+    healthy:"ठीक है",
+
+    /* Alerts */
+    alerts_h:"Alerts", alerts_sub:"Honda Manesar STP",
+    seg_open:"खुले", seg_closed:"बंद",
+    sev_crit:"Critical", sev_high:"High", sev_med:"Medium", sev_done:"हो गया",
+    time_8m:"8 मिनट पहले", time_22m:"22 मिनट पहले", time_1h:"1 घंटा पहले",
+    time_yest:"कल", time_2d:"2 दिन पहले", time_5d:"5 दिन पहले",
+    alert_eq_at01:"Aeration टैंक · AT-01", alert_eq_mbr:"MBR-1 टैंक",
+    alert_eq_cl:"Clarifier · CL-01", alert_eq_bl2:"Blower-2",
+    alert_eq_eq:"EQ टैंक · EQ-01", alert_eq_an:"Anaerobic · AN-01",
+    alert_aeration_t:"DO कम (0.8 mg/L)",
+    alert_aeration_s:"हवा कम है · Bacteria मर सकते हैं · पानी ख़राब होगा",
+    alert_mbr_t:"Turbidity ज़्यादा (28 NTU)",
+    alert_mbr_s:"Membrane का पानी गंदा है · quality खतरे में",
+    alert_clarifier_t:"Scum layer बन रही है",
+    alert_clarifier_s:"Clarifier की सतह पर भूरी layer · skimmer देखना है",
+    alert_blower_t:"Blower trip · resolved",
+    alert_blower_s:"6 घंटे लगातार चलने के बाद thermal trip · ठंडा करके restart",
+    alert_eq_t:"Level ज़्यादा · resolved",
+    alert_eq_s:"Upstream से surge · feed pump अपने आप कम हुआ",
+    alert_an_t:"pH कम · resolved",
+    alert_an_s:"Inlet से acidic shock · lime dosing temporarily बढ़ाई",
+
+    /* Stub */
+    cap_details:"Details", cap_diag_plan:"Diagnostic flows",
+    detail_sensor:"Trigger sensor", detail_value:"अभी का reading",
+    detail_normal:"सामान्य range", detail_assigned:"असाइन है",
+    cta_start_stub:"जाँच शुरू करें",
+    coming_soon_flow:"यह flow demo के लिए configure नहीं हुआ है।",
+
+    /* Tasks / Profile */
+    tasks_h:"Tasks", tasks_sub:"आज के routine checks",
+    cs_tasks_h:"Daily tasks", cs_tasks_p:"5 routine checks scheduled · feature जल्द आ रहा है।",
+    profile_h:"प्रोफ़ाइल",
+    prof_lang:"भाषा", prof_notif:"Notifications",
+    prof_history:"मेरी history", prof_logout:"Sign out",
+
+    step1_title:"Blower बंद है",
+    step2_title:"Blower performance",
+    step3_title:"टैंक में बराबर बुलबुले",
+    step4_title:"DO sensor ख़राब",
+    step5_title:"Sludge bulking",
+    step6_title:"बहुत ज़्यादा load",
+
+    step1_identify:"<b>दो आसान तरीके</b> check करने के — जो भी पास हो वो use करें:",
+    step2_identify:"Blower line का <b>header pressure</b> और <b>flow</b> check करें। दोनों normal से कम हैं तो blower performance गिर गई है।",
+    step3_identify:"टैंक के around चलें। सतह देखें — क्या <b>पूरे टैंक में बराबर</b> बुलबुले आ रहे हैं? या कुछ जगह <b>dead zones</b> हैं (जहाँ बुलबुले नहीं हैं)?",
+    step4_identify:"DO probe निकालकर check करें:<ul><li>क्या probe के tip पर <b>scaling</b> या जमावट है?</li><li>क्या <b>sensor cap</b> scratched, टूटा हुआ है, या काला paint निकल गया है?</li></ul>",
+    step5_identify:"<b>MLSS</b> और <b>SV-30</b> test करें। दोनों range से ज़्यादा हैं तो sludge bulking हो रहा है। सतह पर <b>floating sludge</b> भी देखें — dead sludge जमा हो गया है।",
+    step6_identify:"आने वाले पानी को visually देखें — कोई unusual <b>रंग</b>, <b>smell</b> या difference normal से? COD test से पता चलता पर kit available नहीं है।",
+
+    method_panel:"Panel से", method_panel_sub:"Light OFF या TRIP दिखेगी",
+    method_dp:"DP software पर", method_dp_sub:"Blower-1 status खोलें",
+
+    freq_low:"Low frequency",
+    freq_low_mod:"Low–Moderate",
+    freq_mod_high:"Moderate–High",
+    freq_high:"High frequency",
+
+    bubble_step1:"सबसे आसान पहले — देखते हैं blower चल रहा है या नहीं।",
+    bubble_step2:"ठीक है, blower चालू है। अब performance देखते हैं।",
+    bubble_step3:"अब टैंक खुद देखते हैं — क्या बुलबुले बराबर फैले हैं?",
+    bubble_step4:"शायद sensor ही गलत है। Probe check करते हैं।",
+    bubble_step5:"Biology test करते हैं — MLSS और SV-30।",
+    bubble_step6:"आखिरी — टैंक में क्या आ रहा है वो देखते हैं।",
+
+    tool_filter:"Filter cleaning material",
+    tool_pressure:"Pressure transmitter",
+    tool_rotameter:"Flow meter (Rotameter)",
+    tool_water:"साफ़ पानी",
+    tool_dokit:"Manual DO kit",
+    tool_tissue:"Tissue paper",
+    tool_sv30:"SV-30 testing kit",
+    tool_mlss:"MLSS measuring system",
+    tool_dewater:"Sludge dewatering system",
+    tool_cod:"COD kit (available नहीं)",
+
+    step1_sol_title:"Blower चालू करें",
+    step1_sol_sub:"Aeration Blower-1 start करें और टैंक में हवा फिर से जाएगी।",
+    sol1_1:"Blower panel पर जाएँ",
+    sol1_2:"अगर indicator TRIP दिखा रहा है तो reset करें",
+    sol1_3:"Aeration Blower-1 का switch ON करें",
+    safety_blower:"<b>सुरक्षा:</b> Switch ON करने से पहले panel का indicator green होना चाहिए। फ़ोटो ज़रूरी।",
+
+    step2_sol_title:"Blower filter साफ़ करें",
+    step2_sol_sub:"Filter साफ़ करें और 1 घंटा रुकें — DO recover होती है या नहीं देखें।",
+    sol2_1:"Blower बंद करें",
+    sol2_2:"Filter housing खोलकर साफ़ करें",
+    sol2_3:"Blower restart करें · 1 घंटे बाद DO फिर check करें",
+    info_step2:"1 घंटे बाद भी DO कम है तो problem गहरी है — supervisor संभालेंगे।",
+
+    step3_sol_title:"Diffusers choked हैं",
+    step3_sol_sub:"Diffuser cleaning plan करनी होगी। Supervisor को बुलाकर schedule करें।",
+    sol3_1:"Supervisor को बताएँ कि dead zones मिले",
+    sol3_2:"Supervisor अगले shutdown में diffuser cleaning plan करेंगे",
+
+    step4_sol_title:"DO sensor साफ़ करें",
+    step4_sol_sub:"Probe साफ़ करें और manual DO kit से verify करें।",
+    sol4_1:"DO probe carefully निकालें",
+    sol4_2:"Tissue से wipe करें · साफ़ पानी से rinse करें",
+    sol4_3:"Probe साफ़ पानी में डालें — 7–8 ppm दिखना चाहिए",
+    sol4_4:"Manual DO kit reading से compare करें",
+    info_step4:"Cap scratched है या काला paint निकल गया है तो cap बदलनी होगी — supervisor को बुलाएँ।",
+
+    step5_sol_title:"Sludge wasting करें",
+    step5_sol_sub:"System से excess या dead sludge निकालें।",
+    sol5_1:"SOP के हिसाब से sludge wasting valve operate करें",
+    sol5_2:"30 मिनट बाद MLSS और SV-30 फिर test करें",
+
+    step6_sol_title:"Nutrients डालें · incoming load log करें",
+    step6_sol_sub:"Incoming load stable होने तक biology को support करें।",
+    sol6_1:"आने वाले पानी का रंग और smell visually log करें",
+    sol6_2:"Dosing schedule के हिसाब से nutrients (urea + DAP) डालें",
+    info_step6:"COD test on-site possible नहीं। 2 घंटे बाद भी load abnormal है तो supervisor को escalate करें।",
+
+    prev_1_blurb:"Panel की light देखें",
+    prev_2_blurb:"Header pressure + flow",
+    prev_3_blurb:"Dead zones ढूंढें",
+    prev_4_blurb:"Probe + cap देखें",
+    prev_5_blurb:"MLSS / SV-30 test",
+    prev_6_blurb:"Visual + nutrients"
+  }
+};
+
+let lang = 'en';
+let T = STR.en;
+let currentStepIdx = 0;
+let stepsDone = []; // track outcomes
+
+function setLang(l){
+  lang = l; T = STR[l];
+  document.getElementById('lang-en').classList.toggle('active', l==='en');
+  document.getElementById('lang-hi').classList.toggle('active', l==='hi');
+  document.getElementById('langContinue').textContent = T.lang_continue;
+  document.querySelector('#langModal h2').textContent = T.modal_title;
+  document.querySelector('#langModal p').textContent = T.modal_sub;
+  document.getElementById('langSwitch').textContent = l==='en' ? 'हिं' : 'EN';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(T[key] !== undefined) el.innerHTML = T[key];
+  });
+  document.documentElement.lang = l;
+  renderPreview();
+}
+
+function openLang(){ document.getElementById('langModal').style.display = 'flex'; }
+function closeLang(){ document.getElementById('langModal').style.display = 'none'; }
+
+function go(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  const el = document.getElementById('s-'+name);
+  if(el) el.classList.add('on');
+  const sc = el && el.querySelector('.scroll'); if(sc) sc.scrollTop = 0;
+  if(name==='verify') runVerify();
+  if(name==='success') setTimeout(fireConfetti, 250);  // Peak-end rule
+  if(name==='plant') setTimeout(animateStats, 80);     // Aesthetic Usability
+  if(uxAnnotationsOn) setTimeout(renderUxBadges, 120); // refresh annotation positions
+}
+
+/* Animate the three stat numbers on home (Aesthetic Usability) */
+function animateStats(){
+  document.querySelectorAll('#s-plant .stat .v').forEach((el, i) => {
+    const target = el.dataset.target || el.textContent;
+    el.dataset.target = target;
+    countUp(el, target);
+  });
+}
+
+/* ====== Dummy issues (open + closed) ====== */
+const ISSUES = {
+  'aeration-do':{live:true, target:'home'},  // the real, fully-interactive flow
+  'mbr-turbidity':{
+    eq:'MBR-1 Tank', title:'Turbidity High (28 NTU)',
+    desc:'Membrane outlet water is dirty · discharge quality at risk.',
+    sensor:'Turbidity sensor AT-01-TUR', value:'28 NTU', normal:'< 5 NTU',
+    sev:'Critical', sevClass:'severity-crit', status:'Open', time:'22 min ago',
+    flows:['Foam buildup on tank','Membrane fouling','Sensor calibration drift','Backwash failure']
+  },
+  'clarifier-scum':{
+    eq:'Clarifier · CL-01', title:'Scum layer formation',
+    desc:'Floating brown layer on clarifier surface · skimmer check needed.',
+    sensor:'Visual observation', value:'Scum visible', normal:'Clean surface',
+    sev:'High', sevClass:'severity-high', status:'Open', time:'1 hr ago',
+    flows:['Skimmer fault','FOG in influent','Dead biomass accumulation']
+  },
+  'blower2-trip':{
+    eq:'Blower-2', title:'Blower trip · resolved',
+    desc:'Thermal trip after 6 hr continuous run · cooled and restarted.',
+    sensor:'Motor current', value:'0 A (was 14 A)', normal:'8 — 12 A',
+    sev:'Resolved', sevClass:'severity-done', status:'Closed', time:'Yesterday',
+    flows:['Thermal overload','Motor health check','Cooling fan inspection']
+  },
+  'eq-level':{
+    eq:'EQ Tank · EQ-01', title:'Level High · resolved',
+    desc:'Inlet surge from upstream · feed pump auto-throttled.',
+    sensor:'Level transmitter', value:'92% (was)', normal:'40 — 75%',
+    sev:'Resolved', sevClass:'severity-done', status:'Closed', time:'2 days ago',
+    flows:['Inlet surge handling','Pump throttle check','Bypass valve verify']
+  },
+  'anaerobic-ph':{
+    eq:'Anaerobic · AN-01', title:'pH Low · resolved',
+    desc:'Acidic shock from inlet · lime dosing increased temporarily.',
+    sensor:'pH probe AN-01-PH', value:'5.4 (was)', normal:'6.8 — 7.2',
+    sev:'Resolved', sevClass:'severity-done', status:'Closed', time:'5 days ago',
+    flows:['Inlet pH check','Lime dosing pump','Buffer capacity test']
+  }
+};
+
+function openIssue(id){
+  const iss = ISSUES[id];
+  if(!iss) return;
+  if(iss.live){ go('home'); return; }
+  // Populate stub
+  document.getElementById('stubCrumb').textContent = iss.eq.split('·')[0].trim();
+  document.getElementById('stubEq').textContent = iss.eq;
+  document.getElementById('stubTitle').textContent = iss.title;
+  document.getElementById('stubDesc').textContent = iss.desc;
+  document.getElementById('stubSensor').textContent = iss.sensor;
+  document.getElementById('stubValue').textContent = iss.value;
+  document.getElementById('stubNormal').textContent = iss.normal;
+  document.getElementById('stubTime').textContent = iss.time;
+  const sev = document.getElementById('stubSev');
+  sev.className = 'severity-pill ' + iss.sevClass;
+  sev.textContent = iss.sev;
+  const st = document.getElementById('stubStatus');
+  st.textContent = iss.status;
+  st.style.background = iss.status==='Open' ? 'var(--brand-tint)' : 'var(--green-tint)';
+  st.style.color = iss.status==='Open' ? 'var(--brand)' : '#0F5A30';
+  // Render dummy flows
+  const fwrap = document.getElementById('stubFlows');
+  fwrap.innerHTML = iss.flows.map((f,i)=>`
+    <div style="display:flex;gap:12px;align-items:center;padding:12px 14px;background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;">
+      <div style="width:28px;height:28px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0">${i+1}</div>
+      <div style="flex:1;font-weight:700;font-size:13.5px;color:var(--brand)">${f}</div>
+      <span style="color:var(--ink-3);font-size:14px">›</span>
+    </div>
+  `).join('');
+  go('issue-stub');
+}
+
+/* ====== Equipment registry + bottom sheet ====== */
+const EQUIPMENT = {
+  barscreen:{name:'Bar Screen', sub:'Inlet · Primary', icon:'🚧', status:'ok',
+    readings:[{l:'Headloss',v:'0.2',u:'m'},{l:'Debris',v:'Light',u:''}],
+    uptime:'14h 20m', service:'7 days ago', issueId:null},
+  eqtank:{name:'EQ Tank · EQ-01', sub:'Equalization · Primary', icon:'🛢️', status:'ok',
+    readings:[{l:'Level',v:'62',u:'%'},{l:'Inlet Flow',v:'450',u:'m³/hr'}],
+    uptime:'24h 0m', service:'21 days ago', issueId:null},
+  blower1:{name:'Blower-1', sub:'Aeration supply', icon:'💨', status:'ok',
+    readings:[{l:'Current',v:'11.8',u:'A'},{l:'Pressure',v:'0.42',u:'bar'}],
+    uptime:'14h 22m', service:'30 days ago', issueId:null},
+  anaerobic:{name:'Anaerobic · AN-01', sub:'Primary · No O₂', icon:'⚫', status:'ok',
+    readings:[{l:'pH',v:'7.1',u:''},{l:'Temp',v:'28.4',u:'°C'}],
+    uptime:'24h 0m', service:'45 days ago', issueId:null},
+  aeration:{name:'Aeration Tank · AT-01', sub:'Secondary · Active issue', icon:'🐟', status:'bad',
+    readings:[{l:'DO',v:'0.8',u:'mg/L',bad:true},{l:'MLSS',v:'3,200',u:'mg/L'}],
+    uptime:'14h 22m', service:'30 days ago', issueId:'aeration-do'},
+  mbr1:{name:'MBR-1 Tank', sub:'Secondary · Active issue', icon:'🧫', status:'bad',
+    readings:[{l:'Turbidity',v:'28',u:'NTU',bad:true},{l:'TMP',v:'-0.42',u:'bar'}],
+    uptime:'12h 8m', service:'18 days ago', issueId:'mbr-turbidity'},
+  blower2:{name:'Blower-2', sub:'Aeration supply', icon:'💨', status:'ok',
+    readings:[{l:'Current',v:'12.4',u:'A'},{l:'Pressure',v:'0.45',u:'bar'}],
+    uptime:'8h 14m', service:'30 days ago', issueId:null},
+  clarifier:{name:'Clarifier · CL-01', sub:'Tertiary · Watch', icon:'🔄', status:'warn',
+    readings:[{l:'Scum layer',v:'Thick',u:''},{l:'Sludge depth',v:'1.8',u:'m'}],
+    uptime:'24h 0m', service:'12 days ago', issueId:'clarifier-scum'},
+  sludge:{name:'Sludge Tank · SL-01', sub:'Holding · Disposal', icon:'🟫', status:'ok',
+    readings:[{l:'Level',v:'48',u:'%'},{l:'Last wasting',v:'18h',u:'ago'}],
+    uptime:'24h 0m', service:'10 days ago', issueId:null},
+  disposal:{name:'Disposal Point', sub:'Treated outflow', icon:'💧', status:'ok',
+    readings:[{l:'Outflow',v:'430',u:'m³/hr'},{l:'Compliance',v:'✓',u:''}],
+    uptime:'24h 0m', service:'—', issueId:null}
+};
+
+let curEq = null;
+function openEq(id){
+  const eq = EQUIPMENT[id]; if(!eq) return;
+  curEq = id;
+  document.getElementById('eqName').textContent = eq.name;
+  document.getElementById('eqSub').textContent = eq.sub;
+  const ic = document.getElementById('eqIcon'); ic.textContent = eq.icon;
+  ic.className = 'icon ' + eq.status;
+  const st = document.getElementById('eqStatus');
+  st.className = 'status ' + eq.status;
+  st.textContent = eq.status==='bad' ? (T.sev_crit||'Critical') : eq.status==='warn' ? (T.sev_high||'Watch') : (T.healthy||'Healthy');
+  // readings
+  const r = document.getElementById('eqReadings');
+  r.innerHTML = eq.readings.map(rd=>`
+    <div class="eq-reading${rd.bad?' bad':''}">
+      <div class="l">${rd.l}</div>
+      <div class="v">${rd.v}${rd.u?'<span class="u">'+rd.u+'</span>':''}</div>
+    </div>`).join('');
+  document.getElementById('eqUptime').textContent = eq.uptime;
+  document.getElementById('eqService').textContent = eq.service;
+  // action button label
+  const act = document.getElementById('eqAction');
+  if(eq.issueId){ act.textContent = T.eq_view_issue || 'View open issue'; act.style.display='flex'; }
+  else { act.textContent = T.eq_view_history || 'View history'; act.style.display='flex'; }
+  document.getElementById('eqSheetBg').classList.add('on');
+}
+function closeEqSheet(e){
+  if(e && e.target.id!=='eqSheetBg' && e.target!==undefined) return;
+  document.getElementById('eqSheetBg').classList.remove('on');
+}
+function eqAction(){
+  const eq = EQUIPMENT[curEq]; if(!eq) return;
+  closeEqSheet();
+  if(eq.issueId){ setTimeout(()=>openIssue(eq.issueId), 150); }
+}
+
+function switchAlertTab(tab){
+  document.getElementById('seg-open').classList.toggle('on', tab==='open');
+  document.getElementById('seg-closed').classList.toggle('on', tab==='closed');
+  document.getElementById('alerts-open').style.display = tab==='open' ? 'block' : 'none';
+  document.getElementById('alerts-closed').style.display = tab==='closed' ? 'block' : 'none';
+}
+
+function startDiagnostic(){
+  stepsDone = [];
+  currentStepIdx = 0;
+  renderPreview();
+  go('preview');
+}
+
+function renderPreview(){
+  const list = document.getElementById('previewList');
+  if(!list) return;
+  list.innerHTML = '';
+  STEPS.forEach((s,i)=>{
+    const blurbKey = `prev_${i+1}_blurb`;
+    const titleKey = `step${i+1}_title`;
+    const row = document.createElement('div');
+    row.className = 'previtem';
+    row.style.cssText = 'display:flex;gap:12px;align-items:center;padding:14px;background:#fff;border:1px solid var(--line);border-radius:14px;cursor:pointer;';
+    row.innerHTML = `
+      <div style="width:32px;height:32px;border-radius:10px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;flex-shrink:0;font-size:14px">${i+1}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:14px;color:var(--brand);line-height:1.25">${T[titleKey]}</div>
+        <div style="font-size:11px;color:var(--ink-3);margin-top:2px;font-weight:500">${T[blurbKey]}</div>
+      </div>
+      <span style="color:var(--ink-3);font-size:18px">›</span>
+    `;
+    row.onclick = ()=>startStep(i);
+    list.appendChild(row);
+  });
+}
+
+function startStep(idx){
+  currentStepIdx = idx;
+  renderStep();
+  go('step');
+}
+
+function renderStep(){
+  const idx = currentStepIdx;
+  const s = STEPS[idx];
+  document.getElementById('stepCounter').textContent = (lang==='en'?`Step ${idx+1} of 6`:`Step ${idx+1} / 6`);
+  document.getElementById('stepNum').textContent = idx+1;
+  document.getElementById('stepTitle').textContent = T[`step${idx+1}_title`];
+
+  // ===== Flow type badge & flow-type-specific section =====
+  const ft = s.flowType || 'F1';
+  const ftMeta = FLOW_TYPES[ft];
+  const badge = document.getElementById('flowTypeBadge');
+  badge.className = 'flow-type-badge ' + ftMeta.cls;
+  badge.innerHTML = `<span class="code">${ft}</span><span id="flowTypeName">${T[ftMeta.name_key]}</span>`;
+  document.getElementById('flowTypeDesc').textContent = T[ftMeta.desc_key];
+
+  // Hide all flow-type sections by default
+  document.getElementById('ftAutocheck').style.display = 'none';
+  document.getElementById('ftSkipFriendly').style.display = 'none';
+  document.getElementById('ftSkill').style.display = 'none';
+  document.getElementById('ftEscalate').style.display = 'none';
+
+  // F2: render auto-check banner
+  if(ft === 'F2' && s.autocheck){
+    document.getElementById('ftAutocheck').style.display = 'block';
+    document.getElementById('ftAutoSub').textContent = T[s.autocheck.sub_key] || '';
+    const ro = document.getElementById('ftAutoReadout');
+    ro.innerHTML = '';
+    s.autocheck.readouts.forEach(r => {
+      const item = document.createElement('div');
+      item.className = 'item' + (r.kind === 'warn' ? ' warn' : '');
+      item.innerHTML = `<div class="l">${T[r.l_key]||r.l_key}</div><div class="v">${r.v}</div><div class="n">${T[r.n_key]||''}</div>`;
+      ro.appendChild(item);
+    });
+    // animate countdown
+    const timer = document.getElementById('ftAutoTimer');
+    timer.style.width = '0';
+    setTimeout(() => { timer.style.width = '100%'; }, 60);
+  }
+  // F3: skip-friendly emphasis
+  if(ft === 'F3'){
+    document.getElementById('ftSkipFriendly').style.display = 'flex';
+  }
+  // F4: skill-tier shortcut
+  if(ft === 'F4'){
+    document.getElementById('ftSkill').style.display = 'block';
+    document.getElementById('ftSkillTier').textContent = s.skillTier || 'Intermediate';
+  }
+  // F6: escalation banner
+  if(ft === 'F6'){
+    document.getElementById('ftEscalate').style.display = 'flex';
+  }
+
+  // Eqchip
+  document.getElementById('stepEq').textContent = T[s.eqchip_key];
+  const dot = document.querySelector('#stepEqchip .dot');
+  dot.className = 'dot ' + s.eq_dot;
+
+  // Tools
+  const toolsEl = document.getElementById('stepTools');
+  toolsEl.innerHTML = '';
+  if(s.tools && s.tools.length){
+    const wrap = document.createElement('div'); wrap.className='tools';
+    s.tools.forEach(tkey=>{
+      const t = document.createElement('span');
+      t.className = 'tool' + (s.tools_warn?' freq-pill freq-high':'');
+      if(s.tools_warn){
+        t.style.cssText='background:var(--red-tint);color:var(--red-d);border:1px solid #F2C9C9;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px';
+      }
+      t.textContent = (s.tools_warn?'⚠️ ':'🔧 ') + T[tkey];
+      wrap.appendChild(t);
+    });
+    toolsEl.appendChild(wrap);
+  } else {
+    const none = document.createElement('span');
+    none.className = 'no-tools';
+    none.innerHTML = '✓ ' + T.no_tools_needed;
+    toolsEl.appendChild(none);
+  }
+
+  // Identify
+  document.getElementById('stepIdentify').innerHTML = T[`step${idx+1}_identify`];
+
+  // Methods (step 1 only)
+  const methodsWrap = document.getElementById('stepMethodsWrap');
+  const methodsEl = document.getElementById('stepMethods');
+  if(s.methods){
+    methodsEl.innerHTML = '';
+    s.methods.forEach((m,i)=>{
+      const b = document.createElement('button');
+      b.className = 'method' + (i===0?' active':'');
+      b.innerHTML = `<span class="m-ic">${m.ic}</span><div class="m-t">${T[m.t_key]}</div><div class="m-s">${T[m.s_key]}</div>`;
+      b.onclick = ()=>{ methodsEl.querySelectorAll('.method').forEach(x=>x.classList.remove('active')); b.classList.add('active'); };
+      methodsEl.appendChild(b);
+    });
+    methodsWrap.style.display = 'block';
+  } else {
+    methodsWrap.style.display = 'none';
+  }
+
+  // Bubble
+  document.getElementById('stepBubble').textContent = T[s.bubble_key];
+
+  // Dots
+  const dots = document.getElementById('stepDots');
+  dots.innerHTML = '';
+  for(let i=0;i<6;i++){
+    const d = document.createElement('span');
+    if(i<idx) d.className='done';
+    else if(i===idx) d.className='cur';
+    dots.appendChild(d);
+  }
+}
+
+function backFromStep(){
+  if(currentStepIdx===0) go('preview');
+  else { currentStepIdx--; renderStep(); }
+}
+
+function foundIt(){
+  stepsDone.push({idx:currentStepIdx, outcome:'found'});
+  const s = STEPS[currentStepIdx];
+  if(!s.canResolve){
+    // terminal escalation (e.g., step 3 - diffuser cleaning)
+    showStop(`step${currentStepIdx+1}_title`);
+    return;
+  }
+  renderSolution();
+  go('solution');
+}
+
+function nextStep(){
+  stepsDone.push({idx:currentStepIdx, outcome:'skipped'});
+  if(currentStepIdx >= STEPS.length-1){
+    // exhausted all checks
+    showStop('all_checked');
+    return;
+  }
+  currentStepIdx++;
+  renderStep();
+}
+
+/* F3 — Skip this step (logged as SKIPPED, no judgment) */
+function skipStep(){
+  stepsDone.push({idx:currentStepIdx, outcome:'skipped-by-user'});
+  if(currentStepIdx >= STEPS.length-1){
+    showStop('all_checked');
+    return;
+  }
+  currentStepIdx++;
+  renderStep();
+}
+
+/* F2 — Flag auto-check reading as wrong */
+function flagAutocheck(){
+  stepsDone.push({idx:currentStepIdx, outcome:'flagged-sensor'});
+  alert(T.flagged_msg || 'Sensor reading flagged. We\'ll route to manual check.');
+}
+
+/* F4 — Use skill-tier shortcut: jump past scaffolding into the solution */
+function useShortcut(){
+  stepsDone.push({idx:currentStepIdx, outcome:'shortcut'});
+  // Treat the cause as found and go straight to solution
+  if(STEPS[currentStepIdx].canResolve){
+    renderSolution();
+    go('solution');
+  } else {
+    showStop(`step${currentStepIdx+1}_title`);
+  }
+}
+
+function renderSolution(){
+  const idx = currentStepIdx;
+  const s = STEPS[idx];
+  document.getElementById('solEq').textContent = T[s.eqchip_key];
+  document.getElementById('solIcon').textContent = s.icon;
+  document.getElementById('solTitle').textContent = T[`step${idx+1}_sol_title`];
+  document.getElementById('solSub').textContent = T[`step${idx+1}_sol_sub`];
+
+  const stepsEl = document.getElementById('solSteps');
+  stepsEl.innerHTML = '';
+  (s.sol_steps_keys||[]).forEach((k,i)=>{
+    const r = document.createElement('div');
+    r.className = 'sol-step';
+    r.innerHTML = `<span class="n">${i+1}</span><span>${T[k]}</span>`;
+    stepsEl.appendChild(r);
+  });
+
+  const safety = document.getElementById('solSafety');
+  if(s.safety_key){ safety.style.display='flex'; document.getElementById('solSafetyText').innerHTML = T[s.safety_key]; }
+  else safety.style.display='none';
+
+  const info = document.getElementById('solInfo');
+  if(s.info_key){ info.style.display='flex'; document.getElementById('solInfoText').innerHTML = T[s.info_key]; }
+  else info.style.display='none';
+
+  // sol dots
+  const sd = document.getElementById('solDots');
+  sd.innerHTML = '';
+  for(let i=0;i<6;i++){
+    const d = document.createElement('span');
+    if(i<idx) d.className='done';
+    else if(i===idx) d.className='cur';
+    sd.appendChild(d);
+  }
+}
+
+function actionWorked(){
+  stepsDone[stepsDone.length-1].outcome = 'resolved';
+  // set context for success screen
+  const idx = currentStepIdx;
+  document.getElementById('finalCause').textContent = T[`step${idx+1}_title`];
+  document.getElementById('finalAction').textContent = T[`step${idx+1}_sol_title`];
+  go('verify');
+}
+
+function actionFailed(){
+  stepsDone[stepsDone.length-1].outcome = 'tried-failed';
+  const s = STEPS[currentStepIdx];
+  if(s.failsToSupervisor){
+    showStop(`step${currentStepIdx+1}_title`);
+    return;
+  }
+  // try next step
+  if(currentStepIdx >= STEPS.length-1){
+    showStop('all_checked');
+    return;
+  }
+  currentStepIdx++;
+  renderStep();
+  go('step');
+}
+
+function showStop(finding){
+  const done = stepsDone.length;
+  document.getElementById('ctxChecks').textContent = (lang==='en'?`${done} of 6`:`${done} / 6`);
+  let findingText = '—';
+  if(finding === 'all_checked'){
+    findingText = lang==='en' ? 'All 6 checks done · no fix worked' : 'सभी 6 checks किए · कोई fix काम नहीं आया';
+  } else if(typeof finding === 'string' && finding.startsWith('step')){
+    findingText = T[finding];
+  }
+  document.getElementById('ctxFinding').textContent = findingText;
+  go('stop');
+}
+
+function runVerify(){
+  const needle = document.getElementById('needle');
+  const val = document.getElementById('verVal');
+  const timerEl = document.getElementById('verTimer');
+  let p = 0;
+  needle.setAttribute('transform','rotate(-60 110 110)');
+  val.textContent='0.8 mg/L';
+  const iv = setInterval(()=>{
+    p += 1;
+    const doVal = Math.min(2.4, 0.8 + p*0.2);
+    val.textContent = doVal.toFixed(1)+' mg/L';
+    const ang = -60 + (doVal/5)*120;
+    needle.setAttribute('transform',`rotate(${ang} 110 110)`);
+    const t = 120 - p*12;
+    if(doVal>=2.0 || t<=0){
+      clearInterval(iv);
+      timerEl.textContent = lang==='en' ? '✓ Normal' : '✓ सामान्य';
+      setTimeout(()=>go('success'),1000);
+    } else {
+      const mm = Math.floor(t/60), ss = t%60;
+      timerEl.textContent = String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+    }
+  }, 600);
+}
+
+setLang('en');
+setTimeout(animateStats, 250);
+renderPreview();
+</script>
+</body>
+</html>
