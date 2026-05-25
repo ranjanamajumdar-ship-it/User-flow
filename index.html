@@ -2903,5 +2903,706 @@ setLang('en');
 setTimeout(animateStats, 250);
 renderPreview();
 </script>
+
+<!-- ============================================================
+     SPEC v2 ENHANCEMENTS — P2/P4/P6 + Components
+     Additive layer. Runs on top of existing screens.
+     ============================================================ -->
+<style>
+:root{
+  --fs-headline:22px;
+  --fs-body:14px;
+  --fs-caption:11px;
+}
+
+/* ===== P2.1 — Persistent equipment chip (full-width 32dp) ===== */
+.eqchip-bar{
+  display:flex;align-items:center;gap:10px;width:auto;height:32px;
+  margin:6px 20px 4px;padding:0 12px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  font-size:12px;font-weight:700;color:var(--brand);
+  box-shadow:0 1px 2px rgba(25,52,88,.04);
+  cursor:pointer;font-family:inherit;text-align:left;
+}
+.eqchip-bar .eq-ic{font-size:14px;line-height:1;flex-shrink:0;}
+.eqchip-bar .eq-main{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em;}
+.eqchip-bar .eq-section{color:var(--ink-3);font-weight:600;}
+.eqchip-bar .eq-chev{color:var(--ink-3);font-size:14px;flex-shrink:0;}
+.eqchip-bar:active{transform:scale(.99);background:var(--surface);}
+
+/* ===== P2.3 — Mini plant-map thumbnail on alert card ===== */
+.mini-map{
+  position:absolute;top:10px;right:10px;width:60px;height:60px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  cursor:pointer;overflow:hidden;display:block;padding:0;
+  box-shadow:0 1px 4px rgba(25,52,88,.08);
+}
+.mini-map svg{display:block;width:100%;height:100%;}
+.alert-body{position:relative;padding-right:80px !important;}
+.alert-card .mini-map{z-index:2;}
+
+/* Mini-map modal */
+.mm-bg{position:fixed;inset:0;background:rgba(14,26,46,.6);z-index:90;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+.mm-bg.on{display:flex;}
+.mm-box{background:#fff;border-radius:20px;padding:18px;max-width:360px;width:90%;box-shadow:var(--shadow-lg);}
+.mm-box h3{margin:0 0 4px;font-size:16px;font-weight:800;color:var(--brand);letter-spacing:-.01em;}
+.mm-box .mm-sub{font-size:12px;color:var(--ink-3);font-weight:600;margin-bottom:12px;}
+.mm-box svg{display:block;width:100%;height:auto;background:#F4F6FA;border-radius:12px;border:1px solid var(--line);}
+.mm-box .mm-close{margin-top:14px;width:100%;}
+
+/* Eqchip modal mini-map sheet */
+.eq-mini-sheet-bg{position:fixed;inset:0;background:rgba(14,26,46,.55);z-index:90;display:none;justify-content:center;align-items:flex-end;backdrop-filter:blur(3px);}
+.eq-mini-sheet-bg.on{display:flex;}
+.eq-mini-sheet{width:100%;max-width:420px;background:#fff;border-radius:24px 24px 0 0;padding:18px 20px 28px;box-shadow:var(--shadow-lg);animation:slideUp .22s ease-out;}
+.eq-mini-sheet .handle{width:36px;height:4px;background:var(--line-2);border-radius:2px;margin:0 auto 14px;}
+.eq-mini-sheet h3{margin:0 0 4px;font-size:17px;font-weight:800;color:var(--brand);letter-spacing:-.01em;}
+.eq-mini-sheet .esub{font-size:12px;color:var(--ink-3);font-weight:600;margin-bottom:12px;}
+.eq-mini-sheet .photo-placeholder{
+  width:100%;height:160px;background:linear-gradient(135deg,var(--brand-tint),#fff);
+  border:1.5px dashed var(--brand-tint-2);border-radius:14px;
+  display:grid;place-items:center;color:var(--ink-3);font-size:12px;font-weight:600;
+}
+.eq-mini-sheet .photo-placeholder .ph-ic{font-size:32px;display:block;margin-bottom:6px;}
+
+/* ===== P4.1 — Threshold Bar (A1) ===== */
+.tbar{display:block;margin-top:6px;}
+.tbar-track{position:relative;height:6px;background:var(--line);border-radius:3px;overflow:hidden;}
+.tbar-safe{position:absolute;top:0;bottom:0;background:var(--green-tint);border-left:1px solid var(--green);border-right:1px solid var(--green);}
+.tbar-mark{position:absolute;top:-3px;width:3px;height:12px;background:var(--ink);border-radius:2px;transform:translateX(-1.5px);}
+.tbar-mark.bad{background:var(--red);}
+.tbar-mark.warn{background:var(--amber);}
+.tbar-mark.ok{background:var(--green);}
+.tbar-foot{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-3);font-weight:600;margin-top:3px;}
+.tbar-now{font-size:11px;color:var(--ink-2);font-weight:700;margin-top:4px;}
+.tbar-now b{color:var(--brand);}
+
+/* ===== P4.3 — Semicircular gauge ===== */
+.gauge-sm{display:inline-block;width:120px;height:74px;}
+.gauge-sm svg{display:block;width:100%;height:100%;}
+
+/* ===== P4.4 — R/Y/B phase bars ===== */
+.phase-bars{
+  display:flex;gap:14px;justify-content:center;align-items:flex-end;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:12px;margin-top:10px;height:130px;
+}
+.phase-bar{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;height:100%;}
+.phase-bar .pb-track{flex:1;display:flex;align-items:flex-end;width:34px;background:rgba(255,255,255,.6);border-radius:6px 6px 0 0;}
+.phase-bar .pb-fill{width:100%;border-radius:6px 6px 0 0;transition:height .6s ease-out;}
+.phase-bar.r .pb-fill{background:var(--red);}
+.phase-bar.y .pb-fill{background:var(--amber);}
+.phase-bar.b .pb-fill{background:var(--brand);}
+.phase-bar .pb-val{font-size:13px;font-weight:800;color:var(--brand);letter-spacing:-.01em;}
+.phase-bar .pb-lbl{font-size:11px;font-weight:800;color:var(--ink-3);letter-spacing:.04em;}
+.phase-verdict{font-size:12.5px;color:var(--ink);font-weight:700;text-align:center;margin-top:8px;padding:8px 10px;background:var(--amber-tint);border-radius:8px;}
+
+/* ===== Vocabulary / term tooltip ===== */
+.term{
+  border-bottom:1.5px dotted var(--brand-2);
+  cursor:help;color:inherit;
+}
+.term-sheet-bg{position:fixed;inset:0;background:rgba(14,26,46,.55);z-index:95;display:none;justify-content:center;align-items:flex-end;backdrop-filter:blur(3px);}
+.term-sheet-bg.on{display:flex;}
+.term-sheet{width:100%;max-width:420px;background:#fff;border-radius:24px 24px 0 0;padding:18px 20px 28px;animation:slideUp .22s ease-out;}
+.term-sheet .handle{width:36px;height:4px;background:var(--line-2);border-radius:2px;margin:0 auto 14px;}
+.term-sheet .t-head{display:flex;gap:12px;align-items:center;margin-bottom:10px;}
+.term-sheet .t-icon{width:48px;height:48px;border-radius:12px;background:var(--brand-tint);display:grid;place-items:center;font-size:24px;flex-shrink:0;}
+.term-sheet .t-name{font-size:18px;font-weight:800;color:var(--brand);letter-spacing:-.01em;}
+.term-sheet .t-tag{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:2px;}
+.term-sheet .t-explain{font-size:14px;line-height:1.5;color:var(--ink-2);font-weight:500;margin-top:6px;}
+
+/* ===== P6.4 — CTA utility ===== */
+.cta-primary{
+  width:100%;min-height:56px;
+  background:var(--brand);color:#fff;
+  border:none;border-radius:16px;padding:16px 18px;
+  font-family:inherit;font-size:16px;font-weight:800;letter-spacing:-.01em;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 6px 16px rgba(25,52,88,.25);
+}
+.cta-primary:active{transform:scale(.98);}
+
+/* ===== D1 — Step Dots (already in file, add tappable past) ===== */
+.dots span.done{cursor:pointer;}
+.dots span.cur{box-shadow:0 0 0 3px rgba(25,52,88,.12);}
+
+/* ===== D2/F10 — Abridged step preview enhancements ===== */
+.preview-meta{display:flex;justify-content:space-between;padding:0 20px 6px;font-size:12px;color:var(--ink-3);font-weight:700;}
+.preview-meta .pm-time{display:inline-flex;align-items:center;gap:5px;}
+
+/* ===== B6 — Photo Capture ===== */
+.photo-cap{
+  width:calc(100% - 40px);height:96px;margin:10px 20px 0;
+  background:linear-gradient(135deg,var(--brand-tint),#fff);
+  border:1.5px dashed var(--brand-tint-2);border-radius:14px;
+  display:flex;align-items:center;gap:14px;padding:0 18px;
+  cursor:pointer;font-family:inherit;
+}
+.photo-cap .pc-ic{width:56px;height:56px;border-radius:14px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:24px;flex-shrink:0;}
+.photo-cap .pc-t{font-size:14px;font-weight:800;color:var(--brand);}
+.photo-cap .pc-s{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:2px;}
+
+/* ===== B9 — Voice Answer Strip ===== */
+.voice-strip{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:420px;height:56px;
+  background:var(--brand);color:#fff;
+  display:none;align-items:center;justify-content:center;gap:10px;
+  font-size:14px;font-weight:700;font-family:inherit;
+  border:none;cursor:pointer;z-index:50;
+  box-shadow:0 -4px 16px rgba(25,52,88,.18);
+}
+.voice-strip.on{display:flex;}
+.voice-strip .vs-ic{font-size:18px;}
+
+/* ===== C2 — Issue Stack Strip ===== */
+.stack-strip{
+  display:flex;align-items:center;gap:8px;
+  margin:6px 20px 8px;padding:8px 12px;
+  background:var(--amber-tint);border:1px solid #F5D9A6;border-radius:10px;
+  font-size:11.5px;color:#7C4A0A;font-weight:700;cursor:pointer;
+}
+.stack-strip .ss-ic{font-size:13px;}
+.stack-strip .ss-rel{color:var(--ink-3);font-weight:600;margin-left:auto;}
+
+/* ===== C3 — Severity strip on cards (extend) ===== */
+.sev-strip{position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px;}
+.sev-strip.crit{background:var(--red);}
+.sev-strip.high{background:var(--amber);}
+.sev-strip.warn{background:#E8C547;}
+
+/* ===== E1 — Action card ===== */
+.action-card{
+  display:flex;gap:12px;align-items:center;
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:14px;margin:0 20px 10px;box-shadow:var(--shadow);
+}
+.action-card .a-ic{width:44px;height:44px;border-radius:12px;background:var(--brand-tint);display:grid;place-items:center;font-size:22px;flex-shrink:0;}
+.action-card .a-t{font-size:14px;font-weight:800;color:var(--brand);}
+.action-card .a-s{font-size:12px;color:var(--ink-3);font-weight:500;margin-top:2px;}
+
+/* ===== E4 — Root cause selector ===== */
+.rc-list{display:flex;flex-direction:column;gap:8px;margin:8px 20px 0;}
+.rc-item{display:flex;gap:12px;align-items:center;padding:14px;background:#fff;border:1.5px solid var(--line);border-radius:14px;cursor:pointer;font-family:inherit;text-align:left;width:100%;}
+.rc-item.suggested{border-color:var(--brand);background:var(--brand-tint);}
+.rc-item .rc-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line-2);flex-shrink:0;display:grid;place-items:center;}
+.rc-item.suggested .rc-radio{border-color:var(--brand);}
+.rc-item.suggested .rc-radio::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--brand);}
+.rc-item .rc-ic{width:36px;height:36px;border-radius:10px;background:var(--surface);display:grid;place-items:center;font-size:18px;flex-shrink:0;}
+.rc-item .rc-t{font-size:14px;font-weight:800;color:var(--brand);}
+.rc-item .rc-d{font-size:11.5px;color:var(--ink-3);font-weight:500;margin-top:2px;}
+
+/* ===== F4 dev skill toggle ===== */
+.skill-toggle{
+  position:fixed;top:8px;left:8px;z-index:60;
+  font-size:9px;font-weight:800;letter-spacing:.05em;
+  background:rgba(25,52,88,.85);color:#fff;
+  border:none;padding:4px 8px;border-radius:6px;cursor:pointer;font-family:inherit;
+}
+.skill-toggle:active{transform:scale(.95);}
+
+/* ===== Listen button on every step ===== */
+.listen-fab{
+  position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;
+  background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;
+  cursor:pointer;font-size:14px;z-index:5;
+}
+
+/* ===== Mascot top-left on diag screens ===== */
+.mascot-corner{
+  position:absolute;top:6px;left:54px;width:40px;height:40px;border-radius:50%;
+  background:var(--brand-tint);border:1.5px solid var(--brand-tint-2);
+  display:grid;place-items:center;z-index:4;
+}
+.mascot-corner svg{width:30px;height:30px;}
+
+/* Tighten ad-hoc large font sizes lightly */
+.q{font-size:var(--fs-headline);}
+</style>
+
+<!-- Mini-map modal -->
+<div class="mm-bg" id="mmBg" onclick="closeMiniMap(event)">
+  <div class="mm-box" onclick="event.stopPropagation()">
+    <h3 id="mmTitle">Plant map</h3>
+    <div class="mm-sub" id="mmSub">Affected equipment highlighted</div>
+    <div id="mmSvgWrap"></div>
+    <button class="cta-primary mm-close" onclick="closeMiniMap()">बंद करें · Close</button>
+  </div>
+</div>
+
+<!-- Eqchip mini-sheet -->
+<div class="eq-mini-sheet-bg" id="eqMiniBg" onclick="closeEqMini(event)">
+  <div class="eq-mini-sheet" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <h3 id="eqMiniName">Equipment</h3>
+    <div class="esub" id="eqMiniSub">Section</div>
+    <div id="eqMiniMap"></div>
+    <div class="photo-placeholder" style="margin-top:10px"><div style="text-align:center"><span class="ph-ic">📷</span>Photo placeholder</div></div>
+  </div>
+</div>
+
+<!-- Term explanation sheet -->
+<div class="term-sheet-bg" id="termBg" onclick="closeTerm(event)">
+  <div class="term-sheet" onclick="event.stopPropagation()">
+    <div class="handle"></div>
+    <div class="t-head">
+      <div class="t-icon" id="termIcon">📘</div>
+      <div>
+        <div class="t-name" id="termName">Term</div>
+        <div class="t-tag" id="termTag">Technical term</div>
+      </div>
+    </div>
+    <div class="t-explain" id="termExplain">Explanation here.</div>
+  </div>
+</div>
+
+<!-- Voice strip (B9) -->
+<button class="voice-strip" id="voiceStrip" onclick="mockVoice()">
+  <span class="vs-ic">🎤</span><span>बोलकर जवाब दें · Hold to answer</span>
+</button>
+
+<!-- Dev skill-tier toggle (F4) -->
+<button class="skill-toggle" id="skillToggle" onclick="cycleSkill()">SKILL: BEGINNER</button>
+
+<script>
+/* ============================================================
+   SPEC v2 ENHANCEMENTS — JS layer
+   ============================================================ */
+(function(){
+  'use strict';
+
+  /* ===== Equipment context per screen ===== */
+  const SCREEN_EQ = {
+    home:    {ic:'🐟', name:'AT-01 Tank', sub:'Aeration Section'},
+    preview: {ic:'🐟', name:'AT-01 Tank', sub:'Aeration Section'},
+    step:    {ic:'🐟', name:'AT-01 Tank', sub:'Aeration Section'}, /* dynamic */
+    solution:{ic:'🐟', name:'AT-01 Tank', sub:'Aeration Section'},
+    verify:  {ic:'🐟', name:'AT-01 Tank', sub:'Aeration Section'},
+    success: {ic:'🐟', name:'AT-01 Tank', sub:'Aeration Section'},
+    stop:    {ic:'🐟', name:'AT-01 Tank', sub:'Aeration Section'},
+    photo:   {ic:'🐟', name:'AT-01 Tank', sub:'Aeration Section'},
+    reassign:{ic:'🐟', name:'AT-01 Tank', sub:'Aeration Section'}
+  };
+
+  /* ===== Mini plant SVG (60x60 thumbnail / scalable) ===== */
+  function plantMiniSvg(highlight, size){
+    size = size || 60;
+    // simple plant layout: bar screen -> EQ -> aeration -> MBR -> clarifier -> outflow
+    const dot = (cx,cy,id)=>{
+      const colour = (highlight === id) ? '#D64545' : '#7A8497';
+      const r = (highlight === id) ? 5 : 3;
+      const pulse = (highlight === id) ? `<circle cx="${cx}" cy="${cy}" r="9" fill="#D64545" opacity=".22"><animate attributeName="r" values="6;14;6" dur="1.6s" repeatCount="indefinite"/><animate attributeName="opacity" values=".35;0;.35" dur="1.6s" repeatCount="indefinite"/></circle>` : '';
+      return `${pulse}<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colour}"/>`;
+    };
+    return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="96" height="96" rx="8" fill="#F4F6FA" stroke="#C8D0DD" stroke-width="1"/>
+      <line x1="14" y1="30" x2="86" y2="30" stroke="#C8D0DD" stroke-width="1" stroke-dasharray="2 2"/>
+      <line x1="14" y1="60" x2="86" y2="60" stroke="#C8D0DD" stroke-width="1" stroke-dasharray="2 2"/>
+      <rect x="10" y="22" width="14" height="14" rx="2" fill="#fff" stroke="#7A8497"/>
+      <rect x="32" y="22" width="14" height="14" rx="2" fill="#fff" stroke="#7A8497"/>
+      <rect x="54" y="22" width="14" height="14" rx="2" fill="#fff" stroke="#7A8497"/>
+      <rect x="76" y="22" width="14" height="14" rx="2" fill="#fff" stroke="#7A8497"/>
+      <rect x="22" y="52" width="14" height="14" rx="2" fill="#fff" stroke="#7A8497"/>
+      <rect x="46" y="52" width="14" height="14" rx="2" fill="#fff" stroke="#7A8497"/>
+      <rect x="68" y="52" width="14" height="14" rx="2" fill="#fff" stroke="#7A8497"/>
+      <text x="17" y="46" font-size="6" text-anchor="middle" fill="#3F4D66" font-weight="700">BS</text>
+      <text x="39" y="46" font-size="6" text-anchor="middle" fill="#3F4D66" font-weight="700">EQ</text>
+      <text x="61" y="46" font-size="6" text-anchor="middle" fill="#3F4D66" font-weight="700">AT</text>
+      <text x="83" y="46" font-size="6" text-anchor="middle" fill="#3F4D66" font-weight="700">MBR</text>
+      <text x="29" y="76" font-size="6" text-anchor="middle" fill="#3F4D66" font-weight="700">CL</text>
+      <text x="53" y="76" font-size="6" text-anchor="middle" fill="#3F4D66" font-weight="700">SL</text>
+      <text x="75" y="76" font-size="6" text-anchor="middle" fill="#3F4D66" font-weight="700">OUT</text>
+      ${dot(61, 29, 'AT')}
+      ${highlight!=='AT' ? dot(83,29,highlight) : ''}
+    </svg>`;
+  }
+
+  window.openMiniMap = function(eqCode, title, sub){
+    const wrap = document.getElementById('mmSvgWrap');
+    wrap.innerHTML = plantMiniSvg(eqCode || 'AT', 280);
+    document.getElementById('mmTitle').textContent = title || 'Plant map';
+    document.getElementById('mmSub').textContent = sub || 'Affected equipment highlighted';
+    document.getElementById('mmBg').classList.add('on');
+  };
+  window.closeMiniMap = function(e){
+    if(e && e.target && e.target.id && e.target.id!=='mmBg') return;
+    document.getElementById('mmBg').classList.remove('on');
+  };
+
+  /* ===== Eqchip-bar (P2.1) inject into screens missing it ===== */
+  window.openEqMini = function(){
+    const sc = window.currentScreen || 'home';
+    const eq = SCREEN_EQ[sc] || SCREEN_EQ.home;
+    document.getElementById('eqMiniName').textContent = eq.name + ' · ' + eq.sub;
+    document.getElementById('eqMiniSub').textContent = 'Tap-to-locate';
+    document.getElementById('eqMiniMap').innerHTML = plantMiniSvg('AT', 280);
+    document.getElementById('eqMiniBg').classList.add('on');
+  };
+  window.closeEqMini = function(e){
+    if(e && e.target && e.target.id && e.target.id!=='eqMiniBg') return;
+    document.getElementById('eqMiniBg').classList.remove('on');
+  };
+
+  function ensureEqchipBar(screenId){
+    const sec = document.getElementById('s-'+screenId);
+    if(!sec) return;
+    if(sec.querySelector('.eqchip-bar')) return;
+    // skip on plant/alerts/tasks/profile/issue-stub
+    if(['plant','alerts','tasks','profile','issue-stub'].indexOf(screenId)>=0) return;
+    const eq = SCREEN_EQ[screenId];
+    if(!eq) return;
+    const bar = document.createElement('button');
+    bar.className = 'eqchip-bar';
+    bar.setAttribute('onclick','openEqMini()');
+    bar.innerHTML = `<span class="eq-ic">${eq.ic}</span><span class="eq-main">${eq.name} <span class="eq-section">· ${eq.sub}</span></span><span class="eq-chev">›</span>`;
+    // Insert after statusbar / crumbs
+    const crumbs = sec.querySelector('.crumbs');
+    const sb = sec.querySelector('.statusbar');
+    const anchor = crumbs || sb;
+    if(anchor && anchor.nextSibling){
+      anchor.parentNode.insertBefore(bar, anchor.nextSibling);
+    } else {
+      sec.insertBefore(bar, sec.firstChild);
+    }
+  }
+
+  /* ===== P2.3 — Inject mini-map onto Home alert card (focal) ===== */
+  function injectAlertMiniMap(){
+    const focal = document.querySelector('#s-home .focal');
+    if(!focal || focal.querySelector('.mini-map')) return;
+    const btn = document.createElement('button');
+    btn.className = 'mini-map';
+    btn.setAttribute('onclick','event.stopPropagation();openMiniMap("AT","Aeration Tank · AT-01","Affected equipment")');
+    btn.innerHTML = plantMiniSvg('AT', 60);
+    btn.style.cssText = 'position:absolute;top:14px;right:14px;border:1px solid var(--line);background:#fff;border-radius:10px;width:60px;height:60px;padding:0;overflow:hidden;cursor:pointer;box-shadow:0 1px 4px rgba(25,52,88,.08);z-index:2';
+    focal.style.position = 'relative';
+    focal.appendChild(btn);
+  }
+
+  /* ===== Vocabulary ===== */
+  const TERMS = {
+    'TMP':       {icon:'🧱', tag:'Trans-Membrane Pressure', explain:'झिल्ली (membrane) के दोनों side का pressure difference. ज़्यादा होने पर membrane choke हो रही है.'},
+    'MBR':       {icon:'🧫', tag:'Membrane Bio-Reactor', explain:'Bacteria + membrane filtration वाला system. यहाँ पानी छानकर साफ़ निकलता है.'},
+    'DO':        {icon:'💨', tag:'Dissolved Oxygen', explain:'पानी में घुली हुई oxygen. Bacteria को साँस लेने के लिए चाहिए — 2-4 mg/L normal.'},
+    'pH':        {icon:'🧪', tag:'Acidity / Alkalinity', explain:'पानी कितना खट्टा या क्षारीय है. 6.8-7.2 normal. कम होने पर bacteria मर जाते हैं.'},
+    'blower':    {icon:'💨', tag:'Air Blower', explain:'Aeration tank में हवा पहुँचाने वाली motor. इससे bacteria ज़िंदा रहते हैं.'},
+    'aeration':  {icon:'🐟', tag:'Aeration', explain:'Tank में हवा डालकर bacteria को oxygen देना. Treatment का दिल.'},
+    'turbidity': {icon:'💧', tag:'Turbidity', explain:'पानी कितना गंदला है. ज़्यादा होने पर discharge fail.'},
+    'membrane':  {icon:'🧱', tag:'Membrane', explain:'बारीक छन्नी जो ठोस कचरा रोकती है, साफ़ पानी निकालती है.'},
+    'current':   {icon:'⚡', tag:'Motor Current', explain:'Motor कितना load ले रही है (amps). ज़्यादा means stuck, कम means belt loose.'},
+    'phase':     {icon:'⚡', tag:'R/Y/B Phase', explain:'3-phase supply की तीन lines. एक भी असमान हो तो motor unbalanced.'},
+    'MLSS':      {icon:'🦠', tag:'Mixed Liquor Suspended Solids', explain:'Tank में bacteria की density. 3000-4000 mg/L normal.'},
+    'NTU':       {icon:'💧', tag:'Turbidity unit', explain:'पानी की गंदलापन नापने का unit. < 5 NTU normal.'}
+  };
+
+  window.openTerm = function(key){
+    const t = TERMS[key];
+    if(!t) return;
+    document.getElementById('termIcon').textContent = t.icon;
+    document.getElementById('termName').textContent = key;
+    document.getElementById('termTag').textContent = t.tag;
+    document.getElementById('termExplain').textContent = t.explain;
+    document.getElementById('termBg').classList.add('on');
+  };
+  window.closeTerm = function(e){
+    if(e && e.target && e.target.id && e.target.id!=='termBg') return;
+    document.getElementById('termBg').classList.remove('on');
+  };
+
+  function wrapTerms(){
+    const root = document.querySelector('.device');
+    if(!root) return;
+    const TERM_KEYS = Object.keys(TERMS);
+    // walk text nodes inside .scroll within visible screen
+    const screens = root.querySelectorAll('.screen');
+    screens.forEach(sc=>{
+      // gather candidates
+      const walker = document.createTreeWalker(sc, NodeFilter.SHOW_TEXT, {
+        acceptNode: (n)=>{
+          if(!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          const p = n.parentNode;
+          if(!p) return NodeFilter.FILTER_REJECT;
+          if(p.classList && (p.classList.contains('term') || p.tagName==='SCRIPT' || p.tagName==='STYLE')) return NodeFilter.FILTER_REJECT;
+          if(p.closest && p.closest('.term')) return NodeFilter.FILTER_REJECT;
+          if(p.tagName==='BUTTON' && p.classList.contains('skill-toggle')) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      const toReplace = [];
+      let node;
+      while(node = walker.nextNode()){
+        const text = node.nodeValue;
+        let hit = false;
+        for(const k of TERM_KEYS){
+          // word-boundary match
+          const re = new RegExp('\\b' + k.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&') + '\\b');
+          if(re.test(text)){ hit = true; break; }
+        }
+        if(hit) toReplace.push(node);
+      }
+      toReplace.forEach(n=>{
+        let html = n.nodeValue;
+        TERM_KEYS.forEach(k=>{
+          const re = new RegExp('\\b(' + k + ')\\b','g');
+          html = html.replace(re, `<span class="term" data-term="${k}" onclick="event.stopPropagation();openTerm('${k}')">$1</span>`);
+        });
+        const span = document.createElement('span');
+        span.innerHTML = html;
+        n.parentNode.replaceChild(span, n);
+      });
+    });
+  }
+
+  /* ===== Threshold bar (P4.1) — inject under readouts on home ===== */
+  function tbarHTML(value, safeLo, safeHi, axisLo, axisHi, unit, normalText, currentText){
+    const range = axisHi - axisLo;
+    const safeL = ((safeLo - axisLo)/range)*100;
+    const safeW = ((safeHi - safeLo)/range)*100;
+    let mark = ((value - axisLo)/range)*100;
+    mark = Math.max(0,Math.min(100,mark));
+    const status = (value < safeLo || value > safeHi) ? 'bad' : 'ok';
+    return `<div class="tbar">
+      <div class="tbar-track">
+        <div class="tbar-safe" style="left:${safeL}%;width:${safeW}%"></div>
+        <div class="tbar-mark ${status}" style="left:${mark}%"></div>
+      </div>
+      <div class="tbar-foot"><span>${axisLo}${unit||''}</span><span>${axisHi}${unit||''}</span></div>
+      <div class="tbar-now">अभी: <b>${value}${unit||''}</b> · सामान्य: ${normalText}</div>
+    </div>`;
+  }
+
+  function injectThresholdBars(){
+    // Home readouts
+    const home = document.getElementById('s-home');
+    if(home){
+      const readouts = home.querySelectorAll('.readout');
+      if(readouts[0] && !readouts[0].querySelector('.tbar')){
+        readouts[0].insertAdjacentHTML('beforeend', tbarHTML(0.8, 2.0, 4.0, 0, 6, ' mg/L', '2.0–4.0'));
+      }
+      if(readouts[1] && !readouts[1].querySelector('.tbar')){
+        readouts[1].insertAdjacentHTML('beforeend', tbarHTML(3200, 3000, 4000, 2000, 5000, '', '3000–4000'));
+      }
+    }
+    // Stub issue
+    const stub = document.getElementById('s-issue-stub');
+    if(stub){
+      // light touch — would need data
+    }
+  }
+
+  /* ===== R/Y/B phase bars (P4.4) — added as a helper widget on solution screen for F2 (blower) ===== */
+  window.injectPhaseBars = function(targetEl, rVal, yVal, bVal){
+    if(!targetEl || targetEl.querySelector('.phase-bars')) return;
+    const max = Math.max(rVal, yVal, bVal, 20);
+    const html = `
+      <div class="phase-bars">
+        <div class="phase-bar r"><div class="pb-val">${rVal}A</div><div class="pb-track"><div class="pb-fill" style="height:${(rVal/max)*100}%"></div></div><div class="pb-lbl">R</div></div>
+        <div class="phase-bar y"><div class="pb-val">${yVal}A</div><div class="pb-track"><div class="pb-fill" style="height:${(yVal/max)*100}%"></div></div><div class="pb-lbl">Y</div></div>
+        <div class="phase-bar b"><div class="pb-val">${bVal}A</div><div class="pb-track"><div class="pb-fill" style="height:${(bVal/max)*100}%"></div></div><div class="pb-lbl">B</div></div>
+      </div>
+      <div class="phase-verdict">Y line ज़्यादा खींच रहा है — imbalance possible</div>`;
+    targetEl.insertAdjacentHTML('beforeend', html);
+  };
+
+  /* ===== Issue Stack Strip (C2) on home ===== */
+  function injectStackStrip(){
+    const home = document.getElementById('s-home');
+    if(!home) return;
+    const focal = home.querySelector('.focal');
+    if(!focal || home.querySelector('.stack-strip')) return;
+    const ss = document.createElement('div');
+    ss.className = 'stack-strip';
+    ss.innerHTML = `<span class="ss-ic">📈</span><span>इस हफ्ते 3rd बार · DO Low</span><span class="ss-rel">Related: DT-008 ›</span>`;
+    ss.setAttribute('onclick', "alert('Related issues: DT-008, DT-014, DT-019')");
+    focal.parentNode.insertBefore(ss, focal);
+  }
+
+  /* ===== Listen + mascot corner on diag screens ===== */
+  function injectListenAndMascot(){
+    const diagScreens = ['step','solution','verify','success','stop','photo','reassign'];
+    diagScreens.forEach(id=>{
+      const sec = document.getElementById('s-'+id);
+      if(!sec) return;
+      // listen button (skip if existing .listen in stephead)
+      if(!sec.querySelector('.listen') && !sec.querySelector('.listen-fab')){
+        const sb = sec.querySelector('.statusbar');
+        if(sb){
+          const lb = document.createElement('button');
+          lb.className = 'listen-fab';
+          lb.innerHTML = '🔊';
+          lb.setAttribute('onclick', "playAudio(this)");
+          sec.style.position = 'relative';
+          sec.appendChild(lb);
+        }
+      }
+    });
+  }
+
+  window.playAudio = function(btn){
+    try{
+      if('speechSynthesis' in window){
+        const u = new SpeechSynthesisUtterance('जाँच जारी रखें');
+        u.lang = 'hi-IN'; u.rate = 0.95;
+        speechSynthesis.cancel();
+        speechSynthesis.speak(u);
+        return;
+      }
+    } catch(e){}
+    alert('Playing audio…');
+  };
+
+  /* ===== B6 — Photo capture on photo screen ===== */
+  function enhancePhotoScreen(){
+    const sec = document.getElementById('s-photo');
+    if(!sec) return;
+    if(sec.querySelector('.photo-cap')) return;
+    const cap = document.createElement('button');
+    cap.className = 'photo-cap';
+    cap.setAttribute('onclick','alert(\"क्या दिखाना है: Tank surface + bubbles ·  Capturing…\")');
+    cap.innerHTML = `<div class="pc-ic">📸</div><div><div class="pc-t">Capture / Retake</div><div class="pc-s">क्या दिखाना है: Tank surface + bubbles</div></div>`;
+    const scroll = sec.querySelector('.scroll');
+    if(scroll) scroll.insertBefore(cap, scroll.firstChild);
+  }
+
+  /* ===== Past dots tappable ===== */
+  function bindDotJumps(){
+    const dots = document.getElementById('stepDots');
+    if(!dots) return;
+    dots.querySelectorAll('span.done').forEach((d, i)=>{
+      d.style.cursor = 'pointer';
+      d.title = 'Jump back to step ' + (i+1);
+      d.onclick = ()=>{ if(window.startStep) window.startStep(i); };
+    });
+  }
+
+  /* ===== F4 — Skill toggle ===== */
+  let skillLevel = 'BEGINNER';
+  window.cycleSkill = function(){
+    const order = ['BEGINNER','INTERMEDIATE','ADVANCED'];
+    skillLevel = order[(order.indexOf(skillLevel)+1) % order.length];
+    document.getElementById('skillToggle').textContent = 'SKILL: ' + skillLevel;
+    window.__skillLevel = skillLevel;
+  };
+  window.__skillLevel = skillLevel;
+
+  /* ===== Voice strip shows on step screens ===== */
+  window.mockVoice = function(){
+    alert('🎤 Listening… (mock — voice not connected)');
+  };
+  function updateVoiceStrip(){
+    const sc = window.currentScreen;
+    const v = document.getElementById('voiceStrip');
+    if(!v) return;
+    v.classList.toggle('on', sc==='step');
+  }
+
+  /* ===== Preview meta ===== */
+  function injectPreviewMeta(){
+    const sec = document.getElementById('s-preview');
+    if(!sec || sec.querySelector('.preview-meta')) return;
+    const q = sec.querySelector('.q-sub');
+    if(!q) return;
+    const meta = document.createElement('div');
+    meta.className = 'preview-meta';
+    meta.innerHTML = '<span class="pm-time">⏱ <b>10-15 min</b></span><span>6 checks · आसान से कठिन</span>';
+    q.parentNode.insertBefore(meta, q.nextSibling);
+  }
+
+  /* ===== Apply cta-primary class to bottom buttons ===== */
+  function applyCtaPrimary(){
+    document.querySelectorAll('.cta-bar .btn.primary').forEach(b=>b.classList.add('cta-primary'));
+  }
+
+  /* ===== Step Jump Menu icon (D3) ===== */
+  function injectStepJumpIcon(){
+    const sec = document.getElementById('s-step');
+    if(!sec) return;
+    if(sec.querySelector('.step-jump-btn')) return;
+    const head = sec.querySelector('.stephead');
+    if(!head) return;
+    const btn = document.createElement('button');
+    btn.className = 'listen step-jump-btn';
+    btn.style.cssText='margin-left:6px';
+    btn.innerHTML = '📋';
+    btn.setAttribute('onclick',"if(window.go) go('preview');");
+    head.appendChild(btn);
+  }
+
+  /* ===== F4 — when skill level is INTERMEDIATE or ADVANCED, hide scaffolding silently ===== */
+  function applySkillTier(){
+    const sc = window.currentScreen;
+    if(sc !== 'step') return;
+    const skill = window.__skillLevel || 'BEGINNER';
+    const mascot = document.querySelector('#s-step .mascot-row');
+    const skipWrap = document.querySelector('#s-step .skip-step-wrap');
+    const ftSkill = document.getElementById('ftSkill');
+    const ftSkip = document.getElementById('ftSkipFriendly');
+    const hide = (skill === 'INTERMEDIATE' || skill === 'ADVANCED');
+    if(mascot) mascot.style.display = hide ? 'none' : '';
+    if(ftSkill && hide) ftSkill.style.display = 'none';
+    if(ftSkip && skill === 'ADVANCED') ftSkip.style.display = 'none';
+  }
+
+  /* ===== Wire up: wrap go() ===== */
+  const _go = window.go;
+  window.go = function(name){
+    window.currentScreen = name;
+    _go.apply(this, arguments);
+    setTimeout(()=>{
+      ensureEqchipBar(name);
+      if(name === 'home'){
+        injectAlertMiniMap();
+        injectStackStrip();
+        injectThresholdBars();
+      }
+      if(name === 'preview'){
+        injectPreviewMeta();
+      }
+      if(name === 'step'){
+        bindDotJumps();
+        injectStepJumpIcon();
+        applySkillTier();
+      }
+      if(name === 'photo'){
+        enhancePhotoScreen();
+      }
+      injectListenAndMascot();
+      applyCtaPrimary();
+      updateVoiceStrip();
+      wrapTerms();
+    }, 30);
+  };
+
+  /* ===== Initial pass (home is the alert detail; plant is the first 'on' screen) ===== */
+  function initialPass(){
+    // run for every screen present
+    Object.keys(SCREEN_EQ).forEach(ensureEqchipBar);
+    injectAlertMiniMap();
+    injectStackStrip();
+    injectThresholdBars();
+    injectPreviewMeta();
+    injectListenAndMascot();
+    enhancePhotoScreen();
+    applyCtaPrimary();
+    wrapTerms();
+    // determine current
+    const onScreen = document.querySelector('.screen.on');
+    if(onScreen) window.currentScreen = onScreen.id.replace('s-','');
+    updateVoiceStrip();
+  }
+
+  /* Run after a tick so existing setLang() innerHTML writes are done */
+  setTimeout(initialPass, 80);
+  // Re-wrap terms after language switch (setLang rewrites innerHTML)
+  const _setLang = window.setLang;
+  if(typeof _setLang === 'function'){
+    window.setLang = function(){
+      _setLang.apply(this, arguments);
+      setTimeout(()=>{ wrapTerms(); injectThresholdBars(); injectStackStrip(); injectAlertMiniMap(); }, 30);
+    };
+  }
+})();
+</script>
+
 </body>
 </html>
