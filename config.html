@@ -521,6 +521,42 @@ textarea{min-height:88px;resize:vertical}
 }
 .fnode-add:hover{background:rgba(255,255,255,.75);border-style:solid;transform:translateY(-1px)}
 
+/* ===== Quick start tiles (Step 1 entry) ===== */
+.qs-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+.qs-tile{display:flex;align-items:center;gap:11px;padding:13px 14px;border-radius:14px;cursor:pointer;
+  background:rgba(255,255,255,.55);border:1px solid var(--line);
+  font:inherit;color:var(--ink);text-align:left;width:100%;
+  box-shadow:var(--shadow-soft);transition:transform .15s,background .2s,box-shadow .2s;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.qs-tile:hover{background:rgba(255,255,255,.85);transform:translateY(-1px)}
+.qs-tile.on{background:linear-gradient(155deg,rgba(255,255,255,.95),rgba(229,235,245,.85));
+  border-color:rgba(0,41,118,.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 0 0 3px rgba(0,41,118,.15),0 8px 20px -8px rgba(0,41,118,.20)}
+.qs-tile .qs-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:700;
+  background:linear-gradient(145deg,#DCE5F5,#A8B8DE);color:var(--brand);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 2px 4px rgba(40,50,80,.10)}
+.qs-tile.on .qs-ico{background:linear-gradient(145deg,#1A3F8C,#002976);color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 4px 10px -2px rgba(0,41,118,.40)}
+.qs-tile .qs-body{flex:1;min-width:0}
+.qs-tile .qs-ttl{font-weight:700;font-size:13px;letter-spacing:-.01em;line-height:1.2}
+.qs-tile .qs-sub{font-size:11px;color:var(--ink-3);margin-top:3px;line-height:1.35;font-weight:500}
+@media (max-width:780px){.qs-row{grid-template-columns:1fr 1fr}}
+
+/* ===== Empty-state placeholder (canvas) ===== */
+.canvas-empty{max-width:520px;margin:30px auto;padding:36px 28px;text-align:center;
+  background:rgba(255,255,255,.55);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border:1.5px dashed rgba(140,150,180,.45);border-radius:20px;
+  box-shadow:var(--shadow-soft);color:var(--ink-3)}
+.canvas-empty .ce-ico{font-size:42px;margin-bottom:10px;filter:drop-shadow(0 4px 8px rgba(40,50,80,.18))}
+.canvas-empty .ce-ttl{font-weight:700;color:var(--ink-2);font-size:15px;margin-bottom:4px;letter-spacing:-.01em}
+.canvas-empty .ce-sub{font-size:13px;line-height:1.55;color:var(--ink-3);max-width:380px;margin:0 auto}
+.canvas-empty .ce-actions{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.canvas-empty .ce-actions button{font:600 12px 'Plus Jakarta Sans';padding:8px 16px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:rgba(255,255,255,.7);color:var(--ink-2)}
+.canvas-empty .ce-actions button.primary{background:linear-gradient(145deg,#1A3F8C,#002976);color:#fff;border-color:transparent;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 6px 14px -4px rgba(0,41,118,.35)}
+
 /* ===== Multi-choice / branching cards ===== */
 .fopt-row{display:flex;flex-direction:column;gap:6px;margin:10px 0 4px;padding:10px 12px;
   background:rgba(255,255,255,.45);border:1px dashed var(--line-2);border-radius:12px}
@@ -820,6 +856,41 @@ textarea{min-height:88px;resize:vertical}
     <p class="page-sub">Give it a name operators will understand. One issue = one diagnostic tree.</p>
 
     <div class="card">
+      <h3>Quick start</h3>
+      <p class="helper">Start blank, or pre-fill from a saved template. You can save the current configuration as a template anytime from the Templates tab.</p>
+      <div class="qs-row">
+        <button class="qs-tile on" onclick="setStartMode(this,'blank')">
+          <span class="qs-ico">＋</span>
+          <div class="qs-body">
+            <div class="qs-ttl">Start blank</div>
+            <div class="qs-sub">Configure a brand new flow from scratch</div>
+          </div>
+        </button>
+        <button class="qs-tile" onclick="setStartMode(this,'lowdo')">
+          <span class="qs-ico">💧</span>
+          <div class="qs-body">
+            <div class="qs-ttl">Low DO · Aeration</div>
+            <div class="qs-sub">DT-001 · 6 steps · 11 routes</div>
+          </div>
+        </button>
+        <button class="qs-tile" onclick="setStartMode(this,'tmp')">
+          <span class="qs-ico">📐</span>
+          <div class="qs-body">
+            <div class="qs-ttl">High TMP · MBR</div>
+            <div class="qs-sub">DT-002 · 5 steps</div>
+          </div>
+        </button>
+        <button class="qs-tile" onclick="setStartMode(this,'browse')">
+          <span class="qs-ico">→</span>
+          <div class="qs-body">
+            <div class="qs-ttl">Browse all templates</div>
+            <div class="qs-sub">6 saved · 22 in DP library</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
       <h3>Name &amp; equipment</h3>
       <p class="helper">This is what operators see at the top of the screen.</p>
 
@@ -1038,8 +1109,17 @@ textarea{min-height:88px;resize:vertical}
         </div>
 
         <div id="canvasFlow">
+          <div id="canvasEmpty" class="canvas-empty">
+            <div class="ce-ico">🌱</div>
+            <div class="ce-ttl">Empty canvas — let's build the flow</div>
+            <div class="ce-sub">Tap a step type on the left palette to drop in your first card, or pick a template above to pre-fill the canvas with a saved flow.</div>
+            <div class="ce-actions">
+              <button class="primary" onclick="addStep('question')">＋ Add first step</button>
+              <button onclick="setMode('tpls')">Open templates →</button>
+            </div>
+          </div>
           <!-- Step 1 -->
-          <div class="fnode" onclick="openDrawer(1);selectNode(this)">
+          <div class="fnode" data-tpl="lowdo" onclick="openDrawer(1);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn">1</div>
             <div class="ftools">
@@ -1055,10 +1135,10 @@ textarea{min-height:88px;resize:vertical}
             </div>
             <span class="fk">STEP_Q</span>
           </div>
-          <div class="insert"><button class="ins-btn" onclick="insertAt(0)">+</button></div>
+          <div class="insert" data-tpl="lowdo"><button class="ins-btn" onclick="insertAt(0)">+</button></div>
 
           <!-- Step 2 · Flow 1: Blower performance (multi-choice + nested Y/N) -->
-          <div class="fnode" onclick="openDrawer(2);selectNode(this)">
+          <div class="fnode" data-tpl="lowdo" onclick="openDrawer(2);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn">2</div>
             <div class="ftools">
@@ -1082,10 +1162,10 @@ textarea{min-height:88px;resize:vertical}
             </div>
             <span class="fk">STEP_MC</span>
           </div>
-          <div class="insert"><button class="ins-btn" onclick="insertAt(1)">+</button></div>
+          <div class="insert" data-tpl="lowdo"><button class="ins-btn" onclick="insertAt(1)">+</button></div>
 
           <!-- Step 3 · Flow 2: Aeration distribution (multi-choice + multi-select) -->
-          <div class="fnode selected" onclick="openDrawer(3);selectNode(this)">
+          <div class="fnode selected" data-tpl="lowdo" onclick="openDrawer(3);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn">3</div>
             <div class="ftools">
@@ -1125,10 +1205,10 @@ textarea{min-height:88px;resize:vertical}
             </div>
             <span class="fk">STEP_MC + STEP_MS</span>
           </div>
-          <div class="insert"><button class="ins-btn" onclick="insertAt(2)">+</button></div>
+          <div class="insert" data-tpl="lowdo"><button class="ins-btn" onclick="insertAt(2)">+</button></div>
 
           <!-- Step 4 -->
-          <div class="fnode" onclick="openDrawer(4);selectNode(this)">
+          <div class="fnode" data-tpl="lowdo" onclick="openDrawer(4);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn">4</div>
             <div class="ftools">
@@ -1144,10 +1224,10 @@ textarea{min-height:88px;resize:vertical}
             </div>
             <span class="fk">STEP_Q</span>
           </div>
-          <div class="insert"><button class="ins-btn" onclick="insertAt(3)">+</button></div>
+          <div class="insert" data-tpl="lowdo"><button class="ins-btn" onclick="insertAt(3)">+</button></div>
 
           <!-- Step 5 -->
-          <div class="fnode" onclick="openDrawer(5);selectNode(this)">
+          <div class="fnode" data-tpl="lowdo" onclick="openDrawer(5);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn">5</div>
             <div class="ftools">
@@ -1163,10 +1243,10 @@ textarea{min-height:88px;resize:vertical}
             </div>
             <span class="fk">STEP_MANUAL</span>
           </div>
-          <div class="insert"><button class="ins-btn" onclick="insertAt(4)">+</button></div>
+          <div class="insert" data-tpl="lowdo"><button class="ins-btn" onclick="insertAt(4)">+</button></div>
 
           <!-- Step 6 -->
-          <div class="fnode" onclick="openDrawer(6);selectNode(this)">
+          <div class="fnode" data-tpl="lowdo" onclick="openDrawer(6);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn">6</div>
             <div class="ftools">
@@ -2108,6 +2188,142 @@ textarea{min-height:88px;resize:vertical}
     toast.classList.add('show');
     setTimeout(()=>{ toast.classList.remove('show'); toast.textContent = 'Saved'; }, 1800);
   }
+
+  // =========================================================
+  //  Quick start / blank / template load
+  // =========================================================
+  const TEMPLATES = {
+    lowdo: {
+      name: 'Low DO in Aeration Tank',
+      desc: "Dissolved oxygen levels in the aeration tank are below 2.0 mg/L. Use this tree to walk through the six root causes — blower, aeration distribution, DO sensor, sludge bulking, shock load — and confirm the right fix.",
+      equipmentIdx: 0,
+      severity: 'amber',
+      assignee: 1,
+      escalation: [
+        { lvl: 1, who: 'Site Engineer (Sharma ji)', when: 'Notified immediately on flow start' },
+        { lvl: 2, who: 'Supervisor',                when: 'Escalate after 10 minutes of no response' },
+        { lvl: 3, who: 'Site Manager',              when: 'Escalate after 30 minutes with no resolution' },
+      ],
+      notifs: [1,1,1,0],
+      skillOverride: 1,
+    },
+    tmp: {
+      name: 'High TMP on MBR',
+      desc: "Transmembrane pressure on MBR-1 is trending above 0.55 bar. This 5-step tree checks fouling, cleaning cycle, permeability and physical damage to decide whether CIP is needed.",
+      equipmentIdx: 1,
+      severity: 'amber',
+      assignee: 1,
+      escalation: [
+        { lvl: 1, who: 'Site Engineer (Sharma ji)', when: 'Notified immediately on flow start' },
+        { lvl: 2, who: 'Supervisor',                when: 'Escalate after 15 minutes of no response' },
+      ],
+      notifs: [1,1,0,0],
+      skillOverride: 1,
+    },
+  };
+
+  function setStartMode(el, mode){
+    if (el && el.parentNode){
+      el.parentNode.querySelectorAll('.qs-tile').forEach(t => t.classList.remove('on'));
+      el.classList.add('on');
+    }
+    if (mode === 'blank') {
+      clearAll();
+      _toast('Blank canvas ready — start configuring');
+    } else if (mode === 'browse') {
+      setMode('tpls');
+    } else if (TEMPLATES[mode]) {
+      loadTemplate(mode);
+      _toast('Loaded "' + TEMPLATES[mode].name + '" template — edit anything');
+    }
+  }
+
+  function _toast(msg){
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => { t.classList.remove('show'); t.textContent = 'Saved'; }, 1600);
+  }
+
+  function clearAll(){
+    const en = document.getElementById('issueEn'); if (en) en.value = '';
+    const desc = document.getElementById('issueDesc'); if (desc) desc.value = '';
+    const eq = document.querySelector('#p-1 select:not(.qs-row select)'); if (eq) eq.selectedIndex = 0;
+    document.querySelectorAll('#p-1 .choices .rcard').forEach(c => c.classList.remove('on'));
+    document.querySelectorAll('#p-2 .choices .rcard').forEach(c => c.classList.remove('on'));
+    const escList = document.querySelector('#p-2 .sub-list');
+    if (escList) escList.querySelectorAll('.sub-item').forEach(it => it.remove());
+    document.querySelectorAll('#p-2 .sw').forEach(sw => sw.classList.remove('on'));
+    document.querySelectorAll('#canvasFlow [data-tpl]').forEach(n => n.style.display = 'none');
+    const empty = document.getElementById('canvasEmpty');
+    if (empty) {
+      empty.style.display = '';
+      const ttl = empty.querySelector('.ce-ttl'); if (ttl) ttl.textContent = "Empty canvas — let's build the flow";
+      const sub = empty.querySelector('.ce-sub'); if (sub) sub.textContent = "Tap a step type on the left palette to drop in your first card, or pick a template above to pre-fill the canvas with a saved flow.";
+    }
+    const drQ = document.getElementById('drQEn'); if (drQ) drQ.value = '';
+    const drD = document.getElementById('drQDesc'); if (drD) drD.value = '';
+  }
+
+  function loadTemplate(id){
+    const tpl = TEMPLATES[id];
+    if (!tpl) return;
+    const en = document.getElementById('issueEn'); if (en) en.value = tpl.name;
+    const desc = document.getElementById('issueDesc'); if (desc) desc.value = tpl.desc;
+    const eq = document.querySelector('#p-1 select:not(.qs-row select)'); if (eq) eq.selectedIndex = tpl.equipmentIdx || 0;
+    const sevCards = document.querySelectorAll('#p-1 .choices .rcard');
+    sevCards.forEach(c => c.classList.remove('on'));
+    const sevIdx = (tpl.severity === 'amber') ? 1 : (tpl.severity === 'danger' ? 0 : 2);
+    if (sevCards[sevIdx]) sevCards[sevIdx].classList.add('on');
+    const assCards = document.querySelectorAll('#p-2 .choices .rcard');
+    assCards.forEach(c => c.classList.remove('on'));
+    if (assCards[tpl.assignee]) assCards[tpl.assignee].classList.add('on');
+    const escList = document.querySelector('#p-2 .sub-list');
+    if (escList) {
+      escList.querySelectorAll('.sub-item').forEach(it => it.remove());
+      const addBtn = escList.querySelector('.sub-add');
+      (tpl.escalation || []).forEach(row => {
+        const el = document.createElement('div');
+        el.className = 'sub-item';
+        el.innerHTML =
+          '<span class="ix">' + row.lvl + '</span>' +
+          '<span class="t" style="display:flex;flex-direction:column;gap:4px">' +
+            '<span><b>' + row.who + '</b>' + (row.lvl === 1 ? ' — primary' : '') + '</span>' +
+            '<span style="font-size:11px;color:var(--ink-3)">' + row.when + '</span>' +
+          '</span>' +
+          '<span class="ctrl">' +
+            '<button class="ed" onclick="editSubItem(this,event)">✎</button>' +
+            (row.lvl > 1 ? '<button class="del" onclick="removeSubItem(this,event)">×</button>' : '') +
+          '</span>';
+        escList.insertBefore(el, addBtn);
+      });
+    }
+    const togs = document.querySelectorAll('#p-2 .sw');
+    if (togs[0]) togs[0].classList.toggle('on', !!tpl.skillOverride);
+    if (tpl.notifs && tpl.notifs.length === 4){
+      if (togs[1]) togs[1].classList.toggle('on', !!tpl.notifs[0]);
+      if (togs[2]) togs[2].classList.toggle('on', !!tpl.notifs[1]);
+      if (togs[3]) togs[3].classList.toggle('on', !!tpl.notifs[2]);
+      if (togs[4]) togs[4].classList.toggle('on', !!tpl.notifs[3]);
+    }
+    if (id === 'lowdo'){
+      document.querySelectorAll('#canvasFlow [data-tpl="lowdo"]').forEach(n => n.style.display = '');
+      const empty = document.getElementById('canvasEmpty');
+      if (empty) empty.style.display = 'none';
+    } else {
+      document.querySelectorAll('#canvasFlow [data-tpl]').forEach(n => n.style.display = 'none');
+      const empty = document.getElementById('canvasEmpty');
+      if (empty){
+        empty.style.display = '';
+        const ttl = empty.querySelector('.ce-ttl'); if (ttl) ttl.textContent = '"' + tpl.name + '" — canvas preview coming';
+        const sub = empty.querySelector('.ce-sub'); if (sub) sub.textContent = "We've pre-filled Basics and Assign for this template. Drop step cards from the left to build out the diagnostic flow.";
+      }
+    }
+  }
+
+  // On load, default to blank so the user can configure a new flow
+  window.addEventListener('DOMContentLoaded', () => { clearAll(); });
 </script>
 </body>
 </html>
