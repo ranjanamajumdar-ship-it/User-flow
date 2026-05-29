@@ -521,6 +521,72 @@ textarea{min-height:88px;resize:vertical}
 }
 .fnode-add:hover{background:rgba(255,255,255,.75);border-style:solid;transform:translateY(-1px)}
 
+/* ===== Palette category groups (4-bucket model) ===== */
+.pgroup{margin-bottom:8px;border-radius:12px;overflow:hidden;
+  background:rgba(255,255,255,.45);border:1px solid var(--line-soft);transition:.15s}
+.pgroup summary{display:flex;align-items:center;gap:8px;padding:9px 10px;cursor:pointer;
+  font:700 10px 'Plus Jakarta Sans';letter-spacing:.5px;text-transform:uppercase;color:var(--ink-2);
+  list-style:none;user-select:none}
+.pgroup summary::-webkit-details-marker{display:none}
+.pgroup summary .chev{margin-left:auto;font-size:11px;color:var(--ink-3);transition:.2s;font-weight:700;display:inline-block}
+.pgroup[open] summary .chev{transform:rotate(180deg)}
+.pgroup .cat-dot{width:9px;height:9px;border-radius:999px;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.pgroup .cat-count{font:600 9px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.4px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.7);margin-left:auto;margin-right:8px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.pgroup .ptiles{padding:4px 6px 8px;display:flex;flex-direction:column;gap:4px}
+.pgroup.todo{background:rgba(255,247,232,.55);border-color:rgba(232,148,26,.20)}
+.pgroup.todo .cat-dot{background:#E0A314}
+.pgroup.todo summary{color:#A06F00}
+.pgroup.progress{background:rgba(229,237,248,.55);border-color:rgba(0,41,118,.18)}
+.pgroup.progress .cat-dot{background:var(--brand)}
+.pgroup.progress summary{color:var(--brand)}
+.pgroup.done{background:rgba(220,241,230,.55);border-color:rgba(31,157,85,.20)}
+.pgroup.done .cat-dot{background:#1F9D55}
+.pgroup.done summary{color:#0F5C2F}
+.pgroup.actions{background:rgba(236,223,251,.55);border-color:rgba(107,54,181,.20)}
+.pgroup.actions .cat-dot{background:#6B36B5}
+.pgroup.actions summary{color:#3F1B73}
+
+/* Sub-groups within ACTIONS (Process / Comm / Validate) */
+.psub{padding:4px 2px}
+.psub h5{margin:6px 0 4px;padding:0 6px;font:700 9px 'JetBrains Mono';letter-spacing:.6px;color:var(--ink-3);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.psub h5::before{content:"";width:4px;height:4px;border-radius:999px;background:#6B36B5}
+
+/* fnode (canvas card) accent pill at top — category indicator */
+.fnode .fcat{display:inline-flex;align-items:center;gap:5px;font:700 9px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;
+  padding:3px 9px;border-radius:999px;margin-bottom:6px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.fnode .fcat .ftd{width:6px;height:6px;border-radius:999px;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
+.fnode .fcat.todo{background:rgba(253,236,208,.85);color:#A06F00}
+.fnode .fcat.todo .ftd{background:#E0A314}
+.fnode .fcat.progress{background:rgba(220,229,245,.85);color:var(--brand)}
+.fnode .fcat.progress .ftd{background:var(--brand)}
+.fnode .fcat.done{background:rgba(186,225,201,.85);color:#0F5C2F}
+.fnode .fcat.done .ftd{background:#1F9D55}
+.fnode .fcat.action{background:rgba(220,191,245,.85);color:#3F1B73}
+.fnode .fcat.action .ftd{background:#6B36B5}
+
+/* fn (step number disc) colored per category */
+.fnode .fn.cat-todo{background:linear-gradient(145deg,#F0A431,#C77B0B)}
+.fnode .fn.cat-done{background:linear-gradient(145deg,#28B26A,#1F9D55)}
+.fnode .fn.cat-action{background:linear-gradient(145deg,#7C46C5,#5C2D8E)}
+
+/* pico variants */
+.palette .ptile .pico.cat-todo{background:linear-gradient(145deg,#FCEDD3,#F5D89C);color:#A06F00}
+.palette .ptile .pico.cat-progress{background:linear-gradient(145deg,#DCE5F5,#A8B8DE);color:var(--brand)}
+.palette .ptile .pico.cat-done{background:linear-gradient(145deg,#DCF1E6,#B7E1C9);color:#0F5C2F}
+.palette .ptile .pico.cat-action{background:linear-gradient(145deg,#ECDFFB,#D6BFF5);color:#6B36B5}
+
+/* Category legend (top of Step 3) */
+.cat-legend{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;font-size:11px}
+.cat-legend .cl{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.6);
+  border:1px solid var(--line-soft);border-radius:999px;padding:4px 10px;color:var(--ink-2);font-weight:600;letter-spacing:-.01em;
+  box-shadow:var(--shadow-soft)}
+.cat-legend .cl .d{width:7px;height:7px;border-radius:999px}
+.cat-legend .cl.todo .d{background:#E0A314}
+.cat-legend .cl.progress .d{background:var(--brand)}
+.cat-legend .cl.done .d{background:#1F9D55}
+.cat-legend .cl.action .d{background:#6B36B5}
+
 /* ===== Quick start tiles (Step 1 entry) ===== */
 .qs-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
 .qs-tile{display:flex;align-items:center;gap:11px;padding:13px 14px;border-radius:14px;cursor:pointer;
@@ -1047,54 +1113,157 @@ textarea{min-height:88px;resize:vertical}
     </div>
 
     <div class="branch-tip">
-      <div class="bicon">🌿</div>
-      <div><b style="color:var(--ink)">Multi-choice support</b> — questions can now branch (High / Low / Normal · Yes / Moderately / No). Each option routes to its own next step or outcome. See Step 2 &amp; Step 3 below.</div>
+      <div class="bicon">📋</div>
+      <div><b style="color:var(--ink)">Step types use a 4-bucket workflow model</b> — like your previous app. Every step on the canvas belongs to one of: <b style="color:#A06F00">TO DO</b> (gates &amp; waits) · <b style="color:var(--brand)">IN PROGRESS</b> (operator does something) · <b style="color:#0F5C2F">DONE</b> (terminal outcomes) · <b style="color:#3F1B73">ACTIONS</b> (Process · Communication · Validate). 23 step types total in the palette.</div>
+    </div>
+
+    <div class="cat-legend">
+      <span class="cl todo"><span class="d"></span>TO DO · 4 types</span>
+      <span class="cl progress"><span class="d"></span>IN PROGRESS · 6 types</span>
+      <span class="cl done"><span class="d"></span>DONE · 3 types</span>
+      <span class="cl action"><span class="d"></span>ACTIONS · 10 types (Process · Comm · Validate)</span>
     </div>
 
     <div class="builder">
 
-      <!-- ===== Palette ===== -->
+      <!-- ===== Palette · 4-bucket model ===== -->
       <div class="palette">
-        <h4>Step types</h4>
+        <h4>Step library</h4>
 
-        <button class="ptile" onclick="addStep('question')">
-          <div class="pico q">❓</div>
-          <div class="ptxt"><div class="pt">Yes / No question</div><div class="ps">Two-way · simplest split</div></div>
-        </button>
-        <button class="ptile" onclick="addStep('multichoice')">
-          <div class="pico b">🌿</div>
-          <div class="ptxt"><div class="pt">Multi-choice question</div><div class="ps">3–5 options · branch each way</div></div>
-        </button>
-        <button class="ptile" onclick="addStep('multiselect')">
-          <div class="pico s">☑</div>
-          <div class="ptxt"><div class="pt">Multi-select check</div><div class="ps">Tick any that apply</div></div>
-        </button>
-        <button class="ptile" onclick="addStep('sensor')">
-          <div class="pico r">📡</div>
-          <div class="ptxt"><div class="pt">Sensor reading</div><div class="ps">Auto-read from sensor</div></div>
-        </button>
-        <button class="ptile" onclick="addStep('manual')">
-          <div class="pico s">📋</div>
-          <div class="ptxt"><div class="pt">Manual reading</div><div class="ps">Operator types a value</div></div>
-        </button>
-        <button class="ptile" onclick="addStep('action')">
-          <div class="pico s">🛠</div>
-          <div class="ptxt"><div class="pt">Action / fix</div><div class="ps">Do something physical</div></div>
-        </button>
-        <button class="ptile" onclick="addStep('photo')">
-          <div class="pico a">📷</div>
-          <div class="ptxt"><div class="pt">Photo capture</div><div class="ps">Snap evidence</div></div>
-        </button>
-        <button class="ptile" onclick="addStep('branch')">
-          <div class="pico b">⤴</div>
-          <div class="ptxt"><div class="pt">Decision branch</div><div class="ps">Split flow Yes / No</div></div>
-        </button>
-        <button class="ptile" onclick="addStep('stop')">
-          <div class="pico x">⏹</div>
-          <div class="ptxt"><div class="pt">Stop here</div><div class="ps">Hand off to supervisor</div></div>
-        </button>
+        <!-- ============ IN PROGRESS ============ -->
+        <details class="pgroup progress" open>
+          <summary><span class="cat-dot"></span><span>In Progress</span><span class="cat-count">6</span><span class="chev">⌃</span></summary>
+          <div class="ptiles">
+            <button class="ptile" onclick="addStep('question')">
+              <div class="pico cat-progress">❓</div>
+              <div class="ptxt"><div class="pt">Yes / No question</div><div class="ps">Two-way split</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('multichoice')">
+              <div class="pico cat-progress">🌿</div>
+              <div class="ptxt"><div class="pt">Multi-choice</div><div class="ps">3–5 branching options</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('multiselect')">
+              <div class="pico cat-progress">☑</div>
+              <div class="ptxt"><div class="pt">Multi-select check</div><div class="ps">Tick any that apply</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('sensor')">
+              <div class="pico cat-progress">📡</div>
+              <div class="ptxt"><div class="pt">Sensor reading</div><div class="ps">Auto-read + 5s timer</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('manual')">
+              <div class="pico cat-progress">📋</div>
+              <div class="ptxt"><div class="pt">Manual reading</div><div class="ps">Operator types value</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('branch')">
+              <div class="pico cat-progress">⤴</div>
+              <div class="ptxt"><div class="pt">Decision branch</div><div class="ps">Pure logic split</div></div>
+            </button>
+          </div>
+        </details>
 
-        <div class="ptip">Tip: drag-handle (⋮⋮) on a card lets you reorder. Tap × to remove.</div>
+        <!-- ============ TO DO ============ -->
+        <details class="pgroup todo">
+          <summary><span class="cat-dot"></span><span>To Do</span><span class="cat-count">4</span><span class="chev">⌃</span></summary>
+          <div class="ptiles">
+            <button class="ptile" onclick="addStep('wait')">
+              <div class="pico cat-todo">⏱</div>
+              <div class="ptxt"><div class="pt">Scheduled wait</div><div class="ps">Wait N min / hr</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('pendapproval')">
+              <div class="pico cat-todo">⏸</div>
+              <div class="ptxt"><div class="pt">Pending approval</div><div class="ps">Block until supervisor ✓</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('pendphoto')">
+              <div class="pico cat-todo">📷</div>
+              <div class="ptxt"><div class="pt">Photo required (gate)</div><div class="ps">Hard-block without photo</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('pendresp')">
+              <div class="pico cat-todo">⏳</div>
+              <div class="ptxt"><div class="pt">Pending response</div><div class="ps">Wait on assignee reply</div></div>
+            </button>
+          </div>
+        </details>
+
+        <!-- ============ DONE ============ -->
+        <details class="pgroup done">
+          <summary><span class="cat-dot"></span><span>Done</span><span class="cat-count">3</span><span class="chev">⌃</span></summary>
+          <div class="ptiles">
+            <button class="ptile" onclick="addStep('resolved')">
+              <div class="pico cat-done">✓</div>
+              <div class="ptxt"><div class="pt">Mark resolved</div><div class="ps">Issue confirmed fixed</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('closed')">
+              <div class="pico cat-done">🔒</div>
+              <div class="ptxt"><div class="pt">Mark closed</div><div class="ps">Final state, locked</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('stop')">
+              <div class="pico cat-done">⏹</div>
+              <div class="ptxt"><div class="pt">Stop here / escalate</div><div class="ps">Hand off to supervisor</div></div>
+            </button>
+          </div>
+        </details>
+
+        <!-- ============ ACTIONS (3 sub-groups) ============ -->
+        <details class="pgroup actions">
+          <summary><span class="cat-dot"></span><span>Action nodes</span><span class="cat-count">10</span><span class="chev">⌃</span></summary>
+          <div class="ptiles">
+
+            <div class="psub">
+              <h5>Process</h5>
+              <button class="ptile" onclick="addStep('reassign')">
+                <div class="pico cat-action">👥</div>
+                <div class="ptxt"><div class="pt">Reassign user</div><div class="ps">Hand off to another role</div></div>
+              </button>
+              <button class="ptile" onclick="addStep('subtask')">
+                <div class="pico cat-action">➕</div>
+                <div class="ptxt"><div class="pt">Create sub-task</div><div class="ps">Spawn related issue</div></div>
+              </button>
+              <button class="ptile" onclick="addStep('validatetag')">
+                <div class="pico cat-action">🏷</div>
+                <div class="ptxt"><div class="pt">Validate sensor tags</div><div class="ps">Check tag mapping</div></div>
+              </button>
+            </div>
+
+            <div class="psub">
+              <h5>Communication</h5>
+              <button class="ptile" onclick="addStep('whatsapp')">
+                <div class="pico cat-action">💬</div>
+                <div class="ptxt"><div class="pt">Send WhatsApp</div><div class="ps">Message + deep link</div></div>
+              </button>
+              <button class="ptile" onclick="addStep('sms')">
+                <div class="pico cat-action">📱</div>
+                <div class="ptxt"><div class="pt">Send SMS</div><div class="ps">Fallback channel</div></div>
+              </button>
+              <button class="ptile" onclick="addStep('email')">
+                <div class="pico cat-action">📧</div>
+                <div class="ptxt"><div class="pt">Send email</div><div class="ps">With session report</div></div>
+              </button>
+              <button class="ptile" onclick="addStep('phonecall')">
+                <div class="pico cat-action">📞</div>
+                <div class="ptxt"><div class="pt">Trigger call</div><div class="ps">Urgent only</div></div>
+              </button>
+            </div>
+
+            <div class="psub">
+              <h5>Validate</h5>
+              <button class="ptile" onclick="addStep('upmedia')">
+                <div class="pico cat-action">🖼</div>
+                <div class="ptxt"><div class="pt">Upload media</div><div class="ps">Photo / video evidence</div></div>
+              </button>
+              <button class="ptile" onclick="addStep('addrca')">
+                <div class="pico cat-action">📝</div>
+                <div class="ptxt"><div class="pt">Add RCA</div><div class="ps">Root cause analysis</div></div>
+              </button>
+              <button class="ptile" onclick="addStep('updoc')">
+                <div class="pico cat-action">📎</div>
+                <div class="ptxt"><div class="pt">Upload document</div><div class="ps">PDF / spreadsheet</div></div>
+              </button>
+            </div>
+
+          </div>
+        </details>
+
+        <div class="ptip">4 buckets · 23 step types in total. Tap a tile to add it to the canvas.</div>
       </div>
 
       <!-- ===== Canvas ===== -->
@@ -1121,11 +1290,12 @@ textarea{min-height:88px;resize:vertical}
           <!-- Step 1 -->
           <div class="fnode" data-tpl="lowdo" onclick="openDrawer(1);selectNode(this)">
             <div class="fdrag"></div>
-            <div class="fn">1</div>
+            <div class="fn cat-progress">1</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
+            <div class="fcat progress"><span class="ftd"></span>In Progress · Yes/No</div>
             <div class="ft">Is the blower running?</div>
             <div class="fs">
               <span class="chip">❓ Yes/No</span>
@@ -1140,11 +1310,12 @@ textarea{min-height:88px;resize:vertical}
           <!-- Step 2 · Flow 1: Blower performance (multi-choice + nested Y/N) -->
           <div class="fnode" data-tpl="lowdo" onclick="openDrawer(2);selectNode(this)">
             <div class="fdrag"></div>
-            <div class="fn">2</div>
+            <div class="fn cat-progress">2</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
+            <div class="fcat progress"><span class="ftd"></span>In Progress · Multi-choice</div>
             <div class="ft">Check blower header pressure and flow <span class="mctag">🌿 BRANCHES 3</span></div>
             <div style="font-size:12.5px;color:var(--ink-3);margin-top:2px">Sub-question: <i>How is the pressure?</i></div>
             <div class="fopt-row">
@@ -1167,11 +1338,12 @@ textarea{min-height:88px;resize:vertical}
           <!-- Step 3 · Flow 2: Aeration distribution (multi-choice + multi-select) -->
           <div class="fnode selected" data-tpl="lowdo" onclick="openDrawer(3);selectNode(this)">
             <div class="fdrag"></div>
-            <div class="fn">3</div>
+            <div class="fn cat-progress">3</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
+            <div class="fcat progress"><span class="ftd"></span>In Progress · Multi-choice + Multi-select</div>
             <div class="ft">1 · Check if aeration is equally happening across the tank <span class="mctag">🌿 BRANCHES 3</span></div>
             <div class="fopt-row">
               <div class="lbl">Answer routes</div>
@@ -1210,11 +1382,12 @@ textarea{min-height:88px;resize:vertical}
           <!-- Step 4 -->
           <div class="fnode" data-tpl="lowdo" onclick="openDrawer(4);selectNode(this)">
             <div class="fdrag"></div>
-            <div class="fn">4</div>
+            <div class="fn cat-progress">4</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
+            <div class="fcat progress"><span class="ftd"></span>In Progress · Yes/No</div>
             <div class="ft">Is there a DO sensor problem?</div>
             <div class="fs">
               <span class="chip">❓ Yes/No</span>
@@ -1229,11 +1402,12 @@ textarea{min-height:88px;resize:vertical}
           <!-- Step 5 -->
           <div class="fnode" data-tpl="lowdo" onclick="openDrawer(5);selectNode(this)">
             <div class="fdrag"></div>
-            <div class="fn">5</div>
+            <div class="fn cat-progress">5</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
+            <div class="fcat progress"><span class="ftd"></span>In Progress · Manual reading</div>
             <div class="ft">Is sludge bulking happening?</div>
             <div class="fs">
               <span class="chip">📋 Manual</span>
@@ -1248,11 +1422,12 @@ textarea{min-height:88px;resize:vertical}
           <!-- Step 6 -->
           <div class="fnode" data-tpl="lowdo" onclick="openDrawer(6);selectNode(this)">
             <div class="fdrag"></div>
-            <div class="fn">6</div>
+            <div class="fn cat-progress">6</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
+            <div class="fcat progress"><span class="ftd"></span>In Progress · Yes/No</div>
             <div class="ft">Shock load in incoming flow?</div>
             <div class="fs">
               <span class="chip">❓ Yes/No</span>
@@ -1830,30 +2005,69 @@ textarea{min-height:88px;resize:vertical}
   }
 
   // ===== Figma-like canvas helpers =====
+  // 4-bucket model: todo · progress · done · action (with sub-types)
   const STEP_TEMPLATES = {
-    question:    { ttl: "New question · edit me", chips:['❓ Yes/No','2 routes','👤 Operator'],          kind:'STEP_Q' },
-    multichoice: { ttl: "New multi-choice question · edit me", chips:['🌿 Multi-choice','3 routes','👤 Operator'], kind:'STEP_MC' },
-    multiselect: { ttl: "New multi-select check · edit me", chips:['☑ Multi-select','Tick any','👤 Operator'], kind:'STEP_MS' },
-    sensor:      { ttl: "Read sensor value", chips:['📡 Auto-read','5s timer','👤 Operator'],            kind:'STEP_SENSOR' },
-    manual:      { ttl: "Manual reading from operator", chips:['📋 Manual','Numeric input','🧪 Process / Lab'], kind:'STEP_MANUAL' },
-    action:      { ttl: "Action / fix to perform", chips:['🛠 Action','🔧 Mechanical'],                  kind:'STEP_ACTION' },
-    photo:       { ttl: "Capture a photo", chips:['📷 Photo','Hard block','👤 Operator'],                kind:'STEP_PHOTO' },
-    branch:      { ttl: "Decision · Yes / No split", chips:['⤴ Branch','2 paths'],                       kind:'STEP_BRANCH' },
-    stop:        { ttl: "Stop here · escalate", chips:['⏹ Stop','📞 Supervisor'],                        kind:'STEP_STOP' },
+    // === IN PROGRESS (operator interacts) ===
+    question:    { ttl: "New Yes / No question — edit me",  chips:['❓ Yes/No','2 routes','👤 Operator'],            kind:'STEP_Q',       cat:'progress', catLabel:'In Progress · Yes/No' },
+    multichoice: { ttl: "New multi-choice question — edit me", chips:['🌿 Multi-choice','3 routes','👤 Operator'],  kind:'STEP_MC',      cat:'progress', catLabel:'In Progress · Multi-choice' },
+    multiselect: { ttl: "New multi-select check — edit me", chips:['☑ Multi-select','Tick any','👤 Operator'],     kind:'STEP_MS',      cat:'progress', catLabel:'In Progress · Multi-select' },
+    sensor:      { ttl: "Read sensor value",                chips:['📡 Auto-read','5s timer','👤 Operator'],         kind:'STEP_SENSOR',  cat:'progress', catLabel:'In Progress · Sensor' },
+    manual:      { ttl: "Manual reading from operator",      chips:['📋 Manual','Numeric input','🧪 Process / Lab'], kind:'STEP_MANUAL',  cat:'progress', catLabel:'In Progress · Manual reading' },
+    branch:      { ttl: "Decision branch (pure logic)",      chips:['⤴ Branch','2 paths'],                            kind:'STEP_BRANCH',  cat:'progress', catLabel:'In Progress · Decision branch' },
+
+    // === TO DO (waiting / gating) ===
+    wait:        { ttl: "Scheduled wait",                    chips:['⏱ Wait','1 hr timer'],                          kind:'STEP_WAIT',       cat:'todo', catLabel:'To Do · Scheduled wait' },
+    pendapproval:{ ttl: "Pending supervisor approval",       chips:['⏸ Pending','Blocks flow'],                      kind:'STEP_PEND_APP',   cat:'todo', catLabel:'To Do · Pending approval' },
+    pendphoto:   { ttl: "Photo required (hard gate)",         chips:['📷 Required','Cannot continue'],                kind:'STEP_PEND_PHOTO', cat:'todo', catLabel:'To Do · Photo gate' },
+    pendresp:    { ttl: "Pending response from assignee",     chips:['⏳ Awaiting','From assignee'],                  kind:'STEP_PEND_RESP',  cat:'todo', catLabel:'To Do · Awaiting response' },
+
+    // === DONE (terminal) ===
+    resolved:    { ttl: "Mark issue resolved",                chips:['✓ Resolved','Verify required'],                 kind:'STEP_DONE_RES',  cat:'done', catLabel:'Done · Resolved' },
+    closed:      { ttl: "Mark issue closed",                  chips:['🔒 Closed','Final state'],                      kind:'STEP_DONE_CLOSED', cat:'done', catLabel:'Done · Closed' },
+    stop:        { ttl: "Stop here · escalate to supervisor", chips:['⏹ Stop','📞 Supervisor'],                       kind:'STEP_STOP',      cat:'done', catLabel:'Done · Stop / Escalate' },
+
+    // === ACTION NODES · Process ===
+    reassign:    { ttl: "Reassign to a different user",       chips:['👥 Reassign','Hand off'],                       kind:'STEP_ACT_REASSIGN', cat:'action', catLabel:'Action · Process · Reassign' },
+    subtask:     { ttl: "Create a sub-task",                  chips:['➕ Sub-task','Spawns new issue'],                kind:'STEP_ACT_SUBTASK',  cat:'action', catLabel:'Action · Process · Sub-task' },
+    validatetag: { ttl: "Validate sensor tags",               chips:['🏷 Validate','Tag mapping'],                     kind:'STEP_ACT_VTAG',     cat:'action', catLabel:'Action · Process · Validate tags' },
+
+    // === ACTION NODES · Communication ===
+    whatsapp:    { ttl: "Send WhatsApp message",              chips:['💬 WhatsApp','Deep link'],                      kind:'STEP_ACT_WA',     cat:'action', catLabel:'Action · Communication · WhatsApp' },
+    sms:         { ttl: "Send SMS",                            chips:['📱 SMS','Fallback'],                            kind:'STEP_ACT_SMS',    cat:'action', catLabel:'Action · Communication · SMS' },
+    email:       { ttl: "Send email",                          chips:['📧 Email','With report'],                       kind:'STEP_ACT_EMAIL',  cat:'action', catLabel:'Action · Communication · Email' },
+    phonecall:   { ttl: "Trigger phone call",                  chips:['📞 Call','Urgent only'],                        kind:'STEP_ACT_CALL',   cat:'action', catLabel:'Action · Communication · Call' },
+
+    // === ACTION NODES · Validate ===
+    upmedia:     { ttl: "Upload media (photo / video)",        chips:['🖼 Media','Evidence'],                          kind:'STEP_ACT_MEDIA',  cat:'action', catLabel:'Action · Validate · Upload media' },
+    addrca:      { ttl: "Add root cause analysis",             chips:['📝 RCA','Free text'],                            kind:'STEP_ACT_RCA',    cat:'action', catLabel:'Action · Validate · Add RCA' },
+    updoc:       { ttl: "Upload document",                     chips:['📎 Document','PDF / file'],                     kind:'STEP_ACT_DOC',    cat:'action', catLabel:'Action · Validate · Upload doc' },
+
+    // === Backwards-compat aliases ===
+    action:      { ttl: "Action / fix to perform",             chips:['🛠 Action','🔧 Mechanical'],                    kind:'STEP_ACTION',    cat:'progress', catLabel:'In Progress · Action' },
+    photo:       { ttl: "Photo capture step",                   chips:['📷 Photo','Hard block','👤 Operator'],          kind:'STEP_PHOTO',     cat:'todo', catLabel:'To Do · Photo gate' },
   };
 
   function buildNode(template, n) {
     const t = STEP_TEMPLATES[template] || STEP_TEMPLATES.question;
+    const cat = t.cat || 'progress';
+    // sub-category for ACTION nodes: pick from kind code
+    let subCat = '';
+    if (cat === 'action') {
+      if (t.kind && t.kind.startsWith('STEP_ACT_WA') || t.kind === 'STEP_ACT_SMS' || t.kind === 'STEP_ACT_EMAIL' || t.kind === 'STEP_ACT_CALL') subCat = 'Communication';
+      else if (t.kind === 'STEP_ACT_MEDIA' || t.kind === 'STEP_ACT_RCA' || t.kind === 'STEP_ACT_DOC') subCat = 'Validate';
+      else subCat = 'Process';
+    }
     const node = document.createElement('div');
     node.className = 'fnode';
     node.onclick = function(){ openDrawer(n); selectNode(node); };
     node.innerHTML = `
       <div class="fdrag"></div>
-      <div class="fn">${n}</div>
+      <div class="fn cat-${cat}">${n}</div>
       <div class="ftools">
         <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
         <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
       </div>
+      <div class="fcat ${cat}"><span class="ftd"></span>${t.catLabel || cat.toUpperCase()}</div>
       <div class="ft">${t.ttl}</div>
       <div class="fs">${t.chips.map(c=>'<span class="chip">'+c+'</span>').join('')}</div>
       <span class="fk">${t.kind}</span>
