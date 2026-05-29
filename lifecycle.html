@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Close the Loop · v2 · Operator + Supervisor Lifecycle</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#002976; --brand-2:#1A3F8C; --brand-tint:#E5EBF5; --brand-tint-2:#D0DCF0;
+  --bg-1:#F1F4FA; --bg-2:#E9EBF4; --bg-3:#ECE7F1; --bg-4:#F5EFEB;
+  --ink:#0E1428; --ink-2:#3B4259; --ink-3:#7A8094; --ink-4:#A8ADBE;
+  --line:#E4E8EF; --line-soft:#EAEDF2;
+  --blue:#3E70CC; --blue-tint:#E5EDF8; --blue-d:#1F3F84;
+  --yellow:#E0A314; --yellow-tint:#FCEDD3; --yellow-d:#A06F00;
+  --red:#D64545; --red-tint:#FBE0E0; --red-d:#7A1F1F;
+  --green:#1F9D55; --green-tint:#DCF1E6; --green-d:#0F5C2F;
+  --purple:#6B36B5; --purple-tint:#ECDFFB; --purple-d:#3F1B73;
+  --pink:#C03E7F; --pink-tint:#FBDEE9; --pink-d:#7A1E4F;
+  --sky:#2A8BBE; --sky-tint:#D7EEF8; --sky-d:#155E84;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;color:var(--ink);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;line-height:1.5;
+  background:
+    radial-gradient(1200px 600px at 110% -10%, rgba(187,170,220,.25) 0%, transparent 60%),
+    radial-gradient(900px 500px at -10% 100%, rgba(170,200,230,.30) 0%, transparent 60%),
+    linear-gradient(140deg, var(--bg-1) 0%, var(--bg-2) 35%, var(--bg-3) 70%, var(--bg-4) 100%);
+  background-attachment:fixed;min-height:100vh}
+
+header.top{padding:28px 32px 6px;max-width:1280px;margin:0 auto}
+header.top .eyebrow{font-family:'JetBrains Mono';font-size:11px;color:var(--brand);background:var(--brand-tint);border:1px solid var(--brand-tint-2);border-radius:999px;padding:4px 10px;display:inline-block;letter-spacing:.5px;font-weight:600}
+header.top h1{font-size:32px;font-weight:800;letter-spacing:-.02em;margin:10px 0 4px}
+header.top h1 em{font-family:'DM Serif Display';font-style:italic;font-weight:400;color:var(--brand)}
+header.top .desc{color:var(--ink-2);max-width:780px;margin-top:6px}
+header.top .desc b{color:var(--ink)}
+
+.legend{display:flex;gap:8px;flex-wrap:wrap;padding:14px 32px;max-width:1280px;margin:0 auto}
+.legend .l{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);background:rgba(255,255,255,.55);
+  border:1px solid var(--line);border-radius:999px;padding:5px 10px;backdrop-filter:blur(8px)}
+.legend .l .dot{width:10px;height:10px;border-radius:4px}
+.dot.op{background:var(--blue)}
+.dot.dev{background:var(--yellow)}
+.dot.gate{background:var(--red)}
+.dot.sup{background:var(--sky)}
+.dot.rea{background:var(--pink)}
+.dot.tree{background:var(--purple)}
+.dot.aud{background:var(--green)}
+.dot.state{background:#888}
+
+/* Diagram scrolling container */
+.diagram-wrap{padding:8px 32px 32px;max-width:100%;overflow-x:auto}
+.diagram{display:grid;grid-template-columns:140px repeat(8,minmax(220px,1fr));gap:8px;min-width:1900px;
+  background:rgba(255,255,255,.45);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 12px 40px -16px rgba(40,50,80,.18);
+  backdrop-filter:blur(8px)}
+
+/* State rail top row */
+.state-rail{grid-column:1 / -1;display:grid;grid-template-columns:140px repeat(8,minmax(220px,1fr));gap:8px;margin-bottom:8px}
+.stage-head{padding:10px 12px;text-align:center}
+.stage-head .num{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-3);letter-spacing:.4px}
+.stage-head .name{font-weight:800;font-size:14px;letter-spacing:-.01em;margin-top:2px}
+.stage-head .what{font-size:11px;color:var(--ink-3);margin-top:2px}
+.state-cell{padding:9px 14px;border-radius:14px;text-align:center;font:600 11px 'Plus Jakarta Sans';letter-spacing:.4px;
+  border:1px solid;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.state-cell.created{background:#EFE4FB;border-color:#D6BFF5;color:#6B36B5}
+.state-cell.open{background:#DCE5F5;border-color:#A8B8DE;color:var(--brand)}
+.state-cell.diag{background:#DCE5F5;border-color:#A8B8DE;color:var(--brand)}
+.state-cell.wait{background:#FBDEE9;border-color:#F4B8D0;color:#7A1E4F}
+.state-cell.reme{background:#DCE5F5;border-color:#A8B8DE;color:var(--brand)}
+.state-cell.verify{background:#FCEDD3;border-color:#F0C97A;color:#A06F00}
+.state-cell.res{background:#DCF1E6;border-color:#B7E1C9;color:#0F5C2F}
+.state-cell.closed{background:#DCF1E6;border-color:#B7E1C9;color:#0F5C2F}
+
+.row-label{padding:14px 12px 14px 6px;font:700 10px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.7px;text-transform:uppercase;display:flex;align-items:flex-start;line-height:1.3;border-right:1px dashed var(--line)}
+
+.cell{padding:6px 6px;display:flex;flex-direction:column;gap:6px}
+
+/* Box styles */
+.box{padding:9px 11px;border-radius:11px;font-size:12.5px;line-height:1.35;
+  background:#fff;border:1.5px solid;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 1px 2px rgba(40,50,80,.04),0 4px 10px -4px rgba(40,50,80,.10)}
+.box .ttl{font-weight:700;letter-spacing:-.01em;margin-bottom:2px}
+.box .ev{font-family:'JetBrains Mono';font-size:9.5px;color:var(--ink-3);letter-spacing:.4px;margin-top:3px}
+.box .arr{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ink-3);margin-top:3px;display:block}
+.box.op{background:#E5EDF8;border-color:#A8B8DE;color:var(--blue-d)}
+.box.dev{background:#FCEDD3;border-color:#F0C97A;color:var(--yellow-d)}
+.box.gate{background:#FBE0E0;border-color:#F4B8B8;color:var(--red-d)}
+.box.sup{background:#D7EEF8;border-color:#A8D0E5;color:var(--sky-d)}
+.box.rea{background:#FBDEE9;border-color:#F4B8D0;color:var(--pink-d)}
+.box.tree{background:#ECDFFB;border-color:#D6BFF5;color:var(--purple-d)}
+.box.aud{background:#DCF1E6;border-color:#B7E1C9;color:var(--green-d)}
+.box.choice{background:#FFF;border-color:var(--line);color:var(--ink-2);font-style:italic;border-style:dashed}
+.box.linkout{background:#FFF;border-style:dashed;color:var(--ink-3);font-weight:600}
+
+.box .sub{font-size:11px;color:var(--ink-3);font-weight:500;margin-top:2px;line-height:1.4;font-style:normal}
+.box.dev .sub{color:#7A5800}
+.box.gate .sub{color:#7A1F1F}
+.box.sup .sub{color:#1F5074}
+.box.rea .sub{color:#6F1A47}
+.box.tree .sub{color:#3F1B73}
+.box.aud .sub{color:#0F5C2F}
+
+.empty{height:20px}
+
+/* Bottom arrow guide */
+.arrow-guide{padding:20px 32px;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.guide-card{background:rgba(255,255,255,.7);border:1px solid var(--line);border-radius:18px;padding:18px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 8px 20px -8px rgba(40,50,80,.10)}
+.guide-card h3{margin:0 0 10px;font-size:14px;font-weight:700;letter-spacing:-.01em}
+.guide-card h3 em{font-family:'DM Serif Display';font-style:italic;font-weight:400;color:var(--brand)}
+.guide-card ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--ink-2);line-height:1.65}
+.guide-card li{margin-bottom:6px}
+.guide-card li b{color:var(--ink)}
+.guide-card code{font-family:'JetBrains Mono';font-size:11px;background:var(--brand-tint);color:var(--brand);padding:1px 6px;border-radius:5px;border:1px solid var(--brand-tint-2)}
+
+/* Changes table */
+.changes{padding:8px 32px 80px;max-width:1280px;margin:0 auto}
+.changes h2{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:20px 0 12px}
+.changes h2 em{font-family:'DM Serif Display';font-style:italic;font-weight:400;color:var(--brand)}
+.changes table{width:100%;border-collapse:collapse;background:rgba(255,255,255,.6);
+  border:1px solid var(--line);border-radius:18px;overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 8px 20px -8px rgba(40,50,80,.10)}
+.changes th,.changes td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top;font-size:13px;line-height:1.5}
+.changes th{font:700 11px 'JetBrains Mono';background:rgba(255,255,255,.6);color:var(--ink-3);letter-spacing:.5px;text-transform:uppercase}
+.changes tr:last-child td{border-bottom:none}
+.changes .gap{color:var(--red-d);font-weight:700}
+.changes .fix{color:var(--green-d);font-weight:600}
+.changes .where{font-family:'JetBrains Mono';font-size:11px;color:var(--ink-3)}
+
+.intro-card{background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:18px;padding:14px 18px;
+  margin:0 32px 16px;max-width:1216px;font-size:13px;color:var(--ink-2);line-height:1.55;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 6px 14px -6px rgba(40,50,80,.08)}
+.intro-card b{color:var(--ink)}
+
+@media (max-width: 900px) {
+  .arrow-guide{grid-template-columns:1fr}
+  header.top h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="eyebrow">v2 · UPDATED 28 MAY</span>
+  <h1>Close the Loop · <em>Operator + Supervisor Lifecycle</em></h1>
+  <p class="desc">
+    Same 7-stage spine as v1, but with the gaps filled: <b>split exception events, explicit gate consequences, reassignment swim-lane, tree-improvement feedback path, and review-queue routes.</b>
+    Main path flows left to right. Each row below the state rail is a swim lane — operator main, operator deviations, gates that hit <code>WAITING</code>, supervisor surfaces, reassignment arc, tree-improvement loop, and audit outputs.
+  </p>
+</header>
+
+<div class="legend">
+  <span class="l"><span class="dot state"></span>Issue state</span>
+  <span class="l"><span class="dot op"></span>Operator main flow</span>
+  <span class="l"><span class="dot dev"></span>Operator deviation / branch</span>
+  <span class="l"><span class="dot gate"></span>Approval gate (→ WAITING)</span>
+  <span class="l"><span class="dot sup"></span>Supervisor + system surface</span>
+  <span class="l"><span class="dot rea"></span>Reassignment arc</span>
+  <span class="l"><span class="dot tree"></span>Tree improvement feedback</span>
+  <span class="l"><span class="dot aud"></span>Audit / outputs</span>
+</div>
+
+<div class="intro-card">
+  <b>What changed from v1:</b>  ① 4 new states added to the rail · ② Skip / Don't-know / Fallback / Retry / Correct are now separate boxes with distinct events ·
+  ③ Photo, cost, and verify gates are all explicit with failure paths · ④ Reassignment now has its own lane showing the 3-stage handoff ·
+  ⑤ "Tree improvement" loops back into the next session via SME · ⑥ Review-queue actions show their destinations · ⑦ "Flag new issue" and "self-request reassign" are first-class deviations · ⑧ Auto-recovery vs RCA-provided-auto-close are no longer confused.
+</div>
+
+<div class="diagram-wrap">
+  <div class="diagram">
+
+    <!-- ============ STATE RAIL HEADERS ============ -->
+    <div class="state-rail">
+      <div></div>
+      <div class="stage-head"><div class="num">01</div><div class="name">Create</div><div class="what">Alert / report / schedule</div></div>
+      <div class="stage-head"><div class="num">02</div><div class="name">Intake</div><div class="what">Route &amp; assign</div></div>
+      <div class="stage-head"><div class="num">03</div><div class="name">Diagnose</div><div class="what">Find what's wrong</div></div>
+      <div class="stage-head"><div class="num">04</div><div class="name">Root Cause</div><div class="what">Confirm activity</div></div>
+      <div class="stage-head"><div class="num">05</div><div class="name">Remediate</div><div class="what">Do procedure</div></div>
+      <div class="stage-head"><div class="num">06</div><div class="name">Verify</div><div class="what">Did the fix work?</div></div>
+      <div class="stage-head"><div class="num">07</div><div class="name">Close</div><div class="what">Record &amp; learn</div></div>
+      <div class="stage-head"><div class="num">↻</div><div class="name">Feedback</div><div class="what">SME loop / audit</div></div>
+    </div>
+
+    <!-- ============ STATE RAIL CELLS ============ -->
+    <div class="state-rail">
+      <div class="row-label">Issue state rail</div>
+      <div class="cell"><div class="state-cell created">issue_created</div></div>
+      <div class="cell"><div class="state-cell open">OPEN</div></div>
+      <div class="cell"><div class="state-cell diag">IN_PROGRESS · DIAGNOSE</div></div>
+      <div class="cell"><div class="state-cell wait">WAITING · RC_APPROVAL</div></div>
+      <div class="cell"><div class="state-cell reme">IN_PROGRESS · REMEDIATE</div></div>
+      <div class="cell"><div class="state-cell verify">PENDING_VERIFY</div></div>
+      <div class="cell"><div class="state-cell res">RESOLVED</div></div>
+      <div class="cell"><div class="state-cell closed">CLOSED · LEARNING</div></div>
+    </div>
+
+    <!-- ============ OPERATOR MAIN ============ -->
+    <div class="row-label">Operator main flow</div>
+    <div class="cell"><div class="box op"><div class="ttl">Alert / Report / Schedule</div><div class="sub">Sensor alert · operator report · scheduled check</div><div class="ev">EVT issue_created</div></div></div>
+    <div class="cell">
+      <div class="box op"><div class="ttl">Route issue</div><div class="sub">Auto-route by skill type + on-shift roster</div><div class="ev">EVT routed_to · assignee_id</div></div>
+      <div class="box choice">RCA already known? →<br/><b>Yes</b>: skip to Remediate ·<br/><b>No</b>: begin Diagnose</div>
+    </div>
+    <div class="cell">
+      <div class="box op"><div class="ttl">Answer diagnostic steps</div><div class="sub">Walk Yes/No · multi-choice · multi-select · sensor · manual readings</div><div class="ev">EVT step_answered</div></div>
+    </div>
+    <div class="cell">
+      <div class="box op"><div class="ttl">Confirm root cause</div><div class="sub">Select from list · upload evidence photo</div><div class="ev">EVT rca_selected</div></div>
+    </div>
+    <div class="cell">
+      <div class="box op"><div class="ttl">Perform remediation</div><div class="sub">Action steps · timer · photo gates</div><div class="ev">EVT step_completed</div></div>
+    </div>
+    <div class="cell">
+      <div class="box op"><div class="ttl">Manual verify the fix</div><div class="sub">Operator confirms the issue is resolved + photo</div><div class="ev">EVT verify_passed</div></div>
+    </div>
+    <div class="cell">
+      <div class="box op"><div class="ttl">Issue close</div><div class="sub">Operator finalises notes &amp; closes</div><div class="ev">EVT issue_closed</div></div>
+    </div>
+    <div class="cell">
+      <div class="box aud"><div class="ttl">Audit + history written</div><div class="sub">Timeline · Equipment History · Review log</div><div class="ev">EVT history_written</div></div>
+    </div>
+
+    <!-- ============ OPERATOR DEVIATIONS / BRANCHES ============ -->
+    <div class="row-label">Operator deviations<br/>(now split, were merged)</div>
+    <div class="cell">
+      <div class="box dev"><div class="ttl">False alarm at alert card</div><div class="sub">Before diagnose · operator dismisses with reason + photo</div><div class="ev">EVT false_alarm_pre_diag → notifies SME</div></div>
+    </div>
+    <div class="cell">
+      <div class="box dev"><div class="ttl">"I know the cause"</div><div class="sub">Advanced operators only · jump straight to Root Cause</div><div class="ev">EVT diagnose_shortcut</div><div class="arr">→ skip to ④</div></div>
+      <div class="box dev"><div class="ttl">Self-request reassign</div><div class="sub">"Need help" before starting</div><div class="ev">EVT self_reassign_requested → Reassignment lane</div></div>
+    </div>
+    <div class="cell">
+      <div class="box dev"><div class="ttl">SKIP step</div><div class="sub">Move past without answering</div><div class="ev">EVT step_skipped</div></div>
+      <div class="box dev"><div class="ttl">DON'T KNOW</div><div class="sub">Request supervisor help · pauses session</div><div class="ev">EVT help_requested → Reassignment lane</div></div>
+      <div class="box dev"><div class="ttl">FALLBACK</div><div class="sub">System reverts to a prior step (logic-based)</div><div class="ev">EVT step_fallback</div></div>
+      <div class="box dev"><div class="ttl">RETRY</div><div class="sub">Operator replays the same step</div><div class="ev">EVT step_retried</div></div>
+      <div class="box dev"><div class="ttl">CORRECT prior answer</div><div class="sub">Operator updates a previous response</div><div class="ev">EVT step_corrected → re-evaluate</div></div>
+      <div class="box dev"><div class="ttl">Flag new issue</div><div class="sub">Found a separate problem mid-diagnose · creates new issue</div><div class="ev">EVT new_issue_flagged → Supervisor</div></div>
+    </div>
+    <div class="cell">
+      <div class="box dev"><div class="ttl">Different cause</div><div class="sub">Select RCA outside the suggested list</div><div class="ev">EVT rca_overridden → Tree improvement</div></div>
+      <div class="box dev"><div class="ttl">Other (free text)</div><div class="sub">Custom RCA · forces photo + verify</div><div class="ev">EVT rca_freetext</div></div>
+      <div class="box dev"><div class="ttl">False alarm in diagnose</div><div class="sub">Not a real issue · free-text reason mandatory</div><div class="ev">EVT false_alarm_post_diag</div></div>
+    </div>
+    <div class="cell">
+      <div class="box dev"><div class="ttl">WAIT timer running</div><div class="sub">e.g. "wait 1 hour after cleaning"</div><div class="ev">EVT wait_started</div></div>
+      <div class="box dev"><div class="ttl">Pause + resume</div><div class="sub">Operator steps away · session preserved</div><div class="ev">EVT session_paused → PAUSED</div></div>
+      <div class="box dev"><div class="ttl">Remediation failed</div><div class="sub">Fix didn't work · escalate or try next RCA</div><div class="ev">EVT remediation_failed</div></div>
+    </div>
+    <div class="cell">
+      <div class="box dev"><div class="ttl">Auto-recovery detected</div><div class="sub">Sensor returned to safe range on its own</div><div class="ev">EVT sensor_self_recovered</div><div class="arr">→ skip to ⑦</div></div>
+      <div class="box dev"><div class="ttl">Failed verify</div><div class="sub">Operator says "not fixed" · loops back to Remediate or RCA</div><div class="ev">EVT verify_failed</div></div>
+    </div>
+    <div class="cell">
+      <div class="box dev"><div class="ttl">Force close / Abort</div><div class="sub">Supervisor override · requires reason</div><div class="ev">EVT force_closed</div></div>
+    </div>
+    <div class="cell">
+      <div class="box dev"><div class="ttl">Operator-suggested tree edit</div><div class="sub">"This step was wrong" → marked for SME review</div><div class="ev">EVT improvement_suggested → Tree loop</div></div>
+    </div>
+
+    <!-- ============ APPROVAL GATES ============ -->
+    <div class="row-label">Approval &amp; hard gates<br/>(→ WAITING state)</div>
+    <div class="cell"><div class="empty"></div></div>
+    <div class="cell"><div class="empty"></div></div>
+    <div class="cell">
+      <div class="box gate"><div class="ttl">Step requires sup approval</div><div class="sub">High-risk diagnostic step · waits for supervisor ✓</div><div class="ev">STATE → WAITING_STEP_APPROVAL</div></div>
+    </div>
+    <div class="cell">
+      <div class="box gate"><div class="ttl">RC sign-off gate</div><div class="sub">Some RCAs require supervisor to confirm before remediation</div><div class="ev">STATE → WAITING_RC_APPROVAL</div></div>
+      <div class="box gate"><div class="ttl">SME approval</div><div class="sub">For tree-improvement RCAs · queued to SME</div><div class="ev">STATE → WAITING_SME_REVIEW</div></div>
+    </div>
+    <div class="cell">
+      <div class="box gate"><div class="ttl">Photo hard-gate</div><div class="sub">No photo → cannot continue · 3 retries then auto-escalate</div><div class="ev">STATE → WAITING_PHOTO · fallback ESCALATED</div></div>
+      <div class="box gate"><div class="ttl">Cost approval gate</div><div class="sub">High-cost remediation step needs supervisor / manager sign-off</div><div class="ev">STATE → WAITING_COST_APPROVAL</div></div>
+    </div>
+    <div class="cell">
+      <div class="box gate"><div class="ttl">Verify supervisor approval</div><div class="sub">Critical issues need supervisor verify before RESOLVED</div><div class="ev">STATE → WAITING_VERIFY_APPROVAL</div></div>
+    </div>
+    <div class="cell">
+      <div class="box gate"><div class="ttl">Close confirm</div><div class="sub">Supervisor double-checks close on high-severity issues</div><div class="ev">STATE → WAITING_CLOSE_CONFIRM</div></div>
+    </div>
+    <div class="cell"><div class="empty"></div></div>
+
+    <!-- ============ SUPERVISOR + SYSTEM ============ -->
+    <div class="row-label">Supervisor +<br/>system surfaces</div>
+    <div class="cell">
+      <div class="box sup"><div class="ttl">Alert dispatcher</div><div class="sub">System decides who to notify based on skill + roster</div></div>
+    </div>
+    <div class="cell">
+      <div class="box sup"><div class="ttl">Live visibility console</div><div class="sub">Sees: operator · current step · time on step · state · offline</div></div>
+    </div>
+    <div class="cell">
+      <div class="box sup"><div class="ttl">Approve / reject step</div><div class="sub">Approve (note optional) · reject (reason required)</div></div>
+    </div>
+    <div class="cell">
+      <div class="box sup"><div class="ttl">RC approval queue</div><div class="sub">Approve · reject · suggest different RC</div></div>
+    </div>
+    <div class="cell">
+      <div class="box sup"><div class="ttl">Remediation approvals</div><div class="sub">Photo proof view · cost gate sign-off · WAIT remind</div></div>
+    </div>
+    <div class="cell">
+      <div class="box sup"><div class="ttl">Verify queue</div><div class="sub">Confirm fix worked · override photo requirement</div></div>
+    </div>
+    <div class="cell">
+      <div class="box sup"><div class="ttl">Review queue</div><div class="sub">False alarm · Not this RCA · Force close · Repeated stops · Escalation flags<br/>→ <b>Reopen / Send-to-SME / Accept</b></div></div>
+    </div>
+    <div class="cell">
+      <div class="box sup"><div class="ttl">Auto-close detector</div><div class="sub">Sensor recovers on its own → routes to auto-closure without operator</div><div class="ev">STATE → AUTO_CLOSED</div></div>
+    </div>
+
+    <!-- ============ REASSIGNMENT ARC ============ -->
+    <div class="row-label">Reassignment arc<br/>(new lane)</div>
+    <div class="cell"><div class="empty"></div></div>
+    <div class="cell">
+      <div class="box rea"><div class="ttl">① Trigger</div><div class="sub">Op A "Need help" · or Supervisor reassigns · or skill-mismatch auto-route</div><div class="ev">EVT reassign_triggered</div></div>
+    </div>
+    <div class="cell">
+      <div class="box rea"><div class="ttl">② Graceful Op A close</div><div class="sub">Session frozen · state = PAUSED · banner shown</div><div class="ev">EVT op_a_session_paused</div></div>
+      <div class="box rea"><div class="ttl">③ Context summary card</div><div class="sub">Auto-built: what's been done, last answer, time on issue</div></div>
+    </div>
+    <div class="cell">
+      <div class="box rea"><div class="ttl">④ Op B accepts handoff</div><div class="sub">Yellow banner · reads context card · presses "Take over"</div><div class="ev">EVT reassigned → STATE updates</div></div>
+    </div>
+    <div class="cell">
+      <div class="box rea"><div class="ttl">Reassign mid-remediation</div><div class="sub">Same 4-step arc · context card includes remediation progress + photos taken</div></div>
+    </div>
+    <div class="cell"><div class="empty"></div></div>
+    <div class="cell"><div class="empty"></div></div>
+    <div class="cell"><div class="empty"></div></div>
+
+    <!-- ============ TREE IMPROVEMENT FEEDBACK ============ -->
+    <div class="row-label">Tree-improvement<br/>feedback loop</div>
+    <div class="cell"><div class="empty"></div></div>
+    <div class="cell"><div class="empty"></div></div>
+    <div class="cell">
+      <div class="box tree"><div class="ttl">Operator suggestion in-flow</div><div class="sub">Tap "This step was wrong" → marks step + comment</div></div>
+    </div>
+    <div class="cell">
+      <div class="box tree"><div class="ttl">Different / Other RCA captured</div><div class="sub">Logged to SME backlog with full session trail</div></div>
+    </div>
+    <div class="cell">
+      <div class="box tree"><div class="ttl">Repeated stop-at-step signal</div><div class="sub">If &gt;3 operators stop here in 30d → flagged automatically</div></div>
+    </div>
+    <div class="cell"><div class="empty"></div></div>
+    <div class="cell"><div class="empty"></div></div>
+    <div class="cell">
+      <div class="box tree"><div class="ttl">SME triage + tree edit</div><div class="sub">Reviews backlog · publishes v3.2 → operators see update on next session</div><div class="ev">EVT tree_updated → all affected templates</div></div>
+    </div>
+
+    <!-- ============ AUDIT / OUTPUTS ============ -->
+    <div class="row-label">Audit + outputs<br/>(what gets recorded)</div>
+    <div class="cell">
+      <div class="box aud"><div class="ttl">Issue Timeline</div><div class="sub">Started: alert + thresholds + sensor snapshot</div></div>
+    </div>
+    <div class="cell">
+      <div class="box aud"><div class="ttl">Routing decision</div><div class="sub">Who got it &amp; why (skill / roster)</div></div>
+    </div>
+    <div class="cell">
+      <div class="box aud"><div class="ttl">Step answers + deviations</div><div class="sub">Every answer, skip, retry, correction logged with timestamp</div></div>
+    </div>
+    <div class="cell">
+      <div class="box aud"><div class="ttl">RCA + evidence</div><div class="sub">Selected cause + photo + supervisor sign-off</div></div>
+    </div>
+    <div class="cell">
+      <div class="box aud"><div class="ttl">Remediation log</div><div class="sub">Actions taken + photos + timer durations</div></div>
+    </div>
+    <div class="cell">
+      <div class="box aud"><div class="ttl">Verify reading</div><div class="sub">Final sensor / manual reading vs threshold</div></div>
+    </div>
+    <div class="cell">
+      <div class="box aud"><div class="ttl">Closure summary</div><div class="sub">Total time · operators involved · cost · learning notes</div></div>
+    </div>
+    <div class="cell">
+      <div class="box aud"><div class="ttl">SME / supervisor improvement log</div><div class="sub">"Tree v3.2 published: added cap-replacement Y/N at step 4"</div></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="arrow-guide">
+  <div class="guide-card">
+    <h3>Cross-stage <em>jumps</em> — now disambiguated</h3>
+    <ul>
+      <li><b>RCA already known →</b> Intake skips Diagnose, routes straight to Remediate. <code>EVT diagnose_shortcut</code> — Advanced operators only.</li>
+      <li><b>I know the cause →</b> mid-Diagnose shortcut, same intent as above but exited from a step screen. Same event.</li>
+      <li><b>False alarm at alert →</b> Create skips everything, lands in Close as <code>STATE = FALSE_ALARM</code> with mandatory reason. Notifies SME for threshold review.</li>
+      <li><b>Sensor self-recovered →</b> Auto-close detector sees the reading return before operator completes Remediate. Issue goes to <code>STATE = AUTO_CLOSED</code> directly. <b>This is NOT the same as "RCA provided".</b></li>
+      <li><b>Failed verify →</b> Operator says "not fixed". Routes back to either Remediate (try again) or Root Cause (wrong diagnosis) based on operator pick.</li>
+      <li><b>Photo hard-gate failed 3 times →</b> Auto-escalate to supervisor; state stays <code>WAITING_PHOTO</code> until override.</li>
+      <li><b>Force close / Abort →</b> Supervisor only · requires reason · feeds the review queue.</li>
+    </ul>
+  </div>
+  <div class="guide-card">
+    <h3>New states &amp; events <em>added</em></h3>
+    <ul>
+      <li><b>STATES</b> added to the rail: <code>WAITING_STEP_APPROVAL</code> · <code>WAITING_PHOTO</code> · <code>WAITING_COST_APPROVAL</code> · <code>WAITING_VERIFY_APPROVAL</code> · <code>PAUSED</code> · <code>REASSIGNED</code> · <code>AUTO_CLOSED</code> · <code>FALSE_ALARM</code> · <code>FORCE_CLOSED</code>.</li>
+      <li><b>SPLIT events</b>: SKIPPED · DONT_KNOW · FALLBACK · RETRY · CORRECTED — all separate, each routes differently. SKIP just logs; DON'T_KNOW pauses session and triggers reassignment.</li>
+      <li><b>Reassignment arc</b>: 4 explicit boxes — trigger → graceful close → context card → Op B takeover — usable mid-Diagnose AND mid-Remediate.</li>
+      <li><b>Tree-improvement loop</b>: Different RCA · Operator suggestion · Repeated-stop signal — all feed the SME backlog; SME publishes new template version.</li>
+      <li><b>Review queue actions</b> now have destinations: <code>Reopen</code> · <code>Send-to-SME</code> · <code>Accept</code> (close).</li>
+      <li><b>Flag new issue</b> is a first-class deviation — creates a fresh issue while preserving the current one.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="changes">
+  <h2>What changed · v1 → <em>v2</em></h2>
+  <table>
+    <thead><tr><th style="width:24%">Gap in v1</th><th style="width:38%">v2 fix</th><th style="width:22%">Where to look</th><th>Severity</th></tr></thead>
+    <tbody>
+      <tr><td class="gap">State rail missing pills for Remediate, Pause, Reassign</td><td class="fix">Added <code>IN_PROGRESS · REMEDIATE</code>, <code>PAUSED</code>, <code>REASSIGNED</code>, plus per-gate <code>WAITING_*</code> variants</td><td class="where">State rail row</td><td>High</td></tr>
+      <tr><td class="gap">"Skip / don't know" squashed into one box</td><td class="fix">Now 5 separate event boxes: <b>SKIP · DON'T KNOW · FALLBACK · RETRY · CORRECT</b></td><td class="where">Diagnose · deviations</td><td>High</td></tr>
+      <tr><td class="gap">Photo hard-gate failure path unspecified</td><td class="fix">Explicit: 3 retries → auto-escalate to supervisor · state stays <code>WAITING_PHOTO</code></td><td class="where">Gates · Remediate</td><td>High</td></tr>
+      <tr><td class="gap">Reassignment mechanics not shown</td><td class="fix">Dedicated 4-step lane: trigger → graceful close → context card → Op B takeover</td><td class="where">Reassignment arc row</td><td>High</td></tr>
+      <tr><td class="gap">"Different Cause → Tree improvement" loops out without return</td><td class="fix">SME triage box at right end of Tree-improvement lane → publishes new version → operators see on next session</td><td class="where">Tree loop row</td><td>Medium</td></tr>
+      <tr><td class="gap">RCA-provided-auto-close vs Auto-recovery confused</td><td class="fix">Auto-recovery is now its own deviation under Verify (<code>EVT sensor_self_recovered</code>); RCA-provided shortcut is the Intake "RCA known" branch — different events</td><td class="where">Verify · Intake</td><td>Medium</td></tr>
+      <tr><td class="gap">False alarm only at Root Cause</td><td class="fix">Three false-alarm entry points: at alert card (pre-diag), during diagnose (post-diag), at Root Cause stage</td><td class="where">Deviations columns 1, 3, 4</td><td>Medium</td></tr>
+      <tr><td class="gap">Cost approval not shown</td><td class="fix">Added <code>WAITING_COST_APPROVAL</code> gate under Remediate, separate from step/RC approval</td><td class="where">Gates · Remediate</td><td>Medium</td></tr>
+      <tr><td class="gap">Operator A self-request reassign missing</td><td class="fix">First-class deviation at Intake; feeds the Reassignment lane</td><td class="where">Intake · deviations</td><td>Medium</td></tr>
+      <tr><td class="gap">"Flag new issue" not visualised</td><td class="fix">Deviation under Diagnose · creates separate issue · notifies supervisor while current issue continues</td><td class="where">Diagnose · deviations</td><td>Low</td></tr>
+      <tr><td class="gap">Review queue actions had no destinations</td><td class="fix">Three explicit outcomes: Reopen · Send-to-SME · Accept</td><td class="where">Supervisor surfaces · Close</td><td>Low</td></tr>
+      <tr><td class="gap">No event log on the diagram</td><td class="fix">Every box now shows the auditable event code (e.g. <code>EVT step_skipped</code>) — engineers can map states/events without guessing</td><td class="where">All boxes</td><td>Low</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
