@@ -3,1201 +3,654 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>DP Config · Diagnostic Flow Builder (low-fi wireframes)</title>
+<title>DP Config · Diagnostic Tree Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f5f5f4;
-    --ink: #18181b;
-    --muted: #6b7280;
-    --faint: #9ca3af;
-    --line: #d4d4d8;
-    --line-soft: #e5e7eb;
-    --paper: #ffffff;
-    --accent: #003395;
-    --accent-soft: #e8f0fb;
-    --danger: #dc2626;
-    --danger-soft: #fee2e2;
-    --amber: #d97706;
-    --amber-soft: #fef3c7;
-    --success: #15803d;
-    --success-soft: #dcfce7;
-    --mono: "IBM Plex Mono","JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
-    --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans)}
-  body{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+/* =====================================================================
+   DP Config · Diagnostic Tree Builder (simplified, wizard-style)
+   - Hick's : one decision at a time
+   - Fitt's : ≥44px CTAs, bottom-anchored
+   - Jakob's: familiar wizard pattern
+   - Miller's: 4 wizard steps, ≤5 fields per group
+   - Doherty: "Saved" toast in <400ms
+===================================================================== */
+:root{
+  --brand:#193458; --brand-2:#2A4D7F; --brand-tint:#EEF2F8; --brand-tint-2:#DCE4F0;
+  --bg:#F4F6FA; --surface:#FFFFFF; --surface-2:#F7F8FB;
+  --ink:#0E1A2E; --ink-2:#3F4D66; --ink-3:#7A8497; --ink-4:#A8B0BE;
+  --line:#E4E8EF; --line-2:#C8D0DD;
+  --red:#D64545; --red-d:#7A1F1F; --red-tint:#FBEAEA;
+  --amber:#E8941A; --amber-tint:#FDF1DC;
+  --green:#1F9D55; --green-tint:#E1F4EA;
+  --shadow:0 1px 2px rgba(25,52,88,.04), 0 4px 12px rgba(25,52,88,.06);
+  --shadow-lg:0 12px 36px rgba(25,52,88,.18);
+  --radius:12px; --radius-lg:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;line-height:1.45}
 
-  /* ============ SIDEBAR ============ */
-  aside{
-    background:#fff;border-right:1px solid var(--line);
-    padding:18px 14px;position:sticky;top:0;height:100vh;overflow:auto;
-  }
-  aside h1{font-size:13px;letter-spacing:.5px;text-transform:uppercase;margin:0 0 4px;color:var(--ink)}
-  aside .who{font-size:11px;color:var(--muted);margin-bottom:18px}
-  aside .group{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--faint);margin:18px 6px 6px;text-transform:uppercase}
-  aside button{
-    display:block;width:100%;text-align:left;background:none;border:none;
-    padding:8px 10px;margin:1px 0;border-radius:8px;font:13px/1.4 var(--sans);
-    color:var(--ink);cursor:pointer;
-  }
-  aside button:hover{background:#f3f4f6}
-  aside button.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
-  aside .num{font-family:var(--mono);font-size:10px;color:var(--faint);margin-right:8px}
+/* ===== Top app bar ===== */
+header.app{background:#fff;border-bottom:1px solid var(--line);padding:14px 0;position:sticky;top:0;z-index:10}
+.app-inner{max-width:980px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:30px;height:30px;background:var(--brand);border-radius:8px;position:relative}
+.logo::after{content:"";position:absolute;width:10px;height:10px;background:#fff;border-radius:999px;top:10px;left:10px}
+.brand b{font-weight:800;font-size:15px}
+.brand .role{color:var(--ink-3);font-size:11px;display:block;margin-top:-2px}
+.spacer{flex:1}
+.savetag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);display:flex;gap:6px;align-items:center}
+.savetag .pulse{width:7px;height:7px;border-radius:999px;background:var(--green)}
 
-  /* ============ MAIN ============ */
-  main{padding:24px 32px;max-width:1280px}
-  .topbar{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed var(--line)}
-  .topbar h2{font-size:20px;margin:0;font-weight:700}
-  .topbar .crumbs{font-family:var(--mono);font-size:11px;color:var(--muted)}
-  .topbar .spacer{flex:1}
-  .topbar button{font:12px var(--sans);padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer}
-  .topbar button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .topbar button.ghost{background:transparent}
-  .topbar .save{font-family:var(--mono);font-size:10px;color:var(--success)}
+/* ===== Stepper ===== */
+.stepper{background:#fff;border-bottom:1px solid var(--line);padding:16px 0}
+.stepper-inner{max-width:760px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.step-node{display:flex;align-items:center;gap:10px;cursor:pointer;opacity:.55;transition:opacity .15s}
+.step-node:hover{opacity:.85}
+.step-node.cur,.step-node.done{opacity:1}
+.step-circle{width:32px;height:32px;border-radius:999px;background:var(--surface-2);color:var(--ink-3);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;border:1.5px solid var(--line-2);transition:.15s}
+.step-node.cur .step-circle{background:var(--brand);color:#fff;border-color:var(--brand)}
+.step-node.done .step-circle{background:var(--green);color:#fff;border-color:var(--green)}
+.step-label{font-weight:600;font-size:13px;color:var(--ink-2)}
+.step-node.cur .step-label{color:var(--brand)}
+.step-line{flex:1;height:2px;background:var(--line);max-width:60px}
+.step-line.done{background:var(--green)}
 
-  /* Screen tab indicator */
-  .scr-tag{
-    font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--faint);
-    background:#fff;padding:3px 8px;border:1px dashed var(--line);border-radius:999px;
-    text-transform:uppercase;display:inline-block;
-  }
+/* ===== Panels ===== */
+.wrap{max-width:760px;margin:30px auto 120px;padding:0 24px}
+.panel{display:none;animation:fadeUp .25s ease}
+.panel.on{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.page-h{font-size:26px;font-weight:800;margin:0 0 4px;letter-spacing:-.01em}
+.page-sub{color:var(--ink-3);font-size:14px;margin:0 0 24px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow);margin-bottom:14px}
+.card h3{margin:0 0 4px;font-size:15px;font-weight:700}
+.card .helper{color:var(--ink-3);font-size:12.5px;margin:0 0 14px}
 
-  /* Cards */
-  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
-  .card.dashed{border-style:dashed;background:transparent}
-  .card h3{font-size:13px;margin:0 0 10px;font-weight:600;letter-spacing:.2px}
-  .card .sub{font-size:11px;color:var(--muted);margin:-6px 0 12px}
-  .twocol{display:grid;grid-template-columns:1fr 360px;gap:14px}
-  .threecol{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+/* ===== Inputs ===== */
+label{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin:0 0 6px;letter-spacing:.2px}
+input[type=text],textarea,select{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;
+  font:14px 'Plus Jakarta Sans',system-ui,sans-serif;background:#fff;color:var(--ink);outline:none;transition:border .15s,box-shadow .15s}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+textarea{min-height:80px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.help{font-size:12px;color:var(--ink-3);margin-top:6px}
 
-  .row{display:flex;gap:8px;align-items:center}
-  .row.between{justify-content:space-between}
-  .gap{flex:1}
+/* ===== Big choice cards (Hick: limit choices, large targets) ===== */
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.choices.three{grid-template-columns:1fr 1fr 1fr}
+.choices.four{grid-template-columns:1fr 1fr 1fr 1fr}
+.rcard{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:16px;text-align:left;cursor:pointer;
+  transition:border .15s,box-shadow .15s,transform .1s;font:inherit;color:var(--ink);position:relative}
+.rcard:hover{border-color:var(--line-2)}
+.rcard:active{transform:scale(.98)}
+.rcard.on{border-color:var(--brand);background:var(--brand-tint);box-shadow:0 0 0 3px var(--brand-tint-2)}
+.rcard.on::after{content:"✓";position:absolute;right:12px;top:12px;background:var(--brand);color:#fff;width:22px;height:22px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.rcard .ico{font-size:22px;display:block;margin-bottom:8px}
+.rcard .ttl{font-weight:700;font-size:14px;margin-bottom:2px}
+.rcard .sub{font-size:12px;color:var(--ink-3);line-height:1.4}
+.rcard.danger.on{background:var(--red-tint);border-color:var(--red);box-shadow:0 0 0 3px #f7d4d4}
+.rcard.danger.on::after{background:var(--red)}
+.rcard.amber.on{background:var(--amber-tint);border-color:var(--amber);box-shadow:0 0 0 3px #f7e3bf}
+.rcard.amber.on::after{background:var(--amber)}
+.rcard.green.on{background:var(--green-tint);border-color:var(--green);box-shadow:0 0 0 3px #c5e8d3}
+.rcard.green.on::after{background:var(--green)}
 
-  /* Pills */
-  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:600;letter-spacing:.3px;border:1px solid transparent}
-  .pill.acc{background:var(--accent-soft);color:var(--accent);border-color:#cdd9f0}
-  .pill.dgr{background:var(--danger-soft);color:var(--danger);border-color:#f4b8b8}
-  .pill.amb{background:var(--amber-soft);color:var(--amber);border-color:#f0c97a}
-  .pill.scs{background:var(--success-soft);color:var(--success);border-color:#bbe1c5}
-  .pill.gry{background:#f1f1f0;color:var(--muted);border-color:var(--line)}
-  .pill .dot{width:6px;height:6px;border-radius:999px;background:currentColor;display:inline-block}
-  .pill.outline{background:#fff}
+/* ===== Buttons ===== */
+.btn{font:600 14px 'Plus Jakarta Sans',system-ui,sans-serif;cursor:pointer;
+  border:1.5px solid transparent;border-radius:999px;padding:12px 22px;background:#fff;color:var(--ink);transition:.12s}
+.btn.lg{padding:14px 28px;font-size:14.5px;min-height:48px}
+.btn.primary{background:var(--brand);color:#fff}
+.btn.primary:hover{background:var(--brand-2)}
+.btn.outline{background:#fff;border-color:var(--line-2);color:var(--ink)}
+.btn.outline:hover{border-color:var(--ink-3)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--ink-2)}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.danger{background:var(--red);color:#fff}
 
-  /* Tables */
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  th,td{padding:10px 12px;text-align:left;border-bottom:1px dashed var(--line-soft)}
-  th{font-family:var(--mono);font-weight:600;font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);background:#fafafa}
-  tr:hover td{background:#fafafa}
+/* ===== Bottom anchored bar (Fitt's) ===== */
+.footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:14px 24px;z-index:15}
+.footer-inner{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.footer .meta{flex:1;color:var(--ink-3);font-size:12px}
 
-  /* Form labels */
-  label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin:14px 0 4px}
-  input[type=text],textarea,select{
-    width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;
-    font:13px var(--sans);background:#fff;color:var(--ink);
-  }
-  textarea{min-height:60px;resize:vertical}
-  .field-row{display:flex;gap:8px}
-  .field-row > *{flex:1}
-  .help{font-size:11px;color:var(--muted);margin-top:4px}
+/* ===== Step list / row ===== */
+.step-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:.15s}
+.step-row:hover{border-color:var(--line-2);background:var(--surface-2)}
+.step-row .n{width:28px;height:28px;border-radius:999px;background:var(--brand-tint);color:var(--brand);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-row .body{flex:1;min-width:0}
+.step-row .body .t{font-weight:600;font-size:14px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.step-row .body .s{font-size:12px;color:var(--ink-3);display:flex;gap:8px;flex-wrap:wrap}
+.step-row .chev{color:var(--ink-4);font-size:18px;flex-shrink:0}
+.add-row{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;width:100%;background:transparent;
+  border:1.5px dashed var(--line-2);border-radius:12px;color:var(--brand);font:600 13px 'Plus Jakarta Sans';cursor:pointer;transition:.15s}
+.add-row:hover{background:var(--brand-tint);border-color:var(--brand)}
 
-  /* Tree canvas */
-  .canvas{
-    background:repeating-linear-gradient(0deg,transparent 0 19px,#eaeaea 19px 20px),
-              repeating-linear-gradient(90deg,transparent 0 19px,#eaeaea 19px 20px);
-    background-color:#fbfbfa;
-    border:1px dashed var(--line);border-radius:14px;padding:24px;min-height:520px;position:relative;
-  }
-  .node{
-    background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin:0 auto 14px;
-    box-shadow:0 1px 0 #f0f0f0;max-width:520px;position:relative;
-  }
-  .node.active{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-  .node .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-  .node .head .num{font-family:var(--mono);font-size:10px;color:var(--muted)}
-  .node .q{font-size:14px;font-weight:600;margin:4px 0}
-  .node .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-  .node .meta .pill{font-size:9px}
-  .node .actions{position:absolute;right:10px;top:10px;display:flex;gap:4px}
-  .node .actions button{font:10px var(--mono);padding:4px 8px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;color:var(--muted)}
-  .connector{display:flex;justify-content:center;color:var(--faint);font-family:var(--mono);font-size:14px;margin:-6px 0 8px}
-  .add-step{display:block;margin:0 auto 14px;font:11px var(--mono);padding:6px 14px;border:1px dashed var(--accent);background:#fff;color:var(--accent);border-radius:999px;cursor:pointer}
+/* Mini chips */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.chip.red{background:var(--red-tint);color:var(--red);border-color:#f4c7c7}
+.chip.amber{background:var(--amber-tint);color:var(--amber);border-color:#f0d8a3}
+.chip.green{background:var(--green-tint);color:var(--green);border-color:#bbe1c5}
 
-  /* Lifecycle bar */
-  .lifecycle{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:14px}
-  .stage{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
-  .stage .n{font-family:var(--mono);font-size:10px;color:var(--muted)}
-  .stage .name{font-size:12px;font-weight:600;margin:3px 0 6px}
-  .stage .state{font-family:var(--mono);font-size:9px;letter-spacing:.5px;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:2px 6px;display:inline-block}
-  .stage.alt{background:#fffaf0}
-  .stage.alt .state{color:var(--amber);background:var(--amber-soft)}
-  .stage.exc{background:#fef5f5}
-  .stage.exc .state{color:var(--danger);background:var(--danger-soft)}
+/* ===== Drawer / sheet (for editing one flow step) ===== */
+.scrim{position:fixed;inset:0;background:rgba(14,26,46,.45);opacity:0;pointer-events:none;transition:.18s;z-index:50}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;width:520px;max-width:100%;height:100%;background:#fff;
+  transform:translateX(100%);transition:.22s cubic-bezier(.4,0,.2,1);z-index:60;display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
+.drawer.on{transform:translateX(0)}
+.dr-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.dr-head h3{margin:0;font-size:16px;font-weight:700;flex:1}
+.dr-head .x{width:32px;height:32px;border-radius:999px;background:var(--surface-2);border:none;cursor:pointer;font-size:16px;color:var(--ink-2)}
+.dr-body{flex:1;overflow:auto;padding:20px 22px}
+.dr-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.dr-foot .gap{flex:1}
 
-  /* Side panel (step editor) */
-  .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;position:sticky;top:24px}
-  .panel h4{margin:0 0 4px;font-size:14px}
-  .panel .sub{font-size:11px;color:var(--muted);margin-bottom:12px}
-  .accordion{border-top:1px dashed var(--line-soft);padding:10px 0}
-  .accordion summary{cursor:pointer;font-size:12px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
-  .accordion summary::after{content:"⌄";color:var(--muted)}
-  .accordion[open] summary::after{content:"⌃"}
+/* ===== List inside drawer (identify / solution lines) ===== */
+.sub-list{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);overflow:hidden}
+.sub-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px dashed var(--line);background:#fff}
+.sub-item:last-child{border-bottom:none}
+.sub-item .ix{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-3);background:var(--brand-tint);border-radius:6px;padding:3px 6px;flex-shrink:0}
+.sub-item .ix.s{background:var(--green-tint);color:var(--green)}
+.sub-item .t{flex:1;font-size:13px}
+.sub-item .ctrl{display:flex;gap:4px;flex-shrink:0}
+.sub-item .ctrl button{width:28px;height:28px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;color:var(--ink-3);font-size:13px}
+.sub-add{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;cursor:pointer;color:var(--brand);font-weight:600;font-size:13px;background:#fff;border:none;width:100%}
 
-  /* List rows (for identify lines, solution lines, tools, terms) */
-  .lst{border:1px solid var(--line-soft);border-radius:10px;background:#fafafa}
-  .lst .it{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px dashed var(--line-soft)}
-  .lst .it:last-child{border-bottom:none}
-  .lst .it .idx{font-family:var(--mono);font-size:10px;color:var(--faint);width:20px}
-  .lst .it .txt{flex:1;font-size:13px}
-  .lst .it .ctrl{display:flex;gap:4px}
-  .lst .it .ctrl button{font:10px var(--mono);padding:3px 7px;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:5px;cursor:pointer}
-  .lst .add{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;color:var(--accent);font:11px var(--mono)}
+/* ===== Switch (boolean property) ===== */
+.tog{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.tog:last-child{border-bottom:none}
+.tog .lbl{flex:1}
+.tog .lbl .t{font-weight:600;font-size:13.5px}
+.tog .lbl .s{font-size:11.5px;color:var(--ink-3);margin-top:2px}
+.sw{width:38px;height:22px;border-radius:999px;background:var(--line-2);position:relative;cursor:pointer;transition:background .15s;flex-shrink:0}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:999px;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.sw.on{background:var(--brand)}
+.sw.on::after{left:18px}
 
-  /* Preview mobile mock */
-  .mock{
-    width:300px;background:#fff;border:1px solid var(--ink);border-radius:24px;padding:16px;margin:0 auto;
-    box-shadow:0 4px 18px rgba(0,0,0,.08);
-  }
-  .mock .pbar{display:flex;gap:6px;margin-bottom:10px}
-  .mock .pbar i{height:6px;flex:1;border-radius:3px;background:var(--line-soft)}
-  .mock .pbar i.on{background:var(--accent)}
-  .mock .h{font-size:16px;font-weight:700;margin:8px 0}
-  .mock .ill{height:120px;background:#f1f5fa;border:1px dashed var(--line);border-radius:10px;margin:8px 0;display:flex;align-items:center;justify-content:center;color:var(--faint);font:10px var(--mono)}
-  .mock .opt{border:1px solid var(--line);border-radius:10px;padding:8px;margin:6px 0;font-size:12px}
-  .mock .opt .l{font:9px var(--mono);color:var(--accent);background:var(--accent-soft);padding:2px 6px;border-radius:999px;margin-right:6px}
-  .mock .btn{padding:10px;border-radius:999px;text-align:center;font-size:12px;font-weight:600;margin:6px 0}
-  .mock .btn.y{border:1px solid var(--success);color:var(--success)}
-  .mock .btn.n{border:1px solid var(--danger);color:var(--danger)}
+/* ===== Review summary blocks (Step 4) ===== */
+.summary-block{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:12px}
+.summary-block .head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.summary-block .head h4{margin:0;font-size:14px;font-weight:700;flex:1}
+.edit-link{background:none;border:none;cursor:pointer;color:var(--brand);font:600 13px 'Plus Jakarta Sans';padding:0;text-decoration:underline;text-underline-offset:3px}
+.summary-block .kv{display:grid;grid-template-columns:130px 1fr;gap:6px 14px;font-size:13px}
+.summary-block .kv .k{color:var(--ink-3)}
+.validator{background:var(--amber-tint);border:1px solid #f0c97a;color:var(--ink);padding:12px 14px;border-radius:12px;margin-top:10px;display:flex;gap:10px;align-items:flex-start}
+.validator.ok{background:var(--green-tint);border-color:#bbe1c5}
+.validator .ic{font-size:18px}
+.validator .t{font-weight:600;font-size:13.5px;margin-bottom:2px}
+.validator .s{font-size:12.5px;color:var(--ink-2)}
 
-  /* Diff list */
-  .diff li{font-family:var(--mono);font-size:11px;padding:4px 0;border-bottom:1px dashed var(--line-soft);list-style:none;display:flex;gap:8px}
-  .diff li .op{width:14px;text-align:center}
-  .diff li.add{color:var(--success)}
-  .diff li.rem{color:var(--danger)}
-  .diff li.mod{color:var(--amber)}
+/* Toast */
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;padding:9px 18px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;transition:.18s;pointer-events:none;z-index:80}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
-  /* Toggle */
-  .tog{display:inline-flex;align-items:center;gap:8px;font-size:12px}
-  .tog .sw{width:32px;height:18px;border-radius:999px;background:var(--line);position:relative;display:inline-block}
-  .tog .sw::after{content:"";position:absolute;width:14px;height:14px;border-radius:999px;background:#fff;top:2px;left:2px;transition:.15s}
-  .tog .sw.on{background:var(--accent)}
-  .tog .sw.on::after{left:16px}
-
-  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px}
-  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-
-  /* hide screens */
-  .screen{display:none}
-  .screen.show{display:block}
-
-  /* footer wire-tag */
-  .wire-tag{position:fixed;bottom:14px;right:14px;font:9px var(--mono);color:var(--faint);background:#fff;border:1px dashed var(--line);padding:4px 10px;border-radius:999px}
+@media (max-width:600px){
+  .row2{grid-template-columns:1fr}
+  .row3{grid-template-columns:1fr 1fr}
+  .choices,.choices.three,.choices.four{grid-template-columns:1fr 1fr}
+  .step-label{display:none}
+  .step-line{max-width:30px}
+}
 </style>
 </head>
 <body>
 
-<aside>
-  <h1>DP Config</h1>
-  <div class="who">Admin · SME tools<br/>Low-fi wireframes</div>
+<!-- ========== App bar ========== -->
+<header class="app">
+  <div class="app-inner">
+    <div class="brand">
+      <div class="logo"></div>
+      <div><b>DP Config</b><span class="role">Admin · SME</span></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="savetag"><span class="pulse"></span><span id="saveTxt">Saved</span></div>
+  </div>
+</header>
 
-  <div class="group">Build</div>
-  <button data-go="trees" class="active"><span class="num">01</span>Diagnostic Trees</button>
-  <button data-go="canvas"><span class="num">02</span>Tree Canvas</button>
-  <button data-go="step"><span class="num">03</span>Step Editor</button>
-  <button data-go="vocab"><span class="num">04</span>Vocabulary / F18</button>
+<!-- ========== Stepper ========== -->
+<div class="stepper">
+  <div class="stepper-inner">
+    <div class="step-node cur" data-step="1" onclick="goStep(1)">
+      <div class="step-circle">1</div>
+      <div class="step-label">Basics</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-node" data-step="2" onclick="goStep(2)">
+      <div class="step-circle">2</div>
+      <div class="step-label">Trigger</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-node" data-step="3" onclick="goStep(3)">
+      <div class="step-circle">3</div>
+      <div class="step-label">Steps</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-node" data-step="4" onclick="goStep(4)">
+      <div class="step-circle">4</div>
+      <div class="step-label">Review</div>
+    </div>
+  </div>
+</div>
 
-  <div class="group">Flow</div>
-  <button data-go="lifecycle"><span class="num">05</span>Lifecycle Stages</button>
-  <button data-go="exceptions"><span class="num">06</span>Exception Rules</button>
-  <button data-go="skill"><span class="num">07</span>Skill Tier Routing</button>
-  <button data-go="approvals"><span class="num">08</span>Approvals & Gates</button>
+<div class="wrap">
 
-  <div class="group">Inventory</div>
-  <button data-go="assets"><span class="num">09</span>Equipment Library</button>
-  <button data-go="sensors"><span class="num">10</span>Sensors & Mapping</button>
-  <button data-go="roster"><span class="num">11</span>Supervisors & Roster</button>
+  <!-- ============== STEP 1 · Basics ============== -->
+  <section class="panel on" id="p-1">
+    <h1 class="page-h">Set up the issue</h1>
+    <p class="page-sub">Give it a name operators will understand. One issue = one diagnostic tree.</p>
 
-  <div class="group">Ship</div>
-  <button data-go="preview"><span class="num">12</span>Operator Preview</button>
-  <button data-go="publish"><span class="num">13</span>Publish & Versions</button>
+    <div class="card">
+      <h3>Name &amp; equipment</h3>
+      <p class="helper">Hindi first — that's what operators see at the top of the screen.</p>
+
+      <label>Issue name · Hindi</label>
+      <input type="text" id="issueHi" value="Aeration Tank में DO कम है" oninput="markSaved()"/>
+
+      <label style="margin-top:14px">Issue name · English (helper)</label>
+      <input type="text" id="issueEn" value="Low DO in Aeration Tank" oninput="markSaved()"/>
+
+      <div class="row2" style="margin-top:14px">
+        <div>
+          <label>Equipment</label>
+          <select onchange="markSaved()">
+            <option>AT-01 · Aeration Tank</option>
+            <option>MBR-1 · Permeate Pump</option>
+            <option>B-1 · Blower</option>
+            <option>EQ-1 · Equalisation Tank</option>
+          </select>
+        </div>
+        <div>
+          <label>Section</label>
+          <input type="text" value="Aeration · Block A" oninput="markSaved()"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Severity</h3>
+      <p class="helper">Picks the colour of the alert pill and how loudly it notifies the operator.</p>
+      <div class="choices four">
+        <button class="rcard danger" onclick="pick(this,'sev')">
+          <span class="ico">🔥</span>
+          <div class="ttl">Critical</div>
+          <div class="sub">Immediate · loud alert</div>
+        </button>
+        <button class="rcard amber on" onclick="pick(this,'sev')">
+          <span class="ico">⚠</span>
+          <div class="ttl">High</div>
+          <div class="sub">Within an hour</div>
+        </button>
+        <button class="rcard" onclick="pick(this,'sev')">
+          <span class="ico">●</span>
+          <div class="ttl">Medium</div>
+          <div class="sub">This shift</div>
+        </button>
+        <button class="rcard" onclick="pick(this,'sev')">
+          <span class="ico">○</span>
+          <div class="ttl">Low</div>
+          <div class="sub">This week</div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== STEP 2 · Trigger ============== -->
+  <section class="panel" id="p-2">
+    <h1 class="page-h">When should this trigger?</h1>
+    <p class="page-sub">Pick how the system knows to start this diagnostic flow.</p>
+
+    <div class="card">
+      <h3>Trigger type</h3>
+      <div class="choices three">
+        <button class="rcard on" onclick="pick(this,'trig')">
+          <span class="ico">📡</span>
+          <div class="ttl">Sensor alert</div>
+          <div class="sub">Auto-trigger from sensor reading</div>
+        </button>
+        <button class="rcard" onclick="pick(this,'trig')">
+          <span class="ico">👤</span>
+          <div class="ttl">Operator report</div>
+          <div class="sub">Manual — operator opens it</div>
+        </button>
+        <button class="rcard" onclick="pick(this,'trig')">
+          <span class="ico">🔁</span>
+          <div class="ttl">Both</div>
+          <div class="sub">Sensor or manual</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Sensor &amp; threshold</h3>
+      <p class="helper">Only shown when the trigger is auto-fired by a sensor.</p>
+      <div class="row2">
+        <div>
+          <label>Sensor</label>
+          <select onchange="markSaved()">
+            <option>DO-AT01 · DO on Aeration Tank</option>
+            <option>TMP-MBR1 · TMP gauge on MBR-1</option>
+            <option>PH-EQ1 · pH on Equalisation</option>
+          </select>
+        </div>
+        <div>
+          <label>Operator label (Hindi)</label>
+          <input type="text" value="DO sensor · Aeration Tank" oninput="markSaved()"/>
+        </div>
+      </div>
+      <div class="row3" style="margin-top:14px">
+        <div>
+          <label>Alert when value is</label>
+          <select onchange="markSaved()"><option>below</option><option>above</option><option>outside range</option></select>
+        </div>
+        <div>
+          <label>Threshold</label>
+          <input type="text" value="1.5 mg/L" oninput="markSaved()"/>
+        </div>
+        <div>
+          <label>For at least</label>
+          <input type="text" value="5 min" oninput="markSaved()"/>
+        </div>
+      </div>
+      <div class="help">Example: alert when DO &lt; 1.5 mg/L for 5 minutes.</div>
+    </div>
+  </section>
+
+  <!-- ============== STEP 3 · Steps ============== -->
+  <section class="panel" id="p-3">
+    <h1 class="page-h">Diagnostic steps</h1>
+    <p class="page-sub">List the checks operators walk through, in order. Tap any to edit.</p>
+
+    <div class="card">
+      <h3>The 6 steps · Low DO tree</h3>
+      <p class="helper">Each step is a question + the lines on how to identify + how to fix. Drag to reorder.</p>
+
+      <div id="stepList">
+        <div class="step-row" onclick="openDrawer(1)">
+          <div class="n">1</div>
+          <div class="body">
+            <div class="t">Blower चालू है?</div>
+            <div class="s"><span class="chip">2 checks</span><span class="chip green">1 action</span><span class="chip">Beginner</span></div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="step-row" onclick="openDrawer(2)">
+          <div class="n">2</div>
+          <div class="body">
+            <div class="t">Blower का प्रदर्शन सही है?</div>
+            <div class="s"><span class="chip">1 check</span><span class="chip green">2 actions</span><span class="chip amber">Stop here</span></div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="step-row" onclick="openDrawer(3)">
+          <div class="n">3</div>
+          <div class="body">
+            <div class="t">टैंक में bubbling बराबर है?</div>
+            <div class="s"><span class="chip">2 checks</span><span class="chip green">2 actions</span><span class="chip amber">Photo required</span></div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="step-row" onclick="openDrawer(4)">
+          <div class="n">4</div>
+          <div class="body">
+            <div class="t">DO sensor में problem है?</div>
+            <div class="s"><span class="chip">2 checks</span><span class="chip green">3 actions</span><span class="chip">Intermediate</span></div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="step-row" onclick="openDrawer(5)">
+          <div class="n">5</div>
+          <div class="body">
+            <div class="t">Sludge bulking हो रही है?</div>
+            <div class="s"><span class="chip">3 checks</span><span class="chip green">1 action</span><span class="chip">Intermediate</span></div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+        <div class="step-row" onclick="openDrawer(6)">
+          <div class="n">6</div>
+          <div class="body">
+            <div class="t">Incoming में shock load है?</div>
+            <div class="s"><span class="chip">4 checks</span><span class="chip green">1 action</span><span class="chip red">SME approval</span></div>
+          </div>
+          <div class="chev">›</div>
+        </div>
+      </div>
+
+      <button class="add-row" style="margin-top:10px" onclick="openDrawer('new')">＋ Add another step</button>
+    </div>
+  </section>
+
+  <!-- ============== STEP 4 · Review ============== -->
+  <section class="panel" id="p-4">
+    <h1 class="page-h">Review &amp; publish</h1>
+    <p class="page-sub">One last look. Operators won't see your changes until you publish.</p>
+
+    <div class="summary-block">
+      <div class="head"><h4>Basics</h4><button class="edit-link" onclick="goStep(1)">Edit</button></div>
+      <div class="kv">
+        <span class="k">Name · Hindi</span><span id="rvHi">Aeration Tank में DO कम है</span>
+        <span class="k">Name · English</span><span id="rvEn">Low DO in Aeration Tank</span>
+        <span class="k">Equipment</span><span>AT-01 · Aeration Tank</span>
+        <span class="k">Severity</span><span><span class="chip amber">High</span></span>
+      </div>
+    </div>
+
+    <div class="summary-block">
+      <div class="head"><h4>Trigger</h4><button class="edit-link" onclick="goStep(2)">Edit</button></div>
+      <div class="kv">
+        <span class="k">Type</span><span>Sensor alert</span>
+        <span class="k">Sensor</span><span>DO-AT01 · DO on Aeration Tank</span>
+        <span class="k">Rule</span><span>below 1.5 mg/L for 5 min</span>
+      </div>
+    </div>
+
+    <div class="summary-block">
+      <div class="head"><h4>Steps</h4><button class="edit-link" onclick="goStep(3)">Edit</button></div>
+      <div class="kv">
+        <span class="k">Total</span><span>6 steps</span>
+        <span class="k">Stop-here</span><span>3 (steps 2, 3, 4)</span>
+        <span class="k">Photo hard-block</span><span>1 (step 3)</span>
+        <span class="k">SME approval</span><span>1 (step 6)</span>
+      </div>
+      <div class="validator">
+        <div class="ic">⚠</div>
+        <div>
+          <div class="t">2 vocabulary terms are missing icons</div>
+          <div class="s">"diffuser", "septic zone" — they'll still display but without the picture sheet. <button class="edit-link" style="padding:0;font-size:12.5px" onclick="goStep(3)">Fix in steps</button></div>
+        </div>
+      </div>
+      <div class="validator ok">
+        <div class="ic">✓</div>
+        <div>
+          <div class="t">All 6 steps have Hindi + English + audio</div>
+          <div class="s">Validated against the diagnostic tree.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-block">
+      <div class="head"><h4>Publish to</h4><button class="edit-link">Change</button></div>
+      <div class="choices three">
+        <button class="rcard on" onclick="pick(this,'pub')">
+          <div class="ttl">Everyone</div>
+          <div class="sub">All on-shift operators</div>
+        </button>
+        <button class="rcard" onclick="pick(this,'pub')">
+          <div class="ttl">Beta cohort</div>
+          <div class="sub">Dheeraj, Anil only</div>
+        </button>
+        <button class="rcard" onclick="pick(this,'pub')">
+          <div class="ttl">Scheduled</div>
+          <div class="sub">Mon 8:00 AM</div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ========== Bottom-anchored CTAs ========== -->
+<div class="footer">
+  <div class="footer-inner">
+    <div class="meta">Step <b id="stepNow">1</b> of 4 · DT-001 · v3.2 draft</div>
+    <button class="btn outline lg" id="backBtn" onclick="prevStep()" style="display:none">‹ Back</button>
+    <button class="btn primary lg" id="nextBtn" onclick="nextStep()">Continue ›</button>
+  </div>
+</div>
+
+<!-- ========== Drawer ========== -->
+<div class="scrim" id="scrim" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer">
+  <div class="dr-head">
+    <h3 id="drTitle">Step 3 · Even bubbling check</h3>
+    <button class="x" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="dr-body">
+
+    <label>Question · Hindi</label>
+    <input type="text" id="drQHi" value="टैंक में bubbling बराबर है?"/>
+
+    <label style="margin-top:12px">Question · English helper</label>
+    <input type="text" id="drQEn" value="Is aeration equally happening across the tank?"/>
+
+    <label style="margin-top:18px">How to identify · checks</label>
+    <div class="sub-list">
+      <div class="sub-item">
+        <span class="ix">A1</span>
+        <span class="t">Aeration पूरे tank में बराबर हो रही है?</span>
+        <span class="ctrl"><button>✎</button><button>×</button></span>
+      </div>
+      <div class="sub-item">
+        <span class="ix">A2</span>
+        <span class="t">Dead / Septic zones हैं?</span>
+        <span class="ctrl"><button>✎</button><button>×</button></span>
+      </div>
+      <button class="sub-add">＋ Add check</button>
+    </div>
+
+    <label style="margin-top:18px">Solution · actions</label>
+    <div class="sub-list">
+      <div class="sub-item">
+        <span class="ix s">S1</span>
+        <span class="t">Diffusers चोक हो गए हैं — cleaning चाहिए</span>
+        <span class="ctrl"><button>✎</button><button>×</button></span>
+      </div>
+      <div class="sub-item">
+        <span class="ix s">S2</span>
+        <span class="t">Supervisor को बुलाएं <span class="chip amber" style="margin-left:6px">stop here</span></span>
+        <span class="ctrl"><button>✎</button><button>×</button></span>
+      </div>
+      <button class="sub-add">＋ Add action</button>
+    </div>
+
+    <h4 style="margin:22px 0 6px;font-size:13px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--ink-3)">Properties</h4>
+    <div class="tog">
+      <div class="lbl"><div class="t">Photo required</div><div class="s">Block continue until operator uploads a photo</div></div>
+      <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+    </div>
+    <div class="tog">
+      <div class="lbl"><div class="t">Allow skip</div><div class="s">Operator can mark this step as SKIPPED</div></div>
+      <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+    </div>
+    <div class="tog">
+      <div class="lbl"><div class="t">Needs supervisor approval</div><div class="s">Pause flow until on-shift supervisor approves</div></div>
+      <div class="sw" onclick="this.classList.toggle('on');markSaved()"></div>
+    </div>
+    <div class="tog">
+      <div class="lbl"><div class="t">Stop here on confirmed cause</div><div class="s">If this is the root cause, terminate the flow</div></div>
+      <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+    </div>
+
+    <label style="margin-top:18px">Minimum skill tier</label>
+    <select onchange="markSaved()">
+      <option>Beginner (default — all operators)</option>
+      <option>Intermediate</option>
+      <option>Advanced</option>
+    </select>
+  </div>
+  <div class="dr-foot">
+    <button class="btn ghost" onclick="closeDrawer()">Cancel</button>
+    <span class="gap"></span>
+    <button class="btn danger" onclick="closeDrawer()">Delete</button>
+    <button class="btn primary" onclick="closeDrawer();markSaved()">Save step</button>
+  </div>
 </aside>
 
-<main>
-
-<!-- ============================================== 01 TREES ============================================== -->
-<section class="screen show" id="trees">
-  <div class="topbar">
-    <span class="scr-tag">01 · Diagnostic Trees</span>
-    <div class="crumbs">DP Config / Trees</div>
-    <div class="spacer"></div>
-    <button class="ghost">Filter</button>
-    <button class="ghost">Import</button>
-    <button class="primary">+ New tree</button>
-  </div>
-  <h2>Diagnostic Trees</h2>
-  <p class="sub" style="color:var(--muted);font-size:13px;margin-top:-4px">One row per Issue × Equipment. Each row is a guided flow operators walk through.</p>
-
-  <div class="card">
-    <div class="row" style="margin-bottom:10px;gap:8px;flex-wrap:wrap">
-      <input type="text" placeholder="Search…" style="max-width:220px"/>
-      <span class="pill outline gry">Plant: Honda Manesar</span>
-      <span class="pill outline acc">Status: Published</span>
-      <span class="pill outline gry">Equipment: All</span>
-    </div>
-    <table>
-      <thead><tr><th>Issue</th><th>Equipment</th><th>Steps</th><th>Skill</th><th>Avg time</th><th>Confirmed RCA %</th><th>Status</th><th>Updated</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><b>Low DO in Aeration tank</b><br/><span style="font-family:var(--mono);font-size:10px;color:var(--faint)">DT-001</span></td>
-          <td>AT-01 Aeration Tank</td>
-          <td>6</td>
-          <td><span class="pill gry">Beg–Adv</span></td>
-          <td>14m</td>
-          <td>78%</td>
-          <td><span class="pill scs"><i class="dot"></i>Live</span></td>
-          <td>2d ago</td>
-        </tr>
-        <tr>
-          <td><b>High TMP on MBR</b><br/><span style="font-family:var(--mono);font-size:10px;color:var(--faint)">DT-002</span></td>
-          <td>MBR-1 Permeate Pump</td>
-          <td>5</td>
-          <td><span class="pill gry">Inter–Adv</span></td>
-          <td>11m</td>
-          <td>62%</td>
-          <td><span class="pill amb"><i class="dot"></i>Draft</span></td>
-          <td>5h ago</td>
-        </tr>
-        <tr>
-          <td><b>VFD overcurrent trip</b><br/><span style="font-family:var(--mono);font-size:10px;color:var(--faint)">DT-003</span></td>
-          <td>Blower B-1</td>
-          <td>4</td>
-          <td><span class="pill gry">Adv only</span></td>
-          <td>—</td>
-          <td>—</td>
-          <td><span class="pill dgr"><i class="dot"></i>Unpublished</span></td>
-          <td>1w ago</td>
-        </tr>
-        <tr>
-          <td><b>Membrane module leak</b><br/><span style="font-family:var(--mono);font-size:10px;color:var(--faint)">DT-004</span></td>
-          <td>MBR-1</td>
-          <td>7</td>
-          <td><span class="pill gry">All tiers</span></td>
-          <td>22m</td>
-          <td>88%</td>
-          <td><span class="pill scs"><i class="dot"></i>Live</span></td>
-          <td>3w ago</td>
-        </tr>
-        <tr>
-          <td><b>pH out of range</b><br/><span style="font-family:var(--mono);font-size:10px;color:var(--faint)">DT-005</span></td>
-          <td>Equalisation Tank</td>
-          <td>3</td>
-          <td><span class="pill gry">Beg–Adv</span></td>
-          <td>7m</td>
-          <td>91%</td>
-          <td><span class="pill scs"><i class="dot"></i>Live</span></td>
-          <td>2w ago</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="row" style="margin-top:12px;justify-content:space-between">
-      <span class="help">28 trees total · 22 live · 4 draft · 2 unpublished</span>
-      <span class="help" style="font-family:var(--mono)">page 1 of 6 ‹ ›</span>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================== 02 CANVAS ============================================== -->
-<section class="screen" id="canvas">
-  <div class="topbar">
-    <span class="scr-tag">02 · Tree Canvas</span>
-    <div class="crumbs">Trees / DT-001 — Low DO in Aeration tank</div>
-    <div class="spacer"></div>
-    <span class="save">● Saved 2m ago</span>
-    <button class="ghost">History</button>
-    <button class="ghost">Preview</button>
-    <button class="primary">Publish v3.2</button>
-  </div>
-  <div class="row" style="gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <h2 style="margin:0">DT-001 · Low DO in Aeration tank</h2>
-    <span class="pill scs">Live</span>
-    <span class="pill gry">v3.1 · published</span>
-    <span class="pill gry">v3.2 · draft (unsaved branch)</span>
-  </div>
-
-  <div class="twocol">
-    <div>
-      <div class="card dashed">
-        <div class="row between" style="margin-bottom:10px">
-          <h3 style="margin:0">Diagnostic step tree</h3>
-          <div class="row" style="gap:6px">
-            <span class="pill gry">6 steps</span>
-            <span class="pill gry">3 stops</span>
-            <span class="pill acc"><i class="dot"></i>Drag to reorder</span>
-          </div>
-        </div>
-
-        <div class="canvas">
-
-          <!-- Step 1 -->
-          <div class="node">
-            <div class="actions"><button>edit</button><button>duplicate</button><button>…</button></div>
-            <div class="head"><span class="num">STEP 1 · Freq: Low</span><span class="pill gry">Auto-check capable</span></div>
-            <div class="q">Blower चालू है? <span style="font-weight:400;color:var(--muted)">(Is blower ON?)</span></div>
-            <div class="meta">
-              <span class="pill gry">2 checks</span>
-              <span class="pill scs">1 action</span>
-              <span class="pill acc">Tools: none</span>
-              <span class="pill gry">Min skill: Beginner</span>
-            </div>
-          </div>
-          <div class="connector">│</div>
-          <button class="add-step">+ Insert step here</button>
-
-          <!-- Step 2 -->
-          <div class="node">
-            <div class="actions"><button>edit</button><button>duplicate</button><button>…</button></div>
-            <div class="head"><span class="num">STEP 2 · Freq: Low</span><span class="pill amb">Stop here on fail</span></div>
-            <div class="q">Blower का प्रदर्शन सही है? <span style="font-weight:400;color:var(--muted)">(Blower performance OK?)</span></div>
-            <div class="meta">
-              <span class="pill gry">1 check</span>
-              <span class="pill scs">2 actions</span>
-              <span class="pill amb">Tools: 3</span>
-              <span class="pill gry">Min skill: Beginner</span>
-              <span class="pill dgr">⚠ Stop here</span>
-            </div>
-          </div>
-          <div class="connector">│</div>
-          <button class="add-step">+ Insert step here</button>
-
-          <!-- Step 3 -->
-          <div class="node active">
-            <div class="actions"><button>edit</button><button>duplicate</button><button>…</button></div>
-            <div class="head"><span class="num">STEP 3 · Freq: Low/Moderate · selected</span><span class="pill acc">Editing →</span></div>
-            <div class="q">टैंक में bubbling बराबर है? <span style="font-weight:400;color:var(--muted)">(Even bubbling, no septic zones?)</span></div>
-            <div class="meta">
-              <span class="pill gry">2 checks</span>
-              <span class="pill scs">2 actions</span>
-              <span class="pill acc">Tools: none</span>
-              <span class="pill gry">Min skill: Beginner</span>
-              <span class="pill dgr">⚠ Stop here</span>
-              <span class="pill amb">📷 Photo required</span>
-            </div>
-          </div>
-          <div class="connector">│</div>
-          <button class="add-step">+ Insert step here</button>
-
-          <!-- Step 4 -->
-          <div class="node">
-            <div class="actions"><button>edit</button><button>duplicate</button><button>…</button></div>
-            <div class="head"><span class="num">STEP 4 · Freq: Low/Moderate</span></div>
-            <div class="q">DO sensor में problem है? <span style="font-weight:400;color:var(--muted)">(Sensor scaling / cap damage?)</span></div>
-            <div class="meta">
-              <span class="pill gry">2 checks</span>
-              <span class="pill scs">3 actions</span>
-              <span class="pill amb">Tools: 3</span>
-              <span class="pill gry">Min skill: Intermediate</span>
-            </div>
-          </div>
-          <div class="connector">│</div>
-          <button class="add-step">+ Insert step here</button>
-
-          <!-- Step 5 -->
-          <div class="node">
-            <div class="actions"><button>edit</button><button>duplicate</button><button>…</button></div>
-            <div class="head"><span class="num">STEP 5 · Freq: Moderate/High</span></div>
-            <div class="q">Sludge bulking हो रही है? <span style="font-weight:400;color:var(--muted)">(MLSS / SV-30 high?)</span></div>
-            <div class="meta">
-              <span class="pill gry">3 checks</span>
-              <span class="pill scs">1 action</span>
-              <span class="pill amb">Tools: 3</span>
-              <span class="pill gry">Min skill: Intermediate</span>
-            </div>
-          </div>
-          <div class="connector">│</div>
-          <button class="add-step">+ Insert step here</button>
-
-          <!-- Step 6 -->
-          <div class="node">
-            <div class="actions"><button>edit</button><button>duplicate</button><button>…</button></div>
-            <div class="head"><span class="num">STEP 6 · Freq: High</span><span class="pill dgr">SME approval req.</span></div>
-            <div class="q">Incoming में shock load है? <span style="font-weight:400;color:var(--muted)">(High shock / toxicity?)</span></div>
-            <div class="meta">
-              <span class="pill gry">4 checks</span>
-              <span class="pill scs">1 action</span>
-              <span class="pill dgr">Tools missing: COD kit</span>
-              <span class="pill gry">Min skill: Advanced</span>
-            </div>
-          </div>
-
-          <button class="add-step">+ Add new step</button>
-
-          <div class="legend">
-            <span><i style="background:var(--accent)"></i>Editable</span>
-            <span><i style="background:var(--amber)"></i>Stop here</span>
-            <span><i style="background:var(--danger)"></i>Needs supervisor / SME</span>
-            <span><i style="background:var(--success)"></i>Solution action</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mini panel -->
-    <div>
-      <div class="panel">
-        <h4>Tree settings</h4>
-        <p class="sub">Applies to all 6 steps</p>
-
-        <label>Issue title (Hindi)</label>
-        <input type="text" value="Aeration Tank में DO कम है"/>
-        <label>Issue title (English)</label>
-        <input type="text" value="Low DO in Aeration Tank"/>
-
-        <label>Equipment scope</label>
-        <select><option>AT-01 Aeration Tank</option><option>All Aeration Tanks</option></select>
-
-        <label>Trigger</label>
-        <select><option>Sensor alert (DO &lt; 1.5 mg/L for 5min)</option><option>Manual report</option><option>Both</option></select>
-
-        <details class="accordion" open>
-          <summary>Skill tier routing</summary>
-          <div class="lst" style="margin-top:8px">
-            <div class="it"><span class="idx">▸</span><span class="txt">Beginner — show all 6 steps with scaffolding</span><span class="ctrl"><span class="tog"><span class="sw on"></span></span></span></div>
-            <div class="it"><span class="idx">▸</span><span class="txt">Intermediate — auto-skip step 1 if DP knows blower state</span><span class="ctrl"><span class="tog"><span class="sw on"></span></span></span></div>
-            <div class="it"><span class="idx">▸</span><span class="txt">Advanced — start at step 3, hide tip cards</span><span class="ctrl"><span class="tog"><span class="sw on"></span></span></span></div>
-          </div>
-        </details>
-
-        <details class="accordion">
-          <summary>Approval gates</summary>
-          <div class="lst" style="margin-top:8px">
-            <div class="it"><span class="idx">!</span><span class="txt">Step 6 — SME required before action</span></div>
-          </div>
-        </details>
-
-        <details class="accordion">
-          <summary>Stop-here conditions</summary>
-          <div class="lst" style="margin-top:8px">
-            <div class="it"><span class="idx">2</span><span class="txt">Step 2 · if not resolved → call Maintenance</span></div>
-            <div class="it"><span class="idx">3</span><span class="txt">Step 3 · diffuser cleaning → Supervisor only</span></div>
-            <div class="it"><span class="idx">4</span><span class="txt">Step 4 · cap damaged → Supervisor only</span></div>
-          </div>
-        </details>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================== 03 STEP EDITOR ============================================== -->
-<section class="screen" id="step">
-  <div class="topbar">
-    <span class="scr-tag">03 · Step Editor</span>
-    <div class="crumbs">DT-001 / Step 3 — Even bubbling check</div>
-    <div class="spacer"></div>
-    <button class="ghost">Cancel</button>
-    <button class="ghost">Preview step</button>
-    <button class="primary">Save step</button>
-  </div>
-
-  <div class="twocol">
-    <div>
-
-      <div class="card">
-        <h3>1 · Question</h3>
-        <p class="sub">Operator sees one big Hindi sentence with English helper.</p>
-        <label>Question (Hindi)</label>
-        <input type="text" value="टैंक में bubbling बराबर है?"/>
-        <label>Question (English helper)</label>
-        <input type="text" value="Is aeration equally happening across the tank?"/>
-        <label>Question audio</label>
-        <div class="row" style="gap:8px"><button class="ghost" style="font:11px var(--mono);padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff">▶ play recording</button><span class="help">step3_hi.mp3 · 4s</span></div>
-      </div>
-
-      <div class="card">
-        <h3>2 · How to identify (per-line steps)</h3>
-        <p class="sub">Each line becomes its own micro-screen. From the diagnostic tree.</p>
-        <div class="lst">
-          <div class="it"><span class="idx">A1</span><span class="txt">Aeration पूरे tank में बराबर हो रही है?<br/><span style="font-size:11px;color:var(--muted)">Check evenly across all four corners</span></span><span class="ctrl"><button>edit</button><button>↑</button><button>↓</button><button>×</button></span></div>
-          <div class="it"><span class="idx">A2</span><span class="txt">Dead / Septic zones हैं?<br/><span style="font-size:11px;color:var(--muted)">Dark patches, smell, no bubbles</span></span><span class="ctrl"><button>edit</button><button>↑</button><button>↓</button><button>×</button></span></div>
-          <div class="add">＋ Add identify line</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>3 · Solution (per-line steps)</h3>
-        <p class="sub">Each line becomes its own action screen. Marked stop-here lines terminate.</p>
-        <div class="lst">
-          <div class="it"><span class="idx">S1</span><span class="txt">Diffusers चोक हो गए हैं — cleaning चाहिए<br/><span style="font-size:11px;color:var(--muted)">Diagnose only — operator cannot fix</span></span><span class="ctrl"><button>edit</button><button>↑</button><button>↓</button><button>×</button></span></div>
-          <div class="it"><span class="idx">S2</span><span class="txt">Supervisor को बुलाएं · Action plan करेंगे <span class="pill dgr" style="font-size:9px;margin-left:6px">stop here</span><br/><span style="font-size:11px;color:var(--muted)">Hand off to supervisor for diffuser cleaning</span></span><span class="ctrl"><button>edit</button><button>↑</button><button>↓</button><button>×</button></span></div>
-          <div class="add">＋ Add solution line</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>4 · Tools & illustration</h3>
-        <div class="threecol">
-          <div>
-            <label>Tools required</label>
-            <div class="lst">
-              <div class="it"><span class="idx">•</span><span class="txt">None</span></div>
-              <div class="add">＋ Tool</div>
-            </div>
-          </div>
-          <div>
-            <label>Equipment illustration</label>
-            <div style="height:90px;border:1px dashed var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;font:11px var(--mono);color:var(--faint)">aeration-tank-uneven.svg</div>
-            <div class="help">Drop SVG or pick from library</div>
-          </div>
-          <div>
-            <label>Frequency tag</label>
-            <select><option>Low / Moderate</option><option>Low</option><option>Moderate / High</option><option>High</option></select>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div>
-      <div class="panel">
-        <h4>Step properties</h4>
-        <p class="sub">Behaviour at runtime</p>
-
-        <label>Minimum skill tier</label>
-        <select><option>Beginner (default)</option><option>Intermediate</option><option>Advanced</option></select>
-
-        <label>Auto-check capable</label>
-        <div class="tog"><span class="sw"></span><span>Read sensor instead of asking</span></div>
-
-        <label>Photo required</label>
-        <div class="tog"><span class="sw on"></span><span>Hard block continue until photo uploaded</span></div>
-
-        <label>Supervisor approval</label>
-        <div class="tog"><span class="sw"></span><span>Block transition until approved</span></div>
-
-        <label>Stop here on confirmed cause</label>
-        <div class="tog"><span class="sw on"></span><span>Terminate diagnose flow</span></div>
-
-        <label>Allow skip</label>
-        <div class="tog"><span class="sw on"></span><span>Operator can mark SKIPPED</span></div>
-
-        <label>Time budget (advisory)</label>
-        <input type="text" value="3 min"/>
-
-        <details class="accordion" open>
-          <summary>Linked vocabulary terms</summary>
-          <div class="lst" style="margin-top:8px">
-            <div class="it"><span class="idx">▸</span><span class="txt">aeration → "हवा देना"</span></div>
-            <div class="it"><span class="idx">▸</span><span class="txt">diffuser → "हवा फैलाने वाला"</span></div>
-            <div class="it"><span class="idx">▸</span><span class="txt">septic zone → "सड़ी हुई जगह"</span></div>
-            <div class="add">＋ Link term</div>
-          </div>
-        </details>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================== 04 VOCAB ============================================== -->
-<section class="screen" id="vocab">
-  <div class="topbar">
-    <span class="scr-tag">04 · Vocabulary / F18</span>
-    <div class="crumbs">Glossary · Hindi ↔ English ↔ icon</div>
-    <div class="spacer"></div>
-    <button class="ghost">Bulk import CSV</button>
-    <button class="primary">+ New term</button>
-  </div>
-  <h2>Vocabulary map</h2>
-  <p class="sub" style="color:var(--muted)">Every technical word across the 28 trees should be here. Words on screens get a dotted-blue underline → tap opens this term sheet.</p>
-
-  <div class="card">
-    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:10px">
-      <input type="text" placeholder="Search term…" style="max-width:240px"/>
-      <span class="pill gry">12 terms</span>
-      <span class="pill amb">3 missing icon</span>
-      <span class="pill dgr">1 conflict</span>
-    </div>
-    <table>
-      <thead><tr><th>Term</th><th>Plain Hindi</th><th>English short tag</th><th>Icon</th><th>Used in</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td>TMP</td><td>दबाव अंतर</td><td>TMP</td><td>📐 (set)</td><td>DT-002, DT-004</td><td><span class="pill scs">Approved</span></td></tr>
-        <tr><td>MBR</td><td>झिल्ली रिएक्टर</td><td>MBR</td><td>🟦 (set)</td><td>DT-002, DT-004</td><td><span class="pill scs">Approved</span></td></tr>
-        <tr><td>DO</td><td>ऑक्सीजन / हवा</td><td>DO</td><td>💧 (set)</td><td>DT-001</td><td><span class="pill scs">Approved</span></td></tr>
-        <tr><td>aeration</td><td>हवा देना</td><td>—</td><td>🌬 (set)</td><td>DT-001</td><td><span class="pill scs">Approved</span></td></tr>
-        <tr><td>diffuser</td><td>हवा फैलाने वाला</td><td>—</td><td>— missing</td><td>DT-001</td><td><span class="pill amb">Icon missing</span></td></tr>
-        <tr><td>septic zone</td><td>सड़ी हुई जगह</td><td>—</td><td>— missing</td><td>DT-001</td><td><span class="pill amb">Icon missing</span></td></tr>
-        <tr><td>MLSS</td><td>घुले हुए ठोस</td><td>MLSS</td><td>🧪 (set)</td><td>DT-001</td><td><span class="pill scs">Approved</span></td></tr>
-        <tr><td>SV-30</td><td>30 मिनट sludge</td><td>SV-30</td><td>🧪 (set)</td><td>DT-001</td><td><span class="pill scs">Approved</span></td></tr>
-        <tr><td>shock load</td><td>अचानक ज़्यादा गंदगी</td><td>—</td><td>⚠ (set)</td><td>DT-001</td><td><span class="pill dgr">Conflict — review</span></td></tr>
-        <tr><td>VFD</td><td>मोटर speed control</td><td>VFD</td><td>⚡ (set)</td><td>DT-003</td><td><span class="pill scs">Approved</span></td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<!-- ============================================== 05 LIFECYCLE ============================================== -->
-<section class="screen" id="lifecycle">
-  <div class="topbar">
-    <span class="scr-tag">05 · Lifecycle Stages</span>
-    <div class="crumbs">Close-the-Loop · 7 stages</div>
-    <div class="spacer"></div>
-    <button class="ghost">Reset to defaults</button>
-    <button class="primary">Save</button>
-  </div>
-  <h2>Issue lifecycle</h2>
-  <p class="sub" style="color:var(--muted)">From the Close-the-Loop diagram. Each card is a stage with a state; configure who acts and what transitions are allowed.</p>
-
-  <div class="lifecycle">
-    <div class="stage"><div class="n">01</div><div class="name">Create</div><div class="state">issue_created</div></div>
-    <div class="stage"><div class="n">02</div><div class="name">Intake</div><div class="state">OPEN</div></div>
-    <div class="stage"><div class="n">03</div><div class="name">Diagnose</div><div class="state">IN_PROGRESS</div></div>
-    <div class="stage alt"><div class="n">04</div><div class="name">Root Cause</div><div class="state">WAITING / PENDING_APPROVAL</div></div>
-    <div class="stage"><div class="n">05</div><div class="name">Remediate</div><div class="state">IN_PROGRESS</div></div>
-    <div class="stage exc"><div class="n">06</div><div class="name">Verify</div><div class="state">RESOLVED</div></div>
-    <div class="stage"><div class="n">07</div><div class="name">Close</div><div class="state">CLOSED</div></div>
-  </div>
-
-  <div class="threecol">
-    <div class="card">
-      <h3>Stage: Diagnose</h3>
-      <p class="sub">Owners: Operator · Supervisor (escalation)</p>
-      <label>Allowed actions</label>
-      <div class="lst">
-        <div class="it"><span class="idx">✓</span><span class="txt">Answer step (Yes/No/value)</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">Skip step</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">Fallback / retry previous</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">Need supervisor help → escalate</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">"I know the cause" → skip to Root Cause</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <h3>Stage: Root Cause</h3>
-      <p class="sub">Confirm activities · may need approval</p>
-      <label>Branches</label>
-      <div class="lst">
-        <div class="it"><span class="idx">▸</span><span class="txt">Selected from list (default path)</span></div>
-        <div class="it"><span class="idx">▸</span><span class="txt">Different cause → tree improvement (SME)</span></div>
-        <div class="it"><span class="idx">▸</span><span class="txt">Other (free text) → verify + photo</span></div>
-        <div class="it"><span class="idx">▸</span><span class="txt">Approval required → supervisor</span></div>
-        <div class="it"><span class="idx">▸</span><span class="txt">False alarm → reason → SME notified</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <h3>Stage: Remediate</h3>
-      <p class="sub">Do procedure</p>
-      <label>Hard gates</label>
-      <div class="lst">
-        <div class="it"><span class="idx">!</span><span class="txt">Photos required → hard gate</span></div>
-        <div class="it"><span class="idx">!</span><span class="txt">WAIT timer → attempt / proceed</span></div>
-        <div class="it"><span class="idx">!</span><span class="txt">Fail → escalation (Supervisor / SME)</span></div>
-        <div class="it"><span class="idx">!</span><span class="txt">Resolution condition flow (configured)</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Cross-stage jumps (dashed connectors in the diagram)</h3>
-    <div class="lst">
-      <div class="it"><span class="idx">↪</span><span class="txt">no RCA provided → Root Cause</span></div>
-      <div class="it"><span class="idx">↪</span><span class="txt">RCA = known → Remediation (skip Diagnose)</span></div>
-      <div class="it"><span class="idx">↪</span><span class="txt">RCA provided → auto-close</span></div>
-      <div class="it"><span class="idx">↪</span><span class="txt">Auto-recovery confirm → Issue close</span></div>
-      <div class="it"><span class="idx">↪</span><span class="txt">Failed verification → supervisor approval</span></div>
-      <div class="add">＋ Add jump</div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================== 06 EXCEPTIONS ============================================== -->
-<section class="screen" id="exceptions">
-  <div class="topbar">
-    <span class="scr-tag">06 · Exception Rules</span>
-    <div class="crumbs">Branch behaviour</div>
-    <div class="spacer"></div>
-    <button class="primary">+ Rule</button>
-  </div>
-  <h2>Exception &amp; branch rules</h2>
-  <p class="sub" style="color:var(--muted)">Configure what happens when the operator hits a non-happy-path branch. Maps directly to yellow / red boxes in the Close-the-Loop diagram.</p>
-
-  <div class="twocol">
-    <div>
-      <div class="card">
-        <h3>Skip / Don't know</h3>
-        <p class="sub">Operator taps "I don't know, skip"</p>
-        <label>Behaviour</label>
-        <select><option>Fallback to retry (default)</option><option>Auto-move to next step</option><option>Pause and request supervisor</option></select>
-        <label>Audit event</label>
-        <input type="text" value="SKIPPED" disabled/>
-        <label>Visual confirmation</label>
-        <div class="tog"><span class="sw on"></span><span>Show "Step X skipped" chip on next screen (Operator request #7)</span></div>
-      </div>
-
-      <div class="card">
-        <h3>Need supervisor help</h3>
-        <p class="sub">Awaiting approval</p>
-        <label>On trigger</label>
-        <select><option>Pause flow + notify on-shift supervisor</option><option>Pause + open issue report draft</option></select>
-        <label>Operator session</label>
-        <select><option>Stay logged in, show "waiting…" state</option><option>Hand back to home screen</option></select>
-        <label>Timeout</label>
-        <input type="text" value="15 min → escalate to SME"/>
-      </div>
-
-      <div class="card">
-        <h3>False alarm</h3>
-        <p class="sub">Operator says alert was wrong</p>
-        <label>Required input</label>
-        <div class="tog"><span class="sw on"></span><span>Free-text reason (mandatory)</span></div>
-        <div class="tog"><span class="sw on"></span><span>Photo evidence (mandatory)</span></div>
-        <label>Side-effect</label>
-        <select><option>Notify SME to review threshold</option><option>Auto-suppress same alert for 2h</option><option>Both</option></select>
-      </div>
-    </div>
-
-    <div>
-      <div class="card">
-        <h3>"I know the cause" → skip Diagnose</h3>
-        <p class="sub">Advanced operator shortcut</p>
-        <label>Enabled for tier</label>
-        <select><option>Advanced only</option><option>Intermediate + Advanced</option></select>
-        <label>Logged event</label>
-        <input type="text" value="DIAGNOSE_SHORTCUT" disabled/>
-        <label>Audit requires</label>
-        <div class="tog"><span class="sw on"></span><span>Operator selects RCA from list (cannot free-type)</span></div>
-      </div>
-
-      <div class="card">
-        <h3>Correct prior answer</h3>
-        <p class="sub">Operator changed their mind mid-flow</p>
-        <label>Logged event</label>
-        <input type="text" value="STEP_CORRECTED" disabled/>
-        <label>Behaviour</label>
-        <select><option>Replay from corrected step</option><option>Re-evaluate tree, may shortcut</option></select>
-      </div>
-
-      <div class="card">
-        <h3>Reassignment (Supervisor → Operator B)</h3>
-        <p class="sub">Operator A terminates session; Operator B picks up</p>
-        <label>Operator A session</label>
-        <select><option>Graceful close + show "Reassigned to Nagesh"</option><option>Abrupt close (deprecated)</option></select>
-        <label>Operator B handoff stages</label>
-        <select><option>3-stage (context card → review last step → take over)</option><option>2-stage (context card → take over)</option></select>
-        <label>Context summary card</label>
-        <div class="tog"><span class="sw on"></span><span>Auto-generate from session log</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================== 07 SKILL TIER ============================================== -->
-<section class="screen" id="skill">
-  <div class="topbar">
-    <span class="scr-tag">07 · Skill Tier Routing</span>
-    <div class="crumbs">Per-tier scaffolding</div>
-    <div class="spacer"></div>
-    <button class="ghost">Preview as Beginner</button>
-    <button class="ghost">Preview as Advanced</button>
-    <button class="primary">Save</button>
-  </div>
-  <h2>Skill tier routing — DT-001</h2>
-  <p class="sub" style="color:var(--muted)">Pipeline auto-skips scaffolding; UI must not say "you skipped 4 steps". Configure what's hidden per tier.</p>
-
-  <div class="threecol">
-    <div class="card">
-      <h3>Beginner</h3>
-      <p class="sub">Show everything · maximum hand-holding</p>
-      <label>Shown</label>
-      <div class="lst">
-        <div class="it"><span class="idx">✓</span><span class="txt">All 6 steps</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">A/B identification cards</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">Tip cards (कैसे करें)</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">Mascot · listen 🔊 · voice strip</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">Vocabulary underlines</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Intermediate</h3>
-      <p class="sub">Auto-skip what the system can read</p>
-      <label>Auto-skipped</label>
-      <div class="lst">
-        <div class="it"><span class="idx">×</span><span class="txt">Step 1 if blower state available from DP software</span></div>
-        <div class="it"><span class="idx">×</span><span class="txt">Tip cards (collapsed by default)</span></div>
-        <div class="it"><span class="idx">×</span><span class="txt">Mascot row</span></div>
-      </div>
-      <label>Still shown</label>
-      <div class="lst">
-        <div class="it"><span class="idx">✓</span><span class="txt">All identification + solution sub-screens</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">Vocabulary underlines</span></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>Advanced</h3>
-      <p class="sub">Minimal · expert mode</p>
-      <label>Auto-skipped</label>
-      <div class="lst">
-        <div class="it"><span class="idx">×</span><span class="txt">Steps 1–2 (assume known)</span></div>
-        <div class="it"><span class="idx">×</span><span class="txt">All scaffolding cards</span></div>
-        <div class="it"><span class="idx">×</span><span class="txt">Photo silhouettes</span></div>
-        <div class="it"><span class="idx">×</span><span class="txt">Tools list</span></div>
-      </div>
-      <label>Stays</label>
-      <div class="lst">
-        <div class="it"><span class="idx">✓</span><span class="txt">Question · big Hindi headline</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">Yes/No buttons</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">Stop-here warnings (always)</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Auto-promotion rules</h3>
-    <div class="lst">
-      <div class="it"><span class="idx">→</span><span class="txt">Beginner → Intermediate after 10 issues confirmed correct</span></div>
-      <div class="it"><span class="idx">→</span><span class="txt">Intermediate → Advanced after 30 issues + supervisor endorsement</span></div>
-      <div class="it"><span class="idx">↓</span><span class="txt">Demote on 3 wrong-RCA confirmations in 7 days</span></div>
-      <div class="add">＋ Rule</div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================== 08 APPROVALS ============================================== -->
-<section class="screen" id="approvals">
-  <div class="topbar">
-    <span class="scr-tag">08 · Approvals & Gates</span>
-    <div class="crumbs">Supervisor gates · photo hard-blocks · cost approvals</div>
-    <div class="spacer"></div>
-    <button class="primary">+ Gate</button>
-  </div>
-  <h2>Approvals &amp; hard gates</h2>
-  <p class="sub" style="color:var(--muted)">From the requirements doc: approval of costly step, hard-block photo, sent splash confirmation.</p>
-
-  <div class="card">
-    <h3>Supervisor approval gates</h3>
-    <table>
-      <thead><tr><th>Trigger</th><th>Where</th><th>Who approves</th><th>Block?</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td>Cap replacement on DO sensor</td><td>DT-001 / Step 4 / Action 3</td><td>On-shift Supervisor</td><td>Yes — cannot proceed without ✓</td><td><span class="pill scs">Active</span></td></tr>
-        <tr><td>Diffuser cleaning plan</td><td>DT-001 / Step 3 / Action 2</td><td>On-shift Supervisor</td><td>Yes</td><td><span class="pill scs">Active</span></td></tr>
-        <tr><td>Sludge wasting &gt; 4hr</td><td>DT-001 / Step 5</td><td>SME</td><td>Soft — warn + log</td><td><span class="pill scs">Active</span></td></tr>
-        <tr><td>Maintenance call</td><td>DT-001 / Step 2 / Action 2</td><td>Maintenance lead</td><td>No — auto-route</td><td><span class="pill amb">Draft</span></td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="twocol">
-    <div class="card">
-      <h3>Photo hard-blocks</h3>
-      <p class="sub">"Photo required before continuing"</p>
-      <div class="lst">
-        <div class="it"><span class="idx">📷</span><span class="txt">Step 3 (diffuser cleaning evidence)</span><span class="ctrl"><span class="tog"><span class="sw on"></span></span></span></div>
-        <div class="it"><span class="idx">📷</span><span class="txt">Step 5 (floating sludge)</span><span class="ctrl"><span class="tog"><span class="sw"></span></span></span></div>
-        <div class="it"><span class="idx">📷</span><span class="txt">Verify (after-fix DO reading)</span><span class="ctrl"><span class="tog"><span class="sw on"></span></span></span></div>
-        <div class="add">＋ Add hard-block</div>
-      </div>
-    </div>
-    <div class="card">
-      <h3>Splash confirmations</h3>
-      <p class="sub">"Sent" splash needs confirmation it was delivered</p>
-      <label>"Supervisor को भेजें" confirmation</label>
-      <div class="tog"><span class="sw on"></span><span>Show delivery state (Sent → Seen → Acknowledged)</span></div>
-      <label>Issue Report sent</label>
-      <div class="tog"><span class="sw on"></span><span>Show recipient + timestamp + ack chip</span></div>
-      <label>Reassignment notification</label>
-      <div class="tog"><span class="sw on"></span><span>Yellow inline banner for incoming operator</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================== 09 EQUIPMENT ============================================== -->
-<section class="screen" id="assets">
-  <div class="topbar">
-    <span class="scr-tag">09 · Equipment Library</span>
-    <div class="crumbs">Assets</div>
-    <div class="spacer"></div>
-    <button class="ghost">Bulk CSV</button>
-    <button class="primary">+ Equipment</button>
-  </div>
-  <h2>Equipment library</h2>
-  <p class="sub" style="color:var(--muted)">"Every information attached to equipment" — the canonical anchor for diagnostic trees, alerts, sensors, history.</p>
-
-  <div class="card">
-    <table>
-      <thead><tr><th>ID</th><th>Name</th><th>Section</th><th>Type</th><th>Sensors</th><th>Trees</th><th>Open issues</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td>AT-01</td><td>Aeration Tank</td><td>Aeration</td><td>Tank · Fine bubble diffused</td><td>DO, pH, Temp</td><td>DT-001, DT-005</td><td>1</td><td><span class="pill scs"><i class="dot"></i>Running</span></td></tr>
-        <tr><td>MBR-1</td><td>Permeate Pump</td><td>Secondary · Aeration</td><td>Pump · Centrifugal</td><td>VFD, Flow, Current, Pressure</td><td>DT-002, DT-004</td><td>3</td><td><span class="pill scs"><i class="dot"></i>Running</span></td></tr>
-        <tr><td>B-1</td><td>Blower 1</td><td>Aeration</td><td>Blower · Roots</td><td>Current, Vibration</td><td>DT-003</td><td>0</td><td><span class="pill amb"><i class="dot"></i>Standby</span></td></tr>
-        <tr><td>EQ-1</td><td>Equalisation Tank</td><td>Primary</td><td>Tank</td><td>Level, pH</td><td>DT-005</td><td>0</td><td><span class="pill scs"><i class="dot"></i>Running</span></td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="twocol">
-    <div class="card">
-      <h3>Selected: AT-01 Aeration Tank</h3>
-      <div class="threecol">
-        <div>
-          <label>Volume</label><input type="text" value="120 m³"/>
-          <label>Type</label><input type="text" value="Fine Bubble Diffused"/>
-          <label>Diffuser type</label><input type="text" value="Membrane · 2-stage"/>
-        </div>
-        <div>
-          <label>Feed flow (designed)</label><input type="text" value="50 m³/hr"/>
-          <label>Section</label><input type="text" value="Aeration · Block A"/>
-          <label>Commissioned</label><input type="text" value="12 Mar 2024"/>
-        </div>
-        <div>
-          <label>Photo</label>
-          <div style="height:90px;border:1px dashed var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;font:11px var(--mono);color:var(--faint)">AT-01_main.jpg</div>
-          <label>Location on plant map</label>
-          <div style="height:60px;border:1px dashed var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;font:11px var(--mono);color:var(--faint)">pin (74%, 41%)</div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <h3>Attached diagnostic trees</h3>
-      <div class="lst">
-        <div class="it"><span class="idx">▸</span><span class="txt">DT-001 · Low DO <span class="pill scs" style="font-size:9px;margin-left:6px">Live</span></span><span class="ctrl"><button>edit</button></span></div>
-        <div class="it"><span class="idx">▸</span><span class="txt">DT-005 · pH out of range <span class="pill scs" style="font-size:9px;margin-left:6px">Live</span></span><span class="ctrl"><button>edit</button></span></div>
-        <div class="add">＋ Attach tree</div>
-      </div>
-      <h3 style="margin-top:14px">Maintenance schedule</h3>
-      <div class="lst">
-        <div class="it"><span class="idx">📅</span><span class="txt">Monthly diffuser inspection</span></div>
-        <div class="it"><span class="idx">📅</span><span class="txt">Quarterly: deep clean (Supervisor)</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================== 10 SENSORS ============================================== -->
-<section class="screen" id="sensors">
-  <div class="topbar">
-    <span class="scr-tag">10 · Sensors & Mapping</span>
-    <div class="crumbs">Sensor names, thresholds, auto-check rules</div>
-    <div class="spacer"></div>
-    <button class="primary">+ Sensor</button>
-  </div>
-  <h2>Sensors &amp; thresholds</h2>
-  <p class="sub" style="color:var(--muted)">Every sensor names its parent equipment ("TMP sensor on MBR-1"). Thresholds drive alerts and auto-check steps.</p>
-
-  <div class="card">
-    <table>
-      <thead><tr><th>Sensor</th><th>On equipment</th><th>Operator label</th><th>Safe range</th><th>Alert when</th><th>Auto-check?</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td>DO-AT01</td><td>AT-01 Aeration Tank</td><td>DO sensor on Aeration Tank</td><td>2.5–4.0 mg/L</td><td>&lt; 1.5 for 5min</td><td>✓ Yes (DT-001 step 1)</td><td><span class="pill scs">Healthy</span></td></tr>
-        <tr><td>TMP-MBR1</td><td>MBR-1</td><td>TMP gauge · MBR-1 Panel</td><td>&lt; 0.4 bar</td><td>&gt; 0.55 for 10min</td><td>✓ Yes</td><td><span class="pill scs">Healthy</span></td></tr>
-        <tr><td>CUR-B1-R</td><td>Blower B-1</td><td>Blower current (R phase)</td><td>10–14 A</td><td>imbalance &gt; 30%</td><td>✓ Yes</td><td><span class="pill amb">Last reading stale</span></td></tr>
-        <tr><td>PH-EQ1</td><td>EQ-1</td><td>pH on Equalisation Tank</td><td>6.5–8.5</td><td>out of range</td><td>✓ Yes</td><td><span class="pill scs">Healthy</span></td></tr>
-        <tr><td>MLSS</td><td>(manual test)</td><td>MLSS reading (manual kit)</td><td>3000–5000 mg/L</td><td>—</td><td>× No (manual only)</td><td><span class="pill gry">Manual</span></td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<!-- ============================================== 11 ROSTER ============================================== -->
-<section class="screen" id="roster">
-  <div class="topbar">
-    <span class="scr-tag">11 · Supervisors & Roster</span>
-    <div class="crumbs">On-shift assignments + reassignment rules</div>
-    <div class="spacer"></div>
-    <button class="primary">+ Person</button>
-  </div>
-  <h2>People &amp; roster</h2>
-
-  <div class="twocol">
-    <div>
-      <div class="card">
-        <h3>On-shift right now (auto-computed)</h3>
-        <table>
-          <thead><tr><th>Role</th><th>Name</th><th>Skill</th><th>Session</th><th>Coverage</th></tr></thead>
-          <tbody>
-            <tr><td>Operator</td><td>Dheeraj</td><td>Intermediate</td><td>Active · DT-001</td><td>Aeration · A block</td></tr>
-            <tr><td>Operator</td><td>Nagesh</td><td>Beginner</td><td>Idle</td><td>Aeration · B block</td></tr>
-            <tr><td>Supervisor</td><td>Sharma जी</td><td>—</td><td>Online</td><td>Whole plant</td></tr>
-            <tr><td>Supervisor</td><td>Ashok Kumar</td><td>—</td><td>Online</td><td>Secondary</td></tr>
-            <tr><td>SME</td><td>R. Mehta</td><td>—</td><td>On-call</td><td>Process</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="card">
-        <h3>Shift schedule (week of 27 May)</h3>
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;font:11px var(--mono);text-align:center">
-          <div style="background:#fafafa;padding:6px;border-radius:6px">Mon<br/><span style="color:var(--accent)">Dheeraj</span></div>
-          <div style="background:#fafafa;padding:6px;border-radius:6px">Tue<br/><span style="color:var(--accent)">Dheeraj</span></div>
-          <div style="background:#fafafa;padding:6px;border-radius:6px">Wed<br/><span style="color:var(--accent)">Nagesh</span></div>
-          <div style="background:#fafafa;padding:6px;border-radius:6px">Thu<br/><span style="color:var(--accent)">Nagesh</span></div>
-          <div style="background:#fffaf0;padding:6px;border-radius:6px;border:1px dashed var(--amber)">Fri<br/><span style="color:var(--amber)">unstaffed</span></div>
-          <div style="background:#fafafa;padding:6px;border-radius:6px">Sat<br/><span style="color:var(--accent)">Anil</span></div>
-          <div style="background:#fafafa;padding:6px;border-radius:6px">Sun<br/><span style="color:var(--accent)">Anil</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="card">
-        <h3>Reassignment rules</h3>
-        <p class="sub">Both supervisor-initiated and operator-initiated</p>
-        <label>Supervisor → reassign to Operator B</label>
-        <select><option>Show context summary card to B (default)</option><option>Skip context, jump to active step</option></select>
-        <label>Operator A self-request</label>
-        <div class="tog"><span class="sw on"></span><span>Allow "Need help · reassign me"</span></div>
-        <label>What happens to active step</label>
-        <select><option>Saved as PAUSED · pickup at same step</option><option>Reset to step 1</option></select>
-        <label>Notify supervisor of reassign reason</label>
-        <div class="tog"><span class="sw on"></span><span>Free-text mandatory</span></div>
-      </div>
-      <div class="card">
-        <h3>Escalation path · Aeration zone</h3>
-        <div class="lst">
-          <div class="it"><span class="idx">1</span><span class="txt">On-shift Operator (default)</span></div>
-          <div class="it"><span class="idx">2</span><span class="txt">Sharma जी (Supervisor, 8a–8p)</span></div>
-          <div class="it"><span class="idx">3</span><span class="txt">Ashok Kumar (Supervisor, night)</span></div>
-          <div class="it"><span class="idx">4</span><span class="txt">R. Mehta (SME, on-call)</span></div>
-          <div class="add">＋ Add level</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================== 12 PREVIEW ============================================== -->
-<section class="screen" id="preview">
-  <div class="topbar">
-    <span class="scr-tag">12 · Operator Preview</span>
-    <div class="crumbs">As-built mobile mock</div>
-    <div class="spacer"></div>
-    <select style="width:auto"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
-    <select style="width:auto"><option>Step 3 · Q</option><option>Step 3 · A1 sub</option><option>Step 3 · S1 action</option></select>
-    <button class="ghost">Open in real device</button>
-  </div>
-  <h2>Operator preview</h2>
-  <p class="sub" style="color:var(--muted)">Live mockup of how a given step renders for the selected skill tier.</p>
-
-  <div class="twocol">
-    <div>
-      <div class="card">
-        <h3>What the operator sees</h3>
-        <div class="mock">
-          <div class="pbar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
-          <div style="font:10px var(--mono);color:var(--muted)">Step 3 of 6 · DT-001</div>
-          <div class="h">टैंक में bubbling बराबर है?</div>
-          <div style="font-size:11px;color:var(--muted)">पूरे tank में evenly aeration check करें</div>
-          <div class="ill">[ tank illustration · uneven bubbles ]</div>
-          <div class="opt"><span class="l">A</span>Aeration पूरे tank में बराबर हो रही है?</div>
-          <div class="opt"><span class="l">B</span>Dead / Septic zones हैं?</div>
-          <div class="btn y">✓ हाँ</div>
-          <div class="btn n">✗ नहीं</div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="card">
-        <h3>Resolved config snapshot</h3>
-        <div class="lst">
-          <div class="it"><span class="idx">Q</span><span class="txt">"टैंक में bubbling बराबर है?"</span></div>
-          <div class="it"><span class="idx">A1</span><span class="txt">Aeration पूरे tank में बराबर हो रही है?</span></div>
-          <div class="it"><span class="idx">A2</span><span class="txt">Dead / Septic zones हैं?</span></div>
-          <div class="it"><span class="idx">📷</span><span class="txt">Photo HARD-BLOCK enabled</span></div>
-          <div class="it"><span class="idx">⚠</span><span class="txt">Stop here if confirmed</span></div>
-          <div class="it"><span class="idx">⏱</span><span class="txt">Time budget: 3m</span></div>
-          <div class="it"><span class="idx">🎯</span><span class="txt">Skill tier: Beginner (full scaffolding)</span></div>
-        </div>
-      </div>
-      <div class="card">
-        <h3>Validation</h3>
-        <div class="lst">
-          <div class="it"><span class="idx">✓</span><span class="txt">Hindi + English present</span></div>
-          <div class="it"><span class="idx">✓</span><span class="txt">Audio file uploaded</span></div>
-          <div class="it"><span class="idx">✓</span><span class="txt">Illustration linked</span></div>
-          <div class="it" style="color:var(--amber)"><span class="idx">!</span><span class="txt">Vocabulary: "diffuser" missing icon</span></div>
-          <div class="it"><span class="idx">✓</span><span class="txt">Solution stop-here documented</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================== 13 PUBLISH ============================================== -->
-<section class="screen" id="publish">
-  <div class="topbar">
-    <span class="scr-tag">13 · Publish & Versions</span>
-    <div class="crumbs">Versioned releases</div>
-    <div class="spacer"></div>
-    <button class="ghost">Discard draft</button>
-    <button class="primary">Publish v3.2</button>
-  </div>
-  <h2>Publish DT-001 v3.2</h2>
-  <p class="sub" style="color:var(--muted)">Diff vs. the live version (v3.1). Operators won't see changes until you publish.</p>
-
-  <div class="twocol">
-    <div class="card">
-      <h3>Diff · v3.1 → v3.2 draft</h3>
-      <ul class="diff" style="padding:0;margin:0">
-        <li class="add"><span class="op">+</span>Step 3 · solution line "Supervisor को बुलाएं" marked Stop-here</li>
-        <li class="add"><span class="op">+</span>Step 4 · added tool "Tissue paper"</li>
-        <li class="mod"><span class="op">~</span>Step 3 · question reworded: "is aeration even?" → "टैंक में bubbling बराबर है?"</li>
-        <li class="mod"><span class="op">~</span>Step 4 · min skill: Beginner → Intermediate</li>
-        <li class="mod"><span class="op">~</span>Step 6 · added warning "COD kit not available in STP"</li>
-        <li class="rem"><span class="op">−</span>Step 1 · removed redundant "check from DP software twice" tip</li>
-        <li class="add"><span class="op">+</span>Vocabulary · added "septic zone → सड़ी हुई जगह"</li>
-        <li class="add"><span class="op">+</span>Photo hard-block on Step 5 (floating sludge)</li>
-      </ul>
-    </div>
-
-    <div class="card">
-      <h3>Release notes (sent to operators)</h3>
-      <textarea>v3.2 — Bubbling step is now clearer. Step 4 now needs Intermediate skill. Added warning that COD kit may not be in STP.</textarea>
-
-      <h3 style="margin-top:14px">Rollout</h3>
-      <label>Strategy</label>
-      <select><option>All operators · immediate</option><option>Beta cohort first (Dheeraj, Anil)</option><option>Scheduled · Mon 8:00 AM</option></select>
-
-      <label>Rollback</label>
-      <div class="tog"><span class="sw on"></span><span>Keep v3.1 as instant-revert option for 30 days</span></div>
-
-      <h3 style="margin-top:14px">Sign-off</h3>
-      <div class="lst">
-        <div class="it"><span class="idx">✓</span><span class="txt">Reviewed by R. Mehta (SME) · 26 May</span></div>
-        <div class="it"><span class="idx">✓</span><span class="txt">Validated against diagnostic tree PDF</span></div>
-        <div class="it"><span class="idx">○</span><span class="txt">Operator preview tested (3 tiers) — <span style="color:var(--amber)">pending</span></span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Version history</h3>
-    <table>
-      <thead><tr><th>Version</th><th>Released</th><th>By</th><th>Confirmed RCA</th><th>Avg time</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td>v3.2 (draft)</td><td>—</td><td>You</td><td>—</td><td>—</td><td><span class="pill amb">Draft</span></td></tr>
-        <tr><td>v3.1</td><td>9 May 2025</td><td>R. Mehta</td><td>78%</td><td>14m</td><td><span class="pill scs">Live</span></td></tr>
-        <tr><td>v3.0</td><td>17 Apr 2025</td><td>R. Mehta</td><td>72%</td><td>16m</td><td><span class="pill gry">Archived</span></td></tr>
-        <tr><td>v2.4</td><td>3 Feb 2025</td><td>S. Bose</td><td>65%</td><td>19m</td><td><span class="pill gry">Archived</span></td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-</main>
-
-<div class="wire-tag">low-fi · v1 · config wireframes</div>
+<!-- ========== Toast ========== -->
+<div class="toast" id="toast">Saved</div>
 
 <script>
-  // Simple hash-based screen switcher
-  const buttons = document.querySelectorAll('aside button');
-  const screens = document.querySelectorAll('.screen');
-  function show(id) {
-    screens.forEach(s => s.classList.toggle('show', s.id === id));
-    buttons.forEach(b => b.classList.toggle('active', b.dataset.go === id));
-    history.replaceState(null, '', '#' + id);
-    window.scrollTo(0, 0);
+  let step = 1;
+  function setStep(n){
+    step = n;
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+    document.getElementById('p-' + n).classList.add('on');
+    document.querySelectorAll('.step-node').forEach((el,i) => {
+      const idx = i + 1;
+      el.classList.toggle('cur', idx === n);
+      el.classList.toggle('done', idx < n);
+    });
+    document.querySelectorAll('.step-line').forEach((el,i) => {
+      el.classList.toggle('done', (i+1) < n);
+    });
+    document.getElementById('stepNow').textContent = n;
+    document.getElementById('backBtn').style.display = n > 1 ? '' : 'none';
+    const next = document.getElementById('nextBtn');
+    next.textContent = n === 4 ? 'Publish to operators' : 'Continue ›';
+    if (n === 4) next.style.background = '#1F9D55', next.style.borderColor = '#1F9D55';
+    else next.style.background = '', next.style.borderColor = '';
+    // pull values into review
+    if (n === 4) {
+      document.getElementById('rvHi').textContent = document.getElementById('issueHi').value;
+      document.getElementById('rvEn').textContent = document.getElementById('issueEn').value;
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
   }
-  buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.go)));
-  const initial = (location.hash || '#trees').slice(1);
-  if (document.getElementById(initial)) show(initial);
+  function goStep(n){ setStep(n); }
+  function nextStep(){ if (step < 4) setStep(step + 1); else publish(); }
+  function prevStep(){ if (step > 1) setStep(step - 1); }
+
+  function pick(el, group){
+    el.parentNode.querySelectorAll('.rcard').forEach(c => c.classList.remove('on'));
+    el.classList.add('on');
+    markSaved();
+  }
+
+  function openDrawer(id){
+    document.getElementById('scrim').classList.add('on');
+    document.getElementById('drawer').classList.add('on');
+    if (id !== 'new') {
+      // could swap content; leave canonical Step 3 for the wireframe
+    }
+  }
+  function closeDrawer(){
+    document.getElementById('scrim').classList.remove('on');
+    document.getElementById('drawer').classList.remove('on');
+  }
+
+  // Doherty: <400ms feedback
+  let saveTimer;
+  function markSaved(){
+    const t = document.getElementById('saveTxt');
+    t.textContent = 'Saving…';
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      t.textContent = 'Saved';
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'), 900);
+    }, 250);
+  }
+
+  function publish(){
+    const toast = document.getElementById('toast');
+    toast.textContent = '✓ Published to operators';
+    toast.classList.add('show');
+    setTimeout(()=>{ toast.classList.remove('show'); toast.textContent = 'Saved'; }, 1600);
+  }
 </script>
 </body>
 </html>
