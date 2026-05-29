@@ -797,7 +797,7 @@ textarea{min-height:88px;resize:vertical}
     <div class="step-line"></div>
     <div class="step-node" data-step="2" onclick="goStep(2)">
       <div class="step-circle">2</div>
-      <div class="step-label">Trigger</div>
+      <div class="step-label">Assign</div>
     </div>
     <div class="step-line"></div>
     <div class="step-node" data-step="3" onclick="goStep(3)">
@@ -866,64 +866,102 @@ textarea{min-height:88px;resize:vertical}
     </div>
   </section>
 
-  <!-- ============== STEP 2 · Trigger ============== -->
+  <!-- ============== STEP 2 · Assign ============== -->
   <section class="panel" id="p-2">
-    <h1 class="page-h">When should this <em>trigger</em>?</h1>
-    <p class="page-sub">Pick how the system knows to start this diagnostic flow.</p>
+    <h1 class="page-h">Who runs this <em>flow</em>?</h1>
+    <p class="page-sub">Pick the role that owns this diagnostic. If they're unavailable, it'll auto-escalate.</p>
 
     <div class="card">
-      <h3>Trigger type</h3>
-      <div class="choices three">
-        <button class="rcard on" onclick="pick(this,'trig')">
-          <span class="ico">📡</span>
-          <div class="ttl">Sensor alert</div>
-          <div class="sub">Auto-trigger from sensor reading</div>
+      <h3>Primary assignee</h3>
+      <p class="helper">Whoever is on shift in this role will be notified first.</p>
+      <div class="choices four">
+        <button class="rcard" onclick="pick(this,'assignee')">
+          <span class="ico">👷</span>
+          <div class="ttl">On-shift Operator</div>
+          <div class="sub">Default — whoever is logged in for this shift</div>
         </button>
-        <button class="rcard" onclick="pick(this,'trig')">
-          <span class="ico">👤</span>
-          <div class="ttl">Operator report</div>
-          <div class="sub">Manual — operator opens it</div>
+        <button class="rcard on" onclick="pick(this,'assignee')">
+          <span class="ico">🧑‍🔧</span>
+          <div class="ttl">Site Engineer</div>
+          <div class="sub">Sharma ji — handles complex diagnostics</div>
         </button>
-        <button class="rcard" onclick="pick(this,'trig')">
-          <span class="ico">🔁</span>
-          <div class="ttl">Both</div>
-          <div class="sub">Sensor or manual</div>
+        <button class="rcard" onclick="pick(this,'assignee')">
+          <span class="ico">🦺</span>
+          <div class="ttl">Supervisor</div>
+          <div class="sub">Approval-gated steps &amp; escalations</div>
+        </button>
+        <button class="rcard" onclick="pick(this,'assignee')">
+          <span class="ico">🏢</span>
+          <div class="ttl">Site Manager</div>
+          <div class="sub">Plant-level escalations only</div>
         </button>
       </div>
     </div>
 
     <div class="card">
-      <h3>Sensor &amp; threshold</h3>
-      <p class="helper">Only shown when the trigger is auto-fired by a sensor.</p>
-      <div class="row2">
-        <div>
-          <label>Sensor</label>
-          <select onchange="markSaved()">
-            <option>DO-AT01 · DO on Aeration Tank</option>
-            <option>TMP-MBR1 · TMP gauge on MBR-1</option>
-            <option>PH-EQ1 · pH on Equalisation</option>
-          </select>
+      <h3>Escalation chain</h3>
+      <p class="helper">If the primary assignee doesn't respond, the flow climbs this ladder. Drag rows to reorder.</p>
+
+      <div class="sub-list">
+        <div class="sub-item">
+          <span class="ix">1</span>
+          <span class="t" style="display:flex;flex-direction:column;gap:4px">
+            <span><b>Site Engineer (Sharma ji)</b> — primary</span>
+            <span style="font-size:11px;color:var(--ink-3)">Notified immediately on flow start</span>
+          </span>
+          <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button></span>
         </div>
-        <div>
-          <label>Operator label (Hindi)</label>
-          <input type="text" value="DO sensor · Aeration Tank" oninput="markSaved()"/>
+        <div class="sub-item">
+          <span class="ix">2</span>
+          <span class="t" style="display:flex;flex-direction:column;gap:4px">
+            <span><b>Supervisor</b></span>
+            <span style="font-size:11px;color:var(--ink-3)">Escalate after
+              <select style="padding:3px 22px 3px 8px;font-size:11px;width:auto;display:inline-block;margin:0 4px"><option>10 minutes</option><option>5 minutes</option><option>15 minutes</option><option>30 minutes</option></select>
+              of no response</span>
+          </span>
+          <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
         </div>
+        <div class="sub-item">
+          <span class="ix">3</span>
+          <span class="t" style="display:flex;flex-direction:column;gap:4px">
+            <span><b>Site Manager</b></span>
+            <span style="font-size:11px;color:var(--ink-3)">Escalate after
+              <select style="padding:3px 22px 3px 8px;font-size:11px;width:auto;display:inline-block;margin:0 4px"><option>30 minutes</option><option>15 minutes</option><option>1 hour</option><option>2 hours</option></select>
+              with no resolution</span>
+          </span>
+          <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        </div>
+        <button class="sub-add" onclick="addSubItem(this,'option')">＋ Add escalation level</button>
       </div>
-      <div class="row3" style="margin-top:14px">
-        <div>
-          <label>Alert when value is</label>
-          <select onchange="markSaved()"><option>below</option><option>above</option><option>outside range</option></select>
-        </div>
-        <div>
-          <label>Threshold</label>
-          <input type="text" value="1.5 mg/L" oninput="markSaved()"/>
-        </div>
-        <div>
-          <label>For at least</label>
-          <input type="text" value="5 min" oninput="markSaved()"/>
-        </div>
+    </div>
+
+    <div class="card">
+      <h3>Skill-type override</h3>
+      <p class="helper">If a step needs a different skill type than the assignee has, the system auto-routes that one step. The rest of the flow stays with the primary.</p>
+      <div class="tog">
+        <div class="lbl"><div class="t">Allow per-step auto-routing</div><div class="s">Example — if the assignee is a General Operator but step 4 needs Electrical, that one step jumps to the on-shift technician</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
-      <div class="help">Example: alert when DO &lt; 1.5 mg/L for 5 minutes.</div>
+    </div>
+
+    <div class="card">
+      <h3>How they're notified</h3>
+      <div class="tog">
+        <div class="lbl"><div class="t">In-app push notification</div><div class="s">Banner inside the DP operator app</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+      </div>
+      <div class="tog">
+        <div class="lbl"><div class="t">WhatsApp alert</div><div class="s">Sent to their registered number with deep link</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+      </div>
+      <div class="tog">
+        <div class="lbl"><div class="t">Phone call (urgent only)</div><div class="s">Triggered only for Critical severity issues</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+      </div>
+      <div class="tog">
+        <div class="lbl"><div class="t">SMS fallback</div><div class="s">If WhatsApp not delivered within 2 minutes</div></div>
+        <div class="sw" onclick="this.classList.toggle('on');markSaved()"></div>
+      </div>
     </div>
   </section>
 
@@ -1180,11 +1218,12 @@ textarea{min-height:88px;resize:vertical}
     </div>
 
     <div class="summary-block">
-      <div class="head"><h4>Trigger</h4><button class="edit-link" onclick="goStep(2)">Edit</button></div>
+      <div class="head"><h4>Assignment</h4><button class="edit-link" onclick="goStep(2)">Edit</button></div>
       <div class="kv">
-        <span class="k">Type</span><span>Sensor alert</span>
-        <span class="k">Sensor</span><span>DO-AT01 · DO on Aeration Tank</span>
-        <span class="k">Rule</span><span>below 1.5 mg/L for 5 min</span>
+        <span class="k">Primary assignee</span><span>🧑‍🔧 Site Engineer · <b>Sharma ji</b></span>
+        <span class="k">Escalation</span><span>Supervisor (10 min) → Site Manager (30 min)</span>
+        <span class="k">Skill auto-routing</span><span>Enabled per step</span>
+        <span class="k">Notifications</span><span>In-app · WhatsApp · Phone (urgent)</span>
       </div>
     </div>
 
