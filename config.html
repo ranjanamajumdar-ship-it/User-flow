@@ -534,6 +534,157 @@ textarea{min-height:88px;resize:vertical}
   display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 2px 4px rgba(232,148,26,.20)}
 
+/* ===== Mode switch (Builder | Templates) ===== */
+.modes{display:flex;justify-content:center;padding:14px 0 0}
+.mode-switch{
+  display:inline-flex;background:rgba(255,255,255,.6);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid var(--line);border-radius:999px;padding:4px;
+  box-shadow:var(--shadow-soft);
+}
+.mode-tab{
+  font:700 12.5px 'Plus Jakarta Sans';padding:8px 18px;border:none;background:transparent;
+  cursor:pointer;border-radius:999px;color:var(--ink-2);transition:.15s;letter-spacing:-.01em;
+  display:inline-flex;align-items:center;gap:6px
+}
+.mode-tab:hover{color:var(--ink)}
+.mode-tab.on{
+  background:linear-gradient(145deg,#1A3F8C,#002976);color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 6px 14px -4px rgba(0,41,118,.40)
+}
+.mode-tab .cnt{font-size:10px;font-weight:600;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.18);margin-left:2px}
+.mode-tab:not(.on) .cnt{background:rgba(0,41,118,.10);color:var(--brand)}
+
+/* ===== Templates section ===== */
+#tpls{display:none;max-width:1080px;margin:24px auto 140px;padding:0 24px}
+#tpls.on{display:block}
+.tpls-head{display:flex;align-items:flex-end;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.tpls-head .ttls{flex:1;min-width:260px}
+.tpls-head .actions{display:flex;gap:8px}
+
+.tpls-toolbar{
+  display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;
+  background:var(--surface);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid var(--line);border-radius:16px;padding:10px 12px;
+  box-shadow:var(--shadow-soft)
+}
+.search-wrap{flex:1;min-width:200px;position:relative}
+.search-wrap input{padding-left:38px;border-radius:999px;padding-top:9px;padding-bottom:9px}
+.search-wrap::before{content:"⌕";position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-size:16px;pointer-events:none}
+.filter-pills{display:flex;gap:6px;flex-wrap:wrap}
+.fp{font:600 12px 'Plus Jakarta Sans';padding:6px 14px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:rgba(255,255,255,.6);color:var(--ink-2);transition:.15s;
+  box-shadow:var(--shadow-soft);letter-spacing:-.01em}
+.fp:hover{background:rgba(255,255,255,.85)}
+.fp.on{background:linear-gradient(145deg,#1A3F8C,#002976);color:#fff;border-color:transparent;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 12px -2px rgba(0,41,118,.35)}
+
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.tpl-card{
+  background:var(--surface);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid var(--line);border-radius:var(--r-lg);padding:18px;
+  box-shadow:var(--shadow-card);
+  display:flex;flex-direction:column;gap:10px;
+  transition:transform .2s,box-shadow .2s;position:relative;
+}
+.tpl-card:hover{transform:translateY(-2px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 1px 2px rgba(40,50,80,.06),0 22px 44px -14px rgba(40,50,80,.20)}
+.tpl-card .tc-head{display:flex;align-items:flex-start;gap:12px}
+.tpl-card .tc-ico{
+  width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 4px 10px -2px rgba(40,50,80,.18);
+  background:linear-gradient(145deg,#DCE5F5,#A8B8DE);color:var(--brand)
+}
+.tpl-card .tc-ico.amber{background:linear-gradient(145deg,#FCEDD3,#F5D89C);color:#A56610}
+.tpl-card .tc-ico.green{background:linear-gradient(145deg,#DCF1E6,#B7E1C9);color:#157A40}
+.tpl-card .tc-ico.purple{background:linear-gradient(145deg,#ECDFFB,#D6BFF5);color:#6B36B5}
+.tpl-card .tc-ico.red{background:linear-gradient(145deg,#FBE0E0,#F5C2C2);color:#C03737}
+.tpl-card .tc-meta{flex:1;min-width:0}
+.tpl-card .tc-meta .nm{font-weight:700;font-size:15px;letter-spacing:-.01em;line-height:1.25;margin-bottom:2px}
+.tpl-card .tc-meta .vrs{font-family:'JetBrains Mono';font-size:10px;color:var(--ink-3);letter-spacing:.3px}
+.tpl-card .tc-desc{font-size:12.5px;color:var(--ink-2);line-height:1.45}
+.tpl-card .tc-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tpl-card .tc-stats{display:flex;gap:14px;font-size:11px;color:var(--ink-3);padding-top:10px;border-top:1px solid var(--line-soft);margin-top:auto}
+.tpl-card .tc-stats b{color:var(--ink);font-weight:700}
+.tpl-card .tc-acts{display:flex;gap:8px;margin-top:4px}
+.tpl-card .tc-acts .use{flex:1;padding:10px 14px;font-size:12.5px}
+.tpl-card .tc-menu{
+  width:36px;height:36px;border:1px solid var(--line);border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.7);color:var(--ink-2);font-size:14px;
+  box-shadow:var(--shadow-soft)
+}
+.tpl-card .tc-menu:hover{background:#fff}
+.tpl-card.draft{border-style:dashed}
+.tpl-card.draft::before{content:"DRAFT";position:absolute;top:14px;right:14px;font:700 9px 'JetBrains Mono';color:var(--ink-3);background:rgba(255,255,255,.85);padding:3px 8px;border-radius:999px;border:1px solid var(--line);letter-spacing:.5px}
+
+.tpl-empty{
+  background:var(--surface);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1.5px dashed var(--line-2);border-radius:var(--r-lg);padding:34px;text-align:center;
+  color:var(--ink-3);font-size:13px;line-height:1.6
+}
+
+/* ===== Apply-to-plants modal ===== */
+.mscrim{position:fixed;inset:0;background:rgba(20,25,40,.30);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:.22s;z-index:55}
+.mscrim.on{opacity:1;pointer-events:auto}
+.modal{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,calc(-50% + 20px));
+  width:580px;max-width:calc(100vw - 28px);max-height:calc(100vh - 56px);
+  background:rgba(255,255,255,.85);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid rgba(255,255,255,.85);
+  border-radius:var(--r-xl);z-index:65;
+  opacity:0;pointer-events:none;
+  transition:.28s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+  box-shadow:var(--shadow-lg);overflow:hidden
+}
+.modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+.modal .mh{padding:22px 26px 14px;border-bottom:1px solid var(--line-soft)}
+.modal .mh h3{margin:0 0 4px;font-size:18px;font-weight:700;letter-spacing:-.01em}
+.modal .mh h3 em{font-family:'DM Serif Display',serif;font-style:italic;font-weight:400;color:var(--brand)}
+.modal .mh p{margin:0;font-size:12.5px;color:var(--ink-3)}
+.modal .mb{flex:1;overflow:auto;padding:18px 26px}
+.modal .mb::-webkit-scrollbar{width:8px}
+.modal .mb::-webkit-scrollbar-thumb{background:rgba(140,150,180,.3);border-radius:4px}
+.modal .mf{padding:16px 26px;border-top:1px solid var(--line-soft);display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.4)}
+.modal .mf .gap{flex:1;font-size:12.5px;color:var(--ink-3)}
+
+.plant-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+  background:rgba(255,255,255,.5);border:1px solid var(--line);margin-bottom:8px;
+  cursor:pointer;transition:.15s;box-shadow:var(--shadow-soft)}
+.plant-row:hover{background:rgba(255,255,255,.85)}
+.plant-row.on{background:linear-gradient(155deg,rgba(255,255,255,.95),rgba(229,235,245,.85));border-color:rgba(0,41,118,.35);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,1),0 0 0 3px rgba(0,41,118,.15)}
+.plant-row .pchk{
+  width:22px;height:22px;border-radius:7px;border:1.5px solid var(--line-2);background:rgba(255,255,255,.7);
+  display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;flex-shrink:0;transition:.15s;
+  box-shadow:var(--shadow-inset)
+}
+.plant-row.on .pchk{background:linear-gradient(145deg,#1A3F8C,#002976);border-color:transparent;color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 3px 8px -2px rgba(0,41,118,.35)}
+.plant-row .picon{
+  width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+  background:linear-gradient(145deg,#F1F4FA,#DDE3F0);color:var(--ink-2);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 4px rgba(40,50,80,.06)
+}
+.plant-row .pbody{flex:1;min-width:0}
+.plant-row .pbody .pname{font-weight:700;font-size:13.5px;letter-spacing:-.01em}
+.plant-row .pbody .ploc{font-size:11.5px;color:var(--ink-3);margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.plant-row .pright{font-size:11px;color:var(--ink-3);flex-shrink:0;text-align:right}
+.plant-row .pright b{display:block;color:var(--ink-2);font-weight:700}
+
+.deploy-stats{
+  background:linear-gradient(155deg,rgba(255,255,255,.95),rgba(229,235,245,.85));
+  border:1px solid rgba(0,41,118,.18);border-radius:14px;padding:13px 16px;margin-top:6px;margin-bottom:12px;
+  font-size:12.5px;color:var(--ink-2);line-height:1.5;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.deploy-stats b{color:var(--brand);font-weight:700}
+
 @media (max-width:780px){
   .builder{grid-template-columns:1fr}
   .palette{position:relative;top:0;display:flex;flex-wrap:wrap;gap:6px;max-height:none}
@@ -564,6 +715,14 @@ textarea{min-height:88px;resize:vertical}
     <div class="savetag"><span class="pulse"></span><span id="saveTxt">Saved</span></div>
   </div>
 </header>
+
+<!-- ========== Mode switch ========== -->
+<div class="modes">
+  <div class="mode-switch">
+    <button class="mode-tab on" onclick="setMode('builder')">Builder</button>
+    <button class="mode-tab" onclick="setMode('tpls')">Templates <span class="cnt">6</span></button>
+  </div>
+</div>
 
 <!-- ========== Stepper ========== -->
 <div class="stepper">
@@ -976,6 +1135,205 @@ textarea{min-height:88px;resize:vertical}
 
 </div>
 
+<!-- ========== TEMPLATES SECTION ========== -->
+<section id="tpls">
+  <div class="tpls-head">
+    <div class="ttls">
+      <h1 class="page-h">Diagnostic <em>templates</em></h1>
+      <p class="page-sub" style="margin-bottom:0">Save a flow once, deploy it to multiple plants. Plant-specific equipment IDs &amp; thresholds stay editable per plant.</p>
+    </div>
+    <div class="actions">
+      <button class="btn outline" onclick="setMode('builder')">‹ Back to builder</button>
+      <button class="btn primary" onclick="saveCurrentAsTemplate()">＋ Save current as template</button>
+    </div>
+  </div>
+
+  <div class="tpls-toolbar">
+    <div class="search-wrap"><input type="text" placeholder="Search templates by name, equipment, or plant…"/></div>
+    <div class="filter-pills">
+      <button class="fp on">All · 6</button>
+      <button class="fp">Aeration</button>
+      <button class="fp">MBR</button>
+      <button class="fp">Blower</button>
+      <button class="fp">Sensors</button>
+      <button class="fp">My drafts · 1</button>
+    </div>
+  </div>
+
+  <div class="tpl-grid">
+
+    <!-- Template card 1: Low DO -->
+    <div class="tpl-card">
+      <div class="tc-head">
+        <div class="tc-ico">💧</div>
+        <div class="tc-meta">
+          <div class="nm">Low DO · Aeration Tank</div>
+          <div class="vrs">DT-001 · v3.2</div>
+        </div>
+        <button class="tc-menu" title="More">⋯</button>
+      </div>
+      <div class="tc-desc">6-step tree from blower check → sludge bulking → shock load. Based on Honda Manesar diagnostic study.</div>
+      <div class="tc-tags">
+        <span class="chip">Aeration</span>
+        <span class="chip">6 steps</span>
+        <span class="chip green">78% RCA</span>
+      </div>
+      <div class="tc-stats">
+        <span>📍 <b>4</b> plants</span>
+        <span>👥 <b>12</b> operators</span>
+        <span>⏱ ~14m</span>
+      </div>
+      <div class="tc-acts">
+        <button class="btn primary use" onclick="openApply('Low DO · Aeration Tank')">Deploy to plants</button>
+        <button class="btn outline" onclick="useTemplate()">Open</button>
+      </div>
+    </div>
+
+    <!-- Template card 2: High TMP -->
+    <div class="tpl-card">
+      <div class="tc-head">
+        <div class="tc-ico amber">📐</div>
+        <div class="tc-meta">
+          <div class="nm">High TMP · MBR</div>
+          <div class="vrs">DT-002 · v2.0</div>
+        </div>
+        <button class="tc-menu" title="More">⋯</button>
+      </div>
+      <div class="tc-desc">5-step tree for transmembrane pressure rise. Checks fouling → CIP need → permeability test.</div>
+      <div class="tc-tags">
+        <span class="chip">MBR</span>
+        <span class="chip">5 steps</span>
+        <span class="chip green">62% RCA</span>
+      </div>
+      <div class="tc-stats">
+        <span>📍 <b>3</b> plants</span>
+        <span>👥 <b>8</b> operators</span>
+        <span>⏱ ~11m</span>
+      </div>
+      <div class="tc-acts">
+        <button class="btn primary use" onclick="openApply('High TMP · MBR')">Deploy to plants</button>
+        <button class="btn outline" onclick="useTemplate()">Open</button>
+      </div>
+    </div>
+
+    <!-- Template card 3: VFD Trip -->
+    <div class="tpl-card">
+      <div class="tc-head">
+        <div class="tc-ico red">⚡</div>
+        <div class="tc-meta">
+          <div class="nm">VFD Overcurrent Trip · Blower</div>
+          <div class="vrs">DT-003 · v1.4</div>
+        </div>
+        <button class="tc-menu" title="More">⋯</button>
+      </div>
+      <div class="tc-desc">4-step electrical diagnostic. Phase-imbalance check, current draw analysis, winding inspection.</div>
+      <div class="tc-tags">
+        <span class="chip">Blower</span>
+        <span class="chip">4 steps</span>
+        <span class="chip">⚡ Electrical</span>
+      </div>
+      <div class="tc-stats">
+        <span>📍 <b>2</b> plants</span>
+        <span>👥 <b>4</b> operators</span>
+        <span>⏱ ~9m</span>
+      </div>
+      <div class="tc-acts">
+        <button class="btn primary use" onclick="openApply('VFD Overcurrent Trip · Blower')">Deploy to plants</button>
+        <button class="btn outline" onclick="useTemplate()">Open</button>
+      </div>
+    </div>
+
+    <!-- Template card 4: Membrane Leak -->
+    <div class="tpl-card">
+      <div class="tc-head">
+        <div class="tc-ico purple">🧫</div>
+        <div class="tc-meta">
+          <div class="nm">Membrane Module Leak</div>
+          <div class="vrs">DT-004 · v3.0</div>
+        </div>
+        <button class="tc-menu" title="More">⋯</button>
+      </div>
+      <div class="tc-desc">7-step tree with tap-on-equipment to pinpoint leaking module. Highest-confidence template in library.</div>
+      <div class="tc-tags">
+        <span class="chip">MBR</span>
+        <span class="chip">7 steps</span>
+        <span class="chip green">88% RCA</span>
+      </div>
+      <div class="tc-stats">
+        <span>📍 <b>5</b> plants</span>
+        <span>👥 <b>18</b> operators</span>
+        <span>⏱ ~22m</span>
+      </div>
+      <div class="tc-acts">
+        <button class="btn primary use" onclick="openApply('Membrane Module Leak')">Deploy to plants</button>
+        <button class="btn outline" onclick="useTemplate()">Open</button>
+      </div>
+    </div>
+
+    <!-- Template card 5: pH out of range -->
+    <div class="tpl-card">
+      <div class="tc-head">
+        <div class="tc-ico green">🧪</div>
+        <div class="tc-meta">
+          <div class="nm">pH Out of Range</div>
+          <div class="vrs">DT-005 · v2.1</div>
+        </div>
+        <button class="tc-menu" title="More">⋯</button>
+      </div>
+      <div class="tc-desc">3-step quick tree. Calibration check → chemical dosing → upstream investigation.</div>
+      <div class="tc-tags">
+        <span class="chip">Equalisation</span>
+        <span class="chip">3 steps</span>
+        <span class="chip green">91% RCA</span>
+      </div>
+      <div class="tc-stats">
+        <span>📍 <b>6</b> plants</span>
+        <span>👥 <b>22</b> operators</span>
+        <span>⏱ ~7m</span>
+      </div>
+      <div class="tc-acts">
+        <button class="btn primary use" onclick="openApply('pH Out of Range')">Deploy to plants</button>
+        <button class="btn outline" onclick="useTemplate()">Open</button>
+      </div>
+    </div>
+
+    <!-- Template card 6: Draft -->
+    <div class="tpl-card draft">
+      <div class="tc-head">
+        <div class="tc-ico">🔧</div>
+        <div class="tc-meta">
+          <div class="nm">Pump Cavitation</div>
+          <div class="vrs">DT-006 · v0.3</div>
+        </div>
+        <button class="tc-menu" title="More">⋯</button>
+      </div>
+      <div class="tc-desc">Work in progress. 4 of 6 steps done — needs solution lines for last 2 root causes.</div>
+      <div class="tc-tags">
+        <span class="chip">Pump</span>
+        <span class="chip">4/6 steps</span>
+        <span class="chip amber">Incomplete</span>
+      </div>
+      <div class="tc-stats">
+        <span>📍 <b>0</b> plants</span>
+        <span>👥 By: You</span>
+        <span>📝 Last edit · 2h</span>
+      </div>
+      <div class="tc-acts">
+        <button class="btn outline use" onclick="useTemplate()">Continue editing</button>
+        <button class="btn ghost">Discard</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tpl-empty" style="margin-top:30px">
+    <div style="font-size:32px;margin-bottom:6px">📂</div>
+    <div style="font-weight:700;color:var(--ink-2);margin-bottom:2px">Got a flow you keep recreating?</div>
+    <div>Click <b>＋ Save current as template</b> at the top — pick which fields stay editable per plant.<br/>You can also import templates from the DP community library.</div>
+    <div style="margin-top:14px"><button class="btn outline">Browse community library →</button></div>
+  </div>
+</section>
+
 <!-- ========== Bottom-anchored CTAs ========== -->
 <div class="footer">
   <div class="footer-inner">
@@ -1064,6 +1422,95 @@ textarea{min-height:88px;resize:vertical}
     <button class="btn primary" onclick="closeDrawer();markSaved()">Save step</button>
   </div>
 </aside>
+
+<!-- ========== Apply-to-plants modal ========== -->
+<div class="mscrim" id="mscrim" onclick="closeApply()"></div>
+<div class="modal" id="applyModal" role="dialog">
+  <div class="mh">
+    <h3>Deploy <em><span id="applyName">Low DO · Aeration Tank</span></em> to plants</h3>
+    <p>Pick the plants where this template should be live. Equipment IDs and thresholds auto-fill from each plant's inventory.</p>
+  </div>
+  <div class="mb">
+    <div class="deploy-stats" id="depStats">
+      <b>0 plants</b> selected · this template will replace any older version of <b id="applyName2">Low DO · Aeration Tank</b> on those plants.
+    </div>
+
+    <div class="plant-row on" onclick="togglePlant(this)">
+      <div class="pchk">✓</div>
+      <div class="picon">🏭</div>
+      <div class="pbody">
+        <div class="pname">Honda Manesar STP</div>
+        <div class="ploc">📍 Manesar · Haryana <span class="chip">3 ops</span> <span class="chip green">v3.1 running</span></div>
+      </div>
+      <div class="pright"><b>800 KLD</b>capacity</div>
+    </div>
+
+    <div class="plant-row on" onclick="togglePlant(this)">
+      <div class="pchk">✓</div>
+      <div class="picon">🏭</div>
+      <div class="pbody">
+        <div class="pname">Maruti Gurgaon ETP</div>
+        <div class="ploc">📍 Gurgaon · Haryana <span class="chip">5 ops</span> <span class="chip green">v3.0 running</span></div>
+      </div>
+      <div class="pright"><b>1200 KLD</b>capacity</div>
+    </div>
+
+    <div class="plant-row" onclick="togglePlant(this)">
+      <div class="pchk">✓</div>
+      <div class="picon">🏭</div>
+      <div class="pbody">
+        <div class="pname">Suzuki Vadodara WWTP</div>
+        <div class="ploc">📍 Vadodara · Gujarat <span class="chip">4 ops</span> <span class="chip amber">No DT yet</span></div>
+      </div>
+      <div class="pright"><b>950 KLD</b>capacity</div>
+    </div>
+
+    <div class="plant-row" onclick="togglePlant(this)">
+      <div class="pchk">✓</div>
+      <div class="picon">🏭</div>
+      <div class="pbody">
+        <div class="pname">Hero MotoCorp Haridwar</div>
+        <div class="ploc">📍 Haridwar · Uttarakhand <span class="chip">2 ops</span> <span class="chip amber">No DT yet</span></div>
+      </div>
+      <div class="pright"><b>500 KLD</b>capacity</div>
+    </div>
+
+    <div class="plant-row" onclick="togglePlant(this)">
+      <div class="pchk">✓</div>
+      <div class="picon">🏭</div>
+      <div class="pbody">
+        <div class="pname">Yamaha Surajpur STP</div>
+        <div class="ploc">📍 Surajpur · UP <span class="chip">3 ops</span> <span class="chip">Custom DT</span></div>
+      </div>
+      <div class="pright"><b>650 KLD</b>capacity</div>
+    </div>
+
+    <h4 style="margin:18px 0 10px;font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--ink-3);text-transform:uppercase">Per-plant overrides</h4>
+    <div style="background:rgba(255,255,255,.5);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow-soft)">
+      <div class="tog">
+        <div class="lbl"><div class="t">Adjust threshold per plant</div><div class="s">Each plant can override the DO &lt; 1.5 trigger value</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="tog">
+        <div class="lbl"><div class="t">Map equipment IDs</div><div class="s">Auto-match local AT-01 / MBR-1 IDs at each plant</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="tog">
+        <div class="lbl"><div class="t">Notify on-shift supervisors</div><div class="s">Send in-app + WhatsApp alert when rollout completes</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="tog">
+        <div class="lbl"><div class="t">Phased rollout</div><div class="s">Deploy in 3 batches over 48 hr · monitor confirmed-RCA % between batches</div></div>
+        <div class="sw" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mf">
+    <button class="btn ghost" onclick="closeApply()">Cancel</button>
+    <span class="gap">Pilot rollout · all selected plants get v3.2 simultaneously.</span>
+    <button class="btn primary lg" onclick="confirmApply()">Deploy to <span id="depCount">2</span> plants</button>
+  </div>
+</div>
 
 <!-- ========== Toast ========== -->
 <div class="toast" id="toast">Saved</div>
@@ -1247,6 +1694,70 @@ textarea{min-height:88px;resize:vertical}
     toast.textContent = '✓ Published to operators';
     toast.classList.add('show');
     setTimeout(()=>{ toast.classList.remove('show'); toast.textContent = 'Saved'; }, 1600);
+  }
+
+  // ===== Mode switch (Builder | Templates) =====
+  function setMode(mode){
+    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('on'));
+    const btn = Array.from(document.querySelectorAll('.mode-tab')).find(t => t.textContent.toLowerCase().includes(mode === 'tpls' ? 'templates' : 'builder'));
+    if (btn) btn.classList.add('on');
+
+    const builderEls = [document.querySelector('.stepper'), document.querySelector('.wrap'), document.querySelector('.footer')];
+    const tplsEl = document.getElementById('tpls');
+
+    if (mode === 'tpls') {
+      builderEls.forEach(el => el && (el.style.display = 'none'));
+      tplsEl.classList.add('on');
+    } else {
+      builderEls.forEach(el => el && (el.style.display = ''));
+      tplsEl.classList.remove('on');
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // ===== Save current as template =====
+  function saveCurrentAsTemplate(){
+    const toast = document.getElementById('toast');
+    toast.textContent = '★ Saved as template';
+    toast.classList.add('show');
+    setTimeout(()=>{ toast.classList.remove('show'); toast.textContent = 'Saved'; }, 1600);
+  }
+  function useTemplate(){
+    setMode('builder');
+    setStep(1);
+    markSaved();
+  }
+
+  // ===== Apply-to-plants modal =====
+  function openApply(name){
+    document.getElementById('applyName').textContent = name;
+    document.getElementById('applyName2').textContent = name;
+    document.getElementById('mscrim').classList.add('on');
+    document.getElementById('applyModal').classList.add('on');
+    updateDeployCount();
+  }
+  function closeApply(){
+    document.getElementById('mscrim').classList.remove('on');
+    document.getElementById('applyModal').classList.remove('on');
+  }
+  function togglePlant(row){
+    row.classList.toggle('on');
+    updateDeployCount();
+  }
+  function updateDeployCount(){
+    const n = document.querySelectorAll('#applyModal .plant-row.on').length;
+    document.getElementById('depCount').textContent = n;
+    document.getElementById('depStats').innerHTML =
+      '<b>' + n + ' plant' + (n===1?'':'s') + '</b> selected · this template will replace any older version of <b>'
+      + document.getElementById('applyName').textContent + '</b> on those plants.';
+  }
+  function confirmApply(){
+    const n = document.querySelectorAll('#applyModal .plant-row.on').length;
+    closeApply();
+    const toast = document.getElementById('toast');
+    toast.textContent = '🚀 Deploying to ' + n + ' plant' + (n===1?'':'s') + '…';
+    toast.classList.add('show');
+    setTimeout(()=>{ toast.classList.remove('show'); toast.textContent = 'Saved'; }, 1800);
   }
 </script>
 </body>
