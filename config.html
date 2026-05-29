@@ -821,29 +821,21 @@ textarea{min-height:88px;resize:vertical}
 
     <div class="card">
       <h3>Name &amp; equipment</h3>
-      <p class="helper">Hindi first — that's what operators see at the top of the screen.</p>
+      <p class="helper">This is what operators see at the top of the screen.</p>
 
-      <label>Issue name · Hindi</label>
-      <input type="text" id="issueHi" value="Aeration Tank में DO कम है" oninput="markSaved()"/>
-
-      <label style="margin-top:14px">Issue name · English (helper)</label>
+      <label>Issue name</label>
       <input type="text" id="issueEn" value="Low DO in Aeration Tank" oninput="markSaved()"/>
 
-      <div class="row2" style="margin-top:14px">
-        <div>
-          <label>Equipment</label>
-          <select onchange="markSaved()">
-            <option>AT-01 · Aeration Tank</option>
-            <option>MBR-1 · Permeate Pump</option>
-            <option>B-1 · Blower</option>
-            <option>EQ-1 · Equalisation Tank</option>
-          </select>
-        </div>
-        <div>
-          <label>Section</label>
-          <input type="text" value="Aeration · Block A" oninput="markSaved()"/>
-        </div>
-      </div>
+      <label style="margin-top:14px">Equipment</label>
+      <select onchange="markSaved()">
+        <option>AT-01 · Aeration Tank</option>
+        <option>MBR-1 · Permeate Pump</option>
+        <option>B-1 · Blower</option>
+        <option>EQ-1 · Equalisation Tank</option>
+      </select>
+
+      <label style="margin-top:14px">Description</label>
+      <textarea id="issueDesc" oninput="markSaved()" placeholder="One or two lines explaining what this diagnostic is for, when to use it, and what good looks like." style="min-height:90px">Dissolved oxygen levels in the aeration tank are below 2.0 mg/L. Use this tree to walk through the six root causes — blower, aeration distribution, DO sensor, sludge bulking, shock load — and confirm the right fix.</textarea>
     </div>
 
     <div class="card">
@@ -1016,7 +1008,7 @@ textarea{min-height:88px;resize:vertical}
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="ft">Blower चालू है?</div>
+            <div class="ft">Is the blower running?</div>
             <div class="fs">
               <span class="chip">❓ Yes/No</span>
               <span class="chip">2 checks</span>
@@ -1105,7 +1097,7 @@ textarea{min-height:88px;resize:vertical}
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="ft">DO sensor में problem है?</div>
+            <div class="ft">Is there a DO sensor problem?</div>
             <div class="fs">
               <span class="chip">❓ Yes/No</span>
               <span class="chip">2 checks</span>
@@ -1124,7 +1116,7 @@ textarea{min-height:88px;resize:vertical}
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="ft">Sludge bulking हो रही है?</div>
+            <div class="ft">Is sludge bulking happening?</div>
             <div class="fs">
               <span class="chip">📋 Manual</span>
               <span class="chip">3 checks</span>
@@ -1143,7 +1135,7 @@ textarea{min-height:88px;resize:vertical}
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="ft">Incoming में shock load है?</div>
+            <div class="ft">Shock load in incoming flow?</div>
             <div class="fs">
               <span class="chip">❓ Yes/No</span>
               <span class="chip">4 checks</span>
@@ -1180,9 +1172,9 @@ textarea{min-height:88px;resize:vertical}
     <div class="summary-block">
       <div class="head"><h4>Basics</h4><button class="edit-link" onclick="goStep(1)">Edit</button></div>
       <div class="kv">
-        <span class="k">Name · Hindi</span><span id="rvHi">Aeration Tank में DO कम है</span>
-        <span class="k">Name · English</span><span id="rvEn">Low DO in Aeration Tank</span>
+        <span class="k">Name</span><span id="rvEn">Low DO in Aeration Tank</span>
         <span class="k">Equipment</span><span>AT-01 · Aeration Tank</span>
+        <span class="k">Description</span><span id="rvDesc" style="line-height:1.5;color:var(--ink-2)">Dissolved oxygen levels in the aeration tank are below 2.0 mg/L…</span>
         <span class="k">Severity</span><span><span class="chip amber">High</span></span>
       </div>
     </div>
@@ -1469,11 +1461,11 @@ textarea{min-height:88px;resize:vertical}
       <option>📋 Manual reading (numeric)</option>
     </select>
 
-    <label style="margin-top:14px">Primary question · Hindi</label>
-    <input type="text" id="drQHi" value="क्या पूरे tank में बराबर bubbling हो रही है?" oninput="markSaved()"/>
+    <label style="margin-top:14px">Primary question</label>
+    <input type="text" id="drQEn" value="Is aeration equally happening across the tank?" oninput="markSaved()"/>
 
-    <label style="margin-top:12px">Primary question · English helper</label>
-    <input type="text" id="drQEn" value="Check if aeration is equally happening across the tank" oninput="markSaved()"/>
+    <label style="margin-top:12px">Description for operator (optional)</label>
+    <input type="text" id="drQDesc" value="Walk the tank perimeter and observe bubble distribution at the surface" oninput="markSaved()"/>
 
     <label style="margin-top:18px">Answer options &amp; routes <span style="font-weight:500;color:var(--ink-3);text-transform:none;letter-spacing:0">— each option's destination step</span></label>
     <div class="sub-list">
@@ -1546,12 +1538,12 @@ textarea{min-height:88px;resize:vertical}
     <div class="sub-list">
       <div class="sub-item">
         <span class="ix s">S1</span>
-        <span class="t">Diffusers चोक हो गए हैं — cleaning चाहिए</span>
+        <span class="t">Diffusers are choked — cleaning required</span>
         <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
       <div class="sub-item">
         <span class="ix s">S2</span>
-        <span class="t">Supervisor को बुलाएं <span class="chip amber" style="margin-left:6px">stop here</span></span>
+        <span class="t">Call the supervisor <span class="chip amber" style="margin-left:6px">stop here</span></span>
         <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
       <button class="sub-add" onclick="addSubItem(this,&apos;action&apos;)">＋ Add action</button>
@@ -1708,8 +1700,12 @@ textarea{min-height:88px;resize:vertical}
     document.querySelector('.wrap').classList.toggle('wide', n === 3);
     // pull values into review
     if (n === 4) {
-      document.getElementById('rvHi').textContent = document.getElementById('issueHi').value;
-      document.getElementById('rvEn').textContent = document.getElementById('issueEn').value;
+      const en = document.getElementById('issueEn');
+      const rvEn = document.getElementById('rvEn');
+      if (en && rvEn) rvEn.textContent = en.value;
+      const desc = document.getElementById('issueDesc');
+      const rvDesc = document.getElementById('rvDesc');
+      if (desc && rvDesc) rvDesc.textContent = desc.value;
     }
     window.scrollTo({top:0,behavior:'smooth'});
   }
