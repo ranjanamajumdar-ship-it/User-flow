@@ -141,41 +141,100 @@ header.app{
 .page-sub{color:var(--ink-3);font-size:14.5px;margin:0 0 30px;max-width:560px}
 
 .card{
-  background:var(--surface);
-  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
-  border:1px solid var(--line);
-  border-radius:var(--r-lg);
-  padding:24px;
-  box-shadow:var(--shadow-card);
-  margin-bottom:16px;
-}
-.card h3{margin:0 0 6px;font-size:15px;font-weight:700;letter-spacing:-.01em}
-.card .helper{color:var(--ink-3);font-size:12.5px;margin:0 0 16px;line-height:1.5}
-
-/* ===== Inputs (inset glass) ===== */
-label{display:block;font-size:11px;font-weight:700;color:var(--ink-2);margin:0 0 8px;letter-spacing:.4px;text-transform:uppercase}
-input[type=text],textarea,select{
-  width:100%;padding:13px 16px;
-  border:1px solid var(--line);
-  border-radius:14px;
-  font:14px 'Plus Jakarta Sans',system-ui,sans-serif;
   background:rgba(255,255,255,.55);
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
-  color:var(--ink);outline:none;
-  box-shadow:var(--shadow-inset);
-  transition:box-shadow .18s,border-color .18s,background .18s;
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid rgba(255,255,255,.65);
+  border-radius:26px;
+  padding:28px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    0 1px 2px rgba(40,50,80,.03),
+    0 12px 36px -14px rgba(40,50,80,.12);
+  margin-bottom:18px;
+}
+.card h3{margin:0 0 6px;font-size:14.5px;font-weight:800;letter-spacing:-.015em}
+.card .helper{color:var(--ink-3);font-size:13px;margin:0 0 20px;line-height:1.55}
+
+/* ===== Inputs · refined (airy glass with subtle inset) ===== */
+label{display:block;font-size:10.5px;font-weight:700;color:var(--ink-3);margin:0 0 9px;letter-spacing:.5px;text-transform:uppercase}
+input[type=text],textarea,select{
+  width:100%;padding:15px 18px;
+  border:1px solid rgba(228,232,239,.65);
+  border-radius:16px;
+  font:14.5px 'Plus Jakarta Sans',system-ui,sans-serif;
+  background:rgba(255,255,255,.45);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  color:var(--ink);outline:none;letter-spacing:-.01em;
+  box-shadow:
+    inset 0 1.5px 3px rgba(40,50,80,.04),
+    inset 0 -1px 0 rgba(255,255,255,.6),
+    0 1px 0 rgba(255,255,255,.45);
+  transition:.18s cubic-bezier(.4,0,.2,1);
+}
+input[type=text]:hover,textarea:hover,select:hover{
+  background:rgba(255,255,255,.70);
+  border-color:rgba(0,41,118,.15);
 }
 input[type=text]:focus,textarea:focus,select:focus{
-  border-color:rgba(0,41,118,.5);
-  background:rgba(255,255,255,.85);
-  box-shadow:var(--shadow-inset),0 0 0 4px rgba(0,41,118,.15);
+  border-color:rgba(0,41,118,.40);
+  background:rgba(255,255,255,.95);
+  box-shadow:
+    inset 0 1.5px 3px rgba(40,50,80,.04),
+    0 0 0 4px rgba(0,41,118,.12),
+    0 8px 22px -8px rgba(0,41,118,.18);
 }
+input[type=text]::placeholder,textarea::placeholder{color:var(--ink-4);font-weight:500}
 select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='%237A8094' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
-  background-repeat:no-repeat;background-position:right 16px center;padding-right:38px;cursor:pointer}
-textarea{min-height:88px;resize:vertical}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.help{font-size:12px;color:var(--ink-3);margin-top:8px;line-height:1.5}
+  background-repeat:no-repeat;background-position:right 18px center;padding-right:42px;cursor:pointer}
+textarea{min-height:100px;resize:vertical;line-height:1.55}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.help{font-size:12.5px;color:var(--ink-3);margin-top:9px;line-height:1.55}
+
+/* ===== Combobox · editable input with suggestion chip + chev ===== */
+.combo{
+  position:relative;display:flex;align-items:center;gap:10px;
+  width:100%;padding:6px 14px 6px 8px;
+  border:1px solid rgba(228,232,239,.65);
+  border-radius:16px;
+  background:rgba(255,255,255,.45);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  cursor:text;transition:.18s;
+  box-shadow:inset 0 1.5px 3px rgba(40,50,80,.04),inset 0 -1px 0 rgba(255,255,255,.6);
+}
+.combo:hover{background:rgba(255,255,255,.70);border-color:rgba(0,41,118,.15)}
+.combo:focus-within{background:rgba(255,255,255,.95);border-color:rgba(0,41,118,.40);
+  box-shadow:0 0 0 4px rgba(0,41,118,.12),0 8px 22px -8px rgba(0,41,118,.18),inset 0 1.5px 3px rgba(40,50,80,.04)}
+.combo > input[type=text]{
+  border:none!important;box-shadow:none!important;background:transparent!important;
+  padding:9px 0 9px 10px!important;flex:1;outline:none;min-width:0;
+}
+.combo > input[type=text]:hover,.combo > input[type=text]:focus{background:transparent!important;box-shadow:none!important;border:none!important}
+.combo .pick{
+  flex-shrink:0;font:600 11px 'Plus Jakarta Sans';color:var(--brand);
+  background:rgba(0,41,118,.08);
+  border:1px solid rgba(0,41,118,.14);
+  padding:4px 11px;border-radius:999px;cursor:pointer;
+  letter-spacing:-.01em;transition:.15s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+}
+.combo .pick:hover{background:rgba(0,41,118,.14);border-color:rgba(0,41,118,.22)}
+.combo .chev{color:var(--ink-3);font-size:11px;flex-shrink:0;padding-right:2px;font-weight:700}
+
+/* Inline-editable mini-pill (used for timing values: "10 minutes", etc.) */
+.inl-edit{
+  display:inline-flex;align-items:center;
+  font:600 11px 'Plus Jakarta Sans';color:var(--brand);
+  background:rgba(0,41,118,.08);
+  border:1px solid rgba(0,41,118,.14);
+  padding:3px 11px;border-radius:999px;
+  cursor:text;outline:none;letter-spacing:-.01em;margin:0 2px;
+  min-width:62px;transition:.15s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+}
+.inl-edit:hover{background:rgba(0,41,118,.14)}
+.inl-edit:focus{background:#fff;border-color:var(--brand);border-width:1.5px;
+  padding:2.5px 10.5px;box-shadow:0 0 0 3px rgba(0,41,118,.15)}
 
 /* ===== Big choice cards — glass squircles ===== */
 .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
@@ -260,17 +319,17 @@ textarea{min-height:88px;resize:vertical}
   border:1.5px dashed rgba(140,150,180,.5);border-radius:14px;color:var(--ink-2);font:700 13px 'Plus Jakarta Sans';cursor:pointer;transition:.15s}
 .add-row:hover{background:rgba(255,255,255,.7);border-color:rgba(0,41,118,.5);color:#002976}
 
-/* Mini chips (frosted glass) */
-.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;
-  background:rgba(255,255,255,.65);
+/* Mini chips · refined (smaller, more pill-like) */
+.chip{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 11px;border-radius:999px;font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.70);
   color:var(--ink-2);
-  border:1px solid rgba(180,188,210,.30);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 1px 2px rgba(40,50,80,.05);
-  letter-spacing:-.01em;
+  border:1px solid rgba(220,225,235,.6);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85);
+  letter-spacing:-.005em;line-height:1;white-space:nowrap;
 }
-.chip.red{background:rgba(251,232,232,.85);color:#C03737;border-color:rgba(214,69,69,.25)}
-.chip.amber{background:rgba(253,241,220,.85);color:#A56610;border-color:rgba(232,148,26,.30)}
-.chip.green{background:rgba(225,244,234,.85);color:#157A40;border-color:rgba(31,157,85,.30)}
+.chip.red{background:rgba(251,232,232,.85);color:#C03737;border-color:rgba(214,69,69,.20)}
+.chip.amber{background:rgba(253,241,220,.85);color:#A56610;border-color:rgba(232,148,26,.22)}
+.chip.green{background:rgba(225,244,234,.85);color:#157A40;border-color:rgba(31,157,85,.22)}
 
 /* ===== Drawer / glass sheet ===== */
 .scrim{position:fixed;inset:0;background:rgba(20,25,40,.30);
@@ -385,22 +444,23 @@ textarea{min-height:88px;resize:vertical}
 .sub-add{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;cursor:pointer;color:#002976;font-weight:700;font-size:13px;background:rgba(255,255,255,.3);border:none;width:100%;border-top:1px solid var(--line-soft)}
 .sub-add:hover{background:rgba(255,255,255,.6)}
 
-/* ===== Switch (glass toggle) ===== */
-.tog{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line-soft)}
+/* ===== Switch · refined (smaller, smoother) ===== */
+.tog{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 0;border-bottom:1px dashed rgba(228,232,239,.6)}
 .tog:last-child{border-bottom:none}
 .tog .lbl{flex:1}
-.tog .lbl .t{font-weight:700;font-size:13.5px;letter-spacing:-.01em}
-.tog .lbl .s{font-size:11.5px;color:var(--ink-3);margin-top:3px;line-height:1.45}
-.sw{width:42px;height:24px;border-radius:999px;
-  background:rgba(180,188,210,.4);
-  position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;
-  box-shadow:inset 0 2px 4px rgba(40,50,80,.15),inset 0 -1px 0 rgba(255,255,255,.5)}
-.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;
+.tog .lbl .t{font-weight:700;font-size:13.5px;letter-spacing:-.015em}
+.tog .lbl .s{font-size:12px;color:var(--ink-3);margin-top:3px;line-height:1.55}
+.sw{width:38px;height:22px;border-radius:999px;
+  background:rgba(180,188,210,.35);
+  position:relative;cursor:pointer;transition:.22s cubic-bezier(.4,0,.2,1);flex-shrink:0;
+  box-shadow:inset 0 1.5px 3px rgba(40,50,80,.12),inset 0 -1px 0 rgba(255,255,255,.5)}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;
   background:linear-gradient(145deg,#fff,#e8eaf0);
-  border-radius:999px;transition:.2s;
-  box-shadow:0 2px 5px rgba(40,50,80,.30),inset 0 1px 0 rgba(255,255,255,.8)}
-.sw.on{background:linear-gradient(145deg,#1A3F8C,#001F5C);box-shadow:inset 0 2px 4px rgba(0,0,0,.3),inset 0 -1px 0 rgba(255,255,255,.1)}
-.sw.on::after{left:21px;background:linear-gradient(145deg,#fff,#f0f2f8)}
+  border-radius:999px;transition:.22s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 2px 5px rgba(40,50,80,.28),inset 0 1px 0 rgba(255,255,255,.85)}
+.sw.on{background:linear-gradient(145deg,#1A3F8C,#001F5C);
+  box-shadow:inset 0 1.5px 3px rgba(0,0,0,.25),0 0 0 1px rgba(0,41,118,.20)}
+.sw.on::after{left:19px;background:linear-gradient(145deg,#fff,#f0f2f8)}
 
 /* ===== Review summary blocks ===== */
 .summary-block{
@@ -1013,12 +1073,12 @@ textarea{min-height:88px;resize:vertical}
       <input type="text" id="issueEn" value="Low DO in Aeration Tank" oninput="markSaved()"/>
 
       <label style="margin-top:14px">Equipment</label>
-      <select onchange="markSaved()">
-        <option>AT-01 · Aeration Tank</option>
-        <option>MBR-1 · Permeate Pump</option>
-        <option>B-1 · Blower</option>
-        <option>EQ-1 · Equalisation Tank</option>
-      </select>
+      <div class="combo">
+        <input type="text" id="eqInput" placeholder="Type equipment ID or pick from your library…" oninput="markSaved()" value=""/>
+        <button class="pick" type="button" onclick="this.previousElementSibling.focus()">Pick from library</button>
+        <span class="chev">⌄</span>
+      </div>
+      <div class="help">Start typing — or click "Pick from library" for AT-01 · MBR-1 · B-1 · EQ-1 and 12 others.</div>
 
       <label style="margin-top:14px">Description</label>
       <textarea id="issueDesc" oninput="markSaved()" placeholder="One or two lines explaining what this diagnostic is for, when to use it, and what good looks like." style="min-height:90px">Dissolved oxygen levels in the aeration tank are below 2.0 mg/L. Use this tree to walk through the six root causes — blower, aeration distribution, DO sensor, sludge bulking, shock load — and confirm the right fix.</textarea>
@@ -1092,30 +1152,29 @@ textarea{min-height:88px;resize:vertical}
         <div class="sub-item">
           <span class="ix">1</span>
           <span class="t" style="display:flex;flex-direction:column;gap:4px">
-            <span><b>Site Engineer (Sharma ji)</b> — primary</span>
-            <span style="font-size:11px;color:var(--ink-3)">Notified immediately on flow start</span>
+            <span><b contenteditable="true">Site Engineer (Sharma ji)</b> — primary</span>
+            <span style="font-size:11.5px;color:var(--ink-3);line-height:1.5" contenteditable="true">Notified immediately on flow start</span>
           </span>
-          <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button></span>
         </div>
         <div class="sub-item">
           <span class="ix">2</span>
           <span class="t" style="display:flex;flex-direction:column;gap:4px">
-            <span><b>Supervisor</b></span>
-            <span style="font-size:11px;color:var(--ink-3)">Escalate after
-              <select style="padding:3px 22px 3px 8px;font-size:11px;width:auto;display:inline-block;margin:0 4px"><option>10 minutes</option><option>5 minutes</option><option>15 minutes</option><option>30 minutes</option></select>
+            <span><b contenteditable="true">Supervisor</b></span>
+            <span style="font-size:11.5px;color:var(--ink-3);line-height:1.5">Escalate after
+              <span class="inl-edit" contenteditable="true">10 minutes</span>
               of no response</span>
           </span>
-          <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
         </div>
         <div class="sub-item">
           <span class="ix">3</span>
           <span class="t" style="display:flex;flex-direction:column;gap:4px">
-            <span><b>Site Manager</b></span>
-            <span style="font-size:11px;color:var(--ink-3)">Escalate after
-              <select style="padding:3px 22px 3px 8px;font-size:11px;width:auto;display:inline-block;margin:0 4px"><option>30 minutes</option><option>15 minutes</option><option>1 hour</option><option>2 hours</option></select>
+            <span><b contenteditable="true">Site Manager</b></span>
+            <span style="font-size:11.5px;color:var(--ink-3);line-height:1.5">Escalate after
+              <span class="inl-edit" contenteditable="true">30 minutes</span>
               with no resolution</span>
           </span>
-          <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
         </div>
         <button class="sub-add" onclick="addSubItem(this,'option')">＋ Add escalation level</button>
       </div>
@@ -2467,28 +2526,21 @@ textarea{min-height:88px;resize:vertical}
     markSaved();
   }
 
-  // Global Enter-to-blur for the contenteditable option spans
-  // (so typing Enter saves rather than inserting a newline)
+  // Global Enter-to-blur for all freeform contenteditable spans
   document.addEventListener('keydown', function(e){
     const t = e.target;
     if (!t || !t.matches) return;
-    if (t.matches('.opt-label, .dest-chip, .sub-item .ix[contenteditable="true"]')){
-      if (e.key === 'Enter' && !e.shiftKey){
-        e.preventDefault();
-        t.blur();
-      }
-      if (e.key === 'Escape'){
-        e.preventDefault();
-        t.blur();
-      }
+    if (t.matches('.opt-label, .dest-chip, .sub-item .ix[contenteditable="true"], .inl-edit, [contenteditable="true"] b, .sub-item .t b[contenteditable="true"], .sub-item .t span[contenteditable="true"]')){
+      if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); t.blur(); }
+      if (e.key === 'Escape'){ e.preventDefault(); t.blur(); }
     }
   }, true);
 
-  // Mark saved whenever a freeform field changes
+  // Mark saved on any freeform input change
   document.addEventListener('input', function(e){
     const t = e.target;
     if (!t || !t.matches) return;
-    if (t.matches('.opt-label, .dest-chip, .sub-item .ix[contenteditable="true"]')){
+    if (t.matches('.opt-label, .dest-chip, .sub-item .ix[contenteditable="true"], .inl-edit, .sub-item .t b[contenteditable="true"], .sub-item .t span[contenteditable="true"], .combo input[type=text]')){
       markSaved();
     }
   }, true);
@@ -2639,6 +2691,7 @@ textarea{min-height:88px;resize:vertical}
     const en = document.getElementById('issueEn'); if (en) en.value = '';
     const desc = document.getElementById('issueDesc'); if (desc) desc.value = '';
     const eq = document.querySelector('#p-1 select:not(.qs-row select)'); if (eq) eq.selectedIndex = 0;
+    const eqInp = document.getElementById('eqInput'); if (eqInp) eqInp.value = '';
     document.querySelectorAll('#p-1 .choices .rcard').forEach(c => c.classList.remove('on'));
     document.querySelectorAll('#p-2 .choices .rcard').forEach(c => c.classList.remove('on'));
     const escList = document.querySelector('#p-2 .sub-list');
@@ -2661,6 +2714,11 @@ textarea{min-height:88px;resize:vertical}
     const en = document.getElementById('issueEn'); if (en) en.value = tpl.name;
     const desc = document.getElementById('issueDesc'); if (desc) desc.value = tpl.desc;
     const eq = document.querySelector('#p-1 select:not(.qs-row select)'); if (eq) eq.selectedIndex = tpl.equipmentIdx || 0;
+    const eqInp = document.getElementById('eqInput');
+    if (eqInp){
+      const eqMap = ['AT-01 · Aeration Tank','MBR-1 · Permeate Pump','B-1 · Blower','EQ-1 · Equalisation Tank'];
+      eqInp.value = eqMap[tpl.equipmentIdx || 0] || '';
+    }
     const sevCards = document.querySelectorAll('#p-1 .choices .rcard');
     sevCards.forEach(c => c.classList.remove('on'));
     const sevIdx = (tpl.severity === 'amber') ? 1 : (tpl.severity === 'danger' ? 0 : 2);
