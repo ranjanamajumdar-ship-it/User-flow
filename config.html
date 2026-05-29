@@ -188,6 +188,92 @@ textarea{min-height:80px;resize:vertical}
   background:var(--ink);color:#fff;padding:9px 18px;border-radius:999px;font-size:13px;font-weight:600;opacity:0;transition:.18s;pointer-events:none;z-index:80}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
+/* ===== FIGMA-LIKE CANVAS (Step 3 builder) ===== */
+.builder{display:grid;grid-template-columns:200px 1fr;gap:14px}
+.palette{position:sticky;top:130px;align-self:start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow);max-height:calc(100vh - 180px);overflow:auto}
+.palette h4{margin:0 0 8px;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3)}
+.palette .ptile{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px dashed var(--line-2);background:#fff;border-radius:10px;
+  font:600 12.5px 'Plus Jakarta Sans';color:var(--ink);cursor:grab;margin-bottom:6px;width:100%;text-align:left;transition:.12s}
+.palette .ptile:hover{border-style:solid;border-color:var(--brand);background:var(--brand-tint)}
+.palette .ptile:active{cursor:grabbing;transform:scale(.97)}
+.palette .ptile .pico{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.palette .ptile .pico.q{background:var(--brand-tint);color:var(--brand)}
+.palette .ptile .pico.s{background:var(--green-tint);color:var(--green)}
+.palette .ptile .pico.r{background:var(--amber-tint);color:var(--amber)}
+.palette .ptile .pico.a{background:#FFE4E4;color:var(--red)}
+.palette .ptile .pico.b{background:#EFE4FB;color:#7B3FBF}
+.palette .ptile .pico.x{background:#F1F1F0;color:var(--ink-3)}
+.palette .ptile .ptxt{flex:1;min-width:0}
+.palette .ptile .ptxt .pt{font-size:12.5px}
+.palette .ptile .ptxt .ps{font-size:10.5px;color:var(--ink-3);font-weight:500;margin-top:1px}
+.palette .ptip{font-size:10.5px;color:var(--ink-3);line-height:1.45;padding:8px 4px;border-top:1px dashed var(--line);margin-top:6px}
+
+.canvas-wrap{position:relative;border:1px solid var(--line);border-radius:16px;background:
+  radial-gradient(circle, #d8dde7 1px, transparent 1.5px) 0 0/16px 16px,
+  #fbfcfe;
+  box-shadow:var(--shadow);min-height:600px;padding:30px 22px 60px}
+.canvas-toolbar{position:absolute;top:14px;right:14px;display:flex;gap:6px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px;box-shadow:var(--shadow);z-index:3}
+.canvas-toolbar button{width:30px;height:30px;border:none;background:transparent;cursor:pointer;border-radius:999px;color:var(--ink-2);font-size:14px}
+.canvas-toolbar button:hover{background:var(--surface-2)}
+.canvas-toolbar .zoom{padding:0 10px;font:600 12px 'JetBrains Mono';color:var(--ink-3);display:flex;align-items:center;border-left:1px solid var(--line);margin-left:4px;padding-left:10px}
+
+/* Step cards in the canvas */
+.fnode{position:relative;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px 14px 14px 50px;
+  box-shadow:var(--shadow);margin:0 auto;max-width:520px;cursor:pointer;transition:.15s}
+.fnode:hover{border-color:var(--brand-2);box-shadow:0 6px 18px rgba(25,52,88,.10)}
+.fnode.selected{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint-2),0 6px 18px rgba(25,52,88,.12)}
+.fnode .fn{position:absolute;left:14px;top:14px;width:28px;height:28px;background:var(--brand);color:#fff;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.fnode .fk{position:absolute;left:14px;bottom:14px;display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:'JetBrains Mono';color:var(--ink-3);background:var(--surface-2);padding:2px 6px;border-radius:999px;border:1px solid var(--line)}
+.fnode .ft{font-weight:700;font-size:14px;margin-bottom:4px;line-height:1.3}
+.fnode .fs{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.fnode .fdrag{position:absolute;left:4px;top:50%;transform:translateY(-50%);width:14px;height:30px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:grab;opacity:0;transition:.15s}
+.fnode .fdrag::before,.fnode .fdrag::after{content:"";width:3px;height:3px;background:var(--ink-4);border-radius:999px;box-shadow:0 6px 0 var(--ink-4),0 12px 0 var(--ink-4)}
+.fnode:hover .fdrag{opacity:1}
+.fnode .ftools{position:absolute;right:10px;top:10px;display:flex;gap:4px;opacity:0;transition:.15s;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px;box-shadow:var(--shadow)}
+.fnode:hover .ftools,.fnode.selected .ftools{opacity:1}
+.fnode .ftools button{width:24px;height:24px;border:none;background:transparent;cursor:pointer;border-radius:999px;color:var(--ink-2);font-size:11px}
+.fnode .ftools button:hover{background:var(--surface-2)}
+.fnode .ftools button.del:hover{background:var(--red-tint);color:var(--red)}
+
+/* Connection line */
+.flink{display:flex;justify-content:center;color:var(--line-2);font-family:'JetBrains Mono';font-size:14px;height:24px;line-height:1;margin:-2px 0;position:relative}
+.flink::before{content:"";width:2px;height:100%;background:var(--line-2);position:absolute;top:0;left:50%;margin-left:-1px;border-radius:1px}
+.flink::after{content:"▾";position:absolute;bottom:-2px;color:var(--line-2);background:#fbfcfe;padding:0 2px}
+
+/* Insert-between zone */
+.insert{display:flex;align-items:center;justify-content:center;height:8px;margin:0;position:relative;cursor:pointer}
+.insert::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:0;height:0;background:transparent;border-radius:999px;transition:.18s;border:1.5px dashed transparent}
+.insert .ins-btn{width:24px;height:24px;border-radius:999px;background:#fff;border:1.5px solid var(--brand);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;opacity:0;transform:scale(.6);transition:.15s;z-index:2;position:relative;box-shadow:0 2px 6px rgba(25,52,88,.18)}
+.insert:hover{height:36px;margin:8px 0}
+.insert:hover .ins-btn{opacity:1;transform:scale(1)}
+.insert:hover::before{width:60%;height:36px;border-color:var(--brand);background:var(--brand-tint)}
+
+/* End add-step */
+.fnode-add{display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:1.5px dashed var(--brand);border-radius:14px;padding:16px;color:var(--brand);font:700 13px 'Plus Jakarta Sans';cursor:pointer;max-width:520px;margin:14px auto 0;transition:.15s;width:100%}
+.fnode-add:hover{background:var(--brand-tint)}
+
+/* Mini-map */
+.minimap{position:absolute;right:14px;bottom:14px;width:120px;height:70px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);overflow:hidden}
+.minimap .mmlbl{position:absolute;top:3px;left:6px;font:600 9px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.4px}
+.minimap .mmwin{position:absolute;left:10px;top:18px;width:100px;height:48px;border:1.5px solid var(--brand);border-radius:3px}
+.minimap .mmrow{position:absolute;left:14px;width:90px;height:5px;background:var(--brand-tint-2);border-radius:1px}
+.minimap .mmrow.cur{background:var(--brand)}
+
+/* Wider wrap when on step 3 */
+.wrap.wide{max-width:1040px;transition:max-width .25s}
+
+/* Inline contextual tip */
+.tip-row{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-3);background:var(--brand-tint);border:1px solid var(--brand-tint-2);border-radius:10px;padding:9px 12px;margin-bottom:14px}
+.tip-row .tip-ico{width:24px;height:24px;border-radius:999px;background:#fff;color:var(--brand);font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+
+@media (max-width:780px){
+  .builder{grid-template-columns:1fr}
+  .palette{position:relative;top:0;display:flex;flex-wrap:wrap;gap:6px;max-height:none}
+  .palette h4{width:100%}
+  .palette .ptile{flex:1 0 calc(50% - 6px);margin-bottom:0}
+  .palette .ptip{display:none}
+  .minimap{display:none}
+}
 @media (max-width:600px){
   .row2{grid-template-columns:1fr}
   .row3{grid-template-columns:1fr 1fr}
@@ -359,67 +445,194 @@ textarea{min-height:80px;resize:vertical}
     </div>
   </section>
 
-  <!-- ============== STEP 3 · Steps ============== -->
+  <!-- ============== STEP 3 · Steps (Figma-like builder) ============== -->
   <section class="panel" id="p-3">
     <h1 class="page-h">Diagnostic steps</h1>
-    <p class="page-sub">List the checks operators walk through, in order. Tap any to edit.</p>
+    <p class="page-sub">Build the flow operators walk through. Drag step types in from the left, hover between cards to insert, tap a card to edit it.</p>
 
-    <div class="card">
-      <h3>The 6 steps · Low DO tree</h3>
-      <p class="helper">Each step is a question + the lines on how to identify + how to fix. Drag to reorder.</p>
+    <div class="tip-row">
+      <div class="tip-ico">✨</div>
+      <div>Tap a step type on the left to add it to the canvas, or hover between cards to insert one in the middle. Tap any card to edit its question, checks &amp; actions.</div>
+    </div>
 
-      <div id="stepList">
-        <div class="step-row" onclick="openDrawer(1)">
-          <div class="n">1</div>
-          <div class="body">
-            <div class="t">Blower चालू है?</div>
-            <div class="s"><span class="chip">2 checks</span><span class="chip green">1 action</span><span class="chip">Beginner</span></div>
-          </div>
-          <div class="chev">›</div>
-        </div>
-        <div class="step-row" onclick="openDrawer(2)">
-          <div class="n">2</div>
-          <div class="body">
-            <div class="t">Blower का प्रदर्शन सही है?</div>
-            <div class="s"><span class="chip">1 check</span><span class="chip green">2 actions</span><span class="chip amber">Stop here</span></div>
-          </div>
-          <div class="chev">›</div>
-        </div>
-        <div class="step-row" onclick="openDrawer(3)">
-          <div class="n">3</div>
-          <div class="body">
-            <div class="t">टैंक में bubbling बराबर है?</div>
-            <div class="s"><span class="chip">2 checks</span><span class="chip green">2 actions</span><span class="chip amber">Photo required</span></div>
-          </div>
-          <div class="chev">›</div>
-        </div>
-        <div class="step-row" onclick="openDrawer(4)">
-          <div class="n">4</div>
-          <div class="body">
-            <div class="t">DO sensor में problem है?</div>
-            <div class="s"><span class="chip">2 checks</span><span class="chip green">3 actions</span><span class="chip">Intermediate</span></div>
-          </div>
-          <div class="chev">›</div>
-        </div>
-        <div class="step-row" onclick="openDrawer(5)">
-          <div class="n">5</div>
-          <div class="body">
-            <div class="t">Sludge bulking हो रही है?</div>
-            <div class="s"><span class="chip">3 checks</span><span class="chip green">1 action</span><span class="chip">Intermediate</span></div>
-          </div>
-          <div class="chev">›</div>
-        </div>
-        <div class="step-row" onclick="openDrawer(6)">
-          <div class="n">6</div>
-          <div class="body">
-            <div class="t">Incoming में shock load है?</div>
-            <div class="s"><span class="chip">4 checks</span><span class="chip green">1 action</span><span class="chip red">SME approval</span></div>
-          </div>
-          <div class="chev">›</div>
-        </div>
+    <div class="builder">
+
+      <!-- ===== Palette ===== -->
+      <div class="palette">
+        <h4>Step types</h4>
+
+        <button class="ptile" onclick="addStep('question')">
+          <div class="pico q">❓</div>
+          <div class="ptxt"><div class="pt">Yes / No question</div><div class="ps">Ask operator a question</div></div>
+        </button>
+        <button class="ptile" onclick="addStep('sensor')">
+          <div class="pico r">📡</div>
+          <div class="ptxt"><div class="pt">Sensor reading</div><div class="ps">Auto-read from sensor</div></div>
+        </button>
+        <button class="ptile" onclick="addStep('manual')">
+          <div class="pico s">📋</div>
+          <div class="ptxt"><div class="pt">Manual reading</div><div class="ps">Operator types a value</div></div>
+        </button>
+        <button class="ptile" onclick="addStep('action')">
+          <div class="pico s">🛠</div>
+          <div class="ptxt"><div class="pt">Action / fix</div><div class="ps">Do something physical</div></div>
+        </button>
+        <button class="ptile" onclick="addStep('photo')">
+          <div class="pico a">📷</div>
+          <div class="ptxt"><div class="pt">Photo capture</div><div class="ps">Snap evidence</div></div>
+        </button>
+        <button class="ptile" onclick="addStep('branch')">
+          <div class="pico b">⤴</div>
+          <div class="ptxt"><div class="pt">Decision branch</div><div class="ps">Split flow Yes / No</div></div>
+        </button>
+        <button class="ptile" onclick="addStep('stop')">
+          <div class="pico x">⏹</div>
+          <div class="ptxt"><div class="pt">Stop here</div><div class="ps">Hand off to supervisor</div></div>
+        </button>
+
+        <div class="ptip">Tip: drag-handle (⋮⋮) on a card lets you reorder. Tap × to remove.</div>
       </div>
 
-      <button class="add-row" style="margin-top:10px" onclick="openDrawer('new')">＋ Add another step</button>
+      <!-- ===== Canvas ===== -->
+      <div class="canvas-wrap" id="canvasWrap">
+        <div class="canvas-toolbar">
+          <button title="Undo">↶</button>
+          <button title="Redo">↷</button>
+          <button title="Zoom out">−</button>
+          <button title="Zoom in">+</button>
+          <span class="zoom">100%</span>
+          <button title="Fit to view">⤢</button>
+        </div>
+
+        <div id="canvasFlow">
+          <!-- Step 1 -->
+          <div class="fnode" onclick="openDrawer(1);selectNode(this)">
+            <div class="fdrag"></div>
+            <div class="fn">1</div>
+            <div class="ftools">
+              <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
+              <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
+            </div>
+            <div class="ft">Blower चालू है?</div>
+            <div class="fs">
+              <span class="chip">❓ Yes/No</span>
+              <span class="chip">2 checks</span>
+              <span class="chip green">1 action</span>
+              <span class="chip">Beginner</span>
+            </div>
+            <span class="fk">STEP_Q</span>
+          </div>
+          <div class="insert"><button class="ins-btn" onclick="insertAt(0)">+</button></div>
+
+          <!-- Step 2 -->
+          <div class="fnode" onclick="openDrawer(2);selectNode(this)">
+            <div class="fdrag"></div>
+            <div class="fn">2</div>
+            <div class="ftools">
+              <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
+              <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
+            </div>
+            <div class="ft">Blower का प्रदर्शन सही है?</div>
+            <div class="fs">
+              <span class="chip">❓ Yes/No</span>
+              <span class="chip">1 check</span>
+              <span class="chip green">2 actions</span>
+              <span class="chip amber">Stop here</span>
+            </div>
+            <span class="fk">STEP_Q</span>
+          </div>
+          <div class="insert"><button class="ins-btn" onclick="insertAt(1)">+</button></div>
+
+          <!-- Step 3 -->
+          <div class="fnode selected" onclick="openDrawer(3);selectNode(this)">
+            <div class="fdrag"></div>
+            <div class="fn">3</div>
+            <div class="ftools">
+              <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
+              <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
+            </div>
+            <div class="ft">टैंक में bubbling बराबर है?</div>
+            <div class="fs">
+              <span class="chip">❓ Yes/No</span>
+              <span class="chip">2 checks</span>
+              <span class="chip green">2 actions</span>
+              <span class="chip amber">📷 Photo required</span>
+            </div>
+            <span class="fk">STEP_Q</span>
+          </div>
+          <div class="insert"><button class="ins-btn" onclick="insertAt(2)">+</button></div>
+
+          <!-- Step 4 -->
+          <div class="fnode" onclick="openDrawer(4);selectNode(this)">
+            <div class="fdrag"></div>
+            <div class="fn">4</div>
+            <div class="ftools">
+              <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
+              <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
+            </div>
+            <div class="ft">DO sensor में problem है?</div>
+            <div class="fs">
+              <span class="chip">❓ Yes/No</span>
+              <span class="chip">2 checks</span>
+              <span class="chip green">3 actions</span>
+              <span class="chip">Intermediate</span>
+            </div>
+            <span class="fk">STEP_Q</span>
+          </div>
+          <div class="insert"><button class="ins-btn" onclick="insertAt(3)">+</button></div>
+
+          <!-- Step 5 -->
+          <div class="fnode" onclick="openDrawer(5);selectNode(this)">
+            <div class="fdrag"></div>
+            <div class="fn">5</div>
+            <div class="ftools">
+              <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
+              <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
+            </div>
+            <div class="ft">Sludge bulking हो रही है?</div>
+            <div class="fs">
+              <span class="chip">📋 Manual</span>
+              <span class="chip">3 checks</span>
+              <span class="chip green">1 action</span>
+              <span class="chip">Intermediate</span>
+            </div>
+            <span class="fk">STEP_MANUAL</span>
+          </div>
+          <div class="insert"><button class="ins-btn" onclick="insertAt(4)">+</button></div>
+
+          <!-- Step 6 -->
+          <div class="fnode" onclick="openDrawer(6);selectNode(this)">
+            <div class="fdrag"></div>
+            <div class="fn">6</div>
+            <div class="ftools">
+              <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
+              <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
+            </div>
+            <div class="ft">Incoming में shock load है?</div>
+            <div class="fs">
+              <span class="chip">❓ Yes/No</span>
+              <span class="chip">4 checks</span>
+              <span class="chip green">1 action</span>
+              <span class="chip red">SME approval</span>
+            </div>
+            <span class="fk">STEP_Q</span>
+          </div>
+
+          <button class="fnode-add" onclick="addStep('question')">＋ Add step at the end</button>
+        </div>
+
+        <!-- Mini-map (visual flourish only) -->
+        <div class="minimap" title="Mini-map">
+          <div class="mmlbl">Mini-map</div>
+          <div class="mmrow" style="top:22px"></div>
+          <div class="mmrow" style="top:30px"></div>
+          <div class="mmrow cur" style="top:38px"></div>
+          <div class="mmrow" style="top:46px"></div>
+          <div class="mmrow" style="top:54px"></div>
+          <div class="mmrow" style="top:62px"></div>
+          <div class="mmwin"></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -602,12 +815,123 @@ textarea{min-height:80px;resize:vertical}
     next.textContent = n === 4 ? 'Publish to operators' : 'Continue ›';
     if (n === 4) next.style.background = '#1F9D55', next.style.borderColor = '#1F9D55';
     else next.style.background = '', next.style.borderColor = '';
+    // widen container on Step 3 for the canvas
+    document.querySelector('.wrap').classList.toggle('wide', n === 3);
     // pull values into review
     if (n === 4) {
       document.getElementById('rvHi').textContent = document.getElementById('issueHi').value;
       document.getElementById('rvEn').textContent = document.getElementById('issueEn').value;
     }
     window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // ===== Figma-like canvas helpers =====
+  const STEP_TEMPLATES = {
+    question: { ttl: "New question · edit me", chips:['❓ Yes/No','0 checks','0 actions','Beginner'], kind:'STEP_Q' },
+    sensor:   { ttl: "Read sensor value",       chips:['📡 Auto-read','5s timer','Beginner'],         kind:'STEP_SENSOR' },
+    manual:   { ttl: "Manual reading from operator", chips:['📋 Manual','Numeric input','Beginner'], kind:'STEP_MANUAL' },
+    action:   { ttl: "Action / fix to perform", chips:['🛠 Action','green tick'],                   kind:'STEP_ACTION' },
+    photo:    { ttl: "Capture a photo",          chips:['📷 Photo','Hard block'],                    kind:'STEP_PHOTO' },
+    branch:   { ttl: "Decision · Yes / No split", chips:['⤴ Branch','2 paths'],                     kind:'STEP_BRANCH' },
+    stop:     { ttl: "Stop here · escalate",    chips:['⏹ Stop','📞 Supervisor'],                   kind:'STEP_STOP' },
+  };
+
+  function buildNode(template, n) {
+    const t = STEP_TEMPLATES[template] || STEP_TEMPLATES.question;
+    const node = document.createElement('div');
+    node.className = 'fnode';
+    node.onclick = function(){ openDrawer(n); selectNode(node); };
+    node.innerHTML = `
+      <div class="fdrag"></div>
+      <div class="fn">${n}</div>
+      <div class="ftools">
+        <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
+        <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
+      </div>
+      <div class="ft">${t.ttl}</div>
+      <div class="fs">${t.chips.map(c=>'<span class="chip">'+c+'</span>').join('')}</div>
+      <span class="fk">${t.kind}</span>
+    `;
+    return node;
+  }
+  function buildInsert(idx) {
+    const ins = document.createElement('div');
+    ins.className = 'insert';
+    ins.innerHTML = '<button class="ins-btn" onclick="insertAt('+idx+')">+</button>';
+    return ins;
+  }
+  function renumber() {
+    const flow = document.getElementById('canvasFlow');
+    const nodes = flow.querySelectorAll('.fnode:not(.fnode-add)');
+    nodes.forEach((nd, i) => { nd.querySelector('.fn').textContent = i + 1; });
+  }
+  function addStep(template) {
+    const flow = document.getElementById('canvasFlow');
+    const addBtn = flow.querySelector('.fnode-add');
+    const nodes = flow.querySelectorAll('.fnode:not(.fnode-add)');
+    const newIdx = nodes.length + 1;
+    // insert a link before adding the new node, unless first node
+    if (nodes.length) flow.insertBefore(buildInsert(nodes.length), addBtn);
+    flow.insertBefore(buildNode(template, newIdx), addBtn);
+    selectNode(flow.querySelectorAll('.fnode:not(.fnode-add)')[newIdx - 1]);
+    renumber();
+    markSaved();
+    flow.querySelectorAll('.fnode:not(.fnode-add)')[newIdx - 1].scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function insertAt(idx) {
+    // idx is the position AFTER which we insert (0-based across existing nodes)
+    const flow = document.getElementById('canvasFlow');
+    const nodes = Array.from(flow.querySelectorAll('.fnode:not(.fnode-add)'));
+    if (idx >= nodes.length - 1) return addStep('question');
+    const afterNode = nodes[idx];
+    // The next sibling of afterNode is an .insert. We want to put: new-node then insert-link before that insert
+    const insertEl = afterNode.nextElementSibling; // .insert
+    const newNode = buildNode('question', idx + 2);
+    const newLink = buildInsert(idx + 1);
+    insertEl.parentNode.insertBefore(newLink, insertEl.nextSibling); // link after our new node will go between new and next
+    insertEl.parentNode.insertBefore(newNode, insertEl.nextSibling);
+    renumber();
+    // refresh insert indices (cheap: we leave them, since clicking always recomputes via insertAt)
+    selectNode(newNode);
+    markSaved();
+    newNode.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function dup(btn) {
+    const node = btn.closest('.fnode');
+    const flow = document.getElementById('canvasFlow');
+    const nodes = Array.from(flow.querySelectorAll('.fnode:not(.fnode-add)'));
+    const idx = nodes.indexOf(node);
+    const clone = node.cloneNode(true);
+    clone.classList.remove('selected');
+    clone.onclick = node.onclick;
+    // re-bind toolbar
+    clone.querySelectorAll('.ftools button').forEach(b => {
+      if (b.classList.contains('del')) b.onclick = function(e){e.stopPropagation();delNode(b)};
+      else b.onclick = function(e){e.stopPropagation();dup(b)};
+    });
+    const link = buildInsert(idx + 1);
+    node.parentNode.insertBefore(link, node.nextSibling);
+    node.parentNode.insertBefore(clone, node.nextSibling.nextSibling);
+    renumber();
+    selectNode(clone);
+    markSaved();
+  }
+  function delNode(btn) {
+    const node = btn.closest('.fnode');
+    const flow = document.getElementById('canvasFlow');
+    const nodes = Array.from(flow.querySelectorAll('.fnode:not(.fnode-add)'));
+    if (nodes.length <= 1) return;
+    const nextLink = node.nextElementSibling && node.nextElementSibling.classList.contains('insert') ? node.nextElementSibling : null;
+    const prevLink = node.previousElementSibling && node.previousElementSibling.classList.contains('insert') ? node.previousElementSibling : null;
+    node.remove();
+    if (nextLink) nextLink.remove();
+    else if (prevLink) prevLink.remove();
+    renumber();
+    markSaved();
+  }
+  function selectNode(node) {
+    document.querySelectorAll('.fnode').forEach(n => n.classList.remove('selected'));
+    if (node) node.classList.add('selected');
   }
   function goStep(n){ setStep(n); }
   function nextStep(){ if (step < 4) setStep(step + 1); else publish(); }
