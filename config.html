@@ -314,8 +314,25 @@ textarea{min-height:88px;resize:vertical}
 .sub-item .t{flex:1;font-size:13.5px;line-height:1.45}
 .sub-item .ctrl{display:flex;gap:5px;flex-shrink:0}
 .sub-item .ctrl button{width:30px;height:30px;border:1px solid var(--line);background:rgba(255,255,255,.7);border-radius:8px;cursor:pointer;color:var(--ink-3);font-size:13px;
-  box-shadow:var(--shadow-soft)}
-.sub-item .ctrl button:hover{background:#fff}
+  box-shadow:var(--shadow-soft);transition:.15s}
+.sub-item .ctrl button:hover{background:#fff;color:var(--brand);transform:scale(1.05)}
+.sub-item .ctrl button.del:hover{background:rgba(214,69,69,.10);color:#C03737;border-color:rgba(214,69,69,.25)}
+
+/* Contenteditable highlight when editing */
+.sub-item [contenteditable="true"]{
+  background:rgba(255,255,255,1);
+  border:1.5px solid var(--brand);
+  border-radius:8px;
+  padding:5px 10px;
+  margin:-3px -3px;
+  outline:none;
+  box-shadow:0 0 0 3px rgba(0,41,118,.18),inset 0 1px 0 rgba(255,255,255,.8);
+  cursor:text;
+  display:inline-block;min-width:200px;
+}
+.sub-item.editing{background:rgba(255,255,255,.85)!important}
+.sub-item .ctrl button.active{background:var(--brand);color:#fff;border-color:transparent;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 4px 10px -2px rgba(0,41,118,.35)}
 .sub-add{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;cursor:pointer;color:#002976;font-weight:700;font-size:13px;background:rgba(255,255,255,.3);border:none;width:100%;border-top:1px solid var(--line-soft)}
 .sub-add:hover{background:rgba(255,255,255,.6)}
 
@@ -1453,10 +1470,10 @@ textarea{min-height:88px;resize:vertical}
     </select>
 
     <label style="margin-top:14px">Primary question · Hindi</label>
-    <input type="text" id="drQHi" value="क्या पूरे tank में बराबर bubbling हो रही है?"/>
+    <input type="text" id="drQHi" value="क्या पूरे tank में बराबर bubbling हो रही है?" oninput="markSaved()"/>
 
     <label style="margin-top:12px">Primary question · English helper</label>
-    <input type="text" id="drQEn" value="Check if aeration is equally happening across the tank"/>
+    <input type="text" id="drQEn" value="Check if aeration is equally happening across the tank" oninput="markSaved()"/>
 
     <label style="margin-top:18px">Answer options &amp; routes <span style="font-weight:500;color:var(--ink-3);text-transform:none;letter-spacing:0">— each option's destination step</span></label>
     <div class="sub-list">
@@ -1469,7 +1486,7 @@ textarea{min-height:88px;resize:vertical}
             <select style="padding:5px 28px 5px 10px;font-size:11px;width:auto"><option>Step 4 · DO sensor failure</option><option>End: passed check</option><option>Stop here</option></select>
           </span>
         </span>
-        <span class="ctrl"><button>✎</button><button>×</button></span>
+        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
       <div class="sub-item">
         <span class="ix">~</span>
@@ -1480,7 +1497,7 @@ textarea{min-height:88px;resize:vertical}
             <select style="padding:5px 28px 5px 10px;font-size:11px;width:auto"><option>Continue to Check 2 (below)</option><option>Step 4 · DO sensor failure</option></select>
           </span>
         </span>
-        <span class="ctrl"><button>✎</button><button>×</button></span>
+        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
       <div class="sub-item">
         <span class="ix">N</span>
@@ -1491,18 +1508,18 @@ textarea{min-height:88px;resize:vertical}
             <select style="padding:5px 28px 5px 10px;font-size:11px;width:auto"><option>Continue to Check 2 (below)</option><option>Stop here · diffusers choked</option></select>
           </span>
         </span>
-        <span class="ctrl"><button>✎</button><button>×</button></span>
+        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
-      <button class="sub-add">＋ Add option</button>
+      <button class="sub-add" onclick="addSubItem(this,&apos;option&apos;)">＋ Add option</button>
     </div>
 
     <label style="margin-top:22px">Check 2 · Tick any that apply (multi-select)</label>
     <div class="sub-list">
-      <div class="sub-item"><span class="ix">☐</span><span class="t">Sludge accumulation at the bottom of certain areas</span><span class="ctrl"><button>✎</button><button>×</button></span></div>
-      <div class="sub-item"><span class="ix">☐</span><span class="t">Uneven DO readings across the tank</span><span class="ctrl"><button>✎</button><button>×</button></span></div>
-      <div class="sub-item"><span class="ix">☐</span><span class="t">Dark or black-coloured wastewater in localized area</span><span class="ctrl"><button>✎</button><button>×</button></span></div>
-      <div class="sub-item"><span class="ix">☐</span><span class="t">Reduced treatment performance despite normal blower</span><span class="ctrl"><button>✎</button><button>×</button></span></div>
-      <button class="sub-add">＋ Add observation</button>
+      <div class="sub-item"><span class="ix">☐</span><span class="t">Sludge accumulation at the bottom of certain areas</span><span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
+      <div class="sub-item"><span class="ix">☐</span><span class="t">Uneven DO readings across the tank</span><span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
+      <div class="sub-item"><span class="ix">☐</span><span class="t">Dark or black-coloured wastewater in localized area</span><span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
+      <div class="sub-item"><span class="ix">☐</span><span class="t">Reduced treatment performance despite normal blower</span><span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
+      <button class="sub-add" onclick="addSubItem(this,&apos;observation&apos;)">＋ Add observation</button>
     </div>
 
     <label style="margin-top:22px">Outcome rule</label>
@@ -1513,7 +1530,7 @@ textarea{min-height:88px;resize:vertical}
           <span>If 1+ observations ticked</span>
           <span style="font-size:11px;color:var(--ink-3)">Route to: <b style="color:#C03737">Stop here · Diffusers choked, call supervisor</b></span>
         </span>
-        <span class="ctrl"><button>✎</button></span>
+        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button></span>
       </div>
       <div class="sub-item">
         <span class="ix s">→ N</span>
@@ -1521,7 +1538,7 @@ textarea{min-height:88px;resize:vertical}
           <span>If nothing ticked</span>
           <span style="font-size:11px;color:var(--ink-3)">Route to: <b style="color:var(--brand)">Step 4 · DO sensor failure</b></span>
         </span>
-        <span class="ctrl"><button>✎</button></span>
+        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button></span>
       </div>
     </div>
 
@@ -1530,14 +1547,14 @@ textarea{min-height:88px;resize:vertical}
       <div class="sub-item">
         <span class="ix s">S1</span>
         <span class="t">Diffusers चोक हो गए हैं — cleaning चाहिए</span>
-        <span class="ctrl"><button>✎</button><button>×</button></span>
+        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
       <div class="sub-item">
         <span class="ix s">S2</span>
         <span class="t">Supervisor को बुलाएं <span class="chip amber" style="margin-left:6px">stop here</span></span>
-        <span class="ctrl"><button>✎</button><button>×</button></span>
+        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
-      <button class="sub-add">＋ Add action</button>
+      <button class="sub-add" onclick="addSubItem(this,&apos;action&apos;)">＋ Add action</button>
     </div>
 
     <h4 style="margin:22px 0 6px;font-size:13px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--ink-3)">Properties</h4>
@@ -1827,6 +1844,149 @@ textarea{min-height:88px;resize:vertical}
   function closeDrawer(){
     document.getElementById('scrim').classList.remove('on');
     document.getElementById('drawer').classList.remove('on');
+    // commit any in-progress edits
+    document.querySelectorAll('.sub-item [contenteditable="true"]').forEach(el => {
+      el.removeAttribute('contenteditable');
+      el.classList.remove('editing');
+    });
+    document.querySelectorAll('.sub-item .ed.active').forEach(b => { b.classList.remove('active'); b.textContent = '✎'; });
+  }
+
+  // ===== Edit / remove / add sub-items (answer options + check rows) =====
+  function _findEditTarget(item){
+    const t = item.querySelector('.t');
+    if (!t) return null;
+    // If .t has child spans (multi-line layout), edit the FIRST inner span only
+    const firstSpan = t.querySelector(':scope > span');
+    return firstSpan || t;
+  }
+  function editSubItem(btn, evt){
+    if (evt) evt.stopPropagation();
+    const item = btn.closest('.sub-item');
+    if (!item) return;
+    const target = _findEditTarget(item);
+    if (!target) return;
+    const editing = target.getAttribute('contenteditable') === 'true';
+    if (editing){
+      target.removeAttribute('contenteditable');
+      target.classList.remove('editing');
+      item.classList.remove('editing');
+      btn.classList.remove('active');
+      btn.textContent = '✎';
+      markSaved();
+      return;
+    }
+    // close any other in-progress edits in this list
+    const list = item.closest('.sub-list');
+    if (list){
+      list.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.removeAttribute('contenteditable');
+        el.classList.remove('editing');
+      });
+      list.querySelectorAll('.ed.active').forEach(b => { b.classList.remove('active'); b.textContent = '✎'; });
+    }
+    target.setAttribute('contenteditable', 'true');
+    target.classList.add('editing');
+    item.classList.add('editing');
+    btn.classList.add('active');
+    btn.textContent = '✓';
+    target.focus();
+    const range = document.createRange();
+    range.selectNodeContents(target);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    const keyHandler = (e) => {
+      if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); target.blur(); }
+      else if (e.key === 'Escape'){ e.preventDefault(); target.blur(); }
+    };
+    const blurHandler = () => {
+      target.removeAttribute('contenteditable');
+      target.classList.remove('editing');
+      item.classList.remove('editing');
+      btn.classList.remove('active');
+      btn.textContent = '✎';
+      target.removeEventListener('keydown', keyHandler);
+      markSaved();
+    };
+    target.addEventListener('keydown', keyHandler);
+    target.addEventListener('blur', blurHandler, { once: true });
+  }
+  function removeSubItem(btn, evt){
+    if (evt) evt.stopPropagation();
+    const item = btn.closest('.sub-item');
+    if (!item) return;
+    item.style.transition = 'opacity .15s,transform .15s';
+    item.style.opacity = '0';
+    item.style.transform = 'translateX(-12px)';
+    setTimeout(() => { item.remove(); markSaved(); }, 160);
+  }
+  function addSubItem(btn, kind){
+    if (window.event && window.event.stopPropagation) window.event.stopPropagation();
+    const list = btn.closest('.sub-list');
+    if (!list) return;
+    const items = list.querySelectorAll('.sub-item');
+    let newItem;
+
+    if (kind === 'option') {
+      const last = items[items.length - 1];
+      if (last && last.querySelector('select')) {
+        newItem = last.cloneNode(true);
+        const tspan = newItem.querySelector('.t');
+        const firstSpan = tspan && tspan.querySelector(':scope > span');
+        if (firstSpan) firstSpan.textContent = 'New option';
+        const ix = newItem.querySelector('.ix'); if (ix) ix.textContent = '?';
+      } else {
+        newItem = _buildBasicSubItem('?', 'New option');
+      }
+    } else if (kind === 'check') {
+      newItem = _buildBasicSubItem(String(items.length + 1), 'New check');
+    } else if (kind === 'action') {
+      newItem = _buildBasicSubItem('S' + (items.length + 1), 'New action');
+      const ix = newItem.querySelector('.ix'); if (ix) ix.classList.add('s');
+    } else if (kind === 'observation') {
+      newItem = _buildBasicSubItem('☐', 'New observation');
+    } else {
+      newItem = _buildBasicSubItem('+', 'New item');
+    }
+
+    // Rebind cloned buttons
+    newItem.querySelectorAll('.ctrl button').forEach(b => {
+      const t = (b.textContent || '').trim();
+      if (b.classList.contains('ed') || t === '✎' || t === '✓'){
+        b.classList.add('ed'); b.textContent = '✎';
+        b.onclick = function(e){ editSubItem(this, e); };
+      } else if (b.classList.contains('del') || t === '×'){
+        b.classList.add('del');
+        b.onclick = function(e){ removeSubItem(this, e); };
+      }
+    });
+
+    newItem.style.opacity = '0';
+    newItem.style.transform = 'translateY(-6px)';
+    list.insertBefore(newItem, btn);
+    requestAnimationFrame(() => {
+      newItem.style.transition = 'opacity .2s,transform .2s';
+      newItem.style.opacity = '1';
+      newItem.style.transform = 'translateY(0)';
+    });
+    setTimeout(() => {
+      const editBtn = newItem.querySelector('.ed');
+      if (editBtn) editSubItem(editBtn);
+    }, 220);
+    markSaved();
+  }
+  function _buildBasicSubItem(ix, txt){
+    const el = document.createElement('div');
+    el.className = 'sub-item';
+    el.innerHTML =
+      '<span class="ix">' + ix + '</span>' +
+      '<span class="t">' + txt + '</span>' +
+      '<span class="ctrl">' +
+        '<button class="ed" onclick="editSubItem(this,event)">✎</button>' +
+        '<button class="del" onclick="removeSubItem(this,event)">×</button>' +
+      '</span>';
+    return el;
   }
 
   // Doherty: <400ms feedback
