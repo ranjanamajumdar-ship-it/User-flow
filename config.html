@@ -330,6 +330,55 @@ textarea{min-height:88px;resize:vertical}
   cursor:text;
   display:inline-block;min-width:200px;
 }
+
+/* Inline-editable option label + destination chip — both always editable */
+.opt-label{
+  font-size:13.5px;line-height:1.4;letter-spacing:-.01em;color:var(--ink);
+  cursor:text;outline:none;
+  padding:3px 8px;margin:-3px -8px;border-radius:7px;
+  transition:background .15s,box-shadow .15s;display:inline-block;
+  min-height:18px;min-width:120px;font-weight:600;
+}
+.opt-label:hover{background:rgba(0,41,118,.05)}
+.opt-label:focus{background:rgba(255,255,255,1);
+  box-shadow:inset 0 0 0 1.5px var(--brand),0 0 0 3px rgba(0,41,118,.15)}
+.opt-label:empty::before{content:"Type the option label…";color:var(--ink-4);font-style:italic;font-weight:400}
+
+.dest-chip{
+  display:inline-block;
+  font:600 11px 'Plus Jakarta Sans';
+  background:rgba(0,41,118,.10);
+  color:var(--brand);
+  padding:4px 11px;border-radius:999px;
+  border:1px solid rgba(0,41,118,.18);
+  cursor:text;outline:none;letter-spacing:-.01em;
+  transition:.15s;
+  min-width:120px;max-width:380px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+  vertical-align:middle;
+}
+.dest-chip:hover{background:rgba(0,41,118,.15)}
+.dest-chip:focus{background:rgba(255,255,255,1);
+  border-color:var(--brand);border-width:1.5px;
+  box-shadow:0 0 0 3px rgba(0,41,118,.18),inset 0 1px 0 rgba(255,255,255,.7);
+  padding:3.5px 10.5px}
+.dest-chip:empty::before{content:"Where does this go?";color:var(--ink-4);font-style:italic;font-weight:500}
+.dest-chip.stop{background:rgba(214,69,69,.10);color:#C03737;border-color:rgba(214,69,69,.20)}
+.dest-chip.stop:hover{background:rgba(214,69,69,.18)}
+.dest-chip.stop:focus{border-color:#C03737;box-shadow:0 0 0 3px rgba(214,69,69,.18)}
+.dest-chip.next{background:rgba(31,157,85,.12);color:#157A40;border-color:rgba(31,157,85,.22)}
+.dest-chip.next:hover{background:rgba(31,157,85,.20)}
+.dest-chip.next:focus{border-color:#157A40;box-shadow:0 0 0 3px rgba(31,157,85,.18)}
+
+.opt-row{display:flex;flex-direction:column;gap:8px;align-items:flex-start;min-width:0;flex:1}
+.opt-route-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3);flex-wrap:wrap}
+.opt-route-row .ar{font-weight:700;color:var(--ink-3);font-size:12px}
+.opt-route-style{display:inline-flex;gap:3px;align-items:center;margin-left:4px}
+.opt-route-style button{background:transparent;border:1px solid var(--line);padding:2px 7px;font:700 9px 'JetBrains Mono';letter-spacing:.3px;border-radius:999px;cursor:pointer;color:var(--ink-3);transition:.12s}
+.opt-route-style button:hover{background:rgba(255,255,255,.85);color:var(--ink-2)}
+.opt-route-style button.on[data-style="brand"]{background:var(--brand);color:#fff;border-color:transparent}
+.opt-route-style button.on[data-style="next"]{background:#157A40;color:#fff;border-color:transparent}
+.opt-route-style button.on[data-style="stop"]{background:#C03737;color:#fff;border-color:transparent}
 .sub-item.editing{background:rgba(255,255,255,.85)!important}
 .sub-item .ctrl button.active{background:var(--brand);color:#fff;border-color:transparent;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 4px 10px -2px rgba(0,41,118,.35)}
@@ -1761,42 +1810,61 @@ textarea{min-height:88px;resize:vertical}
     <label style="margin-top:12px">Description for operator (optional)</label>
     <input type="text" id="drQDesc" value="Walk the tank perimeter and observe bubble distribution at the surface" oninput="markSaved()"/>
 
-    <label style="margin-top:18px">Answer options &amp; routes <span style="font-weight:500;color:var(--ink-3);text-transform:none;letter-spacing:0">— each option's destination step</span></label>
+    <label style="margin-top:18px">Answer options &amp; routes <span style="font-weight:500;color:var(--ink-3);text-transform:none;letter-spacing:0">— click any text to edit. Add as many options as you need.</span></label>
     <div class="sub-list">
-      <div class="sub-item">
-        <span class="ix">Y</span>
-        <span class="t" style="display:flex;flex-direction:column;gap:4px">
-          <span>Yes, bubbles seem normal on the surface</span>
-          <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3)">
-            <span>→</span>
-            <select style="padding:5px 28px 5px 10px;font-size:11px;width:auto"><option>Step 4 · DO sensor failure</option><option>End: passed check</option><option>Stop here</option></select>
+
+      <div class="sub-item opt-item">
+        <span class="ix" contenteditable="true">Y</span>
+        <span class="t opt-row">
+          <span class="opt-label" contenteditable="true">Yes, bubbles seem normal on the surface</span>
+          <span class="opt-route-row">
+            <span class="ar">→ Goes to</span>
+            <span class="dest-chip next" contenteditable="true">Step 4 · DO sensor failure</span>
+            <span class="opt-route-style">
+              <button data-style="brand" onclick="setDestStyle(this,'brand')">Step</button>
+              <button data-style="next" class="on" onclick="setDestStyle(this,'next')">Next</button>
+              <button data-style="stop" onclick="setDestStyle(this,'stop')">Stop</button>
+            </span>
           </span>
         </span>
-        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
-      <div class="sub-item">
-        <span class="ix">~</span>
-        <span class="t" style="display:flex;flex-direction:column;gap:4px">
-          <span>Moderately, some bubbles are there</span>
-          <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3)">
-            <span>→</span>
-            <select style="padding:5px 28px 5px 10px;font-size:11px;width:auto"><option>Continue to Check 2 (below)</option><option>Step 4 · DO sensor failure</option></select>
+
+      <div class="sub-item opt-item">
+        <span class="ix" contenteditable="true">~</span>
+        <span class="t opt-row">
+          <span class="opt-label" contenteditable="true">Moderately, some bubbles are there</span>
+          <span class="opt-route-row">
+            <span class="ar">→ Goes to</span>
+            <span class="dest-chip" contenteditable="true">Continue to Check 2 (below)</span>
+            <span class="opt-route-style">
+              <button data-style="brand" class="on" onclick="setDestStyle(this,'brand')">Step</button>
+              <button data-style="next" onclick="setDestStyle(this,'next')">Next</button>
+              <button data-style="stop" onclick="setDestStyle(this,'stop')">Stop</button>
+            </span>
           </span>
         </span>
-        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
-      <div class="sub-item">
-        <span class="ix">N</span>
-        <span class="t" style="display:flex;flex-direction:column;gap:4px">
-          <span>No, there are no bubbles on the tank</span>
-          <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3)">
-            <span>→</span>
-            <select style="padding:5px 28px 5px 10px;font-size:11px;width:auto"><option>Continue to Check 2 (below)</option><option>Stop here · diffusers choked</option></select>
+
+      <div class="sub-item opt-item">
+        <span class="ix" contenteditable="true">N</span>
+        <span class="t opt-row">
+          <span class="opt-label" contenteditable="true">No, there are no bubbles on the tank</span>
+          <span class="opt-route-row">
+            <span class="ar">→ Goes to</span>
+            <span class="dest-chip stop" contenteditable="true">Stop here · diffusers choked</span>
+            <span class="opt-route-style">
+              <button data-style="brand" onclick="setDestStyle(this,'brand')">Step</button>
+              <button data-style="next" onclick="setDestStyle(this,'next')">Next</button>
+              <button data-style="stop" class="on" onclick="setDestStyle(this,'stop')">Stop</button>
+            </span>
           </span>
         </span>
-        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
-      <button class="sub-add" onclick="addSubItem(this,&apos;option&apos;)">＋ Add option</button>
+
+      <button class="sub-add" onclick="addOptionRow(this)">＋ Add option</button>
     </div>
 
     <label style="margin-top:22px">Check 2 · Tick any that apply (multi-select)</label>
@@ -1808,24 +1876,44 @@ textarea{min-height:88px;resize:vertical}
       <button class="sub-add" onclick="addSubItem(this,&apos;observation&apos;)">＋ Add observation</button>
     </div>
 
-    <label style="margin-top:22px">Outcome rule</label>
+    <label style="margin-top:22px">Outcome rule <span style="font-weight:500;color:var(--ink-3);text-transform:none;letter-spacing:0">— maps multi-select result to a final route. Both fields editable.</span></label>
     <div class="sub-list">
-      <div class="sub-item">
-        <span class="ix s">→ Y</span>
-        <span class="t" style="display:flex;flex-direction:column;gap:4px">
-          <span>If 1+ observations ticked</span>
-          <span style="font-size:11px;color:var(--ink-3)">Route to: <b style="color:#C03737">Stop here · Diffusers choked, call supervisor</b></span>
+
+      <div class="sub-item opt-item">
+        <span class="ix" contenteditable="true">→ Y</span>
+        <span class="t opt-row">
+          <span class="opt-label" contenteditable="true">If 1 or more observations ticked</span>
+          <span class="opt-route-row">
+            <span class="ar">→ Goes to</span>
+            <span class="dest-chip stop" contenteditable="true">Stop here · Diffusers choked, call supervisor</span>
+            <span class="opt-route-style">
+              <button data-style="brand" onclick="setDestStyle(this,'brand')">Step</button>
+              <button data-style="next" onclick="setDestStyle(this,'next')">Next</button>
+              <button data-style="stop" class="on" onclick="setDestStyle(this,'stop')">Stop</button>
+            </span>
+          </span>
         </span>
-        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button></span>
+        <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
-      <div class="sub-item">
-        <span class="ix s">→ N</span>
-        <span class="t" style="display:flex;flex-direction:column;gap:4px">
-          <span>If nothing ticked</span>
-          <span style="font-size:11px;color:var(--ink-3)">Route to: <b style="color:var(--brand)">Step 4 · DO sensor failure</b></span>
+
+      <div class="sub-item opt-item">
+        <span class="ix" contenteditable="true">→ N</span>
+        <span class="t opt-row">
+          <span class="opt-label" contenteditable="true">If nothing ticked</span>
+          <span class="opt-route-row">
+            <span class="ar">→ Goes to</span>
+            <span class="dest-chip" contenteditable="true">Step 4 · DO sensor failure</span>
+            <span class="opt-route-style">
+              <button data-style="brand" class="on" onclick="setDestStyle(this,'brand')">Step</button>
+              <button data-style="next" onclick="setDestStyle(this,'next')">Next</button>
+              <button data-style="stop" onclick="setDestStyle(this,'stop')">Stop</button>
+            </span>
+          </span>
         </span>
-        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button></span>
+        <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
       </div>
+
+      <button class="sub-add" onclick="addOptionRow(this)">＋ Add outcome rule</button>
     </div>
 
     <label style="margin-top:18px">Solution · actions</label>
@@ -2317,6 +2405,93 @@ textarea{min-height:88px;resize:vertical}
       '</span>';
     return el;
   }
+
+  // ===== Freeform option rows (label + destination both contenteditable) =====
+  function addOptionRow(btn){
+    if (window.event && window.event.stopPropagation) window.event.stopPropagation();
+    const list = btn.closest('.sub-list');
+    if (!list) return;
+    const existing = list.querySelectorAll('.sub-item').length;
+    const pillChars = ['?', 'A', 'B', 'C', 'D', 'E'];
+    const pillIx = pillChars[Math.min(existing, pillChars.length - 1)];
+
+    const el = document.createElement('div');
+    el.className = 'sub-item opt-item';
+    el.innerHTML =
+      '<span class="ix" contenteditable="true">' + pillIx + '</span>' +
+      '<span class="t opt-row">' +
+        '<span class="opt-label" contenteditable="true"></span>' +
+        '<span class="opt-route-row">' +
+          '<span class="ar">→ Goes to</span>' +
+          '<span class="dest-chip" contenteditable="true"></span>' +
+          '<span class="opt-route-style">' +
+            '<button data-style="brand" class="on" onclick="setDestStyle(this,&quot;brand&quot;)">Step</button>' +
+            '<button data-style="next" onclick="setDestStyle(this,&quot;next&quot;)">Next</button>' +
+            '<button data-style="stop" onclick="setDestStyle(this,&quot;stop&quot;)">Stop</button>' +
+          '</span>' +
+        '</span>' +
+      '</span>' +
+      '<span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>';
+
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-6px)';
+    list.insertBefore(el, btn);
+    requestAnimationFrame(() => {
+      el.style.transition = 'opacity .2s,transform .2s';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    });
+
+    // Focus the new label so user can start typing immediately
+    setTimeout(() => {
+      const lbl = el.querySelector('.opt-label');
+      if (lbl) lbl.focus();
+    }, 220);
+    markSaved();
+  }
+
+  // Switch the destination chip's colour role (Step / Next / Stop)
+  function setDestStyle(btn, style){
+    if (window.event && window.event.stopPropagation) window.event.stopPropagation();
+    const item = btn.closest('.sub-item');
+    if (!item) return;
+    item.querySelectorAll('.opt-route-style button').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const chip = item.querySelector('.dest-chip');
+    if (chip) {
+      chip.classList.remove('next', 'stop');
+      if (style === 'next') chip.classList.add('next');
+      else if (style === 'stop') chip.classList.add('stop');
+      // 'brand' = default (no class)
+    }
+    markSaved();
+  }
+
+  // Global Enter-to-blur for the contenteditable option spans
+  // (so typing Enter saves rather than inserting a newline)
+  document.addEventListener('keydown', function(e){
+    const t = e.target;
+    if (!t || !t.matches) return;
+    if (t.matches('.opt-label, .dest-chip, .sub-item .ix[contenteditable="true"]')){
+      if (e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        t.blur();
+      }
+      if (e.key === 'Escape'){
+        e.preventDefault();
+        t.blur();
+      }
+    }
+  }, true);
+
+  // Mark saved whenever a freeform field changes
+  document.addEventListener('input', function(e){
+    const t = e.target;
+    if (!t || !t.matches) return;
+    if (t.matches('.opt-label, .dest-chip, .sub-item .ix[contenteditable="true"]')){
+      markSaved();
+    }
+  }, true);
 
   // Doherty: <400ms feedback
   let saveTimer;
