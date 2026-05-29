@@ -518,7 +518,7 @@ textarea{min-height:80px;resize:vertical}
               <span class="chip">❓ Yes/No</span>
               <span class="chip">2 checks</span>
               <span class="chip green">1 action</span>
-              <span class="chip">Beginner</span>
+              <span class="chip">👤 Operator</span>
             </div>
             <span class="fk">STEP_Q</span>
           </div>
@@ -537,6 +537,7 @@ textarea{min-height:80px;resize:vertical}
               <span class="chip">❓ Yes/No</span>
               <span class="chip">1 check</span>
               <span class="chip green">2 actions</span>
+              <span class="chip">🔧 Mechanical</span>
               <span class="chip amber">Stop here</span>
             </div>
             <span class="fk">STEP_Q</span>
@@ -556,6 +557,7 @@ textarea{min-height:80px;resize:vertical}
               <span class="chip">❓ Yes/No</span>
               <span class="chip">2 checks</span>
               <span class="chip green">2 actions</span>
+              <span class="chip">👤 Operator</span>
               <span class="chip amber">📷 Photo required</span>
             </div>
             <span class="fk">STEP_Q</span>
@@ -575,7 +577,7 @@ textarea{min-height:80px;resize:vertical}
               <span class="chip">❓ Yes/No</span>
               <span class="chip">2 checks</span>
               <span class="chip green">3 actions</span>
-              <span class="chip">Intermediate</span>
+              <span class="chip">⚡ Electrical / Instr.</span>
             </div>
             <span class="fk">STEP_Q</span>
           </div>
@@ -594,7 +596,7 @@ textarea{min-height:80px;resize:vertical}
               <span class="chip">📋 Manual</span>
               <span class="chip">3 checks</span>
               <span class="chip green">1 action</span>
-              <span class="chip">Intermediate</span>
+              <span class="chip">🧪 Process / Lab</span>
             </div>
             <span class="fk">STEP_MANUAL</span>
           </div>
@@ -613,6 +615,7 @@ textarea{min-height:80px;resize:vertical}
               <span class="chip">❓ Yes/No</span>
               <span class="chip">4 checks</span>
               <span class="chip green">1 action</span>
+              <span class="chip">🧪 Process / Lab</span>
               <span class="chip red">SME approval</span>
             </div>
             <span class="fk">STEP_Q</span>
@@ -692,8 +695,8 @@ textarea{min-height:80px;resize:vertical}
           <div class="sub">All on-shift operators</div>
         </button>
         <button class="rcard" onclick="pick(this,'pub')">
-          <div class="ttl">Beta cohort</div>
-          <div class="sub">Dheeraj, Anil only</div>
+          <div class="ttl">Pilot group</div>
+          <div class="sub">Dheeraj, Anil only — try it on 2 operators first</div>
         </button>
         <button class="rcard" onclick="pick(this,'pub')">
           <div class="ttl">Scheduled</div>
@@ -777,12 +780,14 @@ textarea{min-height:80px;resize:vertical}
       <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
     </div>
 
-    <label style="margin-top:18px">Minimum skill tier</label>
+    <label style="margin-top:18px">Skill type</label>
     <select onchange="markSaved()">
-      <option>Beginner (default — all operators)</option>
-      <option>Intermediate</option>
-      <option>Advanced</option>
+      <option>General Operator (anyone on shift)</option>
+      <option>Mechanical (filter, pump, diffuser work)</option>
+      <option>Electrical / Instrumentation (sensors, VFD, calibration)</option>
+      <option>Process / Lab (MLSS, SV-30, COD, biology)</option>
     </select>
+    <div class="help">Who is allowed to do this step. If the on-shift person doesn't match, the step auto-routes to someone who does.</div>
   </div>
   <div class="dr-foot">
     <button class="btn ghost" onclick="closeDrawer()">Cancel</button>
@@ -827,11 +832,11 @@ textarea{min-height:80px;resize:vertical}
 
   // ===== Figma-like canvas helpers =====
   const STEP_TEMPLATES = {
-    question: { ttl: "New question · edit me", chips:['❓ Yes/No','0 checks','0 actions','Beginner'], kind:'STEP_Q' },
-    sensor:   { ttl: "Read sensor value",       chips:['📡 Auto-read','5s timer','Beginner'],         kind:'STEP_SENSOR' },
-    manual:   { ttl: "Manual reading from operator", chips:['📋 Manual','Numeric input','Beginner'], kind:'STEP_MANUAL' },
-    action:   { ttl: "Action / fix to perform", chips:['🛠 Action','green tick'],                   kind:'STEP_ACTION' },
-    photo:    { ttl: "Capture a photo",          chips:['📷 Photo','Hard block'],                    kind:'STEP_PHOTO' },
+    question: { ttl: "New question · edit me", chips:['❓ Yes/No','0 checks','0 actions','👤 Operator'], kind:'STEP_Q' },
+    sensor:   { ttl: "Read sensor value",       chips:['📡 Auto-read','5s timer','👤 Operator'],         kind:'STEP_SENSOR' },
+    manual:   { ttl: "Manual reading from operator", chips:['📋 Manual','Numeric input','🧪 Process / Lab'], kind:'STEP_MANUAL' },
+    action:   { ttl: "Action / fix to perform", chips:['🛠 Action','🔧 Mechanical'],                kind:'STEP_ACTION' },
+    photo:    { ttl: "Capture a photo",          chips:['📷 Photo','Hard block','👤 Operator'],     kind:'STEP_PHOTO' },
     branch:   { ttl: "Decision · Yes / No split", chips:['⤴ Branch','2 paths'],                     kind:'STEP_BRANCH' },
     stop:     { ttl: "Stop here · escalate",    chips:['⏹ Stop','📞 Supervisor'],                   kind:'STEP_STOP' },
   };
