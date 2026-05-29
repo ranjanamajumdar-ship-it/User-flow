@@ -504,6 +504,52 @@ textarea{min-height:88px;resize:vertical}
 }
 .fnode-add:hover{background:rgba(255,255,255,.75);border-style:solid;transform:translateY(-1px)}
 
+/* ===== Multi-choice / branching cards ===== */
+.fopt-row{display:flex;flex-direction:column;gap:6px;margin:10px 0 4px;padding:10px 12px;
+  background:rgba(255,255,255,.45);border:1px dashed var(--line-2);border-radius:12px}
+.fopt-row .lbl{font:700 9px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.6px;margin-bottom:2px;text-transform:uppercase}
+.fopt{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(255,255,255,.75);
+  border:1px solid var(--line);border-radius:10px;font-size:12px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+.fopt .ok{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:6px;
+  font:700 9px 'JetBrains Mono';letter-spacing:.3px;
+  flex-shrink:0
+}
+.fopt .ok.y{background:linear-gradient(145deg,#DCF1E6,#B7E1C9);color:#157A40}
+.fopt .ok.n{background:linear-gradient(145deg,#FBE0E0,#F5C2C2);color:#C03737}
+.fopt .ok.m{background:linear-gradient(145deg,#FCEDD3,#F5D89C);color:#A56610}
+.fopt .ok.x{background:linear-gradient(145deg,#EFEFF2,#D8DAE2);color:var(--ink-2)}
+.fopt .ftxt{flex:1;color:var(--ink);font-weight:600;letter-spacing:-.01em}
+.fopt .arr{color:var(--ink-3);font-size:13px}
+.fopt .dest{
+  font:600 11px 'Plus Jakarta Sans';
+  background:rgba(0,41,118,.10);
+  color:var(--brand);
+  padding:3px 9px;border-radius:999px;
+  border:1px solid rgba(0,41,118,.16);
+  letter-spacing:-.01em;
+}
+.fopt .dest.stop{background:rgba(214,69,69,.12);color:#C03737;border-color:rgba(214,69,69,.20)}
+.fopt .dest.next{background:rgba(31,157,85,.12);color:#157A40;border-color:rgba(31,157,85,.20)}
+
+/* MC banner on fnode */
+.fnode .mctag{display:inline-flex;align-items:center;gap:4px;font:700 9px 'JetBrains Mono';color:#6B36B5;
+  background:linear-gradient(145deg,#ECDFFB,#D6BFF5);padding:3px 8px;border-radius:999px;
+  letter-spacing:.4px;margin-left:6px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+
+/* Branching info banner */
+.branch-tip{display:flex;align-items:flex-start;gap:12px;background:rgba(236,223,251,.5);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border:1px solid rgba(107,54,181,.20);border-radius:14px;padding:12px 14px;margin-bottom:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.branch-tip .bicon{width:28px;height:28px;border-radius:9px;
+  background:linear-gradient(145deg,#ECDFFB,#D6BFF5);color:#6B36B5;font-weight:700;
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 4px rgba(107,54,181,.2)}
+
 /* Mini-map */
 .minimap{
   position:absolute;right:16px;bottom:16px;width:130px;height:80px;
@@ -882,6 +928,11 @@ textarea{min-height:88px;resize:vertical}
       <div>Tap a step type on the left to add it to the canvas, or hover between cards to insert one in the middle. Tap any card to edit its question, checks &amp; actions.</div>
     </div>
 
+    <div class="branch-tip">
+      <div class="bicon">🌿</div>
+      <div><b style="color:var(--ink)">Multi-choice support</b> — questions can now branch (High / Low / Normal · Yes / Moderately / No). Each option routes to its own next step or outcome. See Step 2 &amp; Step 3 below.</div>
+    </div>
+
     <div class="builder">
 
       <!-- ===== Palette ===== -->
@@ -890,7 +941,15 @@ textarea{min-height:88px;resize:vertical}
 
         <button class="ptile" onclick="addStep('question')">
           <div class="pico q">❓</div>
-          <div class="ptxt"><div class="pt">Yes / No question</div><div class="ps">Ask operator a question</div></div>
+          <div class="ptxt"><div class="pt">Yes / No question</div><div class="ps">Two-way · simplest split</div></div>
+        </button>
+        <button class="ptile" onclick="addStep('multichoice')">
+          <div class="pico b">🌿</div>
+          <div class="ptxt"><div class="pt">Multi-choice question</div><div class="ps">3–5 options · branch each way</div></div>
+        </button>
+        <button class="ptile" onclick="addStep('multiselect')">
+          <div class="pico s">☑</div>
+          <div class="ptxt"><div class="pt">Multi-select check</div><div class="ps">Tick any that apply</div></div>
         </button>
         <button class="ptile" onclick="addStep('sensor')">
           <div class="pico r">📡</div>
@@ -951,7 +1010,7 @@ textarea{min-height:88px;resize:vertical}
           </div>
           <div class="insert"><button class="ins-btn" onclick="insertAt(0)">+</button></div>
 
-          <!-- Step 2 -->
+          <!-- Step 2 · Flow 1: Blower performance (multi-choice + nested Y/N) -->
           <div class="fnode" onclick="openDrawer(2);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn">2</div>
@@ -959,19 +1018,26 @@ textarea{min-height:88px;resize:vertical}
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="ft">Blower का प्रदर्शन सही है?</div>
+            <div class="ft">Check blower header pressure and flow <span class="mctag">🌿 BRANCHES 3</span></div>
+            <div style="font-size:12.5px;color:var(--ink-3);margin-top:2px">Sub-question: <i>How is the pressure?</i></div>
+            <div class="fopt-row">
+              <div class="lbl">Answer routes</div>
+              <div class="fopt"><span class="ok m">HI</span><span class="ftxt">Is it High?</span><span class="arr">→</span><span class="dest">Ask: Is &gt; design? (Y/N)</span></div>
+              <div class="fopt"><span class="ok n">LO</span><span class="ftxt">Is it Low?</span><span class="arr">→</span><span class="dest">Ask: Is &lt; design? (Y/N)</span></div>
+              <div class="fopt"><span class="ok y">OK</span><span class="ftxt">Is it Normal?</span><span class="arr">→</span><span class="dest next">→ Step 3</span></div>
+            </div>
             <div class="fs">
-              <span class="chip">❓ Yes/No</span>
-              <span class="chip">1 check</span>
+              <span class="chip">🌿 Multi-choice</span>
+              <span class="chip">3 outcomes</span>
               <span class="chip green">2 actions</span>
               <span class="chip">🔧 Mechanical</span>
-              <span class="chip amber">Stop here</span>
+              <span class="chip amber">📞 Maintenance fallback</span>
             </div>
-            <span class="fk">STEP_Q</span>
+            <span class="fk">STEP_MC</span>
           </div>
           <div class="insert"><button class="ins-btn" onclick="insertAt(1)">+</button></div>
 
-          <!-- Step 3 -->
+          <!-- Step 3 · Flow 2: Aeration distribution (multi-choice + multi-select) -->
           <div class="fnode selected" onclick="openDrawer(3);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn">3</div>
@@ -979,15 +1045,38 @@ textarea{min-height:88px;resize:vertical}
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="ft">टैंक में bubbling बराबर है?</div>
+            <div class="ft">1 · Check if aeration is equally happening across the tank <span class="mctag">🌿 BRANCHES 3</span></div>
+            <div class="fopt-row">
+              <div class="lbl">Answer routes</div>
+              <div class="fopt"><span class="ok y">Y</span><span class="ftxt">Yes, bubbles seem normal on the surface</span><span class="arr">→</span><span class="dest next">→ Step 4 · DO sensor</span></div>
+              <div class="fopt"><span class="ok m">~</span><span class="ftxt">Moderately, some bubbles are there</span><span class="arr">→</span><span class="dest">→ Check 2 (below)</span></div>
+              <div class="fopt"><span class="ok n">N</span><span class="ftxt">No, there are no bubbles on the tank</span><span class="arr">→</span><span class="dest">→ Check 2 (below)</span></div>
+            </div>
+
+            <div class="ft" style="margin-top:14px">2 · Check if dead zones are created <span class="mctag" style="background:linear-gradient(145deg,#DCF1E6,#B7E1C9);color:#157A40">☑ MULTI-SELECT</span></div>
+            <div class="fopt-row">
+              <div class="lbl">Tick any that apply</div>
+              <div class="fopt"><span class="ok x">☐</span><span class="ftxt">Sludge accumulation at the bottom of certain areas</span></div>
+              <div class="fopt"><span class="ok x">☐</span><span class="ftxt">Uneven dissolved oxygen (DO) readings across the tank</span></div>
+              <div class="fopt"><span class="ok x">☐</span><span class="ftxt">Dark or black-colored wastewater in localized area</span></div>
+              <div class="fopt"><span class="ok x">☐</span><span class="ftxt">Reduced treatment performance despite normal blower</span></div>
+            </div>
+
+            <div class="fopt-row" style="border-style:solid;background:rgba(229,235,245,.5);border-color:rgba(0,41,118,.18)">
+              <div class="lbl" style="color:var(--brand)">Outcome routes</div>
+              <div class="fopt"><span class="ok y">Y</span><span class="ftxt">Any boxes ticked → confirms dead zones</span><span class="arr">→</span><span class="dest stop">⏹ Diffusers choked · call supervisor (Stop here)</span></div>
+              <div class="fopt"><span class="ok n">N</span><span class="ftxt">Nothing ticked → not a distribution issue</span><span class="arr">→</span><span class="dest next">→ Step 4 · DO sensor failure</span></div>
+            </div>
+
             <div class="fs">
-              <span class="chip">❓ Yes/No</span>
+              <span class="chip">🌿 Branching tree</span>
               <span class="chip">2 checks</span>
-              <span class="chip green">2 actions</span>
+              <span class="chip">7 sub-options</span>
               <span class="chip">👤 Operator</span>
               <span class="chip amber">📷 Photo required</span>
+              <span class="chip red">⏹ Stop here</span>
             </div>
-            <span class="fk">STEP_Q</span>
+            <span class="fk">STEP_MC + STEP_MS</span>
           </div>
           <div class="insert"><button class="ins-btn" onclick="insertAt(2)">+</button></div>
 
@@ -1094,6 +1183,8 @@ textarea{min-height:88px;resize:vertical}
       <div class="head"><h4>Steps</h4><button class="edit-link" onclick="goStep(3)">Edit</button></div>
       <div class="kv">
         <span class="k">Total</span><span>6 steps</span>
+        <span class="k">Branching</span><span>2 steps (multi-choice) · 1 step (multi-select)</span>
+        <span class="k">Total routes</span><span>11 outcome paths (3 + 3 + 2 outcome + 2 + 1)</span>
         <span class="k">Stop-here</span><span>3 (steps 2, 3, 4)</span>
         <span class="k">Photo hard-block</span><span>1 (step 3)</span>
         <span class="k">SME approval</span><span>1 (step 6)</span>
@@ -1347,30 +1438,91 @@ textarea{min-height:88px;resize:vertical}
 <div class="scrim" id="scrim" onclick="closeDrawer()"></div>
 <aside class="drawer" id="drawer">
   <div class="dr-head">
-    <h3 id="drTitle">Step 3 · Even bubbling check</h3>
+    <h3 id="drTitle">Step 3 · Aeration distribution <span class="mctag" style="font-size:9px">🌿 BRANCHING</span></h3>
     <button class="x" onclick="closeDrawer()">✕</button>
   </div>
   <div class="dr-body">
 
-    <label>Question · Hindi</label>
-    <input type="text" id="drQHi" value="टैंक में bubbling बराबर है?"/>
+    <label>Question type</label>
+    <select onchange="markSaved()">
+      <option>🌿 Multi-choice + Multi-select (current)</option>
+      <option>❓ Yes / No question</option>
+      <option>☑ Multi-select check only</option>
+      <option>📡 Sensor reading (auto)</option>
+      <option>📋 Manual reading (numeric)</option>
+    </select>
 
-    <label style="margin-top:12px">Question · English helper</label>
-    <input type="text" id="drQEn" value="Is aeration equally happening across the tank?"/>
+    <label style="margin-top:14px">Primary question · Hindi</label>
+    <input type="text" id="drQHi" value="क्या पूरे tank में बराबर bubbling हो रही है?"/>
 
-    <label style="margin-top:18px">How to identify · checks</label>
+    <label style="margin-top:12px">Primary question · English helper</label>
+    <input type="text" id="drQEn" value="Check if aeration is equally happening across the tank"/>
+
+    <label style="margin-top:18px">Answer options &amp; routes <span style="font-weight:500;color:var(--ink-3);text-transform:none;letter-spacing:0">— each option's destination step</span></label>
     <div class="sub-list">
       <div class="sub-item">
-        <span class="ix">A1</span>
-        <span class="t">Aeration पूरे tank में बराबर हो रही है?</span>
+        <span class="ix">Y</span>
+        <span class="t" style="display:flex;flex-direction:column;gap:4px">
+          <span>Yes, bubbles seem normal on the surface</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3)">
+            <span>→</span>
+            <select style="padding:5px 28px 5px 10px;font-size:11px;width:auto"><option>Step 4 · DO sensor failure</option><option>End: passed check</option><option>Stop here</option></select>
+          </span>
+        </span>
         <span class="ctrl"><button>✎</button><button>×</button></span>
       </div>
       <div class="sub-item">
-        <span class="ix">A2</span>
-        <span class="t">Dead / Septic zones हैं?</span>
+        <span class="ix">~</span>
+        <span class="t" style="display:flex;flex-direction:column;gap:4px">
+          <span>Moderately, some bubbles are there</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3)">
+            <span>→</span>
+            <select style="padding:5px 28px 5px 10px;font-size:11px;width:auto"><option>Continue to Check 2 (below)</option><option>Step 4 · DO sensor failure</option></select>
+          </span>
+        </span>
         <span class="ctrl"><button>✎</button><button>×</button></span>
       </div>
-      <button class="sub-add">＋ Add check</button>
+      <div class="sub-item">
+        <span class="ix">N</span>
+        <span class="t" style="display:flex;flex-direction:column;gap:4px">
+          <span>No, there are no bubbles on the tank</span>
+          <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3)">
+            <span>→</span>
+            <select style="padding:5px 28px 5px 10px;font-size:11px;width:auto"><option>Continue to Check 2 (below)</option><option>Stop here · diffusers choked</option></select>
+          </span>
+        </span>
+        <span class="ctrl"><button>✎</button><button>×</button></span>
+      </div>
+      <button class="sub-add">＋ Add option</button>
+    </div>
+
+    <label style="margin-top:22px">Check 2 · Tick any that apply (multi-select)</label>
+    <div class="sub-list">
+      <div class="sub-item"><span class="ix">☐</span><span class="t">Sludge accumulation at the bottom of certain areas</span><span class="ctrl"><button>✎</button><button>×</button></span></div>
+      <div class="sub-item"><span class="ix">☐</span><span class="t">Uneven DO readings across the tank</span><span class="ctrl"><button>✎</button><button>×</button></span></div>
+      <div class="sub-item"><span class="ix">☐</span><span class="t">Dark or black-coloured wastewater in localized area</span><span class="ctrl"><button>✎</button><button>×</button></span></div>
+      <div class="sub-item"><span class="ix">☐</span><span class="t">Reduced treatment performance despite normal blower</span><span class="ctrl"><button>✎</button><button>×</button></span></div>
+      <button class="sub-add">＋ Add observation</button>
+    </div>
+
+    <label style="margin-top:22px">Outcome rule</label>
+    <div class="sub-list">
+      <div class="sub-item">
+        <span class="ix s">→ Y</span>
+        <span class="t" style="display:flex;flex-direction:column;gap:4px">
+          <span>If 1+ observations ticked</span>
+          <span style="font-size:11px;color:var(--ink-3)">Route to: <b style="color:#C03737">Stop here · Diffusers choked, call supervisor</b></span>
+        </span>
+        <span class="ctrl"><button>✎</button></span>
+      </div>
+      <div class="sub-item">
+        <span class="ix s">→ N</span>
+        <span class="t" style="display:flex;flex-direction:column;gap:4px">
+          <span>If nothing ticked</span>
+          <span style="font-size:11px;color:var(--ink-3)">Route to: <b style="color:var(--brand)">Step 4 · DO sensor failure</b></span>
+        </span>
+        <span class="ctrl"><button>✎</button></span>
+      </div>
     </div>
 
     <label style="margin-top:18px">Solution · actions</label>
@@ -1547,13 +1699,15 @@ textarea{min-height:88px;resize:vertical}
 
   // ===== Figma-like canvas helpers =====
   const STEP_TEMPLATES = {
-    question: { ttl: "New question · edit me", chips:['❓ Yes/No','0 checks','0 actions','👤 Operator'], kind:'STEP_Q' },
-    sensor:   { ttl: "Read sensor value",       chips:['📡 Auto-read','5s timer','👤 Operator'],         kind:'STEP_SENSOR' },
-    manual:   { ttl: "Manual reading from operator", chips:['📋 Manual','Numeric input','🧪 Process / Lab'], kind:'STEP_MANUAL' },
-    action:   { ttl: "Action / fix to perform", chips:['🛠 Action','🔧 Mechanical'],                kind:'STEP_ACTION' },
-    photo:    { ttl: "Capture a photo",          chips:['📷 Photo','Hard block','👤 Operator'],     kind:'STEP_PHOTO' },
-    branch:   { ttl: "Decision · Yes / No split", chips:['⤴ Branch','2 paths'],                     kind:'STEP_BRANCH' },
-    stop:     { ttl: "Stop here · escalate",    chips:['⏹ Stop','📞 Supervisor'],                   kind:'STEP_STOP' },
+    question:    { ttl: "New question · edit me", chips:['❓ Yes/No','2 routes','👤 Operator'],          kind:'STEP_Q' },
+    multichoice: { ttl: "New multi-choice question · edit me", chips:['🌿 Multi-choice','3 routes','👤 Operator'], kind:'STEP_MC' },
+    multiselect: { ttl: "New multi-select check · edit me", chips:['☑ Multi-select','Tick any','👤 Operator'], kind:'STEP_MS' },
+    sensor:      { ttl: "Read sensor value", chips:['📡 Auto-read','5s timer','👤 Operator'],            kind:'STEP_SENSOR' },
+    manual:      { ttl: "Manual reading from operator", chips:['📋 Manual','Numeric input','🧪 Process / Lab'], kind:'STEP_MANUAL' },
+    action:      { ttl: "Action / fix to perform", chips:['🛠 Action','🔧 Mechanical'],                  kind:'STEP_ACTION' },
+    photo:       { ttl: "Capture a photo", chips:['📷 Photo','Hard block','👤 Operator'],                kind:'STEP_PHOTO' },
+    branch:      { ttl: "Decision · Yes / No split", chips:['⤴ Branch','2 paths'],                       kind:'STEP_BRANCH' },
+    stop:        { ttl: "Stop here · escalate", chips:['⏹ Stop','📞 Supervisor'],                        kind:'STEP_STOP' },
   };
 
   function buildNode(template, n) {
