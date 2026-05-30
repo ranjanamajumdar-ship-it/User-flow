@@ -1,0 +1,80 @@
+name: Deploy Pages (main + branch previews)
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+
+      - name: Checkout config-v2
+        uses: actions/checkout@v4
+        with:
+          ref: config-v2
+          path: config-v2
+        continue-on-error: true
+
+      - name: Assemble site
+        run: |
+          mkdir -p dist
+          # Root = main branch contents
+          if [ -d main ]; then
+            cp -R main/. dist/ 2>/dev/null || true
+            rm -rf dist/.git dist/.github
+          fi
+          # /config-v2/ = config-v2 branch contents
+          if [ -d config-v2 ]; then
+            mkdir -p dist/config-v2
+            cp -R config-v2/. dist/config-v2/ 2>/dev/null || true
+            rm -rf dist/config-v2/.git dist/config-v2/.github
+          fi
+          # Simple landing index for the previews dir
+          cat > dist/previews.html <<'EOF'
+          <!doctype html><meta charset=utf-8>
+          <title>Previews · User-flow</title>
+          <style>body{font:16px/1.5 system-ui;max-width:560px;margin:60px auto;padding:0 24px;color:#0E1428}
+          a{color:#002976;display:block;padding:10px 0;border-bottom:1px solid #eee;text-decoration:none}
+          a:hover{background:#f6f7fb}h1{font-size:22px;letter-spacing:-.02em}</style>
+          <h1>Previews</h1>
+          <a href="./config.html">main · config.html</a>
+          <a href="./config-v2/config.html">config-v2 · config.html</a>
+          <a href="./lifecycle.html">main · lifecycle.html</a>
+          EOF
+          ls -la dist
+          ls -la dist/config-v2 2>/dev/null || echo "no config-v2 dir"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
