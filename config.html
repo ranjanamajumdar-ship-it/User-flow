@@ -2136,16 +2136,12 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>BLOCKED inline card</b><span>Auto-shows when B is hard-gated · red banner</span></div></label>
       </div>
       <label style="margin-top:12px">CTA button label</label>
-      <input type="text" value="Take back" oninput="markSaved()"/>
-      <div class="tog" style="margin-top:10px">
-        <div class="lbl"><div class="t">Confirm before Take back</div><div class="s">"Are you sure? Nagesh has done {n} steps." — prevents accidental reclaim</div></div>
-        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
-      </div>
+      <input type="text" value="Open full issue" oninput="markSaved()"/>
       <label style="margin-top:12px">CTA opens this step</label>
       <select onchange="markSaved()">
-        <option>Reclaim issue · returns to Op A's flow at last step</option>
-        <option>Open full issue view</option>
+        <option>Open full issue view (read-only for Op A)</option>
       </select>
+      <div class="help" style="margin-top:8px">ⓘ Op A cannot reclaim the issue — once reassigned, only the new assignee or supervisor can act on it.</div>
 
       <!-- State 3 · Completion -->
       <h4 class="dr-section" style="margin-top:22px"><span class="state-pill s3">State 3</span> Completion — outcome</h4>

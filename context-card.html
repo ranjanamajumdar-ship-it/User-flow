@@ -314,14 +314,14 @@
           </div>
 
           <div class="cta-wrap">
-            <button class="cta primary danger">Take back <span class="arr">→</span></button>
+            <button class="cta primary">Open full issue <span class="arr">→</span></button>
           </div>
           <div class="footer-link"><a href="#">Open full issue</a></div>
 
         </div>
       </div>
     </div>
-    <p class="caption">B is moving. Progress bar fills, last activity timestamp updates as steps land. Root cause still <b>diagnosing</b> at this point.</p>
+    <p class="caption">B is moving. Progress bar fills, last activity timestamp updates as steps land. Root cause still <b>diagnosing</b>. Op A is monitoring only — they cannot reclaim.</p>
   </div>
 
 
@@ -379,14 +379,14 @@
           </div>
 
           <div class="cta-wrap">
-            <button class="cta primary danger">Take back <span class="arr">→</span></button>
+            <button class="cta primary">Open full issue <span class="arr">→</span></button>
           </div>
           <div class="footer-link"><a href="#">Open full issue</a></div>
 
         </div>
       </div>
     </div>
-    <p class="caption">A glance tells A everything they need: B is offline, blocked on supervisor approval, 4 min so far. This is the moment A might step in.</p>
+    <p class="caption">A glance tells A everything they need: B is offline, blocked on supervisor approval, 4 min so far. Op A sees the block but cannot reclaim — supervisor must approve.</p>
   </div>
 
 
@@ -467,8 +467,8 @@
       <b>What morphs per state</b>
       <ul>
         <li><b>State 1 (Summary)</b> — reason quote · handoff timestamp · CTA <code>View live progress</code></li>
-        <li><b>State 2 (Progress)</b> — step N/M · progress bar · current step · time on step · root-cause chip · last activity · CTA <code>Take back</code></li>
-        <li><b>State 2 BLOCKED</b> — same as Progress + inline red BLOCKED card · presence flips to offline · CTA still <code>Take back</code> but visually escalated</li>
+        <li><b>State 2 (Progress)</b> — step N/M · progress bar · current step · time on step · root-cause chip · last activity · CTA <code>Open full issue</code></li>
+        <li><b>State 2 BLOCKED</b> — same as Progress + inline red BLOCKED card · presence flips to offline · CTA <code>Open full issue</code> (Op A is monitor-only — cannot reclaim)</li>
         <li><b>State 3 (Completion)</b> — green outcome panel · root cause · total time · verification status · CTA <code>Acknowledge &amp; close</code></li>
       </ul>
     </div>
