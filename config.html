@@ -680,6 +680,20 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .palette .ptile .pico.cat-progress{background:linear-gradient(145deg,#DCE5F5,#A8B8DE);color:var(--brand)}
 .palette .ptile .pico.cat-done{background:linear-gradient(145deg,#DCF1E6,#B7E1C9);color:#0F5C2F}
 .palette .ptile .pico.cat-action{background:linear-gradient(145deg,#ECDFFB,#D6BFF5);color:#6B36B5}
+.palette .ptile .pico.cat-exception{background:linear-gradient(145deg,#FBE0DA,#F5BFB1);color:#B83A1F}
+.palette .ptile .pico.cat-card{background:linear-gradient(145deg,#ECDFFB,#D6BFF5);color:#6B36B5}
+.palette .ptile .pico.cat-normal{background:linear-gradient(145deg,#DCE5F5,#A8B8DE);color:var(--brand)}
+.palette .ptile .pico.cat-branch{background:linear-gradient(145deg,#FCEDD3,#F5D89C);color:#A06F00}
+.palette .ptile .hardblock{position:absolute;top:8px;right:8px;font-size:9px;font-weight:800;letter-spacing:.5px;color:#B83A1F;background:rgba(245,191,177,.5);padding:2px 6px;border-radius:999px;text-transform:uppercase}
+.palette .ptile{position:relative}
+.fnode .fn.cat-exception{background:linear-gradient(145deg,#E85A3A,#B83A1F)}
+.fnode .fn.cat-card{background:linear-gradient(145deg,#7C46C5,#5C2D8E)}
+.fnode .fcat.exception .ftd{background:#B83A1F}
+.fnode .fcat.card .ftd{background:#6B36B5}
+.cat-legend .cl.exception .d{background:#B83A1F}
+.cat-legend .cl.card .d{background:#6B36B5}
+.cat-legend .cl.normal .d{background:var(--brand)}
+.cat-legend .cl.branch .d{background:#E0A314}
 
 /* Category legend (top of Step 3) */
 .cat-legend{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;font-size:11px}
@@ -1213,162 +1227,110 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
     <div class="tip-row">
       <div class="tip-ico">✨</div>
-      <div>Tap a step type on the left to add it to the canvas, or hover between cards to insert one in the middle. Tap any card to edit its question, checks &amp; actions.</div>
+      <div>Drop in <b>Steps</b> (operator does the work) — completion triggers a <b>Card</b> (passive summary with one CTA). Every card&rsquo;s CTA must route to a <i>different</i> step than the one that opened it.</div>
     </div>
 
     <div class="branch-tip">
       <div class="bicon">📋</div>
-      <div><b style="color:var(--ink)">Step types use a 4-bucket workflow model</b> — like your previous app. Every step on the canvas belongs to one of: <b style="color:#A06F00">TO DO</b> (gates &amp; waits) · <b style="color:var(--brand)">IN PROGRESS</b> (operator does something) · <b style="color:#0F5C2F">DONE</b> (terminal outcomes) · <b style="color:#3F1B73">ACTIONS</b> (Process · Communication · Validate). 23 step types total in the palette.</div>
+      <div><b style="color:var(--ink)">Step taxonomy</b> — 3 step categories + 1 card category: <b style="color:var(--brand)">NORMAL</b> (just do the thing) · <b style="color:#A06F00">BRANCH</b> (choice or shortcut) · <b style="color:#B83A1F">EXCEPTION</b> (something went sideways) · <b style="color:#6B36B5">CARDS</b> (passive summary, shown after a step, one CTA). Steps are verbs; cards are receipts with one button.</div>
     </div>
 
     <div class="cat-legend">
-      <span class="cl todo"><span class="d"></span>TO DO · 4 types</span>
-      <span class="cl progress"><span class="d"></span>IN PROGRESS · 6 types</span>
-      <span class="cl done"><span class="d"></span>DONE · 3 types</span>
-      <span class="cl action"><span class="d"></span>ACTIONS · 10 types (Process · Comm · Validate)</span>
+      <span class="cl normal"><span class="d"></span>Normal · 3 steps</span>
+      <span class="cl branch"><span class="d"></span>Branch · 3 steps</span>
+      <span class="cl exception"><span class="d"></span>Exception · 3 steps</span>
+      <span class="cl card"><span class="d"></span>Cards · 4 types</span>
     </div>
 
     <div class="builder">
 
-      <!-- ===== Palette · 4-bucket model ===== -->
+      <!-- ===== Palette · Steps + Cards model ===== -->
       <div class="palette">
-        <h4>Step library</h4>
+        <h4>Step &amp; Card library</h4>
 
-        <!-- ============ IN PROGRESS ============ -->
+        <!-- ============ 🔵 NORMAL ============ -->
         <details class="pgroup progress" open>
-          <summary><span class="cat-dot"></span><span>In Progress</span><span class="cat-count">6</span><span class="chev">⌃</span></summary>
+          <summary><span class="cat-dot" style="background:var(--brand)"></span><span>Normal steps</span><span class="cat-count">3</span><span class="chev">⌃</span></summary>
           <div class="ptiles">
-            <button class="ptile" onclick="addStep('question')">
-              <div class="pico cat-progress">❓</div>
-              <div class="ptxt"><div class="pt">Yes / No question</div><div class="ps">Two-way split</div></div>
+            <button class="ptile" onclick="addStep('action')">
+              <div class="pico cat-normal">🛠</div>
+              <div class="ptxt"><div class="pt">Action card</div><div class="ps">Single instruction · e.g. open valve, restart pump</div></div>
             </button>
-            <button class="ptile" onclick="addStep('multichoice')">
-              <div class="pico cat-progress">🌿</div>
-              <div class="ptxt"><div class="pt">Multi-choice</div><div class="ps">3–5 branching options</div></div>
+            <button class="ptile" onclick="addStep('rcselect')">
+              <div class="pico cat-normal">🌳</div>
+              <div class="ptxt"><div class="pt">Root cause selector</div><div class="ps">Radio list · icon + one-line description</div></div>
             </button>
-            <button class="ptile" onclick="addStep('multiselect')">
-              <div class="pico cat-progress">☑</div>
-              <div class="ptxt"><div class="pt">Multi-select check</div><div class="ps">Tick any that apply</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('sensor')">
-              <div class="pico cat-progress">📡</div>
-              <div class="ptxt"><div class="pt">Sensor reading</div><div class="ps">Auto-read + 5s timer</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('manual')">
-              <div class="pico cat-progress">📋</div>
-              <div class="ptxt"><div class="pt">Manual reading</div><div class="ps">Operator types value</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('branch')">
-              <div class="pico cat-progress">⤴</div>
-              <div class="ptxt"><div class="pt">Decision branch</div><div class="ps">Pure logic split</div></div>
+            <button class="ptile" onclick="addStep('taskdone')">
+              <div class="pico cat-normal">✓</div>
+              <div class="ptxt"><div class="pt">Task accomplished</div><div class="ps">Confirmation / stage complete</div></div>
             </button>
           </div>
         </details>
 
-        <!-- ============ TO DO ============ -->
+        <!-- ============ 🟡 BRANCH ============ -->
         <details class="pgroup todo">
-          <summary><span class="cat-dot"></span><span>To Do</span><span class="cat-count">4</span><span class="chev">⌃</span></summary>
+          <summary><span class="cat-dot" style="background:#E0A314"></span><span>Branch (choice / shortcut)</span><span class="cat-count">3</span><span class="chev">⌃</span></summary>
           <div class="ptiles">
-            <button class="ptile" onclick="addStep('wait')">
-              <div class="pico cat-todo">⏱</div>
-              <div class="ptxt"><div class="pt">Scheduled wait</div><div class="ps">Wait N min / hr</div></div>
+            <button class="ptile" onclick="addStep('skipknow')">
+              <div class="pico cat-branch">⤴</div>
+              <div class="ptxt"><div class="pt">Skip ahead — I know the cause</div><div class="ps">Jump from Intake to Root Cause</div></div>
             </button>
-            <button class="ptile" onclick="addStep('pendapproval')">
-              <div class="pico cat-todo">⏸</div>
-              <div class="ptxt"><div class="pt">Pending approval</div><div class="ps">Block until supervisor ✓</div></div>
+            <button class="ptile" onclick="addStep('skipfalse')">
+              <div class="pico cat-branch">⏭</div>
+              <div class="ptxt"><div class="pt">Skip ahead — false alarm</div><div class="ps">Jump straight to Close</div></div>
             </button>
-            <button class="ptile" onclick="addStep('pendphoto')">
-              <div class="pico cat-todo">📷</div>
-              <div class="ptxt"><div class="pt">Photo required (gate)</div><div class="ps">Hard-block without photo</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('pendresp')">
-              <div class="pico cat-todo">⏳</div>
-              <div class="ptxt"><div class="pt">Pending response</div><div class="ps">Wait on assignee reply</div></div>
+            <button class="ptile" onclick="addStep('reassign2')">
+              <div class="pico cat-branch">👥</div>
+              <div class="ptxt"><div class="pt">Reassignment</div><div class="ps">Op→Sup · Sup→Op · Op→Op · with reason</div></div>
             </button>
           </div>
         </details>
 
-        <!-- ============ DONE ============ -->
-        <details class="pgroup done">
-          <summary><span class="cat-dot"></span><span>Done</span><span class="cat-count">3</span><span class="chev">⌃</span></summary>
-          <div class="ptiles">
-            <button class="ptile" onclick="addStep('resolved')">
-              <div class="pico cat-done">✓</div>
-              <div class="ptxt"><div class="pt">Mark resolved</div><div class="ps">Issue confirmed fixed</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('closed')">
-              <div class="pico cat-done">🔒</div>
-              <div class="ptxt"><div class="pt">Mark closed</div><div class="ps">Final state, locked</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('stop')">
-              <div class="pico cat-done">⏹</div>
-              <div class="ptxt"><div class="pt">Stop here / escalate</div><div class="ps">Hand off to supervisor</div></div>
-            </button>
-          </div>
-        </details>
-
-        <!-- ============ ACTIONS (3 sub-groups) ============ -->
+        <!-- ============ 🟠 EXCEPTION ============ -->
         <details class="pgroup actions">
-          <summary><span class="cat-dot"></span><span>Action nodes</span><span class="cat-count">10</span><span class="chev">⌃</span></summary>
+          <summary><span class="cat-dot" style="background:#B83A1F"></span><span>Exception (something went sideways)</span><span class="cat-count">3</span><span class="chev">⌃</span></summary>
           <div class="ptiles">
-
-            <div class="psub">
-              <h5>Process</h5>
-              <button class="ptile" onclick="addStep('reassign')">
-                <div class="pico cat-action">👥</div>
-                <div class="ptxt"><div class="pt">Reassign user</div><div class="ps">Hand off to another role</div></div>
-              </button>
-              <button class="ptile" onclick="addStep('subtask')">
-                <div class="pico cat-action">➕</div>
-                <div class="ptxt"><div class="pt">Create sub-task</div><div class="ps">Spawn related issue</div></div>
-              </button>
-              <button class="ptile" onclick="addStep('validatetag')">
-                <div class="pico cat-action">🏷</div>
-                <div class="ptxt"><div class="pt">Validate sensor tags</div><div class="ps">Check tag mapping</div></div>
-              </button>
-            </div>
-
-            <div class="psub">
-              <h5>Communication</h5>
-              <button class="ptile" onclick="addStep('whatsapp')">
-                <div class="pico cat-action">💬</div>
-                <div class="ptxt"><div class="pt">Send WhatsApp</div><div class="ps">Message + deep link</div></div>
-              </button>
-              <button class="ptile" onclick="addStep('sms')">
-                <div class="pico cat-action">📱</div>
-                <div class="ptxt"><div class="pt">Send SMS</div><div class="ps">Fallback channel</div></div>
-              </button>
-              <button class="ptile" onclick="addStep('email')">
-                <div class="pico cat-action">📧</div>
-                <div class="ptxt"><div class="pt">Send email</div><div class="ps">With session report</div></div>
-              </button>
-              <button class="ptile" onclick="addStep('phonecall')">
-                <div class="pico cat-action">📞</div>
-                <div class="ptxt"><div class="pt">Trigger call</div><div class="ps">Urgent only</div></div>
-              </button>
-            </div>
-
-            <div class="psub">
-              <h5>Validate</h5>
-              <button class="ptile" onclick="addStep('upmedia')">
-                <div class="pico cat-action">🖼</div>
-                <div class="ptxt"><div class="pt">Upload media</div><div class="ps">Photo / video evidence</div></div>
-              </button>
-              <button class="ptile" onclick="addStep('addrca')">
-                <div class="pico cat-action">📝</div>
-                <div class="ptxt"><div class="pt">Add RCA</div><div class="ps">Root cause analysis</div></div>
-              </button>
-              <button class="ptile" onclick="addStep('updoc')">
-                <div class="pico cat-action">📎</div>
-                <div class="ptxt"><div class="pt">Upload document</div><div class="ps">PDF / spreadsheet</div></div>
-              </button>
-            </div>
-
+            <button class="ptile" onclick="addStep('callsup')">
+              <div class="pico cat-exception">📞</div>
+              <div class="ptxt"><div class="pt">Call Supervisor</div><div class="ps">Async escalation · operator stuck</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('photosup')">
+              <span class="hardblock">⛔ Hard block</span>
+              <div class="pico cat-exception">📷</div>
+              <div class="ptxt"><div class="pt">Photo to Supervisor</div><div class="ps">Cannot proceed until approved</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('falsealarm')">
+              <div class="pico cat-exception">⚠</div>
+              <div class="ptxt"><div class="pt">False alarm overflow</div><div class="ps">Free-text · SME notified · routes to Close</div></div>
+            </button>
           </div>
         </details>
 
-        <div class="ptip">4 buckets · 23 step types in total. Tap a tile to add it to the canvas.</div>
-      </div>
+        <!-- ============ 🟣 CARDS ============ -->
+        <details class="pgroup actions" open>
+          <summary><span class="cat-dot" style="background:#6B36B5"></span><span>Cards (passive · 1 CTA)</span><span class="cat-count">4</span><span class="chev">⌃</span></summary>
+          <div class="ptiles">
+            <button class="ptile" onclick="addStep('issuecard')">
+              <div class="pico cat-card">📋</div>
+              <div class="ptxt"><div class="pt">Issue card</div><div class="ps">Shown when a new issue is assigned</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('summarycard')">
+              <div class="pico cat-card">📑</div>
+              <div class="ptxt"><div class="pt">Summary card</div><div class="ps">Shown to Op B after reassignment</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('progresscard')">
+              <div class="pico cat-card">⏳</div>
+              <div class="ptxt"><div class="pt">Task progress card</div><div class="ps">While Op B is working the task</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('completioncard')">
+              <div class="pico cat-card">🏁</div>
+              <div class="ptxt"><div class="pt">Completion card</div><div class="ps">After Op B finishes the task</div></div>
+            </button>
+          </div>
+        </details>
+
+        <div class="ptip"><b>Steps</b> = operator acts. <b>Cards</b> = system shows a summary after a step completes. Every card has exactly one CTA that opens a <i>different</i> step.</div>
+</div>
 
       <!-- ===== Canvas ===== -->
       <div class="canvas-wrap" id="canvasWrap">
@@ -1387,163 +1349,99 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
             <div class="ce-ttl">Empty canvas — let's build the flow</div>
             <div class="ce-sub">Tap a step type on the left palette to drop in your first card, or pick a template above to pre-fill the canvas with a saved flow.</div>
             <div class="ce-actions">
-              <button class="primary" onclick="addStep('question')">＋ Add first step</button>
+              <button class="primary" onclick="addStep('action')">＋ Add first step</button>
               <button onclick="setMode('tpls')">Open templates →</button>
             </div>
           </div>
-          <!-- Step 1 -->
-          <div class="fnode" data-tpl="lowdo" onclick="openDrawer(1);selectNode(this)">
+          <!-- Seed: Action step (Normal) -->
+          <div class="fnode" onclick="openDrawer(1);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn cat-progress">1</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="fcat progress"><span class="ftd"></span>In Progress · Yes/No</div>
-            <div class="ft">Is the blower running?</div>
+            <div class="fcat progress"><span class="ftd"></span>Normal · Action card</div>
+            <div class="ft">Open valve V-204 and confirm flow</div>
             <div class="fs">
-              <span class="chip">❓ Yes/No</span>
-              <span class="chip">2 checks</span>
-              <span class="chip green">1 action</span>
+              <span class="chip">🛠 Action</span>
               <span class="chip">👤 Operator</span>
             </div>
-            <span class="fk">STEP_Q</span>
+            <span class="fk">STEP_ACTION</span>
           </div>
-          <div class="insert" data-tpl="lowdo"><button class="ins-btn" onclick="insertAt(0)">+</button></div>
+          <div class="insert"><button class="ins-btn" onclick="insertAt(0)">+</button></div>
 
-          <!-- Step 2 · Flow 1: Blower performance (multi-choice + nested Y/N) -->
-          <div class="fnode" data-tpl="lowdo" onclick="openDrawer(2);selectNode(this)">
+          <!-- Seed: Root cause selector (Normal) -->
+          <div class="fnode" onclick="openDrawer(2);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn cat-progress">2</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="fcat progress"><span class="ftd"></span>In Progress · Multi-choice</div>
-            <div class="ft">Check blower header pressure and flow <span class="mctag">🌿 BRANCHES 3</span></div>
-            <div style="font-size:12.5px;color:var(--ink-3);margin-top:2px">Sub-question: <i>How is the pressure?</i></div>
-            <div class="fopt-row">
-              <div class="lbl">Answer routes</div>
-              <div class="fopt"><span class="ok m">HI</span><span class="ftxt">Is it High?</span><span class="arr">→</span><span class="dest">Ask: Is &gt; design? (Y/N)</span></div>
-              <div class="fopt"><span class="ok n">LO</span><span class="ftxt">Is it Low?</span><span class="arr">→</span><span class="dest">Ask: Is &lt; design? (Y/N)</span></div>
-              <div class="fopt"><span class="ok y">OK</span><span class="ftxt">Is it Normal?</span><span class="arr">→</span><span class="dest next">→ Step 3</span></div>
-            </div>
+            <div class="fcat progress"><span class="ftd"></span>Normal · Root cause selector</div>
+            <div class="ft">Pick the root cause from the list</div>
             <div class="fs">
-              <span class="chip">🌿 Multi-choice</span>
-              <span class="chip">3 outcomes</span>
-              <span class="chip green">2 actions</span>
-              <span class="chip">🔧 Mechanical</span>
-              <span class="chip amber">📞 Maintenance fallback</span>
+              <span class="chip">🌳 Radio list</span>
+              <span class="chip">Icon + 1-line desc</span>
             </div>
-            <span class="fk">STEP_MC</span>
+            <span class="fk">STEP_RC_SELECT</span>
           </div>
-          <div class="insert" data-tpl="lowdo"><button class="ins-btn" onclick="insertAt(1)">+</button></div>
+          <div class="insert"><button class="ins-btn" onclick="insertAt(1)">+</button></div>
 
-          <!-- Step 3 · Flow 2: Aeration distribution (multi-choice + multi-select) -->
-          <div class="fnode selected" data-tpl="lowdo" onclick="openDrawer(3);selectNode(this)">
+          <!-- Seed: Photo to Supervisor (Exception · Hard Block) -->
+          <div class="fnode" onclick="openDrawer(3);selectNode(this)">
             <div class="fdrag"></div>
-            <div class="fn cat-progress">3</div>
+            <div class="fn cat-exception">3</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="fcat progress"><span class="ftd"></span>In Progress · Multi-choice + Multi-select</div>
-            <div class="ft">1 · Check if aeration is equally happening across the tank <span class="mctag">🌿 BRANCHES 3</span></div>
-            <div class="fopt-row">
-              <div class="lbl">Answer routes</div>
-              <div class="fopt"><span class="ok y">Y</span><span class="ftxt">Yes, bubbles seem normal on the surface</span><span class="arr">→</span><span class="dest next">→ Step 4 · DO sensor</span></div>
-              <div class="fopt"><span class="ok m">~</span><span class="ftxt">Moderately, some bubbles are there</span><span class="arr">→</span><span class="dest">→ Check 2 (below)</span></div>
-              <div class="fopt"><span class="ok n">N</span><span class="ftxt">No, there are no bubbles on the tank</span><span class="arr">→</span><span class="dest">→ Check 2 (below)</span></div>
-            </div>
-
-            <div class="ft" style="margin-top:14px">2 · Check if dead zones are created <span class="mctag" style="background:linear-gradient(145deg,#DCF1E6,#B7E1C9);color:#157A40">☑ MULTI-SELECT</span></div>
-            <div class="fopt-row">
-              <div class="lbl">Tick any that apply</div>
-              <div class="fopt"><span class="ok x">☐</span><span class="ftxt">Sludge accumulation at the bottom of certain areas</span></div>
-              <div class="fopt"><span class="ok x">☐</span><span class="ftxt">Uneven dissolved oxygen (DO) readings across the tank</span></div>
-              <div class="fopt"><span class="ok x">☐</span><span class="ftxt">Dark or black-colored wastewater in localized area</span></div>
-              <div class="fopt"><span class="ok x">☐</span><span class="ftxt">Reduced treatment performance despite normal blower</span></div>
-            </div>
-
-            <div class="fopt-row" style="border-style:solid;background:rgba(229,235,245,.5);border-color:rgba(0,41,118,.18)">
-              <div class="lbl" style="color:var(--brand)">Outcome routes</div>
-              <div class="fopt"><span class="ok y">Y</span><span class="ftxt">Any boxes ticked → confirms dead zones</span><span class="arr">→</span><span class="dest stop">⏹ Diffusers choked · call supervisor (Stop here)</span></div>
-              <div class="fopt"><span class="ok n">N</span><span class="ftxt">Nothing ticked → not a distribution issue</span><span class="arr">→</span><span class="dest next">→ Step 4 · DO sensor failure</span></div>
-            </div>
-
+            <div class="fcat exception"><span class="ftd"></span>Exception · Photo to Supervisor</div>
+            <div class="ft">Upload photo for supervisor approval</div>
             <div class="fs">
-              <span class="chip">🌿 Branching tree</span>
-              <span class="chip">2 checks</span>
-              <span class="chip">7 sub-options</span>
-              <span class="chip">👤 Operator</span>
-              <span class="chip amber">📷 Photo required</span>
-              <span class="chip red">⏹ Stop here</span>
+              <span class="chip red">⛔ Hard block</span>
+              <span class="chip">📷 Required</span>
             </div>
-            <span class="fk">STEP_MC + STEP_MS</span>
+            <span class="fk">STEP_PHOTO_SUP</span>
           </div>
-          <div class="insert" data-tpl="lowdo"><button class="ins-btn" onclick="insertAt(2)">+</button></div>
+          <div class="insert"><button class="ins-btn" onclick="insertAt(2)">+</button></div>
 
-          <!-- Step 4 -->
-          <div class="fnode" data-tpl="lowdo" onclick="openDrawer(4);selectNode(this)">
+          <!-- Seed: Task accomplished (Normal) -->
+          <div class="fnode" onclick="openDrawer(4);selectNode(this)">
             <div class="fdrag"></div>
             <div class="fn cat-progress">4</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="fcat progress"><span class="ftd"></span>In Progress · Yes/No</div>
-            <div class="ft">Is there a DO sensor problem?</div>
+            <div class="fcat progress"><span class="ftd"></span>Normal · Task accomplished</div>
+            <div class="ft">Task complete &mdash; ready to verify</div>
             <div class="fs">
-              <span class="chip">❓ Yes/No</span>
-              <span class="chip">2 checks</span>
-              <span class="chip green">3 actions</span>
-              <span class="chip">⚡ Electrical / Instr.</span>
+              <span class="chip green">✓ Confirmation</span>
             </div>
-            <span class="fk">STEP_Q</span>
+            <span class="fk">STEP_DONE</span>
           </div>
-          <div class="insert" data-tpl="lowdo"><button class="ins-btn" onclick="insertAt(3)">+</button></div>
+          <div class="insert"><button class="ins-btn" onclick="insertAt(3)">+</button></div>
 
-          <!-- Step 5 -->
-          <div class="fnode" data-tpl="lowdo" onclick="openDrawer(5);selectNode(this)">
+          <!-- Seed: Completion card (Card) -->
+          <div class="fnode" onclick="openDrawer(5);selectNode(this)">
             <div class="fdrag"></div>
-            <div class="fn cat-progress">5</div>
+            <div class="fn cat-card">5</div>
             <div class="ftools">
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="fcat progress"><span class="ftd"></span>In Progress · Manual reading</div>
-            <div class="ft">Is sludge bulking happening?</div>
+            <div class="fcat card"><span class="ftd"></span>Card · Completion</div>
+            <div class="ft">All done &mdash; tap to close the issue</div>
             <div class="fs">
-              <span class="chip">📋 Manual</span>
-              <span class="chip">3 checks</span>
-              <span class="chip green">1 action</span>
-              <span class="chip">🧪 Process / Lab</span>
+              <span class="chip">🏁 Passive</span>
+              <span class="chip">1 CTA → Close</span>
             </div>
-            <span class="fk">STEP_MANUAL</span>
-          </div>
-          <div class="insert" data-tpl="lowdo"><button class="ins-btn" onclick="insertAt(4)">+</button></div>
-
-          <!-- Step 6 -->
-          <div class="fnode" data-tpl="lowdo" onclick="openDrawer(6);selectNode(this)">
-            <div class="fdrag"></div>
-            <div class="fn cat-progress">6</div>
-            <div class="ftools">
-              <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
-              <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
-            </div>
-            <div class="fcat progress"><span class="ftd"></span>In Progress · Yes/No</div>
-            <div class="ft">Shock load in incoming flow?</div>
-            <div class="fs">
-              <span class="chip">❓ Yes/No</span>
-              <span class="chip">4 checks</span>
-              <span class="chip green">1 action</span>
-              <span class="chip">🧪 Process / Lab</span>
-              <span class="chip red">SME approval</span>
-            </div>
-            <span class="fk">STEP_Q</span>
+            <span class="fk">CARD_COMPLETION</span>
           </div>
 
-          <button class="fnode-add" onclick="addStep('question')">＋ Add step at the end</button>
+          <button class="fnode-add" onclick="addStep('action')">＋ Add step at the end</button>
         </div>
 
         <!-- Mini-map (visual flourish only) -->
@@ -2186,8 +2084,28 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     updoc:       { ttl: "Upload document",                     chips:['📎 Document','PDF / file'],                     kind:'STEP_ACT_DOC',    cat:'action', catLabel:'Action · Validate · Upload doc' },
 
     // === Backwards-compat aliases ===
-    action:      { ttl: "Action / fix to perform",             chips:['🛠 Action','🔧 Mechanical'],                    kind:'STEP_ACTION',    cat:'progress', catLabel:'In Progress · Action' },
     photo:       { ttl: "Photo capture step",                   chips:['📷 Photo','Hard block','👤 Operator'],          kind:'STEP_PHOTO',     cat:'todo', catLabel:'To Do · Photo gate' },
+
+    // === NEW TAXONOMY · NORMAL steps ===
+    action:        { ttl: "Action card — single instruction",         chips:['🛠 Action','👤 Operator'],                        kind:'STEP_ACTION',       cat:'progress', catLabel:'Normal · Action card' },
+    rcselect:      { ttl: "Root cause selector — pick from list",      chips:['🌳 Radio list','Icon + 1-line desc'],             kind:'STEP_RC_SELECT',    cat:'progress', catLabel:'Normal · Root cause selector' },
+    taskdone:      { ttl: "Task accomplished",                          chips:['✓ Confirmation','Stage complete'],                kind:'STEP_TASK_DONE',    cat:'progress', catLabel:'Normal · Task accomplished' },
+
+    // === NEW TAXONOMY · BRANCH steps ===
+    skipknow:      { ttl: "Skip ahead — I know the cause",              chips:['⤴ Shortcut','Intake → Root Cause'],              kind:'STEP_SKIP_KNOW',    cat:'todo',     catLabel:'Branch · Skip (know reason)' },
+    skipfalse:     { ttl: "Skip ahead — false alarm",                   chips:['⏭ Shortcut','→ Close'],                          kind:'STEP_SKIP_FALSE',   cat:'todo',     catLabel:'Branch · Skip (false alarm)' },
+    reassign2:     { ttl: "Reassignment — hand off with reason",        chips:['👥 Reassign','Op→Sup · Sup→Op · Op→Op','Reason required'], kind:'STEP_REASSIGN',     cat:'todo',     catLabel:'Branch · Reassignment' },
+
+    // === NEW TAXONOMY · EXCEPTION steps ===
+    callsup:       { ttl: "Call Supervisor — escalation",                chips:['📞 Escalation','Async help'],                    kind:'STEP_CALL_SUP',     cat:'exception', catLabel:'Exception · Call Supervisor' },
+    photosup:      { ttl: "Photo to Supervisor (hard block)",            chips:['📷 Hard block','Supervisor approval'],           kind:'STEP_PHOTO_SUP',    cat:'exception', catLabel:'Exception · Photo to Supervisor' },
+    falsealarm:    { ttl: "False alarm overflow",                        chips:['⚠ Free text','SME notified','→ Close'],          kind:'STEP_FALSE_ALARM',  cat:'exception', catLabel:'Exception · False alarm overflow' },
+
+    // === NEW TAXONOMY · CARDS (passive · 1 CTA) ===
+    issuecard:     { ttl: "Issue card — new assignment",                 chips:['📋 Card','1 CTA','For Op B'],                    kind:'CARD_ISSUE',        cat:'card', catLabel:'Card · Issue' },
+    summarycard:   { ttl: "Summary card — reassignment handoff",         chips:['📑 Card','1 CTA','For Op B'],                    kind:'CARD_SUMMARY',      cat:'card', catLabel:'Card · Summary' },
+    progresscard:  { ttl: "Task progress card — work in flight",         chips:['⏳ Card','1 CTA','For Op B'],                    kind:'CARD_PROGRESS',     cat:'card', catLabel:'Card · Task progress' },
+    completioncard:{ ttl: "Completion card — task finished",             chips:['🏁 Card','1 CTA','For Op B'],                    kind:'CARD_COMPLETION',   cat:'card', catLabel:'Card · Completion' },
   };
 
   function buildNode(template, n) {
