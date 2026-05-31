@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>Issue card · DO Low · Aeration Tank</title>
+<title>Issue cards · Aeration Tank · Two scenarios</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -21,27 +21,31 @@
     --crit:#B83A1F;
     --block:#B83A1F;
     --tank:#2563EB;
+    --comp-ink:#3D445A;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;font:15px/1.5 'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg-grad);min-height:100vh;letter-spacing:-.005em}
-  body{padding:24px 16px 80px;display:flex;flex-direction:column;align-items:center;gap:0}
+  body{padding:24px 16px 80px}
 
-  /* === Page title === */
-  h1.title{text-align:center;font-size:28px;font-weight:800;letter-spacing:-.022em;margin:8px 0 4px;color:var(--ink)}
-  .sub{text-align:center;color:var(--ink-3);max-width:560px;margin:0 auto 28px;line-height:1.6;font-size:14px}
+  h1.title{text-align:center;font-size:28px;font-weight:800;letter-spacing:-.022em;margin:8px 0 4px}
+  .sub{text-align:center;color:var(--ink-3);max-width:680px;margin:0 auto 32px;line-height:1.6;font-size:14px;padding:0 16px}
   .sub b{color:var(--ink);font-weight:700}
 
-  /* === Phone shell === */
-  .phone{width:380px;max-width:100%;background:#FBFAF8;border-radius:32px;overflow:hidden;box-shadow:0 30px 80px -20px rgba(40,50,80,.25),0 8px 24px -8px rgba(40,50,80,.12);position:relative;border:1px solid rgba(255,255,255,.6)}
-  .phone-inner{display:flex;flex-direction:column;min-height:780px;max-height:92vh;overflow:hidden}
+  .panels{display:flex;gap:36px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .panel-col{display:flex;flex-direction:column;align-items:center}
+  .panel-lbl{font:800 10.5px 'JetBrains Mono';letter-spacing:.7px;text-transform:uppercase;color:var(--ink-2);margin-bottom:14px;display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;background:rgba(255,255,255,.7);border:1px solid var(--line-soft)}
+  .panel-lbl .dot{width:9px;height:9px;border-radius:999px;background:var(--crit);box-shadow:0 0 0 3px rgba(184,58,31,.18)}
+
+  /* === Phone === */
+  .phone{width:400px;max-width:100%;background:#FBFAF8;border-radius:32px;overflow:hidden;box-shadow:0 30px 80px -20px rgba(40,50,80,.25),0 8px 24px -8px rgba(40,50,80,.12);border:1px solid rgba(255,255,255,.6)}
+  .phone-inner{display:flex;flex-direction:column;min-height:860px;max-height:92vh;overflow:hidden}
   .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 
-  /* === Nav === */
   .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 8px;font-size:13px}
   .nav .back{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--ink-2);background:none;border:none;font-size:14px;cursor:pointer;padding:6px 0}
   .nav .more{background:rgba(14,20,40,.05);border:none;width:32px;height:32px;border-radius:999px;font-size:18px;color:var(--ink-2);cursor:pointer;display:flex;align-items:center;justify-content:center}
 
-  /* === Assignment banner === */
+  /* Assignment banner */
   .assign{background:linear-gradient(135deg,#002976,#1B3A8C);color:#fff;margin:4px 14px 0;padding:14px 16px;border-radius:18px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 8px 22px -10px rgba(0,41,118,.45)}
   .assign .av{width:36px;height:36px;border-radius:999px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
   .assign .at{font-size:10.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:2px}
@@ -49,19 +53,27 @@
   .assign .ab b{font-weight:800}
   .assign .when{font-size:11px;color:rgba(255,255,255,.65);margin-top:4px;font-weight:500}
 
-  /* === Asset block === */
+  /* Asset block */
   .asset{padding:0 18px 14px;border-bottom:1px solid var(--line-soft);background:#FBFAF8;margin-top:14px}
 
-  /* Illustration */
-  .illu{display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,rgba(220,229,245,.5),rgba(168,184,222,.25));border-radius:18px;padding:18px 12px;margin-bottom:14px;position:relative;overflow:hidden}
-  .illu svg{width:170px;height:130px;display:block}
-  .illu .badge{position:absolute;top:10px;right:10px;font:700 9.5px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;color:var(--brand);background:rgba(255,255,255,.85);padding:4px 9px;border-radius:999px;border:1px solid rgba(0,41,118,.15)}
+  /* Illustration - LARGER, more detail */
+  .illu{display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,rgba(220,229,245,.55),rgba(168,184,222,.30));border-radius:18px;padding:14px 10px 10px;margin-bottom:14px;position:relative;overflow:hidden}
+  .illu svg{width:340px;max-width:100%;height:auto;display:block}
+  .illu .badge{position:absolute;top:10px;left:10px;font:700 9.5px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;color:var(--brand);background:rgba(255,255,255,.85);padding:4px 9px;border-radius:999px;border:1px solid rgba(0,41,118,.15);z-index:2}
+
+  /* SVG component styles */
+  .ic-line{stroke:var(--comp-ink);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .ic-fill{fill:var(--comp-ink);opacity:.55}
+  .ic-text{font:700 9px 'JetBrains Mono';fill:var(--comp-ink);letter-spacing:.4px}
+  .ic-bad .ic-line, .bad-stroke{stroke:var(--crit) !important;stroke-width:2.2 !important}
+  .ic-bad .ic-fill, .bad-fill{fill:var(--crit) !important;opacity:.85 !important}
+  .ic-bad .ic-text, .bad-text{fill:var(--crit) !important}
 
   /* Title block */
   .a-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
   .a-name{font-size:19px;font-weight:800;letter-spacing:-.022em;line-height:1.2;margin:0;color:var(--ink)}
-  .a-source{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--brand);background:rgba(0,41,118,.07);padding:4px 10px;border-radius:999px;margin-top:7px;letter-spacing:-.005em}
-  .a-source::before{content:"📡";font-size:11px}
+  .a-source{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--crit);background:rgba(184,58,31,.10);padding:4px 10px;border-radius:999px;margin-top:7px;letter-spacing:-.005em}
+  .a-source::before{content:"▸";font-size:10px}
   .a-status-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:6px}
   .a-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ok)}
   .a-status .dot{width:8px;height:8px;border-radius:999px;background:var(--ok);box-shadow:0 0 0 3px rgba(31,157,85,.18)}
@@ -72,17 +84,18 @@
   /* Telemetry */
   .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line-soft)}
   .stat{display:flex;align-items:baseline;justify-content:space-between;padding:2px 0}
-  .stat .l{font-size:11px;color:var(--ink-3);font-weight:600;letter-spacing:-.005em}
+  .stat .l{font-size:11px;color:var(--ink-3);font-weight:600}
   .stat .v{font:700 14px 'JetBrains Mono';color:var(--ink);letter-spacing:-.01em}
   .stat .v .u{font-size:10px;color:var(--ink-3);margin-left:2px;font-family:'Plus Jakarta Sans';font-weight:600}
-  .stat.bad .v{color:var(--crit)}
-  .stat.bad .l{color:var(--crit)}
+  .stat.bad .v, .stat.bad .l{color:var(--crit)}
   .stat.bad .v .u{color:var(--crit);opacity:.7}
+  .stat.warn .v, .stat.warn .l{color:#8C6306}
+  .stat.warn .v .u{color:#8C6306;opacity:.7}
 
   /* Components */
   .comps{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line-soft)}
   .comps-hdr{display:flex;align-items:center;justify-content:space-between;font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px}
-  .comps-hdr .cnt{font:700 10px 'JetBrains Mono';color:var(--ink-4);padding:2px 7px;border-radius:999px;background:rgba(14,20,40,.05);letter-spacing:.4px;margin-left:6px}
+  .comps-hdr .cnt{font:700 10px 'JetBrains Mono';color:var(--ink-4);padding:2px 7px;border-radius:999px;background:rgba(14,20,40,.05);margin-left:6px}
   .comps-hdr .chev{color:var(--ink-4);font-size:13px}
   .comp{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font-size:13px;cursor:pointer;margin-bottom:2px}
   .comp:hover{background:rgba(14,20,40,.03)}
@@ -90,11 +103,14 @@
   .comp .nm{flex:1;font-weight:600;letter-spacing:-.005em}
   .comp .st{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ink-3);font-weight:600}
   .comp .st .d{width:8px;height:8px;border-radius:999px;background:var(--ok);box-shadow:0 0 0 2.5px rgba(31,157,85,.20)}
-  .comp.bad{background:rgba(184,58,31,.06);border:1px solid rgba(184,58,31,.18)}
+  .comp.bad{background:rgba(184,58,31,.06);border:1px solid rgba(184,58,31,.20)}
   .comp.bad .ic{background:rgba(184,58,31,.10)}
   .comp.bad .st{color:var(--crit);font-weight:700}
   .comp.bad .st .d{background:var(--crit);box-shadow:0 0 0 2.5px rgba(184,58,31,.22);animation:pulse 1.8s ease-in-out infinite}
-  @keyframes pulse{0%,100%{opacity:.6;transform:scale(.9)}50%{opacity:1;transform:scale(1.12)}}
+  .comp.warn{background:rgba(224,163,20,.06)}
+  .comp.warn .st{color:#8C6306;font-weight:700}
+  .comp.warn .st .d{background:var(--warn);box-shadow:0 0 0 2.5px rgba(224,163,20,.20)}
+  @keyframes pulse{0%,100%{opacity:.6;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
 
   /* Issue summary */
   .issue{padding:16px 18px 4px}
@@ -105,6 +121,7 @@
   .iid{font:700 10px 'JetBrains Mono';color:var(--ink-4);letter-spacing:.5px}
   .issue h2{font-size:21px;font-weight:800;letter-spacing:-.024em;line-height:1.18;margin:0 0 6px}
   .issue .desc{font-size:13px;color:var(--ink-2);line-height:1.55;margin:0}
+  .issue .desc b{color:var(--ink);font-weight:700}
 
   /* CTAs */
   .ctas{padding:16px 18px 8px;display:flex;flex-direction:column;gap:8px}
@@ -115,225 +132,412 @@
   .btn.ghost:hover{background:rgba(14,20,40,.04)}
   .btn .arr{font-weight:800;font-size:16px}
 
-  /* Section */
-  .section{padding:18px 18px 0}
+  /* Section + collapsed */
+  .section{padding:14px 18px 0}
   .section h3{font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3);margin:0 0 10px;display:flex;align-items:center;gap:8px}
-  .section h3 .cnt{font:700 10px 'JetBrains Mono';color:var(--ink-4);padding:2px 7px;border-radius:999px;background:rgba(14,20,40,.05);letter-spacing:.4px}
-
-  /* BLOCKED card */
-  .block-card{margin-top:4px;border-radius:14px;background:linear-gradient(135deg,rgba(184,58,31,.06),rgba(184,58,31,.12));border:1px solid rgba(184,58,31,.22);padding:14px 14px 12px;position:relative;overflow:hidden}
-  .block-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#E85A3A,#B83A1F)}
-  .block-card-inner{padding-left:6px}
-  .block-chip{display:inline-flex;align-items:center;gap:6px;font:800 10px 'JetBrains Mono';letter-spacing:.8px;text-transform:uppercase;color:var(--block);background:rgba(184,58,31,.14);padding:4px 9px;border-radius:999px;margin-bottom:8px}
-  .block-chip::before{content:"⛔";font-size:11px}
-  .block-title{font-size:14px;font-weight:800;color:var(--ink);letter-spacing:-.012em;line-height:1.3;margin:0 0 4px}
-  .block-reason{font-size:12.5px;color:var(--ink-2);line-height:1.55;margin:0 0 8px}
-  .block-reason b{color:var(--block);font-weight:700}
-  .block-meta{font-size:11px;color:var(--ink-3);font-weight:500;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}
-  .block-meta .who{display:inline-flex;align-items:center;gap:5px;font-weight:600}
-  .block-meta .who .pres{width:7px;height:7px;border-radius:999px;background:var(--ok);box-shadow:0 0 0 2px rgba(31,157,85,.20)}
-  .block-meta .who .pres.off{background:var(--ink-4);box-shadow:0 0 0 2px rgba(154,160,176,.20)}
-  .block-meta .elap{display:inline-flex;align-items:center;gap:5px}
-  .block-meta .elap .pulse{width:7px;height:7px;border-radius:999px;background:var(--block);animation:pulse 1.5s ease-in-out infinite}
-  .block-actions{display:flex;gap:8px;margin-top:11px;padding-top:11px;border-top:1px dashed rgba(184,58,31,.25)}
-  .block-actions button{flex:1;padding:10px 10px;border-radius:10px;border:none;background:rgba(255,255,255,.7);color:var(--ink);font:700 12.5px 'Plus Jakarta Sans';cursor:pointer;letter-spacing:-.005em}
-  .block-actions button.primary{background:var(--block);color:#fff}
-
-  /* Collapsed rows */
-  .more-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line-soft);cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-2)}
+  .section h3 .cnt{font:700 10px 'JetBrains Mono';color:var(--ink-4);padding:2px 7px;border-radius:999px;background:rgba(14,20,40,.05)}
+  .more-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line-soft);font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer}
   .more-row:last-child{border-bottom:none}
   .more-row .cnt{font:700 10px 'JetBrains Mono';color:var(--ink-4);padding:2px 7px;border-radius:999px;background:rgba(14,20,40,.05);margin-left:auto;margin-right:8px}
   .more-row .chev{color:var(--ink-4);font-size:16px}
 
   /* Caption */
-  .caption{width:380px;max-width:100%;color:var(--ink-3);font-size:13px;line-height:1.6;margin:20px auto 0;text-align:center;letter-spacing:-.005em}
+  .caption{width:400px;max-width:100%;color:var(--ink-3);font-size:13px;line-height:1.6;margin:16px auto 0;text-align:center}
   .caption b{color:var(--ink);font-weight:700}
+
+  /* Legend block at the bottom */
+  .legend{max-width:840px;margin:60px auto 0;padding:24px;background:rgba(255,255,255,.55);border:1px solid var(--line-soft);border-radius:18px;font-size:13px;line-height:1.6;color:var(--ink-2)}
+  .legend h4{margin:0 0 14px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3)}
+  .legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .legend ul{margin:0;padding-left:18px}
+  .legend li{margin-bottom:8px}
+  .legend b{color:var(--ink)}
+  @media (max-width:760px){.legend-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<h1 class="title">Issue card</h1>
-<p class="sub">DO Low · Aeration Tank · Bay 3. Operator's first screen on initial assignment via WhatsApp deep-link. Equipment is the <b>tank</b> — the DO-3 sensor is shown as the source. Components are <b>expanded by default</b> so the operator sees which child is the source of the problem at a glance.</p>
+<h1 class="title">Issue card · two scenarios</h1>
+<p class="sub">Same equipment (<b>Aeration Tank · Bay 3</b>), same illustration, two different root causes. Notice how the <b>red component</b> in the illustration matches the <b>source pill</b> and the <b>red row</b> in the components list — three signals point to the same place.</p>
 
-<div class="phone">
-  <div class="phone-inner">
+<div class="panels">
 
-    <div class="nav">
-      <button class="back">←  Back</button>
-      <button class="more">⋯</button>
-    </div>
+  <!-- ====================== CARD 1: DO SENSOR READING LOW ====================== -->
+  <div class="panel-col">
+    <div class="panel-lbl"><span class="dot"></span>Scenario 1 · DO sensor reading low</div>
 
-    <div class="scroll">
+    <div class="phone">
+      <div class="phone-inner">
 
-      <!-- 1. Assignment banner -->
-      <div class="assign">
-        <div class="av">👋</div>
-        <div>
-          <div class="at">New assignment</div>
-          <div class="ab"><b>You've been assigned</b> a new issue on Aeration Tank · Bay 3</div>
-          <div class="when">just now · via WhatsApp · by Supervisor Anil</div>
-        </div>
-      </div>
-
-      <!-- 2. Asset block -->
-      <div class="asset">
-
-        <!-- Illustration -->
-        <div class="illu" style="margin-top:14px">
-          <span class="badge">Aeration · Bay 3</span>
-          <!-- Stylized aeration tank with bubbles -->
-          <svg viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Aeration tank">
-            <!-- water level -->
-            <rect x="22" y="44" width="156" height="84" rx="6" fill="#BFD3F5" opacity=".55"/>
-            <!-- tank outline -->
-            <path d="M22 38 L22 128 Q22 134 28 134 L172 134 Q178 134 178 128 L178 38" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"/>
-            <!-- top rim -->
-            <line x1="18" y1="38" x2="182" y2="38" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"/>
-            <!-- water surface -->
-            <path d="M26 50 Q40 46 54 50 T82 50 T110 50 T138 50 T166 50 T174 50" stroke="#2563EB" stroke-width="1.6" stroke-linecap="round" fill="none" opacity=".7"/>
-            <!-- diffuser line -->
-            <rect x="40" y="120" width="120" height="4" rx="2" fill="#0E1428" opacity=".35"/>
-            <!-- bubbles -->
-            <circle cx="56" cy="100" r="4" fill="#fff" opacity=".85"/>
-            <circle cx="56" cy="82" r="3" fill="#fff" opacity=".7"/>
-            <circle cx="56" cy="68" r="2.2" fill="#fff" opacity=".5"/>
-            <circle cx="84" cy="105" r="3.5" fill="#fff" opacity=".85"/>
-            <circle cx="84" cy="86" r="2.6" fill="#fff" opacity=".65"/>
-            <circle cx="112" cy="98" r="4.5" fill="#fff" opacity=".85"/>
-            <circle cx="112" cy="76" r="2.8" fill="#fff" opacity=".6"/>
-            <circle cx="112" cy="62" r="2" fill="#fff" opacity=".45"/>
-            <circle cx="140" cy="106" r="3" fill="#fff" opacity=".8"/>
-            <circle cx="140" cy="88" r="2" fill="#fff" opacity=".55"/>
-            <!-- DO-3 sensor probe (highlighted) -->
-            <g>
-              <line x1="158" y1="38" x2="158" y2="92" stroke="#B83A1F" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="158" cy="96" r="6" fill="#B83A1F"/>
-              <circle cx="158" cy="96" r="10" fill="none" stroke="#B83A1F" stroke-width="1.4" opacity=".5"/>
-              <text x="158" y="30" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#B83A1F">DO-3</text>
-            </g>
-          </svg>
+        <div class="nav">
+          <button class="back">←  Back</button>
+          <button class="more">⋯</button>
         </div>
 
-        <!-- Title + source -->
-        <div class="a-title-row">
-          <div>
-            <h2 class="a-name">Aeration Tank · Bay 3</h2>
-            <span class="a-source">from DO-3 sensor</span>
-          </div>
-        </div>
+        <div class="scroll">
 
-        <!-- Status + timestamp -->
-        <div class="a-status-row">
-          <div class="a-status"><span class="dot"></span>Active<span class="hi">· सक्रिय</span></div>
-          <div class="a-stamp">updated 12s ago</div>
-        </div>
-
-        <!-- Telemetry -->
-        <div class="stats">
-          <div class="stat bad">
-            <span class="l">DO</span>
-            <span class="v">1.3<span class="u">mg/L</span></span>
-          </div>
-          <div class="stat">
-            <span class="l">MLSS</span>
-            <span class="v">3.2<span class="u">g/L</span></span>
-          </div>
-          <div class="stat">
-            <span class="l">Temp</span>
-            <span class="v">28<span class="u">°C</span></span>
-          </div>
-          <div class="stat">
-            <span class="l">pH</span>
-            <span class="v">7.1</span>
-          </div>
-        </div>
-
-        <!-- Components (expanded) -->
-        <div class="comps">
-          <div class="comps-hdr">
-            <span>Components <span class="cnt">4</span></span>
-            <span class="chev">⌄</span>
-          </div>
-
-          <div class="comp bad">
-            <div class="ic">📡</div>
-            <div class="nm">DO-3 sensor</div>
-            <div class="st"><span class="d"></span>reading low</div>
-          </div>
-          <div class="comp">
-            <div class="ic">🌀</div>
-            <div class="nm">Blower 2</div>
-            <div class="st"><span class="d"></span>ok</div>
-          </div>
-          <div class="comp">
-            <div class="ic">▦</div>
-            <div class="nm">Diffuser grid</div>
-            <div class="st"><span class="d"></span>ok</div>
-          </div>
-          <div class="comp">
-            <div class="ic">⚙</div>
-            <div class="nm">MBR-1 Pump</div>
-            <div class="st"><span class="d"></span>ok</div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- 3. Issue summary -->
-      <div class="issue">
-        <div class="sev-row">
-          <span class="sev high">High</span>
-          <span class="iid">ISS-AER-DO-001</span>
-        </div>
-        <h2>Low dissolved oxygen</h2>
-        <p class="desc">DO reading at sensor <b>DO-3</b> has been below 1.5 mg/L for the last 12 minutes. Threshold is 2.0 mg/L. Likely causes: choked diffusers, blower output drop, or biology shift.</p>
-      </div>
-
-      <!-- 4. Primary CTAs -->
-      <div class="ctas">
-        <button class="btn primary">Start diagnosis <span class="arr">→</span></button>
-        <button class="btn ghost">Can't take this — reassign</button>
-      </div>
-
-      <!-- 5. BLOCKED card -->
-      <div class="section">
-        <h3>Already in progress <span class="cnt">1</span></h3>
-
-        <div class="block-card">
-          <div class="block-card-inner">
-            <div class="block-chip">Blocked · hard gate</div>
-            <h4 class="block-title">Diffuser inspection — Step 4 of 6</h4>
-            <p class="block-reason">Dheeraj is <b>waiting on supervisor approval</b> of a diffuser-condition photo before continuing. Flow cannot proceed without it.</p>
-            <div class="block-meta">
-              <span class="who"><span class="pres off"></span>Dheeraj · offline</span>
-              <span class="elap"><span class="pulse"></span>blocked 4m 12s</span>
-            </div>
-            <div class="block-actions">
-              <button>View details</button>
-              <button class="primary">Take over →</button>
+          <div class="assign">
+            <div class="av">👋</div>
+            <div>
+              <div class="at">New assignment</div>
+              <div class="ab"><b>You've been assigned</b> a new issue on Aeration Tank · Bay 3</div>
+              <div class="when">just now · via WhatsApp · by Supervisor Anil</div>
             </div>
           </div>
+
+          <div class="asset">
+
+            <!-- ILLUSTRATION · DO sensor highlighted -->
+            <div class="illu" style="margin-top:14px">
+              <span class="badge">Aeration · Bay 3</span>
+              <svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" aria-label="Aeration tank · DO-3 sensor highlighted">
+                <!-- ===== BLOWER (left, outside tank) ===== -->
+                <g>
+                  <rect x="14" y="120" width="46" height="44" rx="6" class="ic-line"/>
+                  <circle cx="37" cy="142" r="11" class="ic-line"/>
+                  <circle cx="37" cy="142" r="4" class="ic-fill"/>
+                  <!-- fan blades -->
+                  <line x1="37" y1="135" x2="37" y2="149" class="ic-line"/>
+                  <line x1="30" y1="142" x2="44" y2="142" class="ic-line"/>
+                  <line x1="32" y1="137" x2="42" y2="147" class="ic-line"/>
+                  <line x1="42" y1="137" x2="32" y2="147" class="ic-line"/>
+                  <!-- intake -->
+                  <path d="M14 132 L4 132 L4 152 L14 152" class="ic-line"/>
+                  <text x="37" y="180" text-anchor="middle" class="ic-text">BLOWER 2</text>
+                  <!-- air output pipe up & over -->
+                  <path d="M60 130 L78 130 L78 60 L160 60" class="ic-line"/>
+                </g>
+
+                <!-- ===== TANK ===== -->
+                <!-- tank body / water -->
+                <rect x="90" y="78" width="200" height="120" rx="4" fill="#BFD3F5" opacity=".5"/>
+                <!-- tank outline -->
+                <path d="M90 72 L90 192 Q90 198 96 198 L284 198 Q290 198 290 192 L290 72" stroke="#2563EB" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                <line x1="86" y1="72" x2="294" y2="72" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round"/>
+                <!-- water surface waves -->
+                <path d="M94 88 Q108 84 122 88 T150 88 T178 88 T206 88 T234 88 T262 88 T286 88" stroke="#2563EB" stroke-width="1.5" fill="none" opacity=".6"/>
+
+                <!-- ===== DIFFUSER GRID (bottom inside tank) ===== -->
+                <g>
+                  <!-- main header pipe -->
+                  <rect x="110" y="184" width="160" height="6" rx="2" class="ic-line" fill="rgba(61,68,90,.4)"/>
+                  <!-- diffuser stones -->
+                  <circle cx="130" cy="178" r="3" class="ic-fill"/>
+                  <circle cx="155" cy="178" r="3" class="ic-fill"/>
+                  <circle cx="180" cy="178" r="3" class="ic-fill"/>
+                  <circle cx="205" cy="178" r="3" class="ic-fill"/>
+                  <circle cx="230" cy="178" r="3" class="ic-fill"/>
+                  <circle cx="255" cy="178" r="3" class="ic-fill"/>
+                  <text x="190" y="212" text-anchor="middle" class="ic-text">DIFFUSER GRID</text>
+                  <!-- vertical drop from horizontal pipe -->
+                  <line x1="160" y1="60" x2="160" y2="184" class="ic-line"/>
+                </g>
+
+                <!-- ===== BUBBLES (healthy, even plumes) ===== -->
+                <g opacity=".85">
+                  <circle cx="130" cy="160" r="3.5" fill="#fff" opacity=".95"/>
+                  <circle cx="130" cy="140" r="2.6" fill="#fff" opacity=".75"/>
+                  <circle cx="130" cy="120" r="2" fill="#fff" opacity=".5"/>
+                  <circle cx="155" cy="155" r="4" fill="#fff" opacity=".95"/>
+                  <circle cx="155" cy="132" r="2.8" fill="#fff" opacity=".75"/>
+                  <circle cx="155" cy="112" r="2" fill="#fff" opacity=".5"/>
+                  <circle cx="180" cy="160" r="3.5" fill="#fff" opacity=".95"/>
+                  <circle cx="180" cy="138" r="2.6" fill="#fff" opacity=".7"/>
+                  <circle cx="205" cy="155" r="4" fill="#fff" opacity=".95"/>
+                  <circle cx="205" cy="132" r="2.8" fill="#fff" opacity=".75"/>
+                  <circle cx="230" cy="160" r="3.5" fill="#fff" opacity=".9"/>
+                  <circle cx="230" cy="140" r="2.6" fill="#fff" opacity=".7"/>
+                  <circle cx="255" cy="155" r="3.5" fill="#fff" opacity=".9"/>
+                  <circle cx="255" cy="132" r="2.4" fill="#fff" opacity=".65"/>
+                </g>
+
+                <!-- ===== DO SENSOR (HIGHLIGHTED · the problem) ===== -->
+                <g>
+                  <!-- attention ring -->
+                  <circle cx="270" cy="148" r="18" fill="none" stroke="#B83A1F" stroke-width="1.5" opacity=".35">
+                    <animate attributeName="r" values="14;22;14" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values=".5;.0;.5" dur="2s" repeatCount="indefinite"/>
+                  </circle>
+                  <!-- probe stem -->
+                  <line x1="270" y1="72" x2="270" y2="142" class="bad-stroke"/>
+                  <!-- cable mount on rim -->
+                  <rect x="266" y="68" width="8" height="6" class="bad-fill"/>
+                  <!-- probe sensor head -->
+                  <ellipse cx="270" cy="148" rx="5" ry="6" class="bad-fill"/>
+                  <!-- label -->
+                  <text x="294" y="100" text-anchor="middle" class="bad-text">DO-3</text>
+                  <line x1="282" y1="103" x2="272" y2="115" stroke="#B83A1F" stroke-width="1.2"/>
+                </g>
+
+                <!-- ===== MBR PUMP (right, outside tank) ===== -->
+                <g>
+                  <circle cx="318" cy="160" r="14" class="ic-line"/>
+                  <circle cx="318" cy="160" r="4" class="ic-fill"/>
+                  <path d="M312 154 L324 166 M324 154 L312 166" class="ic-line"/>
+                  <!-- suction line from tank to pump -->
+                  <path d="M290 160 L304 160" class="ic-line"/>
+                  <!-- discharge -->
+                  <path d="M332 160 L338 160" class="ic-line"/>
+                  <text x="318" y="188" text-anchor="middle" class="ic-text">MBR-1</text>
+                </g>
+
+                <!-- Tank rim label -->
+                <text x="190" y="62" text-anchor="middle" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#2563EB" opacity=".85">AERATION TANK · BAY 3</text>
+              </svg>
+            </div>
+
+            <div class="a-title-row">
+              <div>
+                <h2 class="a-name">Aeration Tank · Bay 3</h2>
+                <span class="a-source">from DO-3 sensor</span>
+              </div>
+            </div>
+            <div class="a-status-row">
+              <div class="a-status"><span class="dot"></span>Active<span class="hi">· सक्रिय</span></div>
+              <div class="a-stamp">updated 12s ago</div>
+            </div>
+
+            <div class="stats">
+              <div class="stat bad"><span class="l">DO</span><span class="v">1.3<span class="u">mg/L</span></span></div>
+              <div class="stat"><span class="l">MLSS</span><span class="v">3.2<span class="u">g/L</span></span></div>
+              <div class="stat"><span class="l">Temp</span><span class="v">28<span class="u">°C</span></span></div>
+              <div class="stat"><span class="l">pH</span><span class="v">7.1</span></div>
+            </div>
+
+            <div class="comps">
+              <div class="comps-hdr"><span>Components <span class="cnt">4</span></span><span class="chev">⌄</span></div>
+              <div class="comp bad">
+                <div class="ic">📡</div><div class="nm">DO-3 sensor</div>
+                <div class="st"><span class="d"></span>reading low</div>
+              </div>
+              <div class="comp"><div class="ic">🌀</div><div class="nm">Blower 2</div><div class="st"><span class="d"></span>ok</div></div>
+              <div class="comp"><div class="ic">▦</div><div class="nm">Diffuser grid</div><div class="st"><span class="d"></span>ok</div></div>
+              <div class="comp"><div class="ic">⚙</div><div class="nm">MBR-1 Pump</div><div class="st"><span class="d"></span>ok</div></div>
+            </div>
+          </div>
+
+          <div class="issue">
+            <div class="sev-row"><span class="sev high">High</span><span class="iid">ISS-AER-DO-001</span></div>
+            <h2>DO sensor reading low</h2>
+            <p class="desc"><b>DO-3</b> has been below 1.5 mg/L for the last 12 minutes. Threshold is 2.0 mg/L. Other components reading normal — sensor drift or biological demand spike likely.</p>
+          </div>
+
+          <div class="ctas">
+            <button class="btn primary">Start diagnosis <span class="arr">→</span></button>
+            <button class="btn ghost">Can't take this — reassign</button>
+          </div>
+
+          <div class="section" style="padding-bottom:18px">
+            <div class="more-row"><span>Also on this asset</span><span class="cnt">2</span><span class="chev">›</span></div>
+            <div class="more-row"><span>Equipment history</span><span class="chev" style="margin-left:auto">›</span></div>
+          </div>
+
         </div>
       </div>
-
-      <!-- 6. Collapsed rows -->
-      <div class="section" style="padding-bottom:18px">
-        <div class="more-row">
-          <span>Also on this asset</span>
-          <span class="cnt">2</span>
-          <span class="chev">›</span>
-        </div>
-        <div class="more-row">
-          <span>Equipment history</span>
-          <span class="chev" style="margin-left:auto">›</span>
-        </div>
-      </div>
-
     </div>
+
+    <p class="caption">DO-3 probe glows red with a pulsing attention ring. All other components green.</p>
   </div>
+
+
+  <!-- ====================== CARD 2: DIFFUSERS CHOKED ====================== -->
+  <div class="panel-col">
+    <div class="panel-lbl"><span class="dot"></span>Scenario 2 · Diffusers choked</div>
+
+    <div class="phone">
+      <div class="phone-inner">
+
+        <div class="nav">
+          <button class="back">←  Back</button>
+          <button class="more">⋯</button>
+        </div>
+
+        <div class="scroll">
+
+          <div class="assign">
+            <div class="av">👋</div>
+            <div>
+              <div class="at">New assignment</div>
+              <div class="ab"><b>You've been assigned</b> a new issue on Aeration Tank · Bay 3</div>
+              <div class="when">just now · via WhatsApp · by Supervisor Anil</div>
+            </div>
+          </div>
+
+          <div class="asset">
+
+            <!-- ILLUSTRATION · Diffusers highlighted, bubbles uneven -->
+            <div class="illu" style="margin-top:14px">
+              <span class="badge">Aeration · Bay 3</span>
+              <svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" aria-label="Aeration tank · diffuser grid highlighted">
+                <!-- BLOWER -->
+                <g>
+                  <rect x="14" y="120" width="46" height="44" rx="6" class="ic-line"/>
+                  <circle cx="37" cy="142" r="11" class="ic-line"/>
+                  <circle cx="37" cy="142" r="4" class="ic-fill"/>
+                  <line x1="37" y1="135" x2="37" y2="149" class="ic-line"/>
+                  <line x1="30" y1="142" x2="44" y2="142" class="ic-line"/>
+                  <line x1="32" y1="137" x2="42" y2="147" class="ic-line"/>
+                  <line x1="42" y1="137" x2="32" y2="147" class="ic-line"/>
+                  <path d="M14 132 L4 132 L4 152 L14 152" class="ic-line"/>
+                  <text x="37" y="180" text-anchor="middle" class="ic-text">BLOWER 2</text>
+                  <path d="M60 130 L78 130 L78 60 L160 60" class="ic-line"/>
+                </g>
+
+                <!-- TANK -->
+                <rect x="90" y="78" width="200" height="120" rx="4" fill="#BFD3F5" opacity=".5"/>
+                <path d="M90 72 L90 192 Q90 198 96 198 L284 198 Q290 198 290 192 L290 72" stroke="#2563EB" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                <line x1="86" y1="72" x2="294" y2="72" stroke="#2563EB" stroke-width="2.4" stroke-linecap="round"/>
+                <path d="M94 88 Q108 84 122 88 T150 88 T178 88 T206 88 T234 88 T262 88 T286 88" stroke="#2563EB" stroke-width="1.5" fill="none" opacity=".6"/>
+
+                <!-- DIFFUSER GRID (HIGHLIGHTED · the problem) -->
+                <g>
+                  <!-- attention ring around grid -->
+                  <rect x="100" y="170" width="180" height="26" rx="6" fill="none" stroke="#B83A1F" stroke-width="1.5" opacity=".35">
+                    <animate attributeName="opacity" values=".5;.0;.5" dur="2s" repeatCount="indefinite"/>
+                  </rect>
+                  <!-- header pipe — RED -->
+                  <rect x="110" y="184" width="160" height="6" rx="2" class="bad-fill"/>
+                  <!-- diffuser stones — some clogged (X marks) -->
+                  <circle cx="130" cy="178" r="3.5" class="bad-fill"/>
+                  <path d="M127 175 L133 181 M133 175 L127 181" stroke="#fff" stroke-width="1.4"/>
+                  <circle cx="155" cy="178" r="3.5" class="bad-fill"/>
+                  <path d="M152 175 L158 181 M158 175 L152 181" stroke="#fff" stroke-width="1.4"/>
+                  <circle cx="180" cy="178" r="3.5" class="bad-fill"/>
+                  <circle cx="205" cy="178" r="3.5" class="bad-fill"/>
+                  <path d="M202 175 L208 181 M208 175 L202 181" stroke="#fff" stroke-width="1.4"/>
+                  <circle cx="230" cy="178" r="3.5" class="bad-fill"/>
+                  <circle cx="255" cy="178" r="3.5" class="bad-fill"/>
+                  <path d="M252 175 L258 181 M258 175 L252 181" stroke="#fff" stroke-width="1.4"/>
+                  <text x="190" y="214" text-anchor="middle" class="bad-text">DIFFUSER GRID</text>
+                  <!-- vertical drop -->
+                  <line x1="160" y1="60" x2="160" y2="184" class="ic-line"/>
+                </g>
+
+                <!-- BUBBLES (uneven, sparse from choked diffusers) -->
+                <g opacity=".85">
+                  <!-- 130 choked: nothing -->
+                  <!-- 155 choked: nothing -->
+                  <!-- 180 healthy -->
+                  <circle cx="180" cy="160" r="4" fill="#fff" opacity=".95"/>
+                  <circle cx="180" cy="138" r="2.8" fill="#fff" opacity=".7"/>
+                  <circle cx="180" cy="118" r="2" fill="#fff" opacity=".5"/>
+                  <!-- 205 choked: 1 weak bubble -->
+                  <circle cx="205" cy="170" r="1.8" fill="#fff" opacity=".55"/>
+                  <!-- 230 healthy -->
+                  <circle cx="230" cy="160" r="3.5" fill="#fff" opacity=".9"/>
+                  <circle cx="230" cy="140" r="2.4" fill="#fff" opacity=".65"/>
+                  <!-- 255 choked: nothing -->
+                </g>
+
+                <!-- DO SENSOR (greyed but visible — symptom shows here but not root) -->
+                <g>
+                  <line x1="270" y1="72" x2="270" y2="142" class="ic-line"/>
+                  <rect x="266" y="68" width="8" height="6" class="ic-fill"/>
+                  <ellipse cx="270" cy="148" rx="5" ry="6" fill="#E0A314" opacity=".7"/>
+                  <text x="294" y="100" text-anchor="middle" class="ic-text">DO-3</text>
+                  <line x1="282" y1="103" x2="272" y2="115" class="ic-line"/>
+                </g>
+
+                <!-- MBR PUMP -->
+                <g>
+                  <circle cx="318" cy="160" r="14" class="ic-line"/>
+                  <circle cx="318" cy="160" r="4" class="ic-fill"/>
+                  <path d="M312 154 L324 166 M324 154 L312 166" class="ic-line"/>
+                  <path d="M290 160 L304 160" class="ic-line"/>
+                  <path d="M332 160 L338 160" class="ic-line"/>
+                  <text x="318" y="188" text-anchor="middle" class="ic-text">MBR-1</text>
+                </g>
+
+                <text x="190" y="62" text-anchor="middle" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="#2563EB" opacity=".85">AERATION TANK · BAY 3</text>
+              </svg>
+            </div>
+
+            <div class="a-title-row">
+              <div>
+                <h2 class="a-name">Aeration Tank · Bay 3</h2>
+                <span class="a-source">from Diffuser grid</span>
+              </div>
+            </div>
+            <div class="a-status-row">
+              <div class="a-status"><span class="dot"></span>Active<span class="hi">· सक्रिय</span></div>
+              <div class="a-stamp">updated 8s ago</div>
+            </div>
+
+            <div class="stats">
+              <div class="stat bad"><span class="l">DO</span><span class="v">1.1<span class="u">mg/L</span></span></div>
+              <div class="stat"><span class="l">MLSS</span><span class="v">3.4<span class="u">g/L</span></span></div>
+              <div class="stat"><span class="l">Temp</span><span class="v">28<span class="u">°C</span></span></div>
+              <div class="stat warn"><span class="l">Backpressure</span><span class="v">0.62<span class="u">bar</span></span></div>
+            </div>
+
+            <div class="comps">
+              <div class="comps-hdr"><span>Components <span class="cnt">4</span></span><span class="chev">⌄</span></div>
+              <div class="comp bad">
+                <div class="ic">▦</div><div class="nm">Diffuser grid</div>
+                <div class="st"><span class="d"></span>choked · uneven flow</div>
+              </div>
+              <div class="comp warn">
+                <div class="ic">📡</div><div class="nm">DO-3 sensor</div>
+                <div class="st"><span class="d"></span>symptom · low</div>
+              </div>
+              <div class="comp"><div class="ic">🌀</div><div class="nm">Blower 2</div><div class="st"><span class="d"></span>ok</div></div>
+              <div class="comp"><div class="ic">⚙</div><div class="nm">MBR-1 Pump</div><div class="st"><span class="d"></span>ok</div></div>
+            </div>
+          </div>
+
+          <div class="issue">
+            <div class="sev-row"><span class="sev high">High</span><span class="iid">ISS-AER-DIFF-007</span></div>
+            <h2>Diffusers are choked</h2>
+            <p class="desc">Uneven bubble pattern observed across the diffuser grid. Backpressure has risen to <b>0.62 bar</b> (normal: 0.40). DO has dropped as a downstream symptom — cleaning required.</p>
+          </div>
+
+          <div class="ctas">
+            <button class="btn primary">Start diagnosis <span class="arr">→</span></button>
+            <button class="btn ghost">Can't take this — reassign</button>
+          </div>
+
+          <div class="section" style="padding-bottom:18px">
+            <div class="more-row"><span>Also on this asset</span><span class="cnt">1</span><span class="chev">›</span></div>
+            <div class="more-row"><span>Equipment history</span><span class="chev" style="margin-left:auto">›</span></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <p class="caption">Diffuser pipe & stones glow red, bubble plumes are sparse / missing in choked sections, DO shown as amber <b>symptom</b> — not the root cause.</p>
+  </div>
+
 </div>
 
-<p class="caption">Tank is the anchor. The <b>DO-3 sensor</b> appears as a small source pill and as the only red row in the components list — the operator sees instantly where the problem lives.</p>
+
+<!-- ============= LEGEND ============== -->
+<div class="legend">
+  <h4>How the two cards differ</h4>
+  <div class="legend-grid">
+    <div>
+      <b style="color:var(--ink);font-size:13px">DO sensor reading low</b>
+      <ul>
+        <li>Illustration: <b>DO-3 probe</b> in red with pulsing ring · bubbles healthy</li>
+        <li>Source pill: <code>▸ from DO-3 sensor</code></li>
+        <li>Telemetry: DO red, everything else normal</li>
+        <li>Components: <b>DO-3 = bad</b>, others ok</li>
+        <li>Story: <i>the sensor itself is the source</i> — drift or biological demand</li>
+      </ul>
+    </div>
+    <div>
+      <b style="color:var(--ink);font-size:13px">Diffusers are choked</b>
+      <ul>
+        <li>Illustration: <b>diffuser grid</b> in red with choked stones marked · bubbles uneven / missing</li>
+        <li>Source pill: <code>▸ from Diffuser grid</code></li>
+        <li>Telemetry: DO red <i>and</i> Backpressure amber (root cause + symptom)</li>
+        <li>Components: <b>Diffuser grid = bad</b>, <b>DO-3 = symptom (amber)</b></li>
+        <li>Story: <i>diffusers are the source, low DO is the downstream effect</i></li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin:20px 0 0;font-size:12.5px;color:var(--ink-3)">In both cards the equipment anchor is the same (<b style="color:var(--ink)">Aeration Tank · Bay 3</b>) — only the highlighted component, the source pill, and the issue narrative change.</p>
+</div>
 
 </body>
 </html>
