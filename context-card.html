@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Context card · 3 states</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#002976;
+    --ink:#0E1428;
+    --ink-2:#3D445A;
+    --ink-3:#6A7185;
+    --ink-4:#9AA0B0;
+    --line-soft:rgba(14,20,40,.08);
+    --bg-grad:linear-gradient(180deg,#F4F7FB 0%,#EDE4F2 40%,#FBE9D4 80%,#FBD8C6 100%);
+    --ok:#1F9D55;
+    --ok-ink:#0F5C2F;
+    --warn:#E0A314;
+    --warn-ink:#8C6306;
+    --crit:#B83A1F;
+    --block:#B83A1F;
+    --ctx:#6B36B5;
+    --ctx-light:#9963DD;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;font:15px/1.5 'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg-grad);min-height:100vh;letter-spacing:-.005em}
+  body{padding:24px 16px 80px;display:flex;flex-direction:column;align-items:center}
+
+  h1.title{text-align:center;font-size:30px;font-weight:800;letter-spacing:-.022em;margin:8px 0 4px}
+  .sub{text-align:center;color:var(--ink-3);max-width:720px;margin:0 auto 32px;line-height:1.6;font-size:14px;padding:0 16px}
+  .sub b{color:var(--ink);font-weight:700}
+
+  /* === Flow diagram === */
+  .flow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center;margin:0 auto 44px;max-width:880px;padding:18px 22px;background:rgba(255,255,255,.55);border:1px solid var(--line-soft);border-radius:18px}
+  .flow-step{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;min-width:130px}
+  .flow-step .dot{width:32px;height:32px;border-radius:999px;display:flex;align-items:center;justify-content:center;font:800 13px 'JetBrains Mono';margin-bottom:6px}
+  .flow-step.s1 .dot{background:rgba(107,54,181,.15);color:var(--ctx)}
+  .flow-step.s2 .dot{background:rgba(0,41,118,.12);color:var(--brand)}
+  .flow-step.s3 .dot{background:rgba(31,157,85,.15);color:var(--ok-ink)}
+  .flow-step .nm{font:800 11px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;color:var(--ink);margin-bottom:2px}
+  .flow-step .desc{font-size:11px;color:var(--ink-3);line-height:1.4;font-weight:500}
+  .flow-arr{font-size:18px;color:var(--ink-4);flex-shrink:0}
+  @media (max-width:700px){.flow-arr{transform:rotate(90deg)}}
+
+  /* === Panels (grid 2x2 on wide, 1col on narrow) === */
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:36px;max-width:920px;width:100%;justify-items:center}
+  @media (max-width:880px){.panels{grid-template-columns:1fr}}
+
+  .panel-col{display:flex;flex-direction:column;align-items:center;width:100%;max-width:400px}
+  .panel-lbl{font:800 10.5px 'JetBrains Mono';letter-spacing:.7px;text-transform:uppercase;color:var(--ink-2);margin-bottom:14px;display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid var(--line-soft)}
+  .panel-lbl .pdot{width:9px;height:9px;border-radius:999px}
+  .panel-lbl.s1 .pdot{background:var(--ctx);box-shadow:0 0 0 3px rgba(107,54,181,.18)}
+  .panel-lbl.s2 .pdot{background:var(--brand);box-shadow:0 0 0 3px rgba(0,41,118,.18)}
+  .panel-lbl.s2-block .pdot{background:var(--block);box-shadow:0 0 0 3px rgba(184,58,31,.18);animation:pulse 1.5s ease-in-out infinite}
+  .panel-lbl.s3 .pdot{background:var(--ok);box-shadow:0 0 0 3px rgba(31,157,85,.18)}
+  @keyframes pulse{0%,100%{opacity:.55;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
+
+  /* === Phone === */
+  .phone{width:380px;max-width:100%;background:#FBFAF8;border-radius:32px;overflow:hidden;box-shadow:0 30px 80px -20px rgba(40,50,80,.25),0 8px 24px -8px rgba(40,50,80,.12);border:1px solid rgba(255,255,255,.6)}
+  .phone-inner{display:flex;flex-direction:column;min-height:660px;overflow:hidden}
+  .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
+
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 8px;font-size:13px}
+  .nav .back{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--ink-2);background:none;border:none;font-size:14px;cursor:pointer;padding:6px 0}
+  .nav .more{background:rgba(14,20,40,.05);border:none;width:32px;height:32px;border-radius:999px;font-size:18px;color:var(--ink-2);cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+  /* === Constant chrome === */
+
+  /* State chip at top */
+  .state-chip{display:inline-flex;align-items:center;gap:8px;margin:6px 18px 12px;padding:6px 12px 6px 8px;border-radius:999px;font:800 10.5px 'JetBrains Mono';letter-spacing:.7px;text-transform:uppercase}
+  .state-chip .sd{width:9px;height:9px;border-radius:999px;flex-shrink:0}
+  .state-chip.summary{background:rgba(107,54,181,.10);color:var(--ctx);border:1px solid rgba(107,54,181,.22)}
+  .state-chip.summary .sd{background:var(--ctx)}
+  .state-chip.progress{background:rgba(0,41,118,.08);color:var(--brand);border:1px solid rgba(0,41,118,.22)}
+  .state-chip.progress .sd{background:var(--brand);animation:pulse 2s ease-in-out infinite}
+  .state-chip.blocked{background:rgba(184,58,31,.10);color:var(--block);border:1px solid rgba(184,58,31,.28)}
+  .state-chip.blocked .sd{background:var(--block);animation:pulse 1.3s ease-in-out infinite}
+  .state-chip.completed{background:rgba(31,157,85,.10);color:var(--ok-ink);border:1px solid rgba(31,157,85,.22)}
+  .state-chip.completed .sd{background:var(--ok)}
+
+  /* Asset strip */
+  .asset-strip{margin:0 14px 8px;padding:11px 13px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,.55));border:1px solid var(--line-soft);display:flex;align-items:center;gap:10px}
+  .asset-strip .ico{width:32px;height:32px;border-radius:9px;background:linear-gradient(145deg,#DCE5F5,#A8B8DE);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .asset-strip .as-main{flex:1;min-width:0}
+  .asset-strip .as-name{font-size:13.5px;font-weight:800;letter-spacing:-.012em;color:var(--ink);line-height:1.2}
+  .asset-strip .as-issue{font-size:11.5px;color:var(--ink-3);font-weight:600;margin-top:1px;display:flex;align-items:center;gap:6px}
+  .asset-strip .as-issue .sev{font:700 9px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;padding:2px 6px;border-radius:999px;background:rgba(184,58,31,.10);color:var(--crit)}
+
+  /* Recipient strip */
+  .recip{margin:0 14px 12px;padding:11px 13px;border-radius:14px;background:rgba(14,20,40,.03);display:flex;align-items:center;gap:10px;font-size:12.5px}
+  .recip .arrow{font-size:14px;color:var(--ink-4);font-weight:700}
+  .recip .av{width:30px;height:30px;border-radius:999px;background:linear-gradient(145deg,#FBE0E0,#F5C2C2);display:flex;align-items:center;justify-content:center;font-weight:800;color:#C03737;font-size:12px;flex-shrink:0}
+  .recip .rname{font-weight:700;color:var(--ink);letter-spacing:-.005em}
+  .recip .rmeta{font-size:11px;color:var(--ink-3);font-weight:500;display:flex;align-items:center;gap:5px;margin-top:1px}
+  .recip .rmeta .pres{width:7px;height:7px;border-radius:999px;background:var(--ok);box-shadow:0 0 0 2px rgba(31,157,85,.18);display:inline-block}
+  .recip .rmeta .pres.off{background:var(--ink-4);box-shadow:0 0 0 2px rgba(154,160,176,.18)}
+
+  /* === Middle block · varies by state === */
+  .middle{padding:6px 18px 14px}
+
+  /* Summary middle */
+  .reason-card{padding:14px;border-radius:14px;background:linear-gradient(135deg,rgba(107,54,181,.05),rgba(107,54,181,.10));border:1px solid rgba(107,54,181,.18)}
+  .reason-card .rlabel{font:800 9.5px 'JetBrains Mono';letter-spacing:.6px;text-transform:uppercase;color:var(--ctx);margin-bottom:6px}
+  .reason-card .rtext{font-size:14px;color:var(--ink);line-height:1.5;font-weight:600;letter-spacing:-.005em}
+  .reason-card .rtext::before{content:"\201C";font-size:24px;color:var(--ctx);opacity:.5;line-height:0;margin-right:2px;vertical-align:-6px}
+  .reason-card .rtext::after{content:"\201D";font-size:24px;color:var(--ctx);opacity:.5;line-height:0;margin-left:2px;vertical-align:-6px}
+  .handoff-when{font-size:11px;color:var(--ink-3);margin-top:10px;text-align:center;font-weight:500}
+  .handoff-when::before{content:"";display:inline-block;width:6px;height:6px;border-radius:999px;background:var(--ctx);margin-right:6px;vertical-align:1px}
+
+  /* Progress middle */
+  .prog-block{padding:14px;border-radius:14px;background:rgba(0,41,118,.04);border:1px solid rgba(0,41,118,.12)}
+  .prog-bar-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .prog-step-of{font:800 11.5px 'JetBrains Mono';letter-spacing:.4px;color:var(--brand)}
+  .prog-step-of b{font-size:18px;letter-spacing:-.01em}
+  .prog-pct{font:700 11px 'JetBrains Mono';color:var(--ink-3)}
+  .prog-bar{height:6px;border-radius:999px;background:rgba(0,41,118,.10);overflow:hidden;position:relative;margin-bottom:14px}
+  .prog-bar .fill{height:100%;background:linear-gradient(90deg,#002976,#1B3A8C);border-radius:999px;position:relative}
+  .prog-bar .fill::after{content:"";position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:999px;background:var(--brand);box-shadow:0 0 0 4px rgba(0,41,118,.15);animation:pulse 1.8s ease-in-out infinite}
+  .curstep-lbl{font:800 9.5px 'JetBrains Mono';letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+  .curstep-name{font-size:14.5px;font-weight:800;color:var(--ink);letter-spacing:-.012em;line-height:1.3;margin-bottom:8px}
+  .curstep-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-3);font-weight:600}
+  .curstep-meta .dur{display:inline-flex;align-items:center;gap:5px}
+  .curstep-meta .dur::before{content:"⏱";font-size:11px}
+  .rc-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font:700 10.5px 'JetBrains Mono';letter-spacing:.4px}
+  .rc-chip.unknown{background:rgba(224,163,20,.14);color:var(--warn-ink);border:1px solid rgba(224,163,20,.20)}
+  .rc-chip.confirmed{background:rgba(31,157,85,.12);color:var(--ok-ink);border:1px solid rgba(31,157,85,.22)}
+  .rc-chip.unknown::before{content:"?";font-weight:800}
+  .rc-chip.confirmed::before{content:"\2713";font-weight:800}
+
+  .last-act{margin-top:10px;padding-top:10px;border-top:1px dashed rgba(0,41,118,.18);font-size:11.5px;color:var(--ink-3);font-weight:500;display:flex;align-items:center;gap:6px}
+  .last-act .lpulse{width:7px;height:7px;border-radius:999px;background:var(--ok);box-shadow:0 0 0 2px rgba(31,157,85,.20);animation:pulse 2s ease-in-out infinite;display:inline-block}
+  .last-act b{color:var(--ink);font-weight:700}
+
+  /* BLOCKED inline card (lives inside Progress when applicable) */
+  .blocked-inline{margin-top:12px;padding:13px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(184,58,31,.06),rgba(184,58,31,.13));border:1px solid rgba(184,58,31,.25);position:relative}
+  .blocked-inline::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:999px 0 0 999px;background:linear-gradient(180deg,#E85A3A,#B83A1F)}
+  .blocked-inline .bi-inner{padding-left:6px}
+  .blocked-inline .bchip{display:inline-flex;align-items:center;gap:5px;font:800 9.5px 'JetBrains Mono';letter-spacing:.7px;text-transform:uppercase;color:var(--block);background:rgba(184,58,31,.16);padding:3px 8px;border-radius:999px;margin-bottom:7px}
+  .blocked-inline .bchip::before{content:"⛔"}
+  .blocked-inline .btitle{font-size:13px;font-weight:800;color:var(--ink);letter-spacing:-.01em;margin:0 0 4px;line-height:1.3}
+  .blocked-inline .breason{font-size:12px;color:var(--ink-2);line-height:1.5;margin:0;font-weight:500}
+  .blocked-inline .breason b{color:var(--block);font-weight:700}
+  .blocked-inline .belap{margin-top:7px;font-size:11px;font-weight:700;color:var(--block);display:inline-flex;align-items:center;gap:5px}
+  .blocked-inline .belap .ep{width:7px;height:7px;border-radius:999px;background:var(--block);animation:pulse 1.3s ease-in-out infinite}
+
+  /* Completion middle */
+  .outcome-card{padding:16px;border-radius:14px;background:linear-gradient(135deg,rgba(31,157,85,.05),rgba(31,157,85,.12));border:1px solid rgba(31,157,85,.22);text-align:center}
+  .outcome-icon{width:48px;height:48px;border-radius:999px;background:linear-gradient(145deg,#28B26A,#1F9D55);display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;margin:0 auto 10px;box-shadow:0 8px 20px -8px rgba(31,157,85,.45)}
+  .outcome-title{font-size:17px;font-weight:800;letter-spacing:-.018em;color:var(--ink);margin:0 0 4px}
+  .outcome-cause{font-size:12.5px;color:var(--ink-2);font-weight:600;margin:0 0 12px}
+  .outcome-cause b{color:var(--ink)}
+  .outcome-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:10px;border-top:1px dashed rgba(31,157,85,.25);text-align:left}
+  .outcome-meta .om-l{font:800 9.5px 'JetBrains Mono';letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+  .outcome-meta .om-v{font:700 13px 'JetBrains Mono';color:var(--ink);letter-spacing:-.01em}
+  .outcome-meta .om-v.ver{color:var(--ok-ink);font-family:'Plus Jakarta Sans';font-size:12.5px;display:inline-flex;align-items:center;gap:4px}
+  .outcome-meta .om-v.ver::before{content:"✓";font:800 12px 'JetBrains Mono'}
+  .outcome-meta .om-v.pending{color:var(--warn-ink);font-family:'Plus Jakarta Sans';font-size:12.5px;display:inline-flex;align-items:center;gap:4px}
+  .outcome-meta .om-v.pending::before{content:"⏳"}
+
+  /* === CTA === */
+  .cta-wrap{padding:6px 18px 14px}
+  .cta{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 16px;border-radius:14px;font:700 14px 'Plus Jakarta Sans';letter-spacing:-.01em;border:none;cursor:pointer;transition:.15s;width:100%}
+  .cta.primary{background:linear-gradient(135deg,#002976,#1B3A8C);color:#fff;box-shadow:0 8px 22px -8px rgba(0,41,118,.45)}
+  .cta.primary.ctx{background:linear-gradient(135deg,#6B36B5,#5C2D8E);box-shadow:0 8px 22px -8px rgba(107,54,181,.45)}
+  .cta.primary.danger{background:linear-gradient(135deg,#E85A3A,#B83A1F);box-shadow:0 8px 22px -8px rgba(184,58,31,.45)}
+  .cta.primary.success{background:linear-gradient(135deg,#28B26A,#1F9D55);box-shadow:0 8px 22px -8px rgba(31,157,85,.45)}
+  .cta:active{transform:scale(.98)}
+  .cta .arr{font-weight:800;font-size:16px}
+  .footer-link{display:flex;justify-content:center;padding:0 0 14px;font-size:12px;color:var(--ink-3);font-weight:600}
+  .footer-link a{color:var(--ink-3);text-decoration:none;border-bottom:1px solid rgba(106,113,133,.30);padding-bottom:1px}
+  .footer-link a:hover{color:var(--ink-2)}
+
+  /* Caption */
+  .caption{color:var(--ink-3);font-size:12.5px;line-height:1.55;margin:14px auto 0;text-align:center;letter-spacing:-.005em;max-width:380px}
+  .caption b{color:var(--ink);font-weight:700}
+
+  /* Legend block */
+  .legend{max-width:920px;margin:60px auto 0;padding:24px;background:rgba(255,255,255,.55);border:1px solid var(--line-soft);border-radius:18px;font-size:13px;line-height:1.6;color:var(--ink-2)}
+  .legend h4{margin:0 0 14px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3)}
+  .legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media (max-width:760px){.legend-grid{grid-template-columns:1fr}}
+  .legend b{color:var(--ink)}
+  .legend ul{margin:8px 0 0;padding-left:18px}
+  .legend li{margin-bottom:6px}
+  .legend code{font:700 11.5px 'JetBrains Mono';background:rgba(14,20,40,.05);padding:1px 6px;border-radius:5px;letter-spacing:.2px}
+</style>
+</head>
+<body>
+
+<h1 class="title">Context card · 3 states</h1>
+<p class="sub">What Operator A sees in their feed <b>after reassigning</b> an issue. One card that <b>morphs through three states</b> as Operator B works the issue. No state switcher — the card just becomes the next state on its own. <b>One CTA only</b>, label changes per state.</p>
+
+<!-- Flow diagram -->
+<div class="flow">
+  <div class="flow-step s1">
+    <div class="dot">1</div>
+    <div class="nm">Summary</div>
+    <div class="desc">Handoff landed.<br>B hasn't started yet.</div>
+  </div>
+  <div class="flow-arr">→</div>
+  <div class="flow-step s2">
+    <div class="dot">2</div>
+    <div class="nm">Progress</div>
+    <div class="desc">B is mid-flow.<br>Card updates live.</div>
+  </div>
+  <div class="flow-arr">→</div>
+  <div class="flow-step s3">
+    <div class="dot">3</div>
+    <div class="nm">Completion</div>
+    <div class="desc">Outcome &amp; verification.<br>A acknowledges.</div>
+  </div>
+</div>
+
+
+<div class="panels">
+
+  <!-- ========================== STATE 1 · SUMMARY ========================== -->
+  <div class="panel-col">
+    <div class="panel-lbl s1"><span class="pdot"></span>State 1 · Summary</div>
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="nav"><button class="back">←  Back</button><button class="more">⋯</button></div>
+        <div class="scroll">
+
+          <div class="state-chip summary"><span class="sd"></span>Context · Summary</div>
+
+          <div class="asset-strip">
+            <div class="ico">🛢</div>
+            <div class="as-main">
+              <div class="as-name">Aeration Tank · Bay 3</div>
+              <div class="as-issue"><span class="sev">High</span>DO low</div>
+            </div>
+          </div>
+
+          <div class="recip">
+            <span class="arrow">→</span>
+            <div class="av">N</div>
+            <div style="flex:1">
+              <div class="rname">Nagesh</div>
+              <div class="rmeta"><span class="pres"></span>online · not started yet</div>
+            </div>
+          </div>
+
+          <div class="middle">
+            <div class="reason-card">
+              <div class="rlabel">Reason you handed off</div>
+              <div class="rtext">On break — Nagesh is closer to the tank and has Mechanical clearance.</div>
+            </div>
+            <div class="handoff-when">handed off 1m 12s ago</div>
+          </div>
+
+          <div class="cta-wrap">
+            <button class="cta primary ctx">View live progress <span class="arr">→</span></button>
+          </div>
+          <div class="footer-link"><a href="#">Open full issue</a></div>
+
+        </div>
+      </div>
+    </div>
+    <p class="caption">B has the issue but hasn't tapped Start yet. Reason for handoff is preserved verbatim — that's what's most useful for context now.</p>
+  </div>
+
+
+  <!-- ========================== STATE 2 · PROGRESS ========================== -->
+  <div class="panel-col">
+    <div class="panel-lbl s2"><span class="pdot"></span>State 2 · Progress</div>
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="nav"><button class="back">←  Back</button><button class="more">⋯</button></div>
+        <div class="scroll">
+
+          <div class="state-chip progress"><span class="sd"></span>Context · In progress</div>
+
+          <div class="asset-strip">
+            <div class="ico">🛢</div>
+            <div class="as-main">
+              <div class="as-name">Aeration Tank · Bay 3</div>
+              <div class="as-issue"><span class="sev">High</span>DO low</div>
+            </div>
+          </div>
+
+          <div class="recip">
+            <span class="arrow">→</span>
+            <div class="av">N</div>
+            <div style="flex:1">
+              <div class="rname">Nagesh</div>
+              <div class="rmeta"><span class="pres"></span>online · working · 2h 05m active</div>
+            </div>
+          </div>
+
+          <div class="middle">
+            <div class="prog-block">
+              <div class="prog-bar-row">
+                <div class="prog-step-of"><b>3</b> of 7</div>
+                <div class="prog-pct">43%</div>
+              </div>
+              <div class="prog-bar"><div class="fill" style="width:43%"></div></div>
+
+              <div class="curstep-lbl">Current step</div>
+              <div class="curstep-name">Check DO probe against portable meter</div>
+
+              <div class="curstep-meta">
+                <span class="dur">4m 22s on this step</span>
+                <span class="rc-chip unknown">Diagnosing</span>
+              </div>
+
+              <div class="last-act">
+                <span class="lpulse"></span>Nagesh tapped <b>Continue</b> · 18s ago
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-wrap">
+            <button class="cta primary danger">Take back <span class="arr">→</span></button>
+          </div>
+          <div class="footer-link"><a href="#">Open full issue</a></div>
+
+        </div>
+      </div>
+    </div>
+    <p class="caption">B is moving. Progress bar fills, last activity timestamp updates as steps land. Root cause still <b>diagnosing</b> at this point.</p>
+  </div>
+
+
+  <!-- ========================== STATE 2 · BLOCKED VARIANT ========================== -->
+  <div class="panel-col">
+    <div class="panel-lbl s2-block"><span class="pdot"></span>State 2 · Progress · ⛔ BLOCKED</div>
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="nav"><button class="back">←  Back</button><button class="more">⋯</button></div>
+        <div class="scroll">
+
+          <div class="state-chip blocked"><span class="sd"></span>Context · Blocked</div>
+
+          <div class="asset-strip">
+            <div class="ico">🛢</div>
+            <div class="as-main">
+              <div class="as-name">Aeration Tank · Bay 3</div>
+              <div class="as-issue"><span class="sev">High</span>DO low</div>
+            </div>
+          </div>
+
+          <div class="recip">
+            <span class="arrow">→</span>
+            <div class="av">N</div>
+            <div style="flex:1">
+              <div class="rname">Nagesh</div>
+              <div class="rmeta"><span class="pres off"></span>offline · last seen 4m ago</div>
+            </div>
+          </div>
+
+          <div class="middle">
+            <div class="prog-block">
+              <div class="prog-bar-row">
+                <div class="prog-step-of"><b>4</b> of 7</div>
+                <div class="prog-pct">57%</div>
+              </div>
+              <div class="prog-bar"><div class="fill" style="width:57%"></div></div>
+
+              <div class="curstep-lbl">Current step</div>
+              <div class="curstep-name">Diffuser inspection — photo required</div>
+
+              <div class="curstep-meta">
+                <span class="rc-chip confirmed">Diffuser blockage</span>
+              </div>
+
+              <div class="blocked-inline">
+                <div class="bi-inner">
+                  <span class="bchip">Blocked · hard gate</span>
+                  <h4 class="btitle">Waiting on supervisor approval</h4>
+                  <p class="breason">Nagesh uploaded a <b>diffuser-condition photo</b>. Cannot proceed until supervisor signs off.</p>
+                  <div class="belap"><span class="ep"></span>blocked 4m 12s</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-wrap">
+            <button class="cta primary danger">Take back <span class="arr">→</span></button>
+          </div>
+          <div class="footer-link"><a href="#">Open full issue</a></div>
+
+        </div>
+      </div>
+    </div>
+    <p class="caption">A glance tells A everything they need: B is offline, blocked on supervisor approval, 4 min so far. This is the moment A might step in.</p>
+  </div>
+
+
+  <!-- ========================== STATE 3 · COMPLETION ========================== -->
+  <div class="panel-col">
+    <div class="panel-lbl s3"><span class="pdot"></span>State 3 · Completion</div>
+    <div class="phone">
+      <div class="phone-inner">
+        <div class="nav"><button class="back">←  Back</button><button class="more">⋯</button></div>
+        <div class="scroll">
+
+          <div class="state-chip completed"><span class="sd"></span>Context · Completed</div>
+
+          <div class="asset-strip">
+            <div class="ico">🛢</div>
+            <div class="as-main">
+              <div class="as-name">Aeration Tank · Bay 3</div>
+              <div class="as-issue"><span class="sev" style="background:rgba(31,157,85,.12);color:var(--ok-ink)">Resolved</span>DO low</div>
+            </div>
+          </div>
+
+          <div class="recip">
+            <span class="arrow">→</span>
+            <div class="av">N</div>
+            <div style="flex:1">
+              <div class="rname">Nagesh</div>
+              <div class="rmeta"><span class="pres off"></span>finished · off-shift now</div>
+            </div>
+          </div>
+
+          <div class="middle">
+            <div class="outcome-card">
+              <div class="outcome-icon">✓</div>
+              <h3 class="outcome-title">Resolved</h3>
+              <p class="outcome-cause">Root cause: <b>Diffuser blockage</b> · cleaned and verified</p>
+              <div class="outcome-meta">
+                <div>
+                  <div class="om-l">Total time</div>
+                  <div class="om-v">3h 12m</div>
+                </div>
+                <div>
+                  <div class="om-l">Verification</div>
+                  <div class="om-v ver">Supervisor signed</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cta-wrap">
+            <button class="cta primary success">Acknowledge &amp; close <span class="arr">→</span></button>
+          </div>
+          <div class="footer-link"><a href="#">Open full issue</a></div>
+
+        </div>
+      </div>
+    </div>
+    <p class="caption">Outcome is what matters. One tap acknowledges. Card collapses out of A's feed afterward.</p>
+  </div>
+
+</div>
+
+
+<!-- =================== LEGEND =================== -->
+<div class="legend">
+  <h4>What stays the same · what changes</h4>
+  <div class="legend-grid">
+    <div>
+      <b>Constant chrome (every state)</b>
+      <ul>
+        <li><b>Top state chip</b> — colored purple/blue/red/green so the state is readable in 100ms</li>
+        <li><b>Asset strip</b> — name + severity + issue title, one line</li>
+        <li><b>Recipient strip</b> — avatar + name + presence dot + activity sub-line</li>
+        <li><b>Single CTA</b> — always one, full width</li>
+        <li><b>Footer ghost link</b> — <code>Open full issue</code> for the rare deep-view need</li>
+      </ul>
+    </div>
+    <div>
+      <b>What morphs per state</b>
+      <ul>
+        <li><b>State 1 (Summary)</b> — reason quote · handoff timestamp · CTA <code>View live progress</code></li>
+        <li><b>State 2 (Progress)</b> — step N/M · progress bar · current step · time on step · root-cause chip · last activity · CTA <code>Take back</code></li>
+        <li><b>State 2 BLOCKED</b> — same as Progress + inline red BLOCKED card · presence flips to offline · CTA still <code>Take back</code> but visually escalated</li>
+        <li><b>State 3 (Completion)</b> — green outcome panel · root cause · total time · verification status · CTA <code>Acknowledge &amp; close</code></li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin:18px 0 0;font-size:12.5px;color:var(--ink-3)">The card <b style="color:var(--ink)">never asks Op A which state to view</b> — it advances on its own as the underlying issue moves. From Op A's perspective there is only one card in their feed, and it tells them what's happening right now.</p>
+</div>
+
+</body>
+</html>

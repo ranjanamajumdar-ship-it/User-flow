@@ -359,6 +359,11 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .fld b{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.005em}
 .fld span{font-size:11px;color:var(--ink-3);font-weight:500;letter-spacing:0}
 .fld:has(input:checked){background:rgba(0,41,118,.06);border-color:rgba(0,41,118,.20)}
+/* State pills inside Context card drawer headings */
+.state-pill{display:inline-block;font:800 9.5px 'JetBrains Mono';letter-spacing:.6px;text-transform:uppercase;padding:3px 8px;border-radius:999px;margin-right:8px;vertical-align:1px;color:#fff}
+.state-pill.s1{background:linear-gradient(135deg,#7C46C5,#5C2D8E)}
+.state-pill.s2{background:linear-gradient(135deg,#002976,#1B3A8C)}
+.state-pill.s3{background:linear-gradient(135deg,#28B26A,#1F9D55)}
 /* End drawer type-aware */
 /* ===== Drawer / glass sheet ===== */
 .scrim{position:fixed;inset:0;background:rgba(20,25,40,.30);
@@ -1297,7 +1302,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <span class="cl normal"><span class="d"></span>Normal · 3 steps</span>
       <span class="cl branch"><span class="d"></span>Branch · 3 steps</span>
       <span class="cl exception"><span class="d"></span>Exception · 3 steps</span>
-      <span class="cl card"><span class="d"></span>Cards · 4 types</span>
+      <span class="cl card"><span class="d"></span>Cards · 2 types</span>
     </div>
 
     <div class="builder">
@@ -1366,28 +1371,20 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
         <!-- ============ 🟣 CARDS ============ -->
         <div class="pgroup actions open">
-          <div class="pghdr"><span class="cat-dot" style="background:#6B36B5"></span><span>Cards (passive · 1 CTA)</span><span class="cat-count">4</span></div>
+          <div class="pghdr"><span class="cat-dot" style="background:#6B36B5"></span><span>Cards (passive · 1 CTA)</span><span class="cat-count">2</span></div>
           <div class="ptiles">
             <button class="ptile" onclick="addStep('issuecard')">
               <div class="pico cat-card">📋</div>
               <div class="ptxt"><div class="pt">Issue card</div><div class="ps">Shown when a new issue is assigned</div></div>
             </button>
-            <button class="ptile" onclick="addStep('summarycard')">
+            <button class="ptile" onclick="addStep('contextcard')">
               <div class="pico cat-card">📑</div>
-              <div class="ptxt"><div class="pt">Summary card</div><div class="ps">Shown to Op B after reassignment</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('progresscard')">
-              <div class="pico cat-card">⏳</div>
-              <div class="ptxt"><div class="pt">Task progress card</div><div class="ps">While Op B is working the task</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('completioncard')">
-              <div class="pico cat-card">🏁</div>
-              <div class="ptxt"><div class="pt">Completion card</div><div class="ps">After Op B finishes the task</div></div>
+              <div class="ptxt"><div class="pt">Context card</div><div class="ps">For Op A after reassignment · morphs through 3 states</div></div>
             </button>
           </div>
         </div>
 
-        <div class="ptip"><b>Steps</b> = operator acts. <b>Cards</b> = system shows a summary after a step completes. Every card has exactly one CTA that opens a <i>different</i> step.</div>
+        <div class="ptip"><b>Steps</b> = operator acts. <b>Cards</b> = system shows a summary. The <b>Issue card</b> opens diagnosis; the <b>Context card</b> sits in Op A's feed after handoff and morphs <i>Summary → Progress → Completion</i> as Op B works the issue.</div>
 </div>
 
       <!-- ===== Canvas ===== -->
@@ -1490,13 +1487,14 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="fcat card"><span class="ftd"></span>Card · Completion</div>
-            <div class="ft">All done &mdash; tap to close the issue</div>
+            <div class="fcat card"><span class="ftd"></span>Card · Context</div>
+            <div class="ft">Op A's handoff status &mdash; 3 states, morphs live</div>
             <div class="fs">
-              <span class="chip">🏁 Passive</span>
-              <span class="chip">1 CTA → Close</span>
+              <span class="chip">📑 Summary → Progress → Completion</span>
+              <span class="chip">1 CTA per state</span>
+              <span class="chip">For Op A</span>
             </div>
-            <span class="fk">CARD_COMPLETION</span>
+            <span class="fk">CARD_CONTEXT</span>
           </div>
 
           <button class="fnode-add" onclick="addStep('action')">＋ Add step at the end</button>
@@ -1827,9 +1825,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       </optgroup>
       <optgroup label="🟪 Cards">
         <option value="issuecard">Issue card</option>
-        <option value="summarycard">Summary card</option>
-        <option value="progresscard">Task progress card</option>
-        <option value="completioncard">Completion card</option>
+        <option value="contextcard">Context card (Summary → Progress → Completion)</option>
       </optgroup>
     </select>
 
@@ -2097,65 +2093,88 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <div class="help">⚠ Rule — must point to a step that is <b>different</b> from the one that triggered this card.</div>
     </div>
 
-    <!-- ============ 🟪 SUMMARY CARD ============ -->
-    <div class="dr-panel" data-for="summarycard">
-      <div class="dr-banner card">📑 Shown to Operator B after Operator A or Supervisor reassigns the task. One CTA only.</div>
-      <h4 class="dr-section">Card content</h4>
-      <label>Headline</label>
-      <input type="text" value="Picking up where {prevOperator} left off" oninput="markSaved()"/>
-      <label style="margin-top:12px">Summary of work so far</label>
-      <textarea oninput="markSaved()">{prevOperator} completed {stepsDone} steps. Last action: {lastAction}. Reason for handoff: {reassignReason}.</textarea>
-      <h4 class="dr-section" style="margin-top:18px">Single CTA</h4>
-      <label>Button label</label>
-      <input type="text" value="Continue where they left off" oninput="markSaved()"/>
-      <label style="margin-top:12px">CTA opens this step</label>
-      <select onchange="markSaved()">
-        <option>Resume at last incomplete step</option>
-        <option>Step 1 · Action card</option>
-        <option>Step 2 · Root cause selector</option>
-      </select>
-    </div>
+    <!-- ============ 🟪 CONTEXT CARD (3 states in one) ============ -->
+    <div class="dr-panel" data-for="contextcard">
+      <div class="dr-banner card">📑 Sits in <b>Operator A's</b> feed after reassignment. Morphs through three states automatically as Op B works the issue. One CTA per state, label changes with the state.</div>
 
-    <!-- ============ 🟪 TASK PROGRESS CARD ============ -->
-    <div class="dr-panel" data-for="progresscard">
-      <div class="dr-banner card">⏳ Shown to Operator B while the reassigned task is in flight. One CTA only.</div>
-      <h4 class="dr-section">Card content</h4>
-      <label>Headline</label>
-      <input type="text" value="Task in progress — {pctComplete}% done" oninput="markSaved()"/>
-      <label style="margin-top:12px">Live status fields to show</label>
-      <div class="sub-list">
-        <div class="sub-item"><span class="ix">▸</span><span class="t">Current step name</span><span class="ctrl"><button class="del">×</button></span></div>
-        <div class="sub-item"><span class="ix">▸</span><span class="t">Time on this step</span><span class="ctrl"><button class="del">×</button></span></div>
-        <div class="sub-item"><span class="ix">▸</span><span class="t">Steps remaining</span><span class="ctrl"><button class="del">×</button></span></div>
-        <button class="sub-add">＋ Add field</button>
+      <!-- Constant chrome -->
+      <h4 class="dr-section">Constant chrome (shown in every state)</h4>
+      <div class="fld-list">
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>State chip</b><span>Top — purple/blue/red/green based on state</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Asset strip</b><span>Equipment name + severity + issue title</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Recipient strip</b><span>Avatar + name + presence dot + activity</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Footer: "Open full issue" link</b><span>Ghost link for deep-view escape hatch</span></div></label>
       </div>
-      <h4 class="dr-section" style="margin-top:18px">Single CTA</h4>
-      <label>Button label</label>
-      <input type="text" value="Continue to next step" oninput="markSaved()"/>
-      <label style="margin-top:12px">CTA opens this step</label>
-      <select onchange="markSaved()">
-        <option>Next step in flow</option>
-        <option>Specific step…</option>
-      </select>
-    </div>
 
-    <!-- ============ 🟪 COMPLETION CARD ============ -->
-    <div class="dr-panel" data-for="completioncard">
-      <div class="dr-banner card">🏁 Shown to Operator B after the reassigned task finishes. One CTA only.</div>
-      <h4 class="dr-section">Card content</h4>
-      <label>Headline</label>
-      <input type="text" value="All done — task completed" oninput="markSaved()"/>
-      <label style="margin-top:12px">Closing message</label>
-      <textarea oninput="markSaved()">Issue #{id} resolved. Root cause: {rc}. Total time: {duration}.</textarea>
-      <h4 class="dr-section" style="margin-top:18px">Single CTA</h4>
-      <label>Button label</label>
-      <input type="text" value="Close issue" oninput="markSaved()"/>
+      <!-- State 1 · Summary -->
+      <h4 class="dr-section" style="margin-top:22px"><span class="state-pill s1">State 1</span> Summary — handoff just landed</h4>
+      <label>State chip label</label>
+      <input type="text" value="Context · Summary" oninput="markSaved()"/>
+      <label style="margin-top:12px">Quote label (shown above the reason)</label>
+      <input type="text" value="Reason you handed off" oninput="markSaved()"/>
+      <label style="margin-top:12px">Default reason placeholder</label>
+      <textarea oninput="markSaved()">{reassignReason} — pulled verbatim from the reassignment step input.</textarea>
+      <label style="margin-top:12px">CTA button label</label>
+      <input type="text" value="View live progress" oninput="markSaved()"/>
       <label style="margin-top:12px">CTA opens this step</label>
       <select onchange="markSaved()">
-        <option>Close stage</option>
-        <option>Return to dashboard</option>
-        <option>Review with supervisor</option>
+        <option>Self · advances card to State 2 when B starts</option>
+        <option>Open full issue view</option>
       </select>
+
+      <!-- State 2 · Progress -->
+      <h4 class="dr-section" style="margin-top:22px"><span class="state-pill s2">State 2</span> Progress — B is mid-flow</h4>
+      <label>State chip label</label>
+      <input type="text" value="Context · In progress" oninput="markSaved()"/>
+      <label style="margin-top:12px">Fields shown in this state</label>
+      <div class="fld-list">
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Progress bar (N of M)</b><span>Step counter + percentage + filled bar with pulsing tip</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Current step name</b><span>Title of the step B is working on now</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Time on this step</b><span>Live duration · "4m 22s on this step"</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Root-cause chip</b><span>Diagnosing (amber) → Confirmed (green) when found</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Last activity line</b><span>"Nagesh tapped Continue · 18s ago" with pulse dot</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>BLOCKED inline card</b><span>Auto-shows when B is hard-gated · red banner</span></div></label>
+      </div>
+      <label style="margin-top:12px">CTA button label</label>
+      <input type="text" value="Take back" oninput="markSaved()"/>
+      <div class="tog" style="margin-top:10px">
+        <div class="lbl"><div class="t">Confirm before Take back</div><div class="s">"Are you sure? Nagesh has done {n} steps." — prevents accidental reclaim</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+      </div>
+      <label style="margin-top:12px">CTA opens this step</label>
+      <select onchange="markSaved()">
+        <option>Reclaim issue · returns to Op A's flow at last step</option>
+        <option>Open full issue view</option>
+      </select>
+
+      <!-- State 3 · Completion -->
+      <h4 class="dr-section" style="margin-top:22px"><span class="state-pill s3">State 3</span> Completion — outcome</h4>
+      <label>State chip label</label>
+      <input type="text" value="Context · Completed" oninput="markSaved()"/>
+      <label style="margin-top:12px">Outcome headline</label>
+      <input type="text" value="Resolved" oninput="markSaved()"/>
+      <label style="margin-top:12px">Outcome body</label>
+      <textarea oninput="markSaved()">Root cause: {rootCause} · {resolution}</textarea>
+      <label style="margin-top:12px">Fields shown in this state</label>
+      <div class="fld-list">
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Total time</b><span>End-to-end duration · "3h 12m"</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Verification status</b><span>Supervisor signed (green) · Pending (amber)</span></div></label>
+        <label class="fld"><input type="checkbox" oninput="markSaved()"><div><b>Resolution photo</b><span>Thumbnail of the proof B uploaded</span></div></label>
+      </div>
+      <label style="margin-top:12px">CTA button label</label>
+      <input type="text" value="Acknowledge & close" oninput="markSaved()"/>
+      <div class="tog" style="margin-top:10px">
+        <div class="lbl"><div class="t">Card auto-dismisses on acknowledge</div><div class="s">Removes from Op A's feed after one tap</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+      </div>
+      <label style="margin-top:12px">CTA opens this step</label>
+      <select onchange="markSaved()">
+        <option>Mark seen · close card</option>
+        <option>Review with supervisor</option>
+        <option>Open full issue view</option>
+      </select>
+
+      <div class="help" style="margin-top:18px">⚠ <b>Rule</b> — Context card advances state automatically based on the underlying issue's lifecycle. <b>Operator A never picks a state.</b></div>
     </div>
 
   </div>
@@ -2352,9 +2371,11 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
     // === NEW TAXONOMY · CARDS (passive · 1 CTA) ===
     issuecard:     { ttl: "Issue card — new assignment",                 chips:['📋 Card','1 CTA','For Op B'],                    kind:'CARD_ISSUE',        cat:'card', catLabel:'Card · Issue' },
-    summarycard:   { ttl: "Summary card — reassignment handoff",         chips:['📑 Card','1 CTA','For Op B'],                    kind:'CARD_SUMMARY',      cat:'card', catLabel:'Card · Summary' },
-    progresscard:  { ttl: "Task progress card — work in flight",         chips:['⏳ Card','1 CTA','For Op B'],                    kind:'CARD_PROGRESS',     cat:'card', catLabel:'Card · Task progress' },
-    completioncard:{ ttl: "Completion card — task finished",             chips:['🏁 Card','1 CTA','For Op B'],                    kind:'CARD_COMPLETION',   cat:'card', catLabel:'Card · Completion' },
+    contextcard:   { ttl: "Context card — handoff status (3 states)",     chips:['📑 Card','3 states','1 CTA each','For Op A'],     kind:'CARD_CONTEXT',      cat:'card', catLabel:'Card · Context' },
+    // back-compat aliases — old keys still resolve to contextcard
+    summarycard:   { ttl: "Context card — handoff status (3 states)",     chips:['📑 Card','3 states','1 CTA each','For Op A'],     kind:'CARD_CONTEXT',      cat:'card', catLabel:'Card · Context' },
+    progresscard:  { ttl: "Context card — handoff status (3 states)",     chips:['📑 Card','3 states','1 CTA each','For Op A'],     kind:'CARD_CONTEXT',      cat:'card', catLabel:'Card · Context' },
+    completioncard:{ ttl: "Context card — handoff status (3 states)",     chips:['📑 Card','3 states','1 CTA each','For Op A'],     kind:'CARD_CONTEXT',      cat:'card', catLabel:'Card · Context' },
   };
 
   function buildNode(template, n) {
@@ -2489,19 +2510,19 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       action:'Normal · Action card', rcselect:'Normal · Root cause selector', taskdone:'Normal · Task accomplished',
       skipknow:'Branch · Skip (know reason)', skipfalse:'Branch · Skip (false alarm)', reassign2:'Branch · Reassignment',
       callsup:'Exception · Call Supervisor', photosup:'Exception · Photo to Supervisor', falsealarm:'Exception · False alarm overflow',
-      issuecard:'Card · Issue', summarycard:'Card · Summary', progresscard:'Card · Task progress', completioncard:'Card · Completion'
+      issuecard:'Card · Issue', contextcard:'Card · Context', summarycard:'Card · Context', progresscard:'Card · Context', completioncard:'Card · Context'
     };
     const colors = {
       action:'var(--brand)', rcselect:'var(--brand)', taskdone:'var(--brand)',
       skipknow:'#A06F00', skipfalse:'#A06F00', reassign2:'#A06F00',
       callsup:'#B83A1F', photosup:'#B83A1F', falsealarm:'#B83A1F',
-      issuecard:'#6B36B5', summarycard:'#6B36B5', progresscard:'#6B36B5', completioncard:'#6B36B5'
+      issuecard:'#6B36B5', contextcard:'#6B36B5', summarycard:'#6B36B5', progresscard:'#6B36B5', completioncard:'#6B36B5'
     };
     const bgs = {
       action:'rgba(0,41,118,.08)', rcselect:'rgba(0,41,118,.08)', taskdone:'rgba(0,41,118,.08)',
       skipknow:'rgba(232,148,26,.10)', skipfalse:'rgba(232,148,26,.10)', reassign2:'rgba(232,148,26,.10)',
       callsup:'rgba(184,58,31,.10)', photosup:'rgba(184,58,31,.10)', falsealarm:'rgba(184,58,31,.10)',
-      issuecard:'rgba(107,54,181,.10)', summarycard:'rgba(107,54,181,.10)', progresscard:'rgba(107,54,181,.10)', completioncard:'rgba(107,54,181,.10)'
+      issuecard:'rgba(107,54,181,.10)', contextcard:'rgba(107,54,181,.10)', summarycard:'rgba(107,54,181,.10)', progresscard:'rgba(107,54,181,.10)', completioncard:'rgba(107,54,181,.10)'
     };
     const badge = document.getElementById('drTypeBadge');
     if (badge && labels[type]) {
@@ -2530,9 +2551,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         else if (/Photo to Supervisor/i.test(txt)) type = 'photosup';
         else if (/False alarm/i.test(txt)) type = 'falsealarm';
         else if (/Card.*Issue/i.test(txt)) type = 'issuecard';
-        else if (/Card.*Summary/i.test(txt)) type = 'summarycard';
-        else if (/Card.*Progress/i.test(txt)) type = 'progresscard';
-        else if (/Card.*Completion/i.test(txt)) type = 'completioncard';
+        else if (/Card.*Context/i.test(txt)) type = 'contextcard';
+        else if (/Card.*Summary|Card.*Progress|Card.*Completion/i.test(txt)) type = 'contextcard';
       }
       if (!type) type = 'action';
     }
