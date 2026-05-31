@@ -38,6 +38,13 @@ jobs:
           path: context-card
         continue-on-error: true
 
+      - name: Checkout config-dashboard
+        uses: actions/checkout@v4
+        with:
+          ref: config-dashboard
+          path: config-dashboard
+        continue-on-error: true
+
       - name: Assemble site
         run: |
           mkdir -p dist
@@ -58,6 +65,12 @@ jobs:
             cp -R context-card/. dist/context-card/ 2>/dev/null || true
             rm -rf dist/context-card/.git dist/context-card/.github
           fi
+          # /config-dashboard/ = config-dashboard branch contents
+          if [ -d config-dashboard ]; then
+            mkdir -p dist/config-dashboard
+            cp -R config-dashboard/. dist/config-dashboard/ 2>/dev/null || true
+            rm -rf dist/config-dashboard/.git dist/config-dashboard/.github
+          fi
           # Simple landing index for the previews dir
           cat > dist/previews.html <<'EOF'
           <!doctype html><meta charset=utf-8>
@@ -71,6 +84,7 @@ jobs:
           <a href="./config-v2/issue-card.html">config-v2 · issue-card.html</a>
           <a href="./context-card/context-card.html">context-card · context-card.html</a>
           <a href="./context-card/config.html">context-card · config.html</a>
+          <a href="./config-dashboard/config.html">config-dashboard · config.html</a>
           <a href="./lifecycle.html">main · lifecycle.html</a>
           EOF
           ls -la dist

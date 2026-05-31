@@ -130,6 +130,138 @@ header.app{
 .step-line.done{background:linear-gradient(90deg,#28B26A,#1F9D55)}
 
 /* ===== Panels ===== */
+
+/* ===== Configuration dashboard layout ===== */
+.wrap.dash{
+  display:grid;
+  grid-template-columns: minmax(0,1fr) 320px;
+  gap:48px;
+  max-width:1320px;
+  padding:48px 56px 160px;
+  align-items:flex-start;
+}
+.wrap-form{min-width:0}
+.side-dash{
+  position:sticky;
+  top:88px;
+  background:rgba(255,255,255,.55);
+  border:1px solid var(--line-soft);
+  border-radius:18px;
+  padding:20px 18px 22px;
+  align-self:flex-start;
+  box-shadow:0 8px 22px -10px rgba(40,50,80,.12);
+}
+.sd-head{padding:0 6px 14px;border-bottom:1px solid var(--line-soft);margin-bottom:12px}
+.sd-eyebrow{font:800 9.5px 'JetBrains Mono';letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+.sd-title{font-size:14.5px;font-weight:800;letter-spacing:-.012em;color:var(--ink)}
+.sd-steps{position:relative}
+.sd-step{position:relative;padding:0 0 18px 38px;cursor:pointer;display:block}
+.sd-step:last-child{padding-bottom:0}
+.sd-step .sd-marker{position:absolute;left:0;top:0;width:26px;display:flex;justify-content:center}
+.sd-step .sd-circle{
+  width:26px;height:26px;border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+  font:800 11px 'JetBrains Mono';letter-spacing:.4px;
+  background:rgba(14,20,40,.06);color:var(--ink-3);
+  border:2px solid rgba(14,20,40,.10);
+  transition:.2s;flex-shrink:0;z-index:1;position:relative;
+}
+.sd-step.cur .sd-circle{
+  background:linear-gradient(145deg,#1B3A8C,#002976);
+  color:#fff;border-color:#fff;
+  box-shadow:0 0 0 4px rgba(0,41,118,.18),0 4px 12px -4px rgba(0,41,118,.40);
+}
+.sd-step.done .sd-circle{
+  background:linear-gradient(145deg,#28B26A,#1F9D55);color:#fff;border-color:#fff;
+  box-shadow:0 0 0 3px rgba(31,157,85,.18);
+}
+.sd-step.done .sd-circle::after{content:"\2713";font-size:13px;font-weight:800}
+.sd-step.done .sd-circle{font-size:0}
+/* Vertical connecting line */
+.sd-step::before{
+  content:"";position:absolute;left:12px;top:28px;bottom:0;width:2px;
+  background:rgba(14,20,40,.08);border-radius:1px;
+}
+.sd-step:last-child::before{display:none}
+.sd-step.done::before{background:linear-gradient(180deg,#28B26A,#1F9D55)}
+.sd-step.cur::before{background:linear-gradient(180deg,#1B3A8C 0%, rgba(14,20,40,.08) 80%)}
+
+.sd-body{padding-top:1px}
+.sd-name{font-size:13.5px;font-weight:700;letter-spacing:-.005em;color:var(--ink-2);transition:.2s}
+.sd-step.cur .sd-name{color:var(--ink);font-weight:800}
+.sd-step.done .sd-name{color:var(--ok-ink,#0F5C2F)}
+.sd-step.pending .sd-name{color:var(--ink-3)}
+.sd-meta{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:3px;letter-spacing:-.005em}
+.sd-meta b{color:var(--ink-2);font-weight:700}
+.sd-step.cur .sd-meta b{color:var(--brand)}
+
+/* Field list inside current step */
+.sd-fields{display:none;margin-top:10px;padding-left:0;list-style:none;border-left:1px dashed rgba(14,20,40,.10);margin-left:-2px;padding-left:12px}
+.sd-step.cur .sd-fields{display:block}
+.sd-fld{position:relative;font-size:11.5px;color:var(--ink-3);padding:4px 0;display:flex;align-items:center;gap:8px;font-weight:600;letter-spacing:-.005em}
+.sd-fld .sd-ck{
+  width:13px;height:13px;border-radius:999px;
+  background:transparent;border:1.5px solid rgba(14,20,40,.18);
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:.18s;
+  position:relative;
+}
+.sd-fld.done .sd-ck{background:#1F9D55;border-color:#1F9D55}
+.sd-fld.done .sd-ck::after{content:"\2713";color:#fff;font:800 8.5px 'JetBrains Mono';position:absolute;line-height:1}
+.sd-fld.done{color:var(--ink-2)}
+.sd-fld .sd-val{margin-left:auto;font:600 10.5px 'JetBrains Mono';color:var(--ink);background:rgba(31,157,85,.10);padding:2px 7px;border-radius:999px;letter-spacing:0;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sd-fld:not(.done) .sd-val{display:none}
+
+/* ===== Composite time input (hrs+mins or hrs+mins+secs) ===== */
+.time-compose{display:grid;gap:14px;margin-top:6px}
+.time-compose.two{grid-template-columns:1fr 1fr}
+.time-compose.three{grid-template-columns:1fr 1fr 1fr}
+.tc-cell{display:flex;align-items:baseline;gap:8px;border-bottom:1px solid rgba(14,20,40,.55);padding:10px 0;transition:border-color .18s}
+.tc-cell:focus-within{border-bottom-color:var(--brand);border-bottom-width:1.5px;padding-bottom:9.5px}
+.tc-cell input{
+  flex:1;min-width:0;width:100%;
+  border:none!important;outline:none;
+  background:transparent!important;
+  font:700 18px 'JetBrains Mono'!important;
+  color:var(--ink);letter-spacing:-.01em;
+  padding:0!important;
+  box-shadow:none!important;
+  border-bottom:none!important;
+}
+.tc-u{font:700 11px 'Plus Jakarta Sans';color:var(--ink-3);letter-spacing:.3px;text-transform:lowercase;flex-shrink:0}
+
+/* ===== Form grid for paired fields ===== */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px}
+@media (max-width:720px){.form-grid{grid-template-columns:1fr}}
+.ff{display:flex;flex-direction:column;min-width:0}
+
+/* ===== Trigger card chrome ===== */
+.trigger-card{position:relative}
+.trig-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.trig-hdr h3{margin:0}
+.trig-del{
+  width:30px;height:30px;border-radius:999px;
+  background:rgba(184,58,31,.08);color:var(--crit);
+  border:none;cursor:pointer;font-size:18px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  transition:.15s;line-height:1;
+}
+.trig-del:hover{background:rgba(184,58,31,.16)}
+.add-trigger{
+  width:100%;padding:14px;border-radius:14px;
+  background:transparent;border:1px dashed rgba(0,41,118,.28);
+  color:var(--brand);font:700 13px 'Plus Jakarta Sans';letter-spacing:-.005em;
+  cursor:pointer;margin-top:8px;transition:.15s;
+}
+.add-trigger:hover{background:rgba(0,41,118,.04);border-color:rgba(0,41,118,.45)}
+
+/* Responsive: stack the dashboard below the form on narrow screens */
+@media (max-width:1100px){
+  .wrap.dash{grid-template-columns:1fr;gap:24px}
+  .side-dash{position:static;order:-1}
+  .sd-fields{display:none!important}
+}
+/* End config dashboard ===== */
 .wrap{max-width:1120px;margin:48px auto 160px;padding:0 56px;transition:max-width .3s}
 .panel{display:none;animation:fadeUp .3s cubic-bezier(.4,0,.2,1)}
 .panel.on{display:block}
@@ -1076,215 +1208,338 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   <div class="stepper-inner">
     <div class="step-node cur" data-step="1" onclick="goStep(1)">
       <div class="step-circle">1</div>
-      <div class="step-label">Basics</div>
+      <div class="step-label">Set up</div>
     </div>
     <div class="step-line"></div>
     <div class="step-node" data-step="2" onclick="goStep(2)">
       <div class="step-circle">2</div>
-      <div class="step-label">Assign</div>
+      <div class="step-label">Triggers</div>
     </div>
     <div class="step-line"></div>
     <div class="step-node" data-step="3" onclick="goStep(3)">
       <div class="step-circle">3</div>
-      <div class="step-label">Steps</div>
+      <div class="step-label">Communication</div>
     </div>
     <div class="step-line"></div>
     <div class="step-node" data-step="4" onclick="goStep(4)">
       <div class="step-circle">4</div>
+      <div class="step-label">Build the flow</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-node" data-step="5" onclick="goStep(5)">
+      <div class="step-circle">5</div>
       <div class="step-label">Review</div>
     </div>
   </div>
 </div>
 
-<div class="wrap">
+<div class="wrap dash">
 
-  <!-- ============== STEP 1 · Basics ============== -->
+<aside class="side-dash" id="sideDash">
+  <div class="sd-head">
+    <div class="sd-eyebrow">Configuration</div>
+    <div class="sd-title">Low DO · Aeration</div>
+  </div>
+  <div class="sd-steps">
+    <!-- Step 1 -->
+    <div class="sd-step cur" data-sd-step="1" onclick="goStep(1)">
+      <div class="sd-marker"><div class="sd-circle">1</div></div>
+      <div class="sd-body">
+        <div class="sd-name">Set up the issue</div>
+        <div class="sd-meta"><b id="sd1-done">3</b> of <b>9</b> filled</div>
+        <div class="sd-fields" id="sd1-fields">
+          <div class="sd-fld done" data-field="plant"><span class="sd-ck"></span>Plant<span class="sd-val">IREO Grand Arch</span></div>
+          <div class="sd-fld done" data-field="issue"><span class="sd-ck"></span>Issue<span class="sd-val">Low DO</span></div>
+          <div class="sd-fld done" data-field="equipment"><span class="sd-ck"></span>Equipment<span class="sd-val">Aeration Tank · Bay 3</span></div>
+          <div class="sd-fld" data-field="description"><span class="sd-ck"></span>Description</div>
+          <div class="sd-fld" data-field="severity"><span class="sd-ck"></span>Severity</div>
+          <div class="sd-fld" data-field="deadline"><span class="sd-ck"></span>Deadline</div>
+          <div class="sd-fld" data-field="type"><span class="sd-ck"></span>Type</div>
+          <div class="sd-fld" data-field="assignee"><span class="sd-ck"></span>Assignee</div>
+          <div class="sd-fld" data-field="language"><span class="sd-ck"></span>Language</div>
+        </div>
+      </div>
+    </div>
+    <!-- Step 2 -->
+    <div class="sd-step" data-sd-step="2" onclick="goStep(2)">
+      <div class="sd-marker"><div class="sd-circle">2</div></div>
+      <div class="sd-body">
+        <div class="sd-name">Triggers</div>
+        <div class="sd-meta"><b>0</b> triggers configured</div>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div class="sd-step" data-sd-step="3" onclick="goStep(3)">
+      <div class="sd-marker"><div class="sd-circle">3</div></div>
+      <div class="sd-body">
+        <div class="sd-name">Communication</div>
+        <div class="sd-meta"><b>0</b> of <b>4</b> channels on</div>
+      </div>
+    </div>
+    <!-- Step 4 -->
+    <div class="sd-step" data-sd-step="4" onclick="goStep(4)">
+      <div class="sd-marker"><div class="sd-circle">4</div></div>
+      <div class="sd-body">
+        <div class="sd-name">Build the flow</div>
+        <div class="sd-meta">Steps &amp; cards</div>
+      </div>
+    </div>
+    <!-- Step 5 -->
+    <div class="sd-step" data-sd-step="5" onclick="goStep(5)">
+      <div class="sd-marker"><div class="sd-circle">5</div></div>
+      <div class="sd-body">
+        <div class="sd-name">Review &amp; publish</div>
+        <div class="sd-meta">Final check</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="wrap-form">
+
   <section class="panel on" id="p-1">
     <h1 class="page-h">Set up the <em>issue</em></h1>
-    <p class="page-sub">Give it a name operators will understand. One issue = one diagnostic tree.</p>
+    <p class="page-sub">Give the issue a clear identity. Plant, equipment, severity, deadline — everything operators see at the top of the screen.</p>
 
     <div class="card">
-      <h3>Quick start</h3>
-      <p class="helper">Start blank, or pre-fill from a saved template. You can save the current configuration as a template anytime from the Templates tab.</p>
-      <div class="qs-row">
-        <button class="qs-tile on" onclick="setStartMode(this,'blank')">
-          <span class="qs-ico">＋</span>
-          <div class="qs-body">
-            <div class="qs-ttl">Start blank</div>
-            <div class="qs-sub">Configure a brand new flow from scratch</div>
+      <h3>Issue details</h3>
+      <p class="helper">These fields define what operators see at the top of the screen. Pick from dropdowns where possible — type to add new entries.</p>
+
+      <div class="form-grid">
+        <div class="ff">
+          <label>Plant</label>
+          <select onchange="markFieldDone(1,'plant',this.value);markSaved()">
+            <option>IREO Grand Arch</option>
+            <option>IREO Skyon</option>
+            <option>IREO Victory Valley</option>
+            <option>+ Add new plant</option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Equipment</label>
+          <select onchange="markFieldDone(1,'equipment',this.value);markSaved()">
+            <option>Aeration Tank · Bay 3</option>
+            <option>MBR Module 1</option>
+            <option>Clarifier 2</option>
+            <option>+ Add new equipment</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ff" style="margin-top:14px">
+        <label>Issue</label>
+        <select onchange="markFieldDone(1,'issue',this.value);markSaved()">
+          <option>Low DO</option>
+          <option>High TMP</option>
+          <option>Sludge bulking</option>
+          <option>VFD overcurrent trip</option>
+          <option>+ Add new issue</option>
+        </select>
+      </div>
+
+      <div class="ff" style="margin-top:14px">
+        <label>Description</label>
+        <textarea oninput="markFieldDone(1,'description',this.value);markSaved()" placeholder="Short context the operator will read first. What is this issue, when does it happen, what good looks like.">DO levels in the aeration tank are below 2.0 mg/L. Use this tree to walk through the candidate causes — diffusers, sensor, blower, biology — and confirm the right fix.</textarea>
+      </div>
+
+      <div class="form-grid" style="margin-top:14px">
+        <div class="ff">
+          <label>Severity</label>
+          <select onchange="markFieldDone(1,'severity',this.value);markSaved()">
+            <option>— Select severity —</option>
+            <option>Critical (immediate · loud alert)</option>
+            <option>High (within an hour)</option>
+            <option>Medium (this shift)</option>
+            <option>Low (this week)</option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Deadline</label>
+          <div class="time-compose two">
+            <div class="tc-cell">
+              <input type="text" value="" placeholder="0" oninput="markFieldDone(1,'deadline',this.value);markSaved()"/>
+              <span class="tc-u">hrs</span>
+            </div>
+            <div class="tc-cell">
+              <input type="text" value="" placeholder="00" oninput="markFieldDone(1,'deadline',this.value);markSaved()"/>
+              <span class="tc-u">mins</span>
+            </div>
           </div>
-        </button>
-        <button class="qs-tile" onclick="setStartMode(this,'lowdo')">
-          <span class="qs-ico">💧</span>
-          <div class="qs-body">
-            <div class="qs-ttl">Low DO · Aeration</div>
-            <div class="qs-sub">DT-001 · 6 steps · 11 routes</div>
-          </div>
-        </button>
-        <button class="qs-tile" onclick="setStartMode(this,'tmp')">
-          <span class="qs-ico">📐</span>
-          <div class="qs-body">
-            <div class="qs-ttl">High TMP · MBR</div>
-            <div class="qs-sub">DT-002 · 5 steps</div>
-          </div>
-        </button>
-        <button class="qs-tile" onclick="setStartMode(this,'browse')">
-          <span class="qs-ico">→</span>
-          <div class="qs-body">
-            <div class="qs-ttl">Browse all templates</div>
-            <div class="qs-sub">6 saved · 22 in DP library</div>
-          </div>
-        </button>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top:14px">
+        <div class="ff">
+          <label>Type</label>
+          <select onchange="markFieldDone(1,'type',this.value);markSaved()">
+            <option>— Select type —</option>
+            <option>Mechanical</option>
+            <option>Electrical / Instrumentation</option>
+            <option>Process / Lab</option>
+            <option>Safety</option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Assignee</label>
+          <select onchange="markFieldDone(1,'assignee',this.value);markSaved()">
+            <option>— Select assignee —</option>
+            <option>On-shift Operator</option>
+            <option>Site Engineer (Sharma ji)</option>
+            <option>Supervisor</option>
+            <option>Site Manager</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ff" style="margin-top:14px">
+        <label>Language</label>
+        <select onchange="markFieldDone(1,'language',this.value);markSaved()">
+          <option>— Select language —</option>
+          <option>English</option>
+          <option>हिन्दी (Hindi)</option>
+          <option>తెలుగు (Telugu)</option>
+          <option>தமிழ் (Tamil)</option>
+          <option>ಕನ್ನಡ (Kannada)</option>
+        </select>
+        <div class="help">Operator UI strings, alerts, and step copy will all render in this language by default. Translator can be plugged in later.</div>
       </div>
     </div>
 
-    <div class="card">
-      <h3>Name &amp; equipment</h3>
-      <p class="helper">This is what operators see at the top of the screen.</p>
-
-      <label>Issue name</label>
-      <input type="text" id="issueEn" value="Low DO in Aeration Tank" oninput="markSaved()"/>
-
-      <label style="margin-top:14px">Equipment</label>
-      <div class="combo">
-        <input type="text" id="eqInput" placeholder="Type equipment ID or pick from your library…" oninput="markSaved()" value=""/>
-        <button class="pick" type="button" onclick="this.previousElementSibling.focus()">Pick from library</button>
-        <span class="chev">⌄</span>
-      </div>
-      <div class="help">Start typing — or click "Pick from library" for AT-01 · MBR-1 · B-1 · EQ-1 and 12 others.</div>
-
-      <label style="margin-top:14px">Description</label>
-      <textarea id="issueDesc" oninput="markSaved()" placeholder="One or two lines explaining what this diagnostic is for, when to use it, and what good looks like." style="min-height:90px">Dissolved oxygen levels in the aeration tank are below 2.0 mg/L. Use this tree to walk through the six root causes — blower, aeration distribution, DO sensor, sludge bulking, shock load — and confirm the right fix.</textarea>
-    </div>
-
-    <div class="card">
-      <h3>Severity</h3>
-      <p class="helper">Picks the colour of the alert pill and how loudly it notifies the operator.</p>
-      <div class="choices four">
-        <button class="rcard danger" onclick="pick(this,'sev')">
-          <span class="ico">🔥</span>
-          <div class="ttl">Critical</div>
-          <div class="sub">Immediate · loud alert</div>
-        </button>
-        <button class="rcard amber on" onclick="pick(this,'sev')">
-          <span class="ico">⚠</span>
-          <div class="ttl">High</div>
-          <div class="sub">Within an hour</div>
-        </button>
-        <button class="rcard" onclick="pick(this,'sev')">
-          <span class="ico">●</span>
-          <div class="ttl">Medium</div>
-          <div class="sub">This shift</div>
-        </button>
-        <button class="rcard" onclick="pick(this,'sev')">
-          <span class="ico">○</span>
-          <div class="ttl">Low</div>
-          <div class="sub">This week</div>
-        </button>
-      </div>
-    </div>
   </section>
 
-  <!-- ============== STEP 2 · Assign ============== -->
+    <!-- ============== STEP 2 · Triggers ============== -->
   <section class="panel" id="p-2">
-    <h1 class="page-h">Who runs this <em>flow</em>?</h1>
-    <p class="page-sub">Pick the role that owns this diagnostic. If they're unavailable, it'll auto-escalate.</p>
+    <h1 class="page-h">Define the <em>triggers</em></h1>
+    <p class="page-sub">Tell the system what sensor reading, condition, and sustained duration should automatically open this issue. Add as many triggers as you need.</p>
 
-    <div class="card">
-      <h3>Primary assignee</h3>
-      <p class="helper">Whoever is on shift in this role will be notified first.</p>
-      <div class="choices four">
-        <button class="rcard" onclick="pick(this,'assignee')">
-          <span class="ico">👷</span>
-          <div class="ttl">On-shift Operator</div>
-          <div class="sub">Default — whoever is logged in for this shift</div>
-        </button>
-        <button class="rcard on" onclick="pick(this,'assignee')">
-          <span class="ico">🧑‍🔧</span>
-          <div class="ttl">Site Engineer</div>
-          <div class="sub">Sharma ji — handles complex diagnostics</div>
-        </button>
-        <button class="rcard" onclick="pick(this,'assignee')">
-          <span class="ico">🦺</span>
-          <div class="ttl">Supervisor</div>
-          <div class="sub">Approval-gated steps &amp; escalations</div>
-        </button>
-        <button class="rcard" onclick="pick(this,'assignee')">
-          <span class="ico">🏢</span>
-          <div class="ttl">Site Manager</div>
-          <div class="sub">Plant-level escalations only</div>
-        </button>
+    <div class="card trigger-card">
+      <div class="trig-hdr">
+        <h3>Trigger 1</h3>
+        <button class="trig-del" title="Remove trigger" onclick="this.closest('.trigger-card').remove();renumberTriggers();markSaved()">×</button>
+      </div>
+      <p class="helper">The system opens this issue automatically when the condition below is met for the specified duration.</p>
+
+      <div class="form-grid">
+        <div class="ff">
+          <label>Sensor to watch</label>
+          <select onchange="markSaved()">
+            <option>— Pick a sensor —</option>
+            <option>DO-3 (Dissolved Oxygen · Aeration · Bay 3)</option>
+            <option>MLSS-1 (Mixed Liquor Suspended Solids)</option>
+            <option>pH-1 (pH probe · Aeration)</option>
+            <option>VFD-2 (Blower 2 frequency)</option>
+            <option>FLOW-IN (Inlet flow)</option>
+          </select>
+        </div>
+        <div class="ff">
+          <label>Condition</label>
+          <select onchange="markSaved()">
+            <option>Less than</option>
+            <option>Greater than</option>
+            <option>Outside range</option>
+            <option>Equal to</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-top:14px">
+        <div class="ff">
+          <label>Value</label>
+          <input type="text" value="2.0" placeholder="e.g. 2.0" oninput="markSaved()"/>
+        </div>
+        <div class="ff">
+          <label>Unit</label>
+          <select onchange="markSaved()">
+            <option>mg/L</option>
+            <option>%</option>
+            <option>Hz</option>
+            <option>bar</option>
+            <option>m³/hr</option>
+            <option>°C</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ff" style="margin-top:14px">
+        <label>Sustained for</label>
+        <div class="time-compose three">
+          <div class="tc-cell">
+            <input type="text" value="0" placeholder="0" oninput="markSaved()"/>
+            <span class="tc-u">hrs</span>
+          </div>
+          <div class="tc-cell">
+            <input type="text" value="12" placeholder="00" oninput="markSaved()"/>
+            <span class="tc-u">mins</span>
+          </div>
+          <div class="tc-cell">
+            <input type="text" value="00" placeholder="00" oninput="markSaved()"/>
+            <span class="tc-u">secs</span>
+          </div>
+        </div>
+        <div class="help">Reading must hold the condition for this duration before the issue opens. Prevents flapping on transient spikes.</div>
+      </div>
+
+      <div class="ff" style="margin-top:14px">
+        <label>Description for operator (optional)</label>
+        <textarea oninput="markSaved()" placeholder="A short hint shown to the operator when this trigger fires. e.g. 'DO has been below threshold — check diffusers and sensor.'"></textarea>
       </div>
     </div>
 
-    <div class="card">
-      <h3>Escalation chain</h3>
-      <p class="helper">If the primary assignee doesn't respond, the flow climbs this ladder. Drag rows to reorder.</p>
+    <button class="add-trigger" onclick="addTrigger()">＋ Add another trigger</button>
+  </section>
 
-      <div class="sub-list">
-        <div class="sub-item">
-          <span class="ix">1</span>
-          <span class="t" style="display:flex;flex-direction:column;gap:4px">
-            <span><b contenteditable="true">Site Engineer (Sharma ji)</b> — primary</span>
-            <span style="font-size:11.5px;color:var(--ink-3);line-height:1.5" contenteditable="true">Notified immediately on flow start</span>
-          </span>
-        </div>
-        <div class="sub-item">
-          <span class="ix">2</span>
-          <span class="t" style="display:flex;flex-direction:column;gap:4px">
-            <span><b contenteditable="true">Supervisor</b></span>
-            <span style="font-size:11.5px;color:var(--ink-3);line-height:1.5">Escalate after
-              <span class="inl-edit" contenteditable="true">10 minutes</span>
-              of no response</span>
-          </span>
-          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
-        </div>
-        <div class="sub-item">
-          <span class="ix">3</span>
-          <span class="t" style="display:flex;flex-direction:column;gap:4px">
-            <span><b contenteditable="true">Site Manager</b></span>
-            <span style="font-size:11.5px;color:var(--ink-3);line-height:1.5">Escalate after
-              <span class="inl-edit" contenteditable="true">30 minutes</span>
-              with no resolution</span>
-          </span>
-          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
-        </div>
-        <button class="sub-add" onclick="addSubItem(this,'option')">＋ Add escalation level</button>
-      </div>
-    </div>
+  <!-- ============== STEP 3 · Communication ============== -->
+  <section class="panel" id="p-3">
+    <h1 class="page-h">How operators are <em>notified</em></h1>
+    <p class="page-sub">Pick the channels the assignee will be reached on when this issue opens. Multiple channels can be on at once — they fire in priority order.</p>
 
     <div class="card">
-      <h3>Skill-type override</h3>
-      <p class="helper">If a step needs a different skill type than the assignee has, the system auto-routes that one step. The rest of the flow stays with the primary.</p>
-      <div class="tog">
-        <div class="lbl"><div class="t">Allow per-step auto-routing</div><div class="s">Example — if the assignee is a General Operator but step 4 needs Electrical, that one step jumps to the on-shift technician</div></div>
-        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
-      </div>
-    </div>
+      <h3>Notification channels</h3>
+      <p class="helper">Each channel can be toggled independently. Phone call should be reserved for Critical severity only.</p>
 
-    <div class="card">
-      <h3>How they're notified</h3>
       <div class="tog">
         <div class="lbl"><div class="t">In-app push notification</div><div class="s">Banner inside the DP operator app</div></div>
         <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
       <div class="tog">
-        <div class="lbl"><div class="t">WhatsApp alert</div><div class="s">Sent to their registered number with deep link</div></div>
+        <div class="lbl"><div class="t">WhatsApp alert</div><div class="s">Sent to their registered number with deep link to the Issue card</div></div>
         <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
       <div class="tog">
-        <div class="lbl"><div class="t">Phone call (urgent only)</div><div class="s">Triggered only for Critical severity issues</div></div>
-        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+        <div class="lbl"><div class="t">Phone call (urgent only)</div><div class="s">Triggered only for Critical severity issues — auto-dialled to assignee</div></div>
+        <div class="sw" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
       <div class="tog">
         <div class="lbl"><div class="t">SMS fallback</div><div class="s">If WhatsApp not delivered within 2 minutes</div></div>
         <div class="sw" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
     </div>
+
+    <div class="card">
+      <h3>Escalation chain</h3>
+      <p class="helper">If the primary assignee doesn't respond, the system escalates to the next person on this list.</p>
+      <div class="sub-list">
+        <div class="sub-item">
+          <span class="ix">1</span>
+          <span class="t"><b contenteditable="true">Site Engineer (Sharma ji)</b> — primary · notified immediately</span>
+        </div>
+        <div class="sub-item">
+          <span class="ix">2</span>
+          <span class="t"><b contenteditable="true">Supervisor</b> — escalate after <span class="inl-edit" contenteditable="true">10 minutes</span> of no response</span>
+          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        </div>
+        <div class="sub-item">
+          <span class="ix">3</span>
+          <span class="t"><b contenteditable="true">Site Manager</b> — escalate after <span class="inl-edit" contenteditable="true">30 minutes</span> with no resolution</span>
+          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        </div>
+        <button class="sub-add" onclick="addSubItem(this,'option')">＋ Add escalation level</button>
+      </div>
+    </div>
   </section>
 
-  <!-- ============== STEP 3 · Steps (Figma-like builder) ============== -->
-  <section class="panel" id="p-3">
+  <!-- ============== STEP 4 · Build the flow ============== -->
+  <section class="panel" id="p-4">
     <h1 class="page-h">Build the <em>flow</em></h1>
     <p class="page-sub">Drag step types in from the left, hover between cards to insert, tap a card to edit it.</p>
 
@@ -1516,7 +1771,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   </section>
 
   <!-- ============== STEP 4 · Review ============== -->
-  <section class="panel" id="p-4">
+  <section class="panel" id="p-5">
     <h1 class="page-h">Review &amp; <em>publish</em></h1>
     <p class="page-sub">One last look. Operators won't see your changes until you publish.</p>
 
@@ -1789,7 +2044,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 <!-- ========== Bottom-anchored CTAs ========== -->
 <div class="footer">
   <div class="footer-inner">
-    <div class="meta">Step <b id="stepNow">1</b> of 4 · DT-001 · v3.2 draft</div>
+    <div class="meta">Section <b id="stepNow">1</b> of 5 · DT-001 · v3.2 draft</div>
     <button class="btn outline lg" id="backBtn" onclick="prevStep()" style="display:none">‹ Back</button>
     <button class="btn primary lg" id="nextBtn" onclick="nextStep()">Continue ›</button>
   </div>
@@ -2290,6 +2545,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       el.classList.toggle('done', (i+1) < n);
     });
     document.getElementById('stepNow').textContent = n;
+    if (typeof syncSideDash === 'function') syncSideDash(n);
     document.getElementById('backBtn').style.display = n > 1 ? '' : 'none';
     const next = document.getElementById('nextBtn');
     next.textContent = n === 4 ? 'Publish to operators' : 'Continue ›';
@@ -2480,8 +2736,47 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     document.querySelectorAll('.fnode').forEach(n => n.classList.remove('selected'));
     if (node) node.classList.add('selected');
   }
+
+  // ===== Dashboard side-panel helpers =====
+  function syncSideDash(n){
+    document.querySelectorAll('.sd-step').forEach(el => {
+      const idx = +el.getAttribute('data-sd-step');
+      el.classList.toggle('cur', idx === n);
+      el.classList.toggle('done', idx < n);
+      el.classList.toggle('pending', idx > n);
+    });
+  }
+  function markFieldDone(stepNum, fieldKey, val){
+    const fld = document.querySelector('.sd-step[data-sd-step="'+stepNum+'"] .sd-fld[data-field="'+fieldKey+'"]');
+    if (!fld) return;
+    const filled = val && String(val).trim().length > 0 && !String(val).startsWith('— ');
+    fld.classList.toggle('done', !!filled);
+    const valEl = fld.querySelector('.sd-val');
+    if (valEl) valEl.textContent = filled ? val.replace(/\s*\(.*?\)\s*/g,'') : '';
+    // recompute count for step 1
+    const all = document.querySelectorAll('.sd-step[data-sd-step="'+stepNum+'"] .sd-fld');
+    const done = document.querySelectorAll('.sd-step[data-sd-step="'+stepNum+'"] .sd-fld.done');
+    const cnt = document.getElementById('sd'+stepNum+'-done');
+    if (cnt) cnt.textContent = done.length;
+  }
+  function renumberTriggers(){
+    document.querySelectorAll('.trigger-card .trig-hdr h3').forEach((h,i) => h.textContent = 'Trigger ' + (i+1));
+  }
+  function addTrigger(){
+    const last = document.querySelector('.trigger-card:last-of-type');
+    if (!last) return;
+    const clone = last.cloneNode(true);
+    // reset values
+    clone.querySelectorAll('input').forEach(i => i.value = '');
+    clone.querySelectorAll('textarea').forEach(t => t.value = '');
+    clone.querySelectorAll('select').forEach(sel => { try { sel.selectedIndex = 0; } catch(e){} });
+    last.parentNode.insertBefore(clone, last.nextElementSibling);
+    renumberTriggers();
+    markSaved();
+    clone.scrollIntoView({behavior:'smooth',block:'center'});
+  }
   function goStep(n){ setStep(n); }
-  function nextStep(){ if (step < 4) setStep(step + 1); else publish(); }
+  function nextStep(){ if (step < 5) setStep(step + 1); }
   function prevStep(){ if (step > 1) setStep(step - 1); }
 
   function pick(el, group){
