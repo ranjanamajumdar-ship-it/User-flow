@@ -248,6 +248,50 @@ header.app{
   .side-dash{position:static;order:-1}
   .sd-fields{display:none!important}
 }
+/* ===== Review & publish — simplified ===== */
+.rv-cards{display:flex;flex-direction:column;gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:18px;overflow:hidden;margin-bottom:32px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
+.rv-card{display:flex;align-items:center;gap:16px;padding:18px 20px;background:rgba(255,255,255,.7);cursor:pointer;transition:.15s;position:relative}
+.rv-card:hover{background:rgba(255,255,255,.92)}
+.rv-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-weight:800}
+.rv-card.ok .rv-ic{background:rgba(31,157,85,.12);color:#1F9D55}
+.rv-card .rv-ic.trig{background:rgba(224,163,20,.14);color:#8C6306}
+.rv-card .rv-ic.comm{background:rgba(0,41,118,.08);color:var(--brand)}
+.rv-card .rv-ic.warn{background:rgba(224,163,20,.16);color:#8C6306;font:800 18px 'JetBrains Mono'}
+.rv-card.warn .rv-ic.warn::before{content:""}
+.rv-main{flex:1;min-width:0}
+.rv-ttl{font-size:15px;font-weight:800;letter-spacing:-.012em;color:var(--ink);line-height:1.25}
+.rv-sub{font-size:12.5px;color:var(--ink-3);font-weight:500;line-height:1.5;margin-top:3px;letter-spacing:-.005em}
+.rv-link{color:var(--brand);font-weight:700;cursor:pointer;text-decoration:none;border-bottom:1px solid rgba(0,41,118,.30);padding-bottom:1px}
+.rv-link:hover{border-bottom-color:var(--brand)}
+.rv-edit{background:transparent;border:none;color:var(--ink-3);font:700 12.5px 'Plus Jakarta Sans';cursor:pointer;padding:8px 14px;border-radius:999px;transition:.15s;letter-spacing:-.005em}
+.rv-edit:hover{background:rgba(14,20,40,.05);color:var(--ink)}
+
+/* Preview block */
+.rv-preview{margin:0 0 32px;padding:22px 24px;background:rgba(255,255,255,.55);border:1px solid var(--line-soft);border-radius:18px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
+.rvp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.rvp-ttl{font-size:15px;font-weight:800;letter-spacing:-.012em;color:var(--ink)}
+.rvp-body{display:flex;align-items:center;gap:22px;background:rgba(14,20,40,.03);border-radius:14px;padding:18px 20px}
+.rvp-phone{flex-shrink:0;width:84px;height:142px;border-radius:14px;background:#FBFAF8;border:2px solid rgba(14,20,40,.18);padding:8px 6px;display:flex;align-items:flex-end;box-shadow:0 4px 14px -4px rgba(40,50,80,.20)}
+.rvp-screen{width:100%;height:100%;display:flex;flex-direction:column;gap:4px;padding:4px}
+.rvp-line{height:4px;border-radius:2px;background:rgba(14,20,40,.18)}
+.rvp-line.a{width:80%;background:rgba(184,58,31,.55)}
+.rvp-line.b{width:100%}
+.rvp-line.c{width:60%;background:rgba(14,20,40,.10)}
+.rvp-btn{margin-top:auto;height:14px;width:100%;border-radius:6px;background:linear-gradient(135deg,#002976,#1B3A8C)}
+.rvp-text{font-size:13px;color:var(--ink-2);line-height:1.6;letter-spacing:-.005em}
+.rvp-text b{color:var(--ink);font-weight:700}
+.rvp-sev{display:inline-block;font:800 9.5px 'JetBrains Mono';color:#B83A1F;background:rgba(184,58,31,.12);padding:2px 7px;border-radius:999px;letter-spacing:.5px;text-transform:uppercase;vertical-align:1px}
+
+/* Publish CTA block */
+.rv-publish{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 26px;border-radius:18px;background:linear-gradient(135deg,#002976,#1B3A8C);color:#fff;box-shadow:0 14px 36px -14px rgba(0,41,118,.45);flex-wrap:wrap}
+.rvpub-main{flex:1;min-width:200px}
+.rvpub-ttl{font-size:19px;font-weight:800;letter-spacing:-.022em;line-height:1.2;margin-bottom:4px}
+.rvpub-sub{font-size:13px;color:rgba(255,255,255,.78);font-weight:500;letter-spacing:-.005em;line-height:1.5}
+.rvpub-sub b{color:#fff;font-weight:700}
+.rvpub-btn{background:#fff;color:var(--brand);border:none;padding:14px 22px;border-radius:14px;font:800 14px 'Plus Jakarta Sans';letter-spacing:-.01em;cursor:pointer;transition:.15s;box-shadow:0 4px 14px -4px rgba(0,0,0,.20)}
+.rvpub-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px -4px rgba(0,0,0,.25)}
+/* End review redesign */
+
 /* End config dashboard ===== */
 .wrap{max-width:1120px;margin:48px auto 160px;padding:0 56px;transition:max-width .3s}
 .panel{display:none;animation:fadeUp .3s cubic-bezier(.4,0,.2,1)}
@@ -1739,70 +1783,72 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   <!-- ============== STEP 4 · Review ============== -->
   <section class="panel" id="p-5">
     <h1 class="page-h">Review &amp; <em>publish</em></h1>
-    <p class="page-sub">One last look. Operators won't see your changes until you publish.</p>
+    <p class="page-sub">Final check before publishing to all operators.</p>
 
-    <div class="summary-block">
-      <div class="head"><h4>Basics</h4><button class="edit-link" onclick="goStep(1)">Edit</button></div>
-      <div class="kv">
-        <span class="k">Name</span><span id="rvEn">Low DO in Aeration Tank</span>
-        <span class="k">Equipment</span><span>AT-01 · Aeration Tank</span>
-        <span class="k">Description</span><span id="rvDesc" style="line-height:1.5;color:var(--ink-2)">Dissolved oxygen levels in the aeration tank are below 2.0 mg/L…</span>
-        <span class="k">Severity</span><span><span class="chip amber">High</span></span>
+    <div class="rv-cards">
+      <div class="rv-card ok" onclick="goStep(1)">
+        <div class="rv-ic">✓</div>
+        <div class="rv-main">
+          <div class="rv-ttl">Issue setup</div>
+          <div class="rv-sub">Plant · equipment · severity · deadline · assignee · language all set</div>
+        </div>
+        <button class="rv-edit" onclick="event.stopPropagation();goStep(1)">Edit</button>
+      </div>
+
+      <div class="rv-card ok" onclick="goStep(2)">
+        <div class="rv-ic trig">⚡</div>
+        <div class="rv-main">
+          <div class="rv-ttl">Trigger condition</div>
+          <div class="rv-sub">DO &lt; 2.0 mg/L sustained for 12 minutes · auto-resolves at DO ≥ 2.5</div>
+        </div>
+        <button class="rv-edit" onclick="event.stopPropagation();goStep(2)">Edit</button>
+      </div>
+
+      <div class="rv-card ok" onclick="goStep(3)">
+        <div class="rv-ic comm">📡</div>
+        <div class="rv-main">
+          <div class="rv-ttl">Communication</div>
+          <div class="rv-sub">2 of 4 channels on · in-app push + WhatsApp deeplink</div>
+        </div>
+        <button class="rv-edit" onclick="event.stopPropagation();goStep(3)">Edit</button>
+      </div>
+
+      <div class="rv-card warn" onclick="goStep(4)">
+        <div class="rv-ic warn">!</div>
+        <div class="rv-main">
+          <div class="rv-ttl">5 steps + 1 card configured</div>
+          <div class="rv-sub">2 steps still need a verification card. <a class="rv-link" onclick="event.stopPropagation();goStep(4)">Fix flow</a></div>
+        </div>
+        <button class="rv-edit" onclick="event.stopPropagation();goStep(4)">Edit</button>
       </div>
     </div>
 
-    <div class="summary-block">
-      <div class="head"><h4>Assignment</h4><button class="edit-link" onclick="goStep(2)">Edit</button></div>
-      <div class="kv">
-        <span class="k">Primary assignee</span><span>🧑‍🔧 Site Engineer · <b>Sharma ji</b></span>
-        <span class="k">Escalation</span><span>Supervisor (10 min) → Site Manager (30 min)</span>
-        <span class="k">Skill auto-routing</span><span>Enabled per step</span>
-        <span class="k">Notifications</span><span>In-app · WhatsApp · Phone (urgent)</span>
+    <div class="rv-preview">
+      <div class="rvp-head">
+        <div class="rvp-ttl">What the operator will see</div>
+        <a class="rv-link" href="issue-card.html" target="_blank">↗ Open full preview</a>
       </div>
-    </div>
-
-    <div class="summary-block">
-      <div class="head"><h4>Steps</h4><button class="edit-link" onclick="goStep(3)">Edit</button></div>
-      <div class="kv">
-        <span class="k">Total</span><span>6 steps</span>
-        <span class="k">Branching</span><span>2 steps (multi-choice) · 1 step (multi-select)</span>
-        <span class="k">Total routes</span><span>11 outcome paths (3 + 3 + 2 outcome + 2 + 1)</span>
-        <span class="k">Stop-here</span><span>3 (steps 2, 3, 4)</span>
-        <span class="k">Photo hard-block</span><span>1 (step 3)</span>
-        <span class="k">SME approval</span><span>1 (step 6)</span>
-      </div>
-      <div class="validator">
-        <div class="ic">⚠</div>
-        <div>
-          <div class="t">2 vocabulary terms are missing icons</div>
-          <div class="s">"diffuser", "septic zone" — they'll still display but without the picture sheet. <button class="edit-link" style="padding:0;font-size:12.5px" onclick="goStep(3)">Fix in steps</button></div>
+      <div class="rvp-body">
+        <div class="rvp-phone">
+          <div class="rvp-screen">
+            <div class="rvp-line a"></div>
+            <div class="rvp-line b"></div>
+            <div class="rvp-line c"></div>
+            <div class="rvp-btn"></div>
+          </div>
+        </div>
+        <div class="rvp-text">
+          Alert lands with <b>Aeration Tank · DO Low</b> · <span class="rvp-sev">High</span> badge. Operator taps <b>Start diagnosis</b> and is walked through the 5 steps + 1 card in the order you've built. The card morphs from Summary → Progress → Completion as work advances.
         </div>
       </div>
-      <div class="validator ok">
-        <div class="ic">✓</div>
-        <div>
-          <div class="t">All 6 steps have Hindi + English + audio</div>
-          <div class="s">Validated against the diagnostic tree.</div>
-        </div>
-      </div>
     </div>
 
-    <div class="summary-block">
-      <div class="head"><h4>Publish to</h4><button class="edit-link">Change</button></div>
-      <div class="choices three">
-        <button class="rcard on" onclick="pick(this,'pub')">
-          <div class="ttl">Everyone</div>
-          <div class="sub">All on-shift operators</div>
-        </button>
-        <button class="rcard" onclick="pick(this,'pub')">
-          <div class="ttl">Pilot group</div>
-          <div class="sub">Dheeraj, Anil only — try it on 2 operators first</div>
-        </button>
-        <button class="rcard" onclick="pick(this,'pub')">
-          <div class="ttl">Scheduled</div>
-          <div class="sub">Mon 8:00 AM</div>
-        </button>
+    <div class="rv-publish">
+      <div class="rvpub-main">
+        <div class="rvpub-ttl">Ready to publish</div>
+        <div class="rvpub-sub"><b>v0.4</b> will replace <b>v0.3</b> for all <b>IREO Grand Arch</b> operators.</div>
       </div>
+      <button class="rvpub-btn">Publish to operators →</button>
     </div>
   </section>
 
