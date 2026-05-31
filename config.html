@@ -133,15 +133,12 @@ header.app{
 
 /* ===== Configuration dashboard layout ===== */
 .wrap.dash{
-  display:grid;
-  grid-template-columns: minmax(0,1fr) 150px;
-  gap:36px;
-  max-width:1320px;
+  display:block;
+  max-width:980px;
   padding:48px 56px 160px;
-  align-items:flex-start;
+  margin:0 auto;
 }
-.wrap-form{min-width:0;grid-column:1;grid-row:1}
-.wrap.dash > .side-dash{grid-column:2;grid-row:1}
+.wrap-form{min-width:0}
 .side-dash{
   position:sticky;
   top:88px;
@@ -337,29 +334,77 @@ header.app{
 .rvpub-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px -4px rgba(0,0,0,.25)}
 /* End review redesign */
 
+
+
+/* === Save-as-template button (Build the flow page) === */
+.page-h-row{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 8px;flex-wrap:wrap}
+.btn-template{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:10px 16px 10px 12px;border-radius:14px;
+  background:rgba(255,255,255,.65);
+  border:1px solid rgba(255,255,255,.8);
+  box-shadow:0 8px 22px -10px rgba(40,50,80,.22),inset 0 1px 0 rgba(255,255,255,.85);
+  cursor:pointer;transition:.15s;font:inherit;letter-spacing:-.005em;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+}
+.btn-template:hover{transform:translateY(-1px);box-shadow:0 12px 26px -10px rgba(40,50,80,.26),inset 0 1px 0 rgba(255,255,255,.85)}
+.btn-template .bt-ic{
+  width:34px;height:34px;border-radius:10px;
+  background:linear-gradient(145deg,#ECDFFB,#D6BFF5);color:#6B36B5;
+  font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.btn-template .bt-tx{display:flex;flex-direction:column;gap:1px;text-align:left}
+.btn-template .bt-tx b{font-size:13px;font-weight:800;color:var(--ink);letter-spacing:-.005em}
+.btn-template .bt-tx span{font-size:11px;color:var(--ink-3);font-weight:500}
+
+/* === Fitts's Law — generous click targets === */
+.btn.primary.lg{padding:16px 28px!important;font-size:15px!important;letter-spacing:-.01em;border-radius:14px}
+.btn.outline.lg{padding:14px 22px;font-size:14px}
+/* Step nodes in top bar — easier to hit */
+.step-circle{width:30px!important;height:30px!important;font-size:13px!important}
+/* === Aesthetic-Usability — refined input feel === */
+input[type=text]:focus,textarea:focus,select:focus{border-bottom-width:1.5px;padding-bottom:9.5px}
+/* === Doherty — all transitions < 200ms === */
+*,*::before,*::after{transition-duration:.16s!important}
+.btn{transition:all .15s cubic-bezier(.4,0,.2,1)}
+
 /* End config dashboard ===== */
 .wrap{max-width:1120px;margin:48px auto 160px;padding:0 56px;transition:max-width .3s}
 .panel{display:none;animation:fadeUp .3s cubic-bezier(.4,0,.2,1)}
 .panel.on{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-.page-h{font-size:44px;font-weight:700;margin:0 0 10px;letter-spacing:-.028em;line-height:1.05}
+.page-h{font-size:38px;font-weight:800;margin:0 0 8px;letter-spacing:-.028em;line-height:1.08}
 .page-h em{font-family:'DM Serif Display',serif;font-style:italic;font-weight:400;color:var(--brand);letter-spacing:-.01em}
-.page-sub{color:var(--ink-3);font-size:15.5px;margin:0 0 44px;max-width:680px;line-height:1.55;letter-spacing:-.01em}
+.page-sub{color:var(--ink-3);font-size:15px;margin:0 0 36px;max-width:680px;line-height:1.55;letter-spacing:-.01em}
 
 .card{
-  background:transparent;
-  -webkit-backdrop-filter:none;backdrop-filter:none;
-  border:none;
-  border-bottom:1px solid rgba(14,20,40,.12);
-  border-radius:0;
-  padding:36px 0 44px;
-  box-shadow:none;
-  margin:0;
+  background:rgba(255,255,255,.65);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid rgba(255,255,255,.7);
+  border-radius:22px;
+  padding:30px 32px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.85),
+    0 1px 2px rgba(40,50,80,.04),
+    0 18px 44px -22px rgba(40,50,80,.18);
+  margin:0 0 20px;
+  position:relative;
 }
-.card:last-of-type{border-bottom:none;padding-bottom:8px}
-.card h3{margin:0 0 14px;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-2)}
-.card .helper{color:var(--ink-3);font-size:14px;margin:0 0 28px;line-height:1.6;max-width:720px}
+.card:last-of-type{margin-bottom:0}
+.card h3{
+  margin:0 0 8px;
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:-.018em;
+  color:var(--ink);
+  display:flex;align-items:center;gap:10px;
+}
+.card h3::before{
+  content:"";display:inline-block;width:4px;height:18px;border-radius:2px;
+  background:linear-gradient(180deg,#1B3A8C,#002976);
+}
+.card .helper{color:var(--ink-3);font-size:13.5px;margin:0 0 22px;line-height:1.55;max-width:680px}
 
 /* ===== Inputs · MINIMAL · thin black underline (Aesthetic-Usability) ===== */
 label{display:block;font-size:10.5px;font-weight:700;color:var(--ink-3);margin:0 0 8px;letter-spacing:.55px;text-transform:uppercase}
@@ -1311,70 +1356,6 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
 <div class="wrap dash">
 
-<aside class="side-dash" id="sideDash">
-  <div class="sd-head">
-    <div class="sd-eyebrow">Configuration</div>
-    <div class="sd-title">Low DO · Aeration</div>
-  </div>
-  <div class="sd-steps">
-    <!-- Step 1 -->
-    <div class="sd-step cur" data-sd-step="1" onclick="goStep(1)">
-      <div class="sd-marker"><div class="sd-circle">1</div></div>
-      <div class="sd-body">
-        <div class="sd-name">Set up the issue</div>
-        <div class="sd-meta"><b id="sd1-done">3</b> of <b>13</b> filled</div>
-        <div class="sd-fields" id="sd1-fields">
-          <div class="sd-fld done" data-field="plant"><span class="sd-ck"></span>Plant<span class="sd-val">IREO Grand Arch</span></div>
-          <div class="sd-fld done" data-field="issue"><span class="sd-ck"></span>Issue<span class="sd-val">Low DO</span></div>
-          <div class="sd-fld done" data-field="equipment"><span class="sd-ck"></span>Equipment<span class="sd-val">Aeration Tank · Bay 3</span></div>
-          <div class="sd-fld" data-field="description"><span class="sd-ck"></span>Description</div>
-          <div class="sd-fld" data-field="severity"><span class="sd-ck"></span>Severity</div>
-          <div class="sd-fld" data-field="deadline"><span class="sd-ck"></span>Deadline</div>
-          <div class="sd-fld" data-field="type"><span class="sd-ck"></span>Type</div>
-          <div class="sd-fld" data-field="role"><span class="sd-ck"></span>Role</div>
-          <div class="sd-fld" data-field="skill"><span class="sd-ck"></span>Skill</div>
-          <div class="sd-fld" data-field="assignee"><span class="sd-ck"></span>Assignee</div>
-          <div class="sd-fld" data-field="group"><span class="sd-ck"></span>Group</div>
-          <div class="sd-fld" data-field="graphiclib"><span class="sd-ck"></span>Graphic library</div>
-          <div class="sd-fld" data-field="langlib"><span class="sd-ck"></span>Language library</div>
-        </div>
-      </div>
-    </div>
-    <!-- Step 2 -->
-    <div class="sd-step" data-sd-step="2" onclick="goStep(2)">
-      <div class="sd-marker"><div class="sd-circle">2</div></div>
-      <div class="sd-body">
-        <div class="sd-name">Triggers</div>
-        <div class="sd-meta"><b>0</b> triggers configured</div>
-      </div>
-    </div>
-    <!-- Step 3 -->
-    <div class="sd-step" data-sd-step="3" onclick="goStep(3)">
-      <div class="sd-marker"><div class="sd-circle">3</div></div>
-      <div class="sd-body">
-        <div class="sd-name">Communication</div>
-        <div class="sd-meta"><b>0</b> of <b>4</b> channels on</div>
-      </div>
-    </div>
-    <!-- Step 4 -->
-    <div class="sd-step" data-sd-step="4" onclick="goStep(4)">
-      <div class="sd-marker"><div class="sd-circle">4</div></div>
-      <div class="sd-body">
-        <div class="sd-name">Build the flow</div>
-        <div class="sd-meta">Steps &amp; cards</div>
-      </div>
-    </div>
-    <!-- Step 5 -->
-    <div class="sd-step" data-sd-step="5" onclick="goStep(5)">
-      <div class="sd-marker"><div class="sd-circle">5</div></div>
-      <div class="sd-body">
-        <div class="sd-name">Review &amp; publish</div>
-        <div class="sd-meta">Final check</div>
-      </div>
-    </div>
-  </div>
-</aside>
-
 <div class="wrap-form">
 
   <section class="panel on" id="p-1">
@@ -1675,7 +1656,13 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
   <!-- ============== STEP 4 · Build the flow ============== -->
   <section class="panel" id="p-4">
-    <h1 class="page-h">Build the <em>flow</em></h1>
+    <div class="page-h-row">
+      <h1 class="page-h" style="margin-bottom:0">Build the <em>flow</em></h1>
+      <button class="btn-template" onclick="saveAsTemplate()" title="Save current flow as a reusable template">
+        <span class="bt-ic">📐</span>
+        <span class="bt-tx"><b>Save as template</b><span>Reuse this flow on other plants</span></span>
+      </button>
+    </div>
     <p class="page-sub">Drag step types in from the left, hover between cards to insert, tap a card to edit it.</p>
 
     <div class="tip-row">
@@ -1692,7 +1679,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <span class="cl normal"><span class="d"></span>Normal · 3 steps</span>
       <span class="cl branch"><span class="d"></span>Branch · 3 steps</span>
       <span class="cl exception"><span class="d"></span>Exception · 3 steps</span>
-      <span class="cl card"><span class="d"></span>Cards · 2 types</span>
+      <span class="cl card"><span class="d"></span>Cards · 3 types</span>
     </div>
 
     <div class="builder">
@@ -1761,7 +1748,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
         <!-- ============ 🟣 CARDS ============ -->
         <div class="pgroup actions open">
-          <div class="pghdr"><span class="cat-dot" style="background:#6B36B5"></span><span>Cards (passive · 1 CTA)</span><span class="cat-count">2</span></div>
+          <div class="pghdr"><span class="cat-dot" style="background:#6B36B5"></span><span>Cards (passive · 1 CTA)</span><span class="cat-count">3</span></div>
           <div class="ptiles">
             <button class="ptile" onclick="addStep('issuecard')">
               <div class="pico cat-card">📋</div>
@@ -1770,6 +1757,10 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
             <button class="ptile" onclick="addStep('contextcard')">
               <div class="pico cat-card">📑</div>
               <div class="ptxt"><div class="pt">Context card</div><div class="ps">For Op A after reassignment · morphs through 3 states</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('confirmcard')">
+              <div class="pico cat-card">✓</div>
+              <div class="ptxt"><div class="pt">Confirmation card</div><div class="ps">Success / Failure outcome of a step</div></div>
             </button>
           </div>
         </div>
@@ -2285,6 +2276,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <optgroup label="🟪 Cards">
         <option value="issuecard">Issue card</option>
         <option value="contextcard">Context card (Summary → Progress → Completion)</option>
+        <option value="confirmcard">Confirmation card (Success / Failure)</option>
       </optgroup>
     </select>
 
@@ -2308,6 +2300,18 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <option>Electrical / Instrumentation</option>
         <option>Process / Lab</option>
       </select>
+
+      <h4 class="dr-section">Output → Next step</h4>
+      <label>When the operator finishes, open this step next</label>
+      <select onchange="markSaved()">
+        <option>→ Confirmation card (Success / Failure)</option>
+        <option>→ Root cause selector</option>
+        <option>→ Photo to Supervisor (hard block)</option>
+        <option>→ Task accomplished</option>
+        <option>→ Skip ahead — false alarm</option>
+        <option>→ End diagnosis</option>
+      </select>
+      <div class="help">Every step needs an output. If this is the last step, point it to <b>End diagnosis</b>.</div>
     </div>
 
     <!-- ============ 🔵 ROOT CAUSE SELECTOR ============ -->
@@ -2344,6 +2348,15 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <div class="lbl"><div class="t">Allow &ldquo;Other (free text)&rdquo;</div><div class="s">Operator can type a cause not in the list — SME notified</div></div>
         <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
+
+      <h4 class="dr-section">Output → Next step</h4>
+      <label>When a cause is picked, open this step next</label>
+      <select onchange="markSaved()">
+        <option>→ Action card (mapped to cause)</option>
+        <option>→ Photo to Supervisor (hard block)</option>
+        <option>→ Confirmation card (Success / Failure)</option>
+        <option>→ End diagnosis</option>
+      </select>
     </div>
 
     <!-- ============ 🔵 TASK ACCOMPLISHED ============ -->
@@ -2353,6 +2366,14 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <input type="text" placeholder="e.g. Task complete — ready to verify" oninput="markSaved()"/>
       <label style="margin-top:12px">Body message (optional)</label>
       <textarea placeholder="Anything else the operator should see when this step completes…" oninput="markSaved()"></textarea>
+
+      <h4 class="dr-section">Output → Next step</h4>
+      <label>After this confirmation, open this step next</label>
+      <select onchange="markSaved()">
+        <option>→ End diagnosis</option>
+        <option>→ Confirmation card</option>
+        <option>→ Issue close</option>
+      </select>
     </div>
 
     <!-- ============ 🟡 SKIP AHEAD — KNOW REASON ============ -->
@@ -2408,6 +2429,14 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <div class="lbl"><div class="t">Allow callback request</div><div class="s">Supervisor can call back via WhatsApp / phone</div></div>
         <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
+
+      <h4 class="dr-section">Output → Next step</h4>
+      <label>After supervisor responds, open this step next</label>
+      <select onchange="markSaved()">
+        <option>→ Resume from previous step</option>
+        <option>→ Reassignment</option>
+        <option>→ End diagnosis</option>
+      </select>
     </div>
 
     <!-- ============ 🔴 PHOTO TO SUPERVISOR (HARD BLOCK) ============ -->
@@ -2430,6 +2459,15 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <div class="lbl"><div class="t">Supervisor approval required</div><div class="s">Locked ON — defining property of this step type</div></div>
         <div class="sw on locked" style="opacity:.7;pointer-events:none"></div>
       </div>
+
+      <h4 class="dr-section">Output → Next step</h4>
+      <label>After supervisor approves, open this step next</label>
+      <select onchange="markSaved()">
+        <option>→ Continue to next step in flow</option>
+        <option>→ Confirmation card (Success / Failure)</option>
+        <option>→ Task accomplished</option>
+        <option>→ End diagnosis</option>
+      </select>
     </div>
 
     <!-- ============ 🔴 FALSE ALARM OVERFLOW ============ -->
@@ -2631,6 +2669,44 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
       <div class="help" style="margin-top:18px">⚠ <b>Rule</b> — Context card advances state automatically based on the underlying issue's lifecycle. <b>Operator A never picks a state.</b></div>
     </div>
+    <!-- ============ 🟪 CONFIRMATION CARD (success / failure) ============ -->
+    <div class="dr-panel" data-for="confirmcard">
+      <div class="dr-banner card">✓ Shown to the operator after a step finishes. Has <b>two states</b> — Success and Failure. Each state has its own message and CTA target.</div>
+
+      <h4 class="dr-section">Card content</h4>
+      <label>Title</label>
+      <input type="text" value="Did the fix work?" oninput="markSaved()"/>
+
+      <!-- Success state -->
+      <h4 class="dr-section" style="margin-top:22px"><span class="state-pill s3">Success</span> Worked as expected</h4>
+      <label>Headline</label>
+      <input type="text" value="✓ Resolved" oninput="markSaved()"/>
+      <label style="margin-top:10px">Body</label>
+      <textarea oninput="markSaved()">DO is back above 2.0 mg/L. Issue can be closed.</textarea>
+      <label style="margin-top:10px">CTA label</label>
+      <input type="text" value="Close issue" oninput="markSaved()"/>
+      <label style="margin-top:10px">CTA opens this step</label>
+      <select onchange="markSaved()">
+        <option>Issue Close (terminal)</option>
+        <option>Task accomplished card</option>
+      </select>
+
+      <!-- Failure state -->
+      <h4 class="dr-section" style="margin-top:22px"><span class="state-pill s2-block">Failure</span> Didn't work — try the next branch</h4>
+      <label>Headline</label>
+      <input type="text" value="× Did not resolve" oninput="markSaved()"/>
+      <label style="margin-top:10px">Body</label>
+      <textarea oninput="markSaved()">DO is still below threshold. Move to the next candidate cause.</textarea>
+      <label style="margin-top:10px">CTA label</label>
+      <input type="text" value="Try next diagnosis" oninput="markSaved()"/>
+      <label style="margin-top:10px">CTA opens this step</label>
+      <select onchange="markSaved()">
+        <option>Step · Check DO sensor against portable meter</option>
+        <option>Step · Check blower output</option>
+        <option>Step · False alarm overflow</option>
+      </select>
+    </div>
+
 
   </div>
 
@@ -2828,6 +2904,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     // === NEW TAXONOMY · CARDS (passive · 1 CTA) ===
     issuecard:     { ttl: "Issue card — new assignment",                 chips:['📋 Card','1 CTA','For Op B'],                    kind:'CARD_ISSUE',        cat:'card', catLabel:'Card · Issue' },
     contextcard:   { ttl: "Context card — handoff status (3 states)",     chips:['📑 Card','3 states','1 CTA each','For Op A'],     kind:'CARD_CONTEXT',      cat:'card', catLabel:'Card · Context' },
+    confirmcard:   { ttl: "Confirmation — Success or Failure",            chips:['✓ Card','2 states','Success / Failure'],          kind:'CARD_CONFIRM',      cat:'card', catLabel:'Card · Confirmation' },
     // back-compat aliases — old keys still resolve to contextcard
     summarycard:   { ttl: "Context card — handoff status (3 states)",     chips:['📑 Card','3 states','1 CTA each','For Op A'],     kind:'CARD_CONTEXT',      cat:'card', catLabel:'Card · Context' },
     progresscard:  { ttl: "Context card — handoff status (3 states)",     chips:['📑 Card','3 states','1 CTA each','For Op A'],     kind:'CARD_CONTEXT',      cat:'card', catLabel:'Card · Context' },
@@ -2979,6 +3056,10 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     markSaved();
     clone.scrollIntoView({behavior:'smooth',block:'center'});
   }
+
+  function saveAsTemplate(){
+    if (typeof _toast === 'function') _toast('Saved as template: Low DO · Aeration');
+  }
   function toggleGroupEditor(){
     const ed = document.getElementById('groupEditor');
     if (!ed) return;
@@ -3024,19 +3105,19 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       action:'Normal · Action card', rcselect:'Normal · Root cause selector', taskdone:'Normal · Task accomplished',
       skipknow:'Branch · Skip (know reason)', skipfalse:'Branch · Skip (false alarm)', reassign2:'Branch · Reassignment',
       callsup:'Exception · Call Supervisor', photosup:'Exception · Photo to Supervisor', falsealarm:'Exception · False alarm overflow',
-      issuecard:'Card · Issue', contextcard:'Card · Context', summarycard:'Card · Context', progresscard:'Card · Context', completioncard:'Card · Context'
+      issuecard:'Card · Issue', contextcard:'Card · Context', confirmcard:'Card · Confirmation', summarycard:'Card · Context', progresscard:'Card · Context', completioncard:'Card · Context'
     };
     const colors = {
       action:'var(--brand)', rcselect:'var(--brand)', taskdone:'var(--brand)',
       skipknow:'#A06F00', skipfalse:'#A06F00', reassign2:'#A06F00',
       callsup:'#B83A1F', photosup:'#B83A1F', falsealarm:'#B83A1F',
-      issuecard:'#6B36B5', contextcard:'#6B36B5', summarycard:'#6B36B5', progresscard:'#6B36B5', completioncard:'#6B36B5'
+      issuecard:'#6B36B5', contextcard:'#6B36B5', confirmcard:'#6B36B5', summarycard:'#6B36B5', progresscard:'#6B36B5', completioncard:'#6B36B5'
     };
     const bgs = {
       action:'rgba(0,41,118,.08)', rcselect:'rgba(0,41,118,.08)', taskdone:'rgba(0,41,118,.08)',
       skipknow:'rgba(232,148,26,.10)', skipfalse:'rgba(232,148,26,.10)', reassign2:'rgba(232,148,26,.10)',
       callsup:'rgba(184,58,31,.10)', photosup:'rgba(184,58,31,.10)', falsealarm:'rgba(184,58,31,.10)',
-      issuecard:'rgba(107,54,181,.10)', contextcard:'rgba(107,54,181,.10)', summarycard:'rgba(107,54,181,.10)', progresscard:'rgba(107,54,181,.10)', completioncard:'rgba(107,54,181,.10)'
+      issuecard:'rgba(107,54,181,.10)', contextcard:'rgba(107,54,181,.10)', confirmcard:'rgba(107,54,181,.10)', summarycard:'rgba(107,54,181,.10)', progresscard:'rgba(107,54,181,.10)', completioncard:'rgba(107,54,181,.10)'
     };
     const badge = document.getElementById('drTypeBadge');
     if (badge && labels[type]) {
@@ -3066,6 +3147,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         else if (/False alarm/i.test(txt)) type = 'falsealarm';
         else if (/Card.*Issue/i.test(txt)) type = 'issuecard';
         else if (/Card.*Context/i.test(txt)) type = 'contextcard';
+        else if (/Card.*Confirmation/i.test(txt)) type = 'confirmcard';
         else if (/Card.*Summary|Card.*Progress|Card.*Completion/i.test(txt)) type = 'contextcard';
       }
       if (!type) type = 'action';
