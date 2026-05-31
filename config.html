@@ -1696,7 +1696,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
           <div class="ptiles">
             <button class="ptile" onclick="addStep('action')">
               <div class="pico cat-normal">🛠</div>
-              <div class="ptxt"><div class="pt">Action card</div><div class="ps">Single instruction · e.g. open valve, restart pump</div></div>
+              <div class="ptxt"><div class="pt">Action step</div><div class="ps">Single instruction · e.g. open valve, restart pump</div></div>
             </button>
             <button class="ptile" onclick="addStep('rcselect')">
               <div class="pico cat-normal">🌳</div>
@@ -1799,7 +1799,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
               <button title="Duplicate" onclick="event.stopPropagation();dup(this)">⎘</button>
               <button title="Delete" class="del" onclick="event.stopPropagation();delNode(this)">×</button>
             </div>
-            <div class="fcat progress"><span class="ftd"></span>Normal · Action card</div>
+            <div class="fcat progress"><span class="ftd"></span>Normal · Action step</div>
             <div class="ft">Open valve V-204 and confirm flow</div>
             <div class="fs">
               <span class="chip">🛠 Action</span>
@@ -2251,7 +2251,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 <div class="scrim" id="scrim" onclick="closeDrawer()"></div>
 <aside class="drawer" id="drawer">
   <div class="dr-head">
-    <h3 id="drTitle">Edit step <span class="dr-typebadge" id="drTypeBadge">Normal · Action card</span></h3>
+    <h3 id="drTitle">Edit step <span class="dr-typebadge" id="drTypeBadge">Normal · Action step</span></h3>
     <button class="x" onclick="closeDrawer()">✕</button>
   </div>
 
@@ -2261,7 +2261,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     <label>Step type</label>
     <select id="drType" onchange="switchDrawerType(this.value)">
       <optgroup label="🔵 Normal">
-        <option value="action">Action card</option>
+        <option value="action">Action step</option>
         <option value="rcselect">Root cause selector</option>
         <option value="taskdone">Task accomplished</option>
       </optgroup>
@@ -2354,7 +2354,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <h4 class="dr-section">Output → Next step</h4>
       <label>When a cause is picked, open this step next</label>
       <select onchange="markSaved()">
-        <option>→ Action card (mapped to cause)</option>
+        <option>→ Action step (mapped to cause)</option>
         <option>→ Photo to Supervisor (hard block)</option>
         <option>→ Confirmation card (Success / Failure)</option>
         <option>→ End diagnosis</option>
@@ -2584,7 +2584,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <input type="text" value="Start diagnosis" oninput="markSaved()"/>
       <label style="margin-top:12px">CTA opens this step</label>
       <select onchange="markSaved()">
-        <option>Step 1 · Action card — Walk tank, check aeration distribution</option>
+        <option>Step 1 · Action step — Walk tank, check aeration distribution</option>
         <option>Step 2 · Root cause selector</option>
         <option>Step 3 · Photo to Supervisor</option>
         <option>Step 4 · Task accomplished</option>
@@ -2889,7 +2889,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     photo:       { ttl: "Photo capture step",                   chips:['📷 Photo','Hard block','👤 Operator'],          kind:'STEP_PHOTO',     cat:'todo', catLabel:'To Do · Photo gate' },
 
     // === NEW TAXONOMY · NORMAL steps ===
-    action:        { ttl: "Action card — single instruction",         chips:['🛠 Action','👤 Operator'],                        kind:'STEP_ACTION',       cat:'progress', catLabel:'Normal · Action card' },
+    action:        { ttl: "Action step — single instruction",         chips:['🛠 Action','👤 Operator'],                        kind:'STEP_ACTION',       cat:'progress', catLabel:'Normal · Action step' },
     rcselect:      { ttl: "Root cause selector — pick from list",      chips:['🌳 Radio list','Icon + 1-line desc'],             kind:'STEP_RC_SELECT',    cat:'progress', catLabel:'Normal · Root cause selector' },
     taskdone:      { ttl: "Task accomplished",                          chips:['✓ Confirmation','Stage complete'],                kind:'STEP_TASK_DONE',    cat:'progress', catLabel:'Normal · Task accomplished' },
 
@@ -3104,7 +3104,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     if (panel) panel.classList.add('show');
     // update badge
     const labels = {
-      action:'Normal · Action card', rcselect:'Normal · Root cause selector', taskdone:'Normal · Task accomplished',
+      action:'Normal · Action step', rcselect:'Normal · Root cause selector', taskdone:'Normal · Task accomplished',
       skipknow:'Branch · Skip (know reason)', skipfalse:'Branch · Skip (false alarm)', reassign2:'Branch · Reassignment',
       callsup:'Exception · Call Supervisor', photosup:'Exception · Photo to Supervisor', falsealarm:'Exception · False alarm overflow',
       issuecard:'Card · Issue', contextcard:'Card · Context', confirmcard:'Card · Confirmation', summarycard:'Card · Context', progresscard:'Card · Context', completioncard:'Card · Context'
@@ -3138,7 +3138,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       if (sel) {
         const cat = sel.querySelector('.fcat');
         const txt = cat ? cat.textContent : '';
-        if (/Action card/i.test(txt)) type = 'action';
+        if (/Action step/i.test(txt)) type = 'action';
         else if (/Root cause selector/i.test(txt)) type = 'rcselect';
         else if (/Task accomplished/i.test(txt)) type = 'taskdone';
         else if (/Skip.*know/i.test(txt)) type = 'skipknow';
