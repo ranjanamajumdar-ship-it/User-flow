@@ -248,10 +248,55 @@ header.app{
   .side-dash{position:static;order:-1}
   .sd-fields{display:none!important}
 }
+/* ===== Group selector + inline editor ===== */
+.lbl-opt{color:var(--ink-4);font-weight:500;font-size:10px;letter-spacing:0;text-transform:none;margin-left:4px}
+.group-row{display:flex;gap:10px;align-items:flex-end}
+.group-row select{flex:1}
+.group-edit{padding:9px 16px;border-radius:10px;background:rgba(0,41,118,.06);color:var(--brand);border:none;font:700 12.5px 'Plus Jakarta Sans';cursor:pointer;letter-spacing:-.005em;transition:.15s;flex-shrink:0}
+.group-edit:hover{background:rgba(0,41,118,.12)}
+.group-preview{font-size:11.5px;color:var(--ink-3);margin-top:8px;line-height:1.5;font-weight:500;letter-spacing:-.005em;padding:8px 12px;background:rgba(14,20,40,.03);border-radius:10px}
+.group-editor{margin-top:14px;padding:18px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.65));border:1px solid var(--line-soft);box-shadow:0 4px 14px -6px rgba(40,50,80,.12)}
+.ge-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line-soft)}
+.ge-ttl{font-size:14px;font-weight:800;letter-spacing:-.012em;color:var(--ink)}
+.ge-x{background:rgba(14,20,40,.05);border:none;width:26px;height:26px;border-radius:999px;color:var(--ink-2);font-size:15px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
+.ge-x:hover{background:rgba(14,20,40,.10)}
+.member-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mchip{display:inline-flex;align-items:center;gap:7px;padding:5px 8px 5px 5px;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid var(--line-soft);font-size:12px;font-weight:600;color:var(--ink);letter-spacing:-.005em}
+.mchip button{background:transparent;border:none;color:var(--ink-4);font-size:13px;cursor:pointer;padding:0 2px;line-height:1}
+.mchip button:hover{color:var(--crit)}
+.mrole{font:800 8.5px 'JetBrains Mono';letter-spacing:.5px;padding:2px 5px;border-radius:5px}
+.mrole.op{background:rgba(0,41,118,.10);color:var(--brand)}
+.mrole.eng{background:rgba(31,157,85,.10);color:#0F5C2F}
+.mrole.sup{background:rgba(224,163,20,.14);color:#8C6306}
+.mrole.sme{background:rgba(107,54,181,.10);color:#6B36B5}
+.member-add{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ma-btn{padding:7px 12px;border-radius:999px;background:transparent;border:1px dashed rgba(0,41,118,.28);color:var(--brand);font:700 11.5px 'Plus Jakarta Sans';cursor:pointer;letter-spacing:-.005em;transition:.15s}
+.ma-btn:hover{background:rgba(0,41,118,.06);border-style:solid}
+.ge-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft)}
+.ge-cancel{background:transparent;border:1px solid var(--line-soft);color:var(--ink-2);padding:9px 16px;border-radius:10px;font:700 12.5px 'Plus Jakarta Sans';cursor:pointer}
+.ge-cancel:hover{background:rgba(14,20,40,.04)}
+.ge-save{background:linear-gradient(135deg,#002976,#1B3A8C);color:#fff;border:none;padding:9px 18px;border-radius:10px;font:700 12.5px 'Plus Jakarta Sans';cursor:pointer;box-shadow:0 4px 12px -4px rgba(0,41,118,.40)}
+
 /* ===== Review & publish — simplified ===== */
 .rv-cards{display:flex;flex-direction:column;gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:18px;overflow:hidden;margin-bottom:32px;box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
-.rv-card{display:flex;align-items:center;gap:16px;padding:18px 20px;background:rgba(255,255,255,.7);cursor:pointer;transition:.15s;position:relative}
+.rv-card{background:rgba(255,255,255,.7);transition:.15s;position:relative}
 .rv-card:hover{background:rgba(255,255,255,.92)}
+.rv-hd{display:flex;align-items:center;gap:16px;padding:18px 20px;cursor:pointer}
+.rv-chev{font-size:14px;color:var(--ink-4);font-weight:800;transition:transform .25s ease;margin-right:6px;flex-shrink:0}
+.rv-card.open .rv-chev{transform:rotate(180deg)}
+.rv-kv{display:none;padding:6px 20px 18px;border-top:1px dashed var(--line-soft);background:rgba(14,20,40,.02)}
+.rv-card.open .rv-kv{display:block}
+.kv-row{display:grid;grid-template-columns:160px 1fr;gap:14px;padding:7px 0;font-size:12.5px;line-height:1.55;border-bottom:1px solid rgba(14,20,40,.04)}
+.kv-row:last-child{border-bottom:none}
+.kv-k{color:var(--ink-3);font-weight:600;letter-spacing:-.005em}
+.kv-v{color:var(--ink-2);font-weight:500;letter-spacing:-.005em}
+.kv-v b{color:var(--ink);font-weight:700}
+.kv-on{display:inline-block;font:800 9.5px 'JetBrains Mono';color:#0F5C2F;background:rgba(31,157,85,.14);padding:2px 7px;border-radius:999px;letter-spacing:.4px;text-transform:uppercase}
+.kv-off{display:inline-block;font:800 9.5px 'JetBrains Mono';color:var(--ink-4);background:rgba(14,20,40,.06);padding:2px 7px;border-radius:999px;letter-spacing:.4px;text-transform:uppercase}
+.kv-row.warn{background:rgba(224,163,20,.06);padding:8px 12px;border-radius:8px;margin-top:4px;border:1px solid rgba(224,163,20,.20)}
+.kv-row.warn .kv-k{color:#8C6306;font-weight:800}
+.kv-row.warn .kv-v{color:var(--ink-2)}
+@media (max-width:680px){.kv-row{grid-template-columns:1fr;gap:2px}.kv-k{font-size:11px;text-transform:uppercase;letter-spacing:.5px}}
 .rv-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-weight:800}
 .rv-card.ok .rv-ic{background:rgba(31,157,85,.12);color:#1F9D55}
 .rv-card .rv-ic.trig{background:rgba(224,163,20,.14);color:#8C6306}
@@ -1277,7 +1322,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <div class="sd-marker"><div class="sd-circle">1</div></div>
       <div class="sd-body">
         <div class="sd-name">Set up the issue</div>
-        <div class="sd-meta"><b id="sd1-done">3</b> of <b>9</b> filled</div>
+        <div class="sd-meta"><b id="sd1-done">3</b> of <b>13</b> filled</div>
         <div class="sd-fields" id="sd1-fields">
           <div class="sd-fld done" data-field="plant"><span class="sd-ck"></span>Plant<span class="sd-val">IREO Grand Arch</span></div>
           <div class="sd-fld done" data-field="issue"><span class="sd-ck"></span>Issue<span class="sd-val">Low DO</span></div>
@@ -1286,8 +1331,12 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
           <div class="sd-fld" data-field="severity"><span class="sd-ck"></span>Severity</div>
           <div class="sd-fld" data-field="deadline"><span class="sd-ck"></span>Deadline</div>
           <div class="sd-fld" data-field="type"><span class="sd-ck"></span>Type</div>
+          <div class="sd-fld" data-field="role"><span class="sd-ck"></span>Role</div>
+          <div class="sd-fld" data-field="skill"><span class="sd-ck"></span>Skill</div>
           <div class="sd-fld" data-field="assignee"><span class="sd-ck"></span>Assignee</div>
-          <div class="sd-fld" data-field="language"><span class="sd-ck"></span>Language</div>
+          <div class="sd-fld" data-field="group"><span class="sd-ck"></span>Group</div>
+          <div class="sd-fld" data-field="graphiclib"><span class="sd-ck"></span>Graphic library</div>
+          <div class="sd-fld" data-field="langlib"><span class="sd-ck"></span>Language library</div>
         </div>
       </div>
     </div>
@@ -1399,40 +1448,116 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         </div>
       </div>
 
-      <div class="form-grid" style="margin-top:14px">
+      <div class="ff" style="margin-top:14px">
+        <label>Type</label>
+        <select onchange="markFieldDone(1,'type',this.value);markSaved()">
+          <option>— Select type —</option>
+          <option>Mechanical</option>
+          <option>Electrical / Instrumentation</option>
+          <option>Process / Lab</option>
+          <option>Safety</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Assignment</h3>
+      <p class="helper">Who gets this issue when it fires. Role + Skill narrow the pool; Assignee or Group picks the person.</p>
+
+      <div class="form-grid">
         <div class="ff">
-          <label>Type</label>
-          <select onchange="markFieldDone(1,'type',this.value);markSaved()">
-            <option>— Select type —</option>
-            <option>Mechanical</option>
-            <option>Electrical / Instrumentation</option>
-            <option>Process / Lab</option>
-            <option>Safety</option>
+          <label>Role</label>
+          <select onchange="markFieldDone(1,'role',this.value);markSaved()">
+            <option>— Select role —</option>
+            <option>Operator</option>
+            <option>Site Engineer</option>
+            <option>Supervisor</option>
+            <option>SME</option>
+            <option>Site Manager</option>
           </select>
         </div>
         <div class="ff">
-          <label>Assignee</label>
-          <select onchange="markFieldDone(1,'assignee',this.value);markSaved()">
-            <option>— Select assignee —</option>
-            <option>On-shift Operator</option>
-            <option>Site Engineer (Sharma ji)</option>
-            <option>Supervisor</option>
-            <option>Site Manager</option>
+          <label>Skill</label>
+          <select onchange="markFieldDone(1,'skill',this.value);markSaved()">
+            <option>— Select skill —</option>
+            <option>General (anyone on shift)</option>
+            <option>Mechanical</option>
+            <option>Electrical / Instrumentation</option>
+            <option>Process / Lab</option>
+            <option>Biology</option>
           </select>
         </div>
       </div>
 
       <div class="ff" style="margin-top:14px">
-        <label>Language</label>
-        <select onchange="markFieldDone(1,'language',this.value);markSaved()">
-          <option>— Select language —</option>
-          <option>English</option>
-          <option>हिन्दी (Hindi)</option>
-          <option>తెలుగు (Telugu)</option>
-          <option>தமிழ் (Tamil)</option>
-          <option>ಕನ್ನಡ (Kannada)</option>
+        <label>Assignee name</label>
+        <select onchange="markFieldDone(1,'assignee',this.value);markSaved()">
+          <option>— Pick a person —</option>
+          <option>Sharma ji (Site Engineer · Mechanical)</option>
+          <option>Dheeraj (Operator · General)</option>
+          <option>Anil (Supervisor)</option>
+          <option>Ravi (SME · Process)</option>
+          <option>Nagesh (Operator · Mechanical)</option>
         </select>
-        <div class="help">Operator UI strings, alerts, and step copy will all render in this language by default. Translator can be plugged in later.</div>
+        <div class="help">If unavailable on shift, the system auto-routes within the same Role + Skill pool.</div>
+      </div>
+
+      <div class="ff" style="margin-top:14px">
+        <label>Assign to group <span class="lbl-opt">(optional — overrides single assignee)</span></label>
+        <div class="group-row">
+          <select onchange="onGroupChange(this)">
+            <option>— No group —</option>
+            <option>Aeration team A</option>
+            <option>MBR night shift</option>
+            <option>Chemical handling crew</option>
+            <option data-create="1">＋ Create new group…</option>
+          </select>
+          <button type="button" class="group-edit" onclick="toggleGroupEditor()">Edit</button>
+        </div>
+        <div class="group-preview">
+          4 members · Sharma ji (Site Engineer) · Dheeraj (Operator) · Anil (Supervisor) · Ravi (SME)
+        </div>
+
+        <!-- Group editor (hidden by default, shown when creating/editing) -->
+        <div class="group-editor" id="groupEditor" style="display:none">
+          <div class="ge-head">
+            <div class="ge-ttl">New group</div>
+            <button type="button" class="ge-x" onclick="toggleGroupEditor()">×</button>
+          </div>
+          <label>Group name</label>
+          <input type="text" placeholder="e.g. Aeration team A" oninput="markSaved()"/>
+          <label style="margin-top:14px">Members</label>
+          <div class="member-chips">
+            <span class="mchip"><span class="mrole op">OP</span>Dheeraj <button>×</button></span>
+            <span class="mchip"><span class="mrole eng">ENG</span>Sharma ji <button>×</button></span>
+            <span class="mchip"><span class="mrole sup">SUP</span>Anil <button>×</button></span>
+            <span class="mchip"><span class="mrole sme">SME</span>Ravi <button>×</button></span>
+          </div>
+          <div class="member-add">
+            <button type="button" class="ma-btn">＋ Add Operator</button>
+            <button type="button" class="ma-btn">＋ Add Supervisor</button>
+            <button type="button" class="ma-btn">＋ Add SME</button>
+            <button type="button" class="ma-btn">＋ Add Engineer</button>
+          </div>
+          <div class="ge-actions">
+            <button type="button" class="ge-cancel" onclick="toggleGroupEditor()">Cancel</button>
+            <button type="button" class="ge-save" onclick="saveGroup()">Save group</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Libraries</h3>
+      <p class="helper">Turn on the libraries this issue should use. Off means operators won't see icons / translations for steps in this flow.</p>
+
+      <div class="tog">
+        <div class="lbl"><div class="t">Graphic library</div><div class="s">Visual icons + illustrations from your saved graphic library (equipment, sensors, controls)</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markFieldDone(1,'graphiclib',this.classList.contains('on')?'On':'');markSaved()"></div>
+      </div>
+      <div class="tog">
+        <div class="lbl"><div class="t">Language library</div><div class="s">Auto-translate operator-facing copy into the operator's chosen language (Hindi, Telugu, Tamil, Kannada)</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markFieldDone(1,'langlib',this.classList.contains('on')?'On':'');markSaved()"></div>
       </div>
     </div>
 
@@ -1786,40 +1911,107 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     <p class="page-sub">Final check before publishing to all operators.</p>
 
     <div class="rv-cards">
-      <div class="rv-card ok" onclick="goStep(1)">
-        <div class="rv-ic">✓</div>
-        <div class="rv-main">
-          <div class="rv-ttl">Issue setup</div>
-          <div class="rv-sub">Plant · equipment · severity · deadline · assignee · language all set</div>
+      <!-- ====== Card 1: Issue basics ====== -->
+      <div class="rv-card ok">
+        <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
+          <div class="rv-ic">✓</div>
+          <div class="rv-main">
+            <div class="rv-ttl">Issue basics</div>
+            <div class="rv-sub">Plant · equipment · severity · deadline · type — all set</div>
+          </div>
+          <span class="rv-chev">⌄</span>
+          <button class="rv-edit" onclick="event.stopPropagation();goStep(1)">Edit</button>
         </div>
-        <button class="rv-edit" onclick="event.stopPropagation();goStep(1)">Edit</button>
+        <div class="rv-kv">
+          <div class="kv-row"><span class="kv-k">Plant</span><span class="kv-v">IREO Grand Arch</span></div>
+          <div class="kv-row"><span class="kv-k">Equipment</span><span class="kv-v">Aeration Tank · Bay 3</span></div>
+          <div class="kv-row"><span class="kv-k">Issue</span><span class="kv-v">Low DO</span></div>
+          <div class="kv-row"><span class="kv-k">Description</span><span class="kv-v">DO in aeration tank is below 2.0 mg/L. Walk the candidate causes — diffusers, sensor, blower, biology…</span></div>
+          <div class="kv-row"><span class="kv-k">Severity</span><span class="kv-v"><span class="rvp-sev">High</span></span></div>
+          <div class="kv-row"><span class="kv-k">Deadline</span><span class="kv-v">2 hrs · within shift</span></div>
+          <div class="kv-row"><span class="kv-k">Type</span><span class="kv-v">Process / Lab</span></div>
+        </div>
       </div>
 
-      <div class="rv-card ok" onclick="goStep(2)">
-        <div class="rv-ic trig">⚡</div>
-        <div class="rv-main">
-          <div class="rv-ttl">Trigger condition</div>
-          <div class="rv-sub">DO &lt; 2.0 mg/L sustained for 12 minutes · auto-resolves at DO ≥ 2.5</div>
+      <!-- ====== Card 2: Assignment ====== -->
+      <div class="rv-card ok">
+        <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
+          <div class="rv-ic">👤</div>
+          <div class="rv-main">
+            <div class="rv-ttl">Assignment</div>
+            <div class="rv-sub">Sharma ji · Site Engineer · Mechanical · in group <b>Aeration team A</b></div>
+          </div>
+          <span class="rv-chev">⌄</span>
+          <button class="rv-edit" onclick="event.stopPropagation();goStep(1)">Edit</button>
         </div>
-        <button class="rv-edit" onclick="event.stopPropagation();goStep(2)">Edit</button>
+        <div class="rv-kv">
+          <div class="kv-row"><span class="kv-k">Role</span><span class="kv-v">Site Engineer</span></div>
+          <div class="kv-row"><span class="kv-k">Skill</span><span class="kv-v">Mechanical</span></div>
+          <div class="kv-row"><span class="kv-k">Assignee</span><span class="kv-v"><b>Sharma ji</b></span></div>
+          <div class="kv-row"><span class="kv-k">Group</span><span class="kv-v">Aeration team A · 4 members</span></div>
+          <div class="kv-row"><span class="kv-k">Auto-routing</span><span class="kv-v">On — falls back to same Role + Skill if unavailable</span></div>
+        </div>
       </div>
 
-      <div class="rv-card ok" onclick="goStep(3)">
-        <div class="rv-ic comm">📡</div>
-        <div class="rv-main">
-          <div class="rv-ttl">Communication</div>
-          <div class="rv-sub">2 of 4 channels on · in-app push + WhatsApp deeplink</div>
+      <!-- ====== Card 3: Trigger condition ====== -->
+      <div class="rv-card ok">
+        <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
+          <div class="rv-ic trig">⚡</div>
+          <div class="rv-main">
+            <div class="rv-ttl">Trigger condition</div>
+            <div class="rv-sub">DO &lt; 2.0 mg/L sustained for 12 minutes</div>
+          </div>
+          <span class="rv-chev">⌄</span>
+          <button class="rv-edit" onclick="event.stopPropagation();goStep(2)">Edit</button>
         </div>
-        <button class="rv-edit" onclick="event.stopPropagation();goStep(3)">Edit</button>
+        <div class="rv-kv">
+          <div class="kv-row"><span class="kv-k">Sensor</span><span class="kv-v">DO-3 (Dissolved Oxygen · Aeration · Bay 3)</span></div>
+          <div class="kv-row"><span class="kv-k">Condition</span><span class="kv-v">Less than <b>2.0 mg/L</b></span></div>
+          <div class="kv-row"><span class="kv-k">Sustained for</span><span class="kv-v">0 hrs · 12 mins · 00 secs</span></div>
+          <div class="kv-row"><span class="kv-k">Auto-resolve</span><span class="kv-v">When DO ≥ 2.5 mg/L for 5 mins</span></div>
+        </div>
       </div>
 
-      <div class="rv-card warn" onclick="goStep(4)">
-        <div class="rv-ic warn">!</div>
-        <div class="rv-main">
-          <div class="rv-ttl">5 steps + 1 card configured</div>
-          <div class="rv-sub">2 steps still need a verification card. <a class="rv-link" onclick="event.stopPropagation();goStep(4)">Fix flow</a></div>
+      <!-- ====== Card 4: Communication ====== -->
+      <div class="rv-card ok">
+        <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
+          <div class="rv-ic comm">📡</div>
+          <div class="rv-main">
+            <div class="rv-ttl">Communication</div>
+            <div class="rv-sub">2 of 4 channels on · libraries enabled</div>
+          </div>
+          <span class="rv-chev">⌄</span>
+          <button class="rv-edit" onclick="event.stopPropagation();goStep(3)">Edit</button>
         </div>
-        <button class="rv-edit" onclick="event.stopPropagation();goStep(4)">Edit</button>
+        <div class="rv-kv">
+          <div class="kv-row"><span class="kv-k">In-app push</span><span class="kv-v"><span class="kv-on">On</span></span></div>
+          <div class="kv-row"><span class="kv-k">WhatsApp</span><span class="kv-v"><span class="kv-on">On</span> · deeplink to Issue card</span></div>
+          <div class="kv-row"><span class="kv-k">Phone call</span><span class="kv-v"><span class="kv-off">Off</span> · would only fire on Critical</span></div>
+          <div class="kv-row"><span class="kv-k">SMS fallback</span><span class="kv-v"><span class="kv-off">Off</span></span></div>
+          <div class="kv-row"><span class="kv-k">Graphic library</span><span class="kv-v"><span class="kv-on">On</span></span></div>
+          <div class="kv-row"><span class="kv-k">Language library</span><span class="kv-v"><span class="kv-on">On</span> · Hindi · Telugu · Tamil · Kannada</span></div>
+        </div>
+      </div>
+
+      <!-- ====== Card 5: Build the flow ====== -->
+      <div class="rv-card warn">
+        <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
+          <div class="rv-ic warn">!</div>
+          <div class="rv-main">
+            <div class="rv-ttl">5 steps + 1 card configured</div>
+            <div class="rv-sub">2 steps still need a verification card. <a class="rv-link" onclick="event.stopPropagation();goStep(4)">Fix flow</a></div>
+          </div>
+          <span class="rv-chev">⌄</span>
+          <button class="rv-edit" onclick="event.stopPropagation();goStep(4)">Edit</button>
+        </div>
+        <div class="rv-kv">
+          <div class="kv-row"><span class="kv-k">Total</span><span class="kv-v">5 steps + 1 card</span></div>
+          <div class="kv-row"><span class="kv-k">Branching</span><span class="kv-v">2 steps (multi-choice) · 1 step (multi-select)</span></div>
+          <div class="kv-row"><span class="kv-k">Total routes</span><span class="kv-v">11 outcome paths</span></div>
+          <div class="kv-row"><span class="kv-k">Photo hard-block</span><span class="kv-v">1 (step 3 — Photo to Supervisor)</span></div>
+          <div class="kv-row"><span class="kv-k">SME approval</span><span class="kv-v">1 (step 6)</span></div>
+          <div class="kv-row warn"><span class="kv-k">⚠ Missing</span><span class="kv-v">2 steps don't have a verification card after them — operator can't confirm fix worked</span></div>
+        </div>
       </div>
     </div>
 
@@ -2786,6 +2978,25 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     renumberTriggers();
     markSaved();
     clone.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function toggleGroupEditor(){
+    const ed = document.getElementById('groupEditor');
+    if (!ed) return;
+    ed.style.display = ed.style.display === 'none' ? 'block' : 'none';
+  }
+  function onGroupChange(sel){
+    const opt = sel.options[sel.selectedIndex];
+    markFieldDone(1,'group',sel.value);
+    if (opt && opt.getAttribute('data-create') === '1') {
+      document.getElementById('groupEditor').style.display = 'block';
+    }
+    markSaved();
+  }
+  function saveGroup(){
+    document.getElementById('groupEditor').style.display = 'none';
+    markFieldDone(1,'group','New group');
+    markSaved();
+    _toast('Group saved');
   }
   function goStep(n){ setStep(n); }
   function nextStep(){ if (step < 5) setStep(step + 1); }
