@@ -327,6 +327,23 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .chip.amber{background:rgba(253,241,220,.85);color:#A56610;border-color:rgba(232,148,26,.22)}
 .chip.green{background:rgba(225,244,234,.85);color:#157A40;border-color:rgba(31,157,85,.22)}
 
+
+/* === Drawer · type-aware panels === */
+.dr-typebadge{display:inline-block;font:700 10px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:rgba(0,41,118,.08);color:var(--brand);margin-left:8px;vertical-align:middle}
+.dr-section{margin:22px 0 12px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3)}
+.dr-panel{display:none;padding-top:8px;margin-top:8px;border-top:1px solid rgba(14,20,40,.06)}
+.dr-panel.show{display:block}
+.dr-banner{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:12px;font-size:12.5px;line-height:1.5;margin:18px 0 4px;font-weight:600;letter-spacing:-.005em}
+.dr-banner.ex{background:rgba(184,58,31,.08);color:#B83A1F;border:1px solid rgba(184,58,31,.18)}
+.dr-banner.block{background:rgba(184,58,31,.14);color:#B83A1F;border:1px solid rgba(184,58,31,.30);font-weight:800;letter-spacing:.2px}
+.dr-banner.card{background:rgba(107,54,181,.08);color:#5C2D8E;border:1px solid rgba(107,54,181,.20)}
+.reassign-dirs{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.reassign-dirs .rdir{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid rgba(14,20,40,.08);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.4);transition:.15s}
+.reassign-dirs .rdir:hover{background:rgba(255,255,255,.7);border-color:rgba(0,41,118,.20)}
+.reassign-dirs .rdir input{margin-top:3px}
+.reassign-dirs .rdir small{color:var(--ink-3);font-weight:500}
+.sw.locked{cursor:not-allowed}
+/* End drawer type-aware */
 /* ===== Drawer / glass sheet ===== */
 .scrim{position:fixed;inset:0;background:rgba(20,25,40,.30);
   -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
@@ -1768,174 +1785,282 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 <div class="scrim" id="scrim" onclick="closeDrawer()"></div>
 <aside class="drawer" id="drawer">
   <div class="dr-head">
-    <h3 id="drTitle">Step 3 · Aeration distribution <span class="mctag" style="font-size:9px">🌿 BRANCHING</span></h3>
+    <h3 id="drTitle">Edit step <span class="dr-typebadge" id="drTypeBadge">Normal · Action card</span></h3>
     <button class="x" onclick="closeDrawer()">✕</button>
   </div>
+
   <div class="dr-body">
 
-    <label>Question type</label>
-    <select onchange="markSaved()">
-      <option>🌿 Multi-choice + Multi-select (current)</option>
-      <option>❓ Yes / No question</option>
-      <option>☑ Multi-select check only</option>
-      <option>📡 Sensor reading (auto)</option>
-      <option>📋 Manual reading (numeric)</option>
+    <!-- ============ UNIVERSAL FIELDS ============ -->
+    <label>Step type</label>
+    <select id="drType" onchange="switchDrawerType(this.value)">
+      <optgroup label="🔵 Normal">
+        <option value="action">Action card</option>
+        <option value="rcselect">Root cause selector</option>
+        <option value="taskdone">Task accomplished</option>
+      </optgroup>
+      <optgroup label="🟡 Branch">
+        <option value="skipknow">Skip ahead — I know the cause</option>
+        <option value="skipfalse">Skip ahead — false alarm</option>
+        <option value="reassign2">Reassignment</option>
+      </optgroup>
+      <optgroup label="🔴 Exception">
+        <option value="callsup">Call Supervisor</option>
+        <option value="photosup">Photo to Supervisor (hard block)</option>
+        <option value="falsealarm">False alarm overflow</option>
+      </optgroup>
+      <optgroup label="🟪 Cards">
+        <option value="issuecard">Issue card</option>
+        <option value="summarycard">Summary card</option>
+        <option value="progresscard">Task progress card</option>
+        <option value="completioncard">Completion card</option>
+      </optgroup>
     </select>
 
-    <label style="margin-top:14px">Primary question</label>
-    <input type="text" id="drQEn" value="Is aeration equally happening across the tank?" oninput="markSaved()"/>
+    <label style="margin-top:18px">Title</label>
+    <input type="text" id="drTitleField" value="Open valve V-204 and confirm flow" oninput="markSaved()"/>
 
-    <label style="margin-top:12px">Description for operator (optional)</label>
-    <input type="text" id="drQDesc" value="Walk the tank perimeter and observe bubble distribution at the surface" oninput="markSaved()"/>
+    <label style="margin-top:14px">Description for operator (optional)</label>
+    <textarea id="drDesc" oninput="markSaved()" placeholder="A short hint or context the operator will see under the title…">Walk to bay 2, locate V-204, rotate clockwise until fully open.</textarea>
 
-    <label style="margin-top:18px">Answer options &amp; routes <span style="font-weight:500;color:var(--ink-3);text-transform:none;letter-spacing:0">— click any text to edit. Add as many options as you need.</span></label>
-    <div class="sub-list">
+    <!-- ============ 🔵 ACTION CARD ============ -->
+    <div class="dr-panel" data-for="action">
+      <h4 class="dr-section">Action details</h4>
+      <label>Target asset / equipment</label>
+      <input type="text" placeholder="e.g. Valve V-204, Pump 7, Aeration Blower 2" oninput="markSaved()"/>
+      <label style="margin-top:12px">Expected outcome (1 line)</label>
+      <input type="text" placeholder="e.g. Flow restored to design rate" oninput="markSaved()"/>
+      <label style="margin-top:12px">Skill required</label>
+      <select onchange="markSaved()">
+        <option>General operator (anyone on shift)</option>
+        <option>Mechanical</option>
+        <option>Electrical / Instrumentation</option>
+        <option>Process / Lab</option>
+      </select>
+    </div>
 
-      <div class="sub-item opt-item">
-        <span class="ix" contenteditable="true">Y</span>
-        <span class="t opt-row">
-          <span class="opt-label" contenteditable="true">Yes, bubbles seem normal on the surface</span>
-          <span class="opt-route-row">
-            <span class="ar">→ Goes to</span>
-            <span class="dest-chip next" contenteditable="true">Step 4 · DO sensor failure</span>
-            <span class="opt-route-style">
-              <button data-style="brand" onclick="setDestStyle(this,'brand')">Step</button>
-              <button data-style="next" class="on" onclick="setDestStyle(this,'next')">Next</button>
-              <button data-style="stop" onclick="setDestStyle(this,'stop')">Stop</button>
-            </span>
+    <!-- ============ 🔵 ROOT CAUSE SELECTOR ============ -->
+    <div class="dr-panel" data-for="rcselect">
+      <h4 class="dr-section">Cause options — radio list (icon + one-line description)</h4>
+      <div class="sub-list">
+        <div class="sub-item opt-item">
+          <span class="ix">🔧</span>
+          <span class="t opt-row">
+            <span class="opt-label" contenteditable="true">Worn bearing</span>
+            <span class="opt-route-row"><span class="ar">desc</span><span class="dest-chip" contenteditable="true">Vibration past threshold</span></span>
           </span>
-        </span>
-        <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
-      </div>
-
-      <div class="sub-item opt-item">
-        <span class="ix" contenteditable="true">~</span>
-        <span class="t opt-row">
-          <span class="opt-label" contenteditable="true">Moderately, some bubbles are there</span>
-          <span class="opt-route-row">
-            <span class="ar">→ Goes to</span>
-            <span class="dest-chip" contenteditable="true">Continue to Check 2 (below)</span>
-            <span class="opt-route-style">
-              <button data-style="brand" class="on" onclick="setDestStyle(this,'brand')">Step</button>
-              <button data-style="next" onclick="setDestStyle(this,'next')">Next</button>
-              <button data-style="stop" onclick="setDestStyle(this,'stop')">Stop</button>
-            </span>
+          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        </div>
+        <div class="sub-item opt-item">
+          <span class="ix">💧</span>
+          <span class="t opt-row">
+            <span class="opt-label" contenteditable="true">Seal leak</span>
+            <span class="opt-route-row"><span class="ar">desc</span><span class="dest-chip" contenteditable="true">Fluid loss on housing</span></span>
           </span>
-        </span>
-        <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
-      </div>
-
-      <div class="sub-item opt-item">
-        <span class="ix" contenteditable="true">N</span>
-        <span class="t opt-row">
-          <span class="opt-label" contenteditable="true">No, there are no bubbles on the tank</span>
-          <span class="opt-route-row">
-            <span class="ar">→ Goes to</span>
-            <span class="dest-chip stop" contenteditable="true">Stop here · diffusers choked</span>
-            <span class="opt-route-style">
-              <button data-style="brand" onclick="setDestStyle(this,'brand')">Step</button>
-              <button data-style="next" onclick="setDestStyle(this,'next')">Next</button>
-              <button data-style="stop" class="on" onclick="setDestStyle(this,'stop')">Stop</button>
-            </span>
+          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        </div>
+        <div class="sub-item opt-item">
+          <span class="ix">⚡</span>
+          <span class="t opt-row">
+            <span class="opt-label" contenteditable="true">Power dip</span>
+            <span class="opt-route-row"><span class="ar">desc</span><span class="dest-chip" contenteditable="true">Supply dropped below spec</span></span>
           </span>
-        </span>
-        <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        </div>
+        <button class="sub-add" onclick="addOptionRow(this)">＋ Add cause</button>
       </div>
-
-      <button class="sub-add" onclick="addOptionRow(this)">＋ Add option</button>
-    </div>
-
-    <label style="margin-top:22px">Check 2 · Tick any that apply (multi-select)</label>
-    <div class="sub-list">
-      <div class="sub-item"><span class="ix">☐</span><span class="t">Sludge accumulation at the bottom of certain areas</span><span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
-      <div class="sub-item"><span class="ix">☐</span><span class="t">Uneven DO readings across the tank</span><span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
-      <div class="sub-item"><span class="ix">☐</span><span class="t">Dark or black-coloured wastewater in localized area</span><span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
-      <div class="sub-item"><span class="ix">☐</span><span class="t">Reduced treatment performance despite normal blower</span><span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
-      <button class="sub-add" onclick="addSubItem(this,&apos;observation&apos;)">＋ Add observation</button>
-    </div>
-
-    <label style="margin-top:22px">Outcome rule <span style="font-weight:500;color:var(--ink-3);text-transform:none;letter-spacing:0">— maps multi-select result to a final route. Both fields editable.</span></label>
-    <div class="sub-list">
-
-      <div class="sub-item opt-item">
-        <span class="ix" contenteditable="true">→ Y</span>
-        <span class="t opt-row">
-          <span class="opt-label" contenteditable="true">If 1 or more observations ticked</span>
-          <span class="opt-route-row">
-            <span class="ar">→ Goes to</span>
-            <span class="dest-chip stop" contenteditable="true">Stop here · Diffusers choked, call supervisor</span>
-            <span class="opt-route-style">
-              <button data-style="brand" onclick="setDestStyle(this,'brand')">Step</button>
-              <button data-style="next" onclick="setDestStyle(this,'next')">Next</button>
-              <button data-style="stop" class="on" onclick="setDestStyle(this,'stop')">Stop</button>
-            </span>
-          </span>
-        </span>
-        <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+      <div class="tog" style="margin-top:14px">
+        <div class="lbl"><div class="t">Allow &ldquo;Other (free text)&rdquo;</div><div class="s">Operator can type a cause not in the list — SME notified</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
+    </div>
 
-      <div class="sub-item opt-item">
-        <span class="ix" contenteditable="true">→ N</span>
-        <span class="t opt-row">
-          <span class="opt-label" contenteditable="true">If nothing ticked</span>
-          <span class="opt-route-row">
-            <span class="ar">→ Goes to</span>
-            <span class="dest-chip" contenteditable="true">Step 4 · DO sensor failure</span>
-            <span class="opt-route-style">
-              <button data-style="brand" class="on" onclick="setDestStyle(this,'brand')">Step</button>
-              <button data-style="next" onclick="setDestStyle(this,'next')">Next</button>
-              <button data-style="stop" onclick="setDestStyle(this,'stop')">Stop</button>
-            </span>
-          </span>
-        </span>
-        <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+    <!-- ============ 🔵 TASK ACCOMPLISHED ============ -->
+    <div class="dr-panel" data-for="taskdone">
+      <h4 class="dr-section">Confirmation screen</h4>
+      <label>Headline shown to operator</label>
+      <input type="text" placeholder="e.g. Task complete — ready to verify" oninput="markSaved()"/>
+      <label style="margin-top:12px">Body message (optional)</label>
+      <textarea placeholder="Anything else the operator should see when this step completes…" oninput="markSaved()"></textarea>
+    </div>
+
+    <!-- ============ 🟡 SKIP AHEAD — KNOW REASON ============ -->
+    <div class="dr-panel" data-for="skipknow">
+      <h4 class="dr-section">Shortcut configuration</h4>
+      <label>Trigger label on operator screen</label>
+      <input type="text" value="I already know the cause — skip diagnosis" oninput="markSaved()"/>
+      <label style="margin-top:12px">Destination (locked)</label>
+      <input type="text" value="→ Root Cause stage" disabled style="opacity:.6"/>
+      <div class="help">Branch shortcut from Intake straight to Root Cause. Destination is fixed.</div>
+    </div>
+
+    <!-- ============ 🟡 SKIP AHEAD — FALSE ALARM ============ -->
+    <div class="dr-panel" data-for="skipfalse">
+      <h4 class="dr-section">Shortcut configuration</h4>
+      <label>Trigger label on operator screen</label>
+      <input type="text" value="This is a false alarm — skip to Close" oninput="markSaved()"/>
+      <label style="margin-top:12px">Reason input prompt</label>
+      <input type="text" value="Why do you think it's a false alarm?" oninput="markSaved()"/>
+      <label style="margin-top:12px">Destination (locked)</label>
+      <input type="text" value="→ Close stage" disabled style="opacity:.6"/>
+      <div class="tog" style="margin-top:14px">
+        <div class="lbl"><div class="t">Notify SME</div><div class="s">SME reviews false alarms and updates the diagnostic tree</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
-
-      <button class="sub-add" onclick="addOptionRow(this)">＋ Add outcome rule</button>
     </div>
 
-    <label style="margin-top:18px">Solution · actions</label>
-    <div class="sub-list">
-      <div class="sub-item">
-        <span class="ix s">S1</span>
-        <span class="t">Diffusers are choked — cleaning required</span>
-        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+    <!-- ============ 🟡 REASSIGNMENT ============ -->
+    <div class="dr-panel" data-for="reassign2">
+      <h4 class="dr-section">Reassignment direction</h4>
+      <div class="reassign-dirs">
+        <label class="rdir"><input type="radio" name="reassignDir" checked/> <span><b>Operator → Supervisor</b><br><small>Escalate up the chain</small></span></label>
+        <label class="rdir"><input type="radio" name="reassignDir"/> <span><b>Supervisor → Operator</b><br><small>Delegate down</small></span></label>
+        <label class="rdir"><input type="radio" name="reassignDir"/> <span><b>Operator → Operator</b><br><small>Peer handoff (Op A → Op B)</small></span></label>
       </div>
-      <div class="sub-item">
-        <span class="ix s">S2</span>
-        <span class="t">Call the supervisor <span class="chip amber" style="margin-left:6px">stop here</span></span>
-        <span class="ctrl"><button class="ed" onclick="editSubItem(this,event)">✎</button><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+      <label style="margin-top:14px">Reason prompt shown to user (required)</label>
+      <input type="text" value="Why are you reassigning this task?" oninput="markSaved()"/>
+      <label style="margin-top:12px">Target user / role</label>
+      <select onchange="markSaved()">
+        <option>Pick from on-shift list</option>
+        <option>Default supervisor for site</option>
+        <option>Any operator with matching skill</option>
+      </select>
+    </div>
+
+    <!-- ============ 🔴 CALL SUPERVISOR ============ -->
+    <div class="dr-panel" data-for="callsup">
+      <div class="dr-banner ex">📞 Async escalation — operator stays in flow, supervisor is pinged.</div>
+      <h4 class="dr-section">Escalation message</h4>
+      <label>Default message to supervisor</label>
+      <textarea oninput="markSaved()" placeholder="e.g. Operator on Issue #{id} requests guidance — stuck at {step}.">Operator needs guidance — they are stuck at this step.</textarea>
+      <div class="tog" style="margin-top:14px">
+        <div class="lbl"><div class="t">Allow callback request</div><div class="s">Supervisor can call back via WhatsApp / phone</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
-      <button class="sub-add" onclick="addSubItem(this,&apos;action&apos;)">＋ Add action</button>
     </div>
 
-    <h4 style="margin:22px 0 6px;font-size:13px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--ink-3)">Properties</h4>
-    <div class="tog">
-      <div class="lbl"><div class="t">Photo required</div><div class="s">Block continue until operator uploads a photo</div></div>
-      <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
-    </div>
-    <div class="tog">
-      <div class="lbl"><div class="t">Allow skip</div><div class="s">Operator can mark this step as SKIPPED</div></div>
-      <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
-    </div>
-    <div class="tog">
-      <div class="lbl"><div class="t">Needs supervisor approval</div><div class="s">Pause flow until on-shift supervisor approves</div></div>
-      <div class="sw" onclick="this.classList.toggle('on');markSaved()"></div>
-    </div>
-    <div class="tog">
-      <div class="lbl"><div class="t">Stop here on confirmed cause</div><div class="s">If this is the root cause, terminate the flow</div></div>
-      <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+    <!-- ============ 🔴 PHOTO TO SUPERVISOR (HARD BLOCK) ============ -->
+    <div class="dr-panel" data-for="photosup">
+      <div class="dr-banner block">⛔ HARD BLOCK — Operator cannot proceed until supervisor approves the photo.</div>
+      <h4 class="dr-section">Photo requirements</h4>
+      <label>Photo guidance shown to operator</label>
+      <input type="text" value="Photograph the equipment showing the issue clearly" oninput="markSaved()"/>
+      <div class="row2" style="margin-top:12px">
+        <div>
+          <label>Minimum photos</label>
+          <input type="text" value="1" oninput="markSaved()"/>
+        </div>
+        <div>
+          <label>Maximum photos</label>
+          <input type="text" value="5" oninput="markSaved()"/>
+        </div>
+      </div>
+      <div class="tog" style="margin-top:14px">
+        <div class="lbl"><div class="t">Supervisor approval required</div><div class="s">Locked ON — defining property of this step type</div></div>
+        <div class="sw on locked" style="opacity:.7;pointer-events:none"></div>
+      </div>
     </div>
 
-    <label style="margin-top:18px">Skill type</label>
-    <select onchange="markSaved()">
-      <option>General Operator (anyone on shift)</option>
-      <option>Mechanical (filter, pump, diffuser work)</option>
-      <option>Electrical / Instrumentation (sensors, VFD, calibration)</option>
-      <option>Process / Lab (MLSS, SV-30, COD, biology)</option>
-    </select>
-    <div class="help">Who is allowed to do this step. If the on-shift person doesn't match, the step auto-routes to someone who does.</div>
+    <!-- ============ 🔴 FALSE ALARM OVERFLOW ============ -->
+    <div class="dr-panel" data-for="falsealarm">
+      <div class="dr-banner ex">⚠ Overflow step — picked when root cause doesn't fit any option in the selector.</div>
+      <h4 class="dr-section">Free-text capture</h4>
+      <label>Reason input prompt</label>
+      <input type="text" value="Describe the issue / why this is a false alarm" oninput="markSaved()"/>
+      <label style="margin-top:12px">Minimum characters</label>
+      <input type="text" value="20" oninput="markSaved()"/>
+      <div class="tog" style="margin-top:14px">
+        <div class="lbl"><div class="t">Notify SME</div><div class="s">Locked ON — SME reviews and updates the diagnostic tree</div></div>
+        <div class="sw on locked" style="opacity:.7;pointer-events:none"></div>
+      </div>
+      <label style="margin-top:14px">Destination (locked)</label>
+      <input type="text" value="→ Close stage" disabled style="opacity:.6"/>
+    </div>
+
+    <!-- ============ 🟪 ISSUE CARD ============ -->
+    <div class="dr-panel" data-for="issuecard">
+      <div class="dr-banner card">📋 Passive summary shown to Operator B when a new issue is assigned. One CTA only.</div>
+      <h4 class="dr-section">Card content</h4>
+      <label>Headline</label>
+      <input type="text" value="You've been assigned a new issue" oninput="markSaved()"/>
+      <label style="margin-top:12px">Body summary</label>
+      <textarea oninput="markSaved()">Issue #{id} at {site} — assigned by {sender}. Tap below to begin.</textarea>
+      <h4 class="dr-section" style="margin-top:18px">Single CTA</h4>
+      <label>Button label</label>
+      <input type="text" value="Start diagnosis" oninput="markSaved()"/>
+      <label style="margin-top:12px">CTA opens this step</label>
+      <select onchange="markSaved()">
+        <option>Step 1 · Action card — Open valve V-204</option>
+        <option>Step 2 · Root cause selector</option>
+        <option>Step 3 · Photo to Supervisor</option>
+        <option>Step 4 · Task accomplished</option>
+      </select>
+      <div class="help">⚠ Rule — must point to a step that is <b>different</b> from the one that triggered this card.</div>
+    </div>
+
+    <!-- ============ 🟪 SUMMARY CARD ============ -->
+    <div class="dr-panel" data-for="summarycard">
+      <div class="dr-banner card">📑 Shown to Operator B after Operator A or Supervisor reassigns the task. One CTA only.</div>
+      <h4 class="dr-section">Card content</h4>
+      <label>Headline</label>
+      <input type="text" value="Picking up where {prevOperator} left off" oninput="markSaved()"/>
+      <label style="margin-top:12px">Summary of work so far</label>
+      <textarea oninput="markSaved()">{prevOperator} completed {stepsDone} steps. Last action: {lastAction}. Reason for handoff: {reassignReason}.</textarea>
+      <h4 class="dr-section" style="margin-top:18px">Single CTA</h4>
+      <label>Button label</label>
+      <input type="text" value="Continue where they left off" oninput="markSaved()"/>
+      <label style="margin-top:12px">CTA opens this step</label>
+      <select onchange="markSaved()">
+        <option>Resume at last incomplete step</option>
+        <option>Step 1 · Action card</option>
+        <option>Step 2 · Root cause selector</option>
+      </select>
+    </div>
+
+    <!-- ============ 🟪 TASK PROGRESS CARD ============ -->
+    <div class="dr-panel" data-for="progresscard">
+      <div class="dr-banner card">⏳ Shown to Operator B while the reassigned task is in flight. One CTA only.</div>
+      <h4 class="dr-section">Card content</h4>
+      <label>Headline</label>
+      <input type="text" value="Task in progress — {pctComplete}% done" oninput="markSaved()"/>
+      <label style="margin-top:12px">Live status fields to show</label>
+      <div class="sub-list">
+        <div class="sub-item"><span class="ix">▸</span><span class="t">Current step name</span><span class="ctrl"><button class="del">×</button></span></div>
+        <div class="sub-item"><span class="ix">▸</span><span class="t">Time on this step</span><span class="ctrl"><button class="del">×</button></span></div>
+        <div class="sub-item"><span class="ix">▸</span><span class="t">Steps remaining</span><span class="ctrl"><button class="del">×</button></span></div>
+        <button class="sub-add">＋ Add field</button>
+      </div>
+      <h4 class="dr-section" style="margin-top:18px">Single CTA</h4>
+      <label>Button label</label>
+      <input type="text" value="Continue to next step" oninput="markSaved()"/>
+      <label style="margin-top:12px">CTA opens this step</label>
+      <select onchange="markSaved()">
+        <option>Next step in flow</option>
+        <option>Specific step…</option>
+      </select>
+    </div>
+
+    <!-- ============ 🟪 COMPLETION CARD ============ -->
+    <div class="dr-panel" data-for="completioncard">
+      <div class="dr-banner card">🏁 Shown to Operator B after the reassigned task finishes. One CTA only.</div>
+      <h4 class="dr-section">Card content</h4>
+      <label>Headline</label>
+      <input type="text" value="All done — task completed" oninput="markSaved()"/>
+      <label style="margin-top:12px">Closing message</label>
+      <textarea oninput="markSaved()">Issue #{id} resolved. Root cause: {rc}. Total time: {duration}.</textarea>
+      <h4 class="dr-section" style="margin-top:18px">Single CTA</h4>
+      <label>Button label</label>
+      <input type="text" value="Close issue" oninput="markSaved()"/>
+      <label style="margin-top:12px">CTA opens this step</label>
+      <select onchange="markSaved()">
+        <option>Close stage</option>
+        <option>Return to dashboard</option>
+        <option>Review with supervisor</option>
+      </select>
+    </div>
+
   </div>
+
   <div class="dr-foot">
     <button class="btn ghost" onclick="closeDrawer()">Cancel</button>
     <span class="gap"></span>
@@ -2249,12 +2374,65 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     markSaved();
   }
 
-  function openDrawer(id){
+  function switchDrawerType(type){
+    document.querySelectorAll('.dr-panel').forEach(p => p.classList.remove('show'));
+    const panel = document.querySelector('.dr-panel[data-for="' + type + '"]');
+    if (panel) panel.classList.add('show');
+    // update badge
+    const labels = {
+      action:'Normal · Action card', rcselect:'Normal · Root cause selector', taskdone:'Normal · Task accomplished',
+      skipknow:'Branch · Skip (know reason)', skipfalse:'Branch · Skip (false alarm)', reassign2:'Branch · Reassignment',
+      callsup:'Exception · Call Supervisor', photosup:'Exception · Photo to Supervisor', falsealarm:'Exception · False alarm overflow',
+      issuecard:'Card · Issue', summarycard:'Card · Summary', progresscard:'Card · Task progress', completioncard:'Card · Completion'
+    };
+    const colors = {
+      action:'var(--brand)', rcselect:'var(--brand)', taskdone:'var(--brand)',
+      skipknow:'#A06F00', skipfalse:'#A06F00', reassign2:'#A06F00',
+      callsup:'#B83A1F', photosup:'#B83A1F', falsealarm:'#B83A1F',
+      issuecard:'#6B36B5', summarycard:'#6B36B5', progresscard:'#6B36B5', completioncard:'#6B36B5'
+    };
+    const bgs = {
+      action:'rgba(0,41,118,.08)', rcselect:'rgba(0,41,118,.08)', taskdone:'rgba(0,41,118,.08)',
+      skipknow:'rgba(232,148,26,.10)', skipfalse:'rgba(232,148,26,.10)', reassign2:'rgba(232,148,26,.10)',
+      callsup:'rgba(184,58,31,.10)', photosup:'rgba(184,58,31,.10)', falsealarm:'rgba(184,58,31,.10)',
+      issuecard:'rgba(107,54,181,.10)', summarycard:'rgba(107,54,181,.10)', progresscard:'rgba(107,54,181,.10)', completioncard:'rgba(107,54,181,.10)'
+    };
+    const badge = document.getElementById('drTypeBadge');
+    if (badge && labels[type]) {
+      badge.textContent = labels[type];
+      badge.style.color = colors[type];
+      badge.style.background = bgs[type];
+    }
+    markSaved();
+  }
+  function openDrawer(id, type){
     document.getElementById('scrim').classList.add('on');
     document.getElementById('drawer').classList.add('on');
-    if (id !== 'new') {
-      // could swap content; leave canonical Step 3 for the wireframe
+    // Infer type from clicked fnode if not passed
+    if (!type) {
+      const sel = document.querySelector('.fnode.selected') || document.querySelectorAll('.fnode:not(.fnode-add)')[ (id||1) - 1 ];
+      if (sel) {
+        const cat = sel.querySelector('.fcat');
+        const txt = cat ? cat.textContent : '';
+        if (/Action card/i.test(txt)) type = 'action';
+        else if (/Root cause selector/i.test(txt)) type = 'rcselect';
+        else if (/Task accomplished/i.test(txt)) type = 'taskdone';
+        else if (/Skip.*know/i.test(txt)) type = 'skipknow';
+        else if (/Skip.*false/i.test(txt)) type = 'skipfalse';
+        else if (/Reassign/i.test(txt)) type = 'reassign2';
+        else if (/Call Supervisor/i.test(txt)) type = 'callsup';
+        else if (/Photo to Supervisor/i.test(txt)) type = 'photosup';
+        else if (/False alarm/i.test(txt)) type = 'falsealarm';
+        else if (/Card.*Issue/i.test(txt)) type = 'issuecard';
+        else if (/Card.*Summary/i.test(txt)) type = 'summarycard';
+        else if (/Card.*Progress/i.test(txt)) type = 'progresscard';
+        else if (/Card.*Completion/i.test(txt)) type = 'completioncard';
+      }
+      if (!type) type = 'action';
     }
+    const typeSel = document.getElementById('drType');
+    if (typeSel) typeSel.value = type;
+    switchDrawerType(type);
   }
   function closeDrawer(){
     document.getElementById('scrim').classList.remove('on');
