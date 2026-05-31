@@ -109,6 +109,16 @@
   .comp.warn .st .d{background:var(--warn);box-shadow:0 0 0 2.5px rgba(224,163,20,.22);animation:pulse 2s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:.6;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
 
+  /* === About this tank · meta grid === */
+  .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;padding-top:4px}
+  .meta{display:flex;flex-direction:column;gap:3px}
+  .meta.wide{grid-column:span 2;padding-top:10px;border-top:1px dashed var(--line-soft)}
+  .meta-l{font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3)}
+  .meta-v{font:700 14px 'JetBrains Mono';color:var(--ink);letter-spacing:-.01em;line-height:1.35}
+  .meta-v .u{font:600 10px 'Plus Jakarta Sans';color:var(--ink-3);margin-left:4px;letter-spacing:0}
+  .meta-v.meta-line{font:700 13px 'Plus Jakarta Sans';letter-spacing:-.005em}
+  .meta-s{font:500 10.5px 'Plus Jakarta Sans';color:var(--ink-3);letter-spacing:0}
+
   /* Issue summary */
   .issue{padding:16px 18px 4px}
   .issue .sev-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
@@ -356,6 +366,42 @@
               <div class="st"><span class="d"></span>no fault</div>
             </div>
 
+          </div>
+        </div>
+
+        <!-- About this tank (collapsible, expanded by default) -->
+        <div class="coll" data-open="true">
+          <div class="coll-hdr" onclick="tog(this.parentElement)">
+            <span class="label">About this tank</span>
+            <span class="chev">⌄</span>
+          </div>
+          <div class="coll-body">
+            <div class="meta-grid">
+              <div class="meta">
+                <div class="meta-l">Volume</div>
+                <div class="meta-v">850 <span class="u">m³</span></div>
+              </div>
+              <div class="meta">
+                <div class="meta-l">Type</div>
+                <div class="meta-v">Conventional<br><span class="meta-s">activated sludge</span></div>
+              </div>
+              <div class="meta">
+                <div class="meta-l">Feed flow</div>
+                <div class="meta-v">245 <span class="u">m³/hr</span></div>
+              </div>
+              <div class="meta">
+                <div class="meta-l">Open issues</div>
+                <div class="meta-v">2<span class="u">on this asset</span></div>
+              </div>
+              <div class="meta wide">
+                <div class="meta-l">Last issue</div>
+                <div class="meta-v meta-line">DO low → diffuser cleaning<br><span class="meta-s">Apr 12 · Dheeraj · 38 min</span></div>
+              </div>
+              <div class="meta wide">
+                <div class="meta-l">Last maintenance</div>
+                <div class="meta-v meta-line">Diffuser cleaning<br><span class="meta-s">Apr 02 · scheduled</span></div>
+              </div>
+            </div>
           </div>
         </div>
 

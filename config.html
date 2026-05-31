@@ -343,6 +343,22 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .reassign-dirs .rdir input{margin-top:3px}
 .reassign-dirs .rdir small{color:var(--ink-3);font-weight:500}
 .sw.locked{cursor:not-allowed}
+/* Graphic library picker */
+.graphic-lib{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:8px}
+.gtile{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px 9px;border-radius:12px;border:1px solid var(--line-soft);background:rgba(255,255,255,.55);cursor:pointer;transition:.15s;font:600 11px 'Plus Jakarta Sans';color:var(--ink-2);letter-spacing:-.005em;text-align:center}
+.gtile:hover{background:rgba(255,255,255,.85);border-color:rgba(0,41,118,.22);transform:translateY(-1px)}
+.gtile.on{background:linear-gradient(145deg,rgba(0,41,118,.10),rgba(0,41,118,.18));border-color:rgba(0,41,118,.45);color:var(--brand);box-shadow:0 4px 14px -6px rgba(0,41,118,.30)}
+.gtile .gico{font-size:22px;line-height:1}
+.gtile .gnm{font-size:10.5px;font-weight:700;line-height:1.2}
+/* Field visibility checklist */
+.fld-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.fld{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border-radius:12px;border:1px solid var(--line-soft);background:rgba(255,255,255,.5);cursor:pointer;transition:.12s}
+.fld:hover{background:rgba(255,255,255,.78);border-color:rgba(0,41,118,.18)}
+.fld input{margin-top:3px;width:16px;height:16px;accent-color:var(--brand);flex-shrink:0}
+.fld div{display:flex;flex-direction:column;gap:1px}
+.fld b{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.005em}
+.fld span{font-size:11px;color:var(--ink-3);font-weight:500;letter-spacing:0}
+.fld:has(input:checked){background:rgba(0,41,118,.06);border-color:rgba(0,41,118,.20)}
 /* End drawer type-aware */
 /* ===== Drawer / glass sheet ===== */
 .scrim{position:fixed;inset:0;background:rgba(20,25,40,.30);
@@ -1979,18 +1995,101 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
     <!-- ============ 🟪 ISSUE CARD ============ -->
     <div class="dr-panel" data-for="issuecard">
-      <div class="dr-banner card">📋 Passive summary shown to Operator B when a new issue is assigned. One CTA only.</div>
-      <h4 class="dr-section">Card content</h4>
-      <label>Headline</label>
-      <input type="text" value="You've been assigned a new issue" oninput="markSaved()"/>
-      <label style="margin-top:12px">Body summary</label>
-      <textarea oninput="markSaved()">Issue #{id} at {site} — assigned by {sender}. Tap below to begin.</textarea>
-      <h4 class="dr-section" style="margin-top:18px">Single CTA</h4>
+      <div class="dr-banner card">📋 Operator's landing screen on initial assignment via WhatsApp deeplink. Shows the symptom + asset + candidate components. One CTA opens diagnosis.</div>
+
+      <!-- ===== Equipment ===== -->
+      <h4 class="dr-section">Equipment</h4>
+      <label>Equipment name</label>
+      <input type="text" value="Aeration Tank · Bay 3" oninput="markSaved()"/>
+
+      <label style="margin-top:12px">Pick illustration from graphic library</label>
+      <div class="graphic-lib">
+        <button class="gtile on" type="button" onclick="pickGraphic(this)" title="Aeration tank"><span class="gico">🛢</span><span class="gnm">Aeration tank</span></button>
+        <button class="gtile" type="button" onclick="pickGraphic(this)" title="Clarifier"><span class="gico">⬢</span><span class="gnm">Clarifier</span></button>
+        <button class="gtile" type="button" onclick="pickGraphic(this)" title="MBR module"><span class="gico">▦</span><span class="gnm">MBR module</span></button>
+        <button class="gtile" type="button" onclick="pickGraphic(this)" title="Pump"><span class="gico">⚙</span><span class="gnm">Pump</span></button>
+        <button class="gtile" type="button" onclick="pickGraphic(this)" title="Blower"><span class="gico">🌀</span><span class="gnm">Blower</span></button>
+        <button class="gtile" type="button" onclick="pickGraphic(this)" title="Sensor probe"><span class="gico">📡</span><span class="gnm">Sensor probe</span></button>
+        <button class="gtile" type="button" onclick="pickGraphic(this)" title="Valve"><span class="gico">⌧</span><span class="gnm">Valve</span></button>
+        <button class="gtile" type="button" onclick="pickGraphic(this)" title="Filter"><span class="gico">▤</span><span class="gnm">Filter</span></button>
+      </div>
+
+      <div class="tog" style="margin-top:14px">
+        <div class="lbl"><div class="t">Nested · has child components</div><div class="s">Show a components list with health dots</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');document.getElementById('nestedBlock').style.display=this.classList.contains('on')?'block':'none';markSaved()"></div>
+      </div>
+
+      <div id="nestedBlock">
+        <label style="margin-top:12px">Nested components</label>
+        <div class="sub-list">
+          <div class="sub-item opt-item">
+            <span class="ix">📡</span>
+            <span class="t opt-row">
+              <span class="opt-label" contenteditable="true">DO-3 sensor</span>
+              <span class="opt-route-row"><span class="ar">graphic</span><span class="dest-chip" contenteditable="true">Sensor probe</span></span>
+            </span>
+            <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+          </div>
+          <div class="sub-item opt-item">
+            <span class="ix">🌀</span>
+            <span class="t opt-row">
+              <span class="opt-label" contenteditable="true">Blower 2</span>
+              <span class="opt-route-row"><span class="ar">graphic</span><span class="dest-chip" contenteditable="true">Blower</span></span>
+            </span>
+            <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+          </div>
+          <div class="sub-item opt-item">
+            <span class="ix">▦</span>
+            <span class="t opt-row">
+              <span class="opt-label" contenteditable="true">Diffuser grid</span>
+              <span class="opt-route-row"><span class="ar">graphic</span><span class="dest-chip" contenteditable="true">Diffuser grid</span></span>
+            </span>
+            <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+          </div>
+          <div class="sub-item opt-item">
+            <span class="ix">⚙</span>
+            <span class="t opt-row">
+              <span class="opt-label" contenteditable="true">MBR-1 Pump</span>
+              <span class="opt-route-row"><span class="ar">graphic</span><span class="dest-chip" contenteditable="true">Pump</span></span>
+            </span>
+            <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+          </div>
+          <button class="sub-add" onclick="addOptionRow(this)">＋ Add child component</button>
+        </div>
+      </div>
+
+      <!-- ===== Fields to show on the card ===== -->
+      <h4 class="dr-section" style="margin-top:22px">Fields to show on the card</h4>
+      <div class="help" style="margin-top:0">Toggle each block on or off. Reorder by dragging.</div>
+      <div class="fld-list">
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Live telemetry</b><span>DO · MLSS · Temp · pH</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Volume</b><span>Tank capacity in m³</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Type of tank</b><span>e.g. Conventional activated sludge</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Feed flow</b><span>Inlet flow rate</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Open issues count</b><span>Other active issues on this asset</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Last issue</b><span>Most recent resolved · who · how long</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Last maintenance</b><span>Most recent scheduled or planned work</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Components list</b><span>Nested children with health dots</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>BLOCKED state card</b><span>Show if another issue is hard-gated</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>Diagnostic hint</b><span>"First step in diagnosis" preview above CTA</span></div></label>
+        <label class="fld"><input type="checkbox" oninput="markSaved()"><div><b>Equipment history</b><span>Collapsed by default — full audit trail</span></div></label>
+        <label class="fld"><input type="checkbox" oninput="markSaved()"><div><b>Also on this asset</b><span>Collapsed by default — other queued issues</span></div></label>
+      </div>
+
+      <!-- ===== Card content ===== -->
+      <h4 class="dr-section" style="margin-top:22px">Card content</h4>
+      <label>Issue title (shown to operator)</label>
+      <input type="text" value="DO low" oninput="markSaved()"/>
+      <label style="margin-top:12px">Description</label>
+      <textarea oninput="markSaved()">DO at {sensor} has been below {threshold} for {duration}. The reading is a symptom — root cause is one of: choked diffusers, sensor drift, blower output drop, or biology shift.</textarea>
+
+      <!-- ===== Single CTA ===== -->
+      <h4 class="dr-section" style="margin-top:22px">Single CTA</h4>
       <label>Button label</label>
       <input type="text" value="Start diagnosis" oninput="markSaved()"/>
       <label style="margin-top:12px">CTA opens this step</label>
       <select onchange="markSaved()">
-        <option>Step 1 · Action card — Open valve V-204</option>
+        <option>Step 1 · Action card — Walk tank, check aeration distribution</option>
         <option>Step 2 · Root cause selector</option>
         <option>Step 3 · Photo to Supervisor</option>
         <option>Step 4 · Task accomplished</option>
@@ -2374,6 +2473,13 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     markSaved();
   }
 
+  function pickGraphic(btn){
+    const lib = btn.closest('.graphic-lib');
+    if (!lib) return;
+    lib.querySelectorAll('.gtile').forEach(t => t.classList.remove('on'));
+    btn.classList.add('on');
+    markSaved();
+  }
   function switchDrawerType(type){
     document.querySelectorAll('.dr-panel').forEach(p => p.classList.remove('show'));
     const panel = document.querySelector('.dr-panel[data-for="' + type + '"]');
