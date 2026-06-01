@@ -568,21 +568,56 @@ body:not([data-override="on"]) .ovr-reset{display:none!important}
   margin-top:6px;
 }
 
-/* Canvas step nodes — show a small padlock badge in Override mode */
-body[data-override="on"] .fnode::after{
-  content:"";
-  position:absolute;top:10px;right:10px;
-  width:22px;height:22px;border-radius:8px;
-  background:rgba(232,148,26,.15);border:1px solid rgba(232,148,26,.40);
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='14' viewBox='0 0 24 24' fill='none' stroke='%238C6306' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='11' width='18' height='11' rx='2'/><path d='M7 11V7a5 5 0 0 1 10 0v4'/></svg>");
-  background-repeat:no-repeat;background-position:center;
-  pointer-events:none;
-  z-index:2;
-  box-shadow:0 2px 6px -2px rgba(184,116,20,.25);
-  animation:fadeIn .2s ease-out;
-}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+/* Canvas step nodes — clickable per-step padlock button (visible in Override mode) */
 .fnode{position:relative}
+.step-lock-btn{
+  display:none;
+  position:absolute;top:10px;right:10px;
+  width:28px;height:28px;border-radius:9px;
+  background:rgba(232,148,26,.14);
+  border:1px solid rgba(232,148,26,.36);
+  color:#8C6306;
+  cursor:pointer;
+  z-index:5;
+  align-items:center;justify-content:center;
+  transition:.18s;
+  box-shadow:0 2px 6px -2px rgba(184,116,20,.20);
+  animation:fadeIn .22s ease-out;
+}
+body[data-override="on"] .step-lock-btn{display:inline-flex}
+.step-lock-btn:hover{
+  background:rgba(232,148,26,.24);
+  border-color:rgba(232,148,26,.55);
+  transform:translateY(-1px);
+  box-shadow:0 4px 10px -3px rgba(184,116,20,.30);
+}
+.step-lock-btn .padlock-svg{display:block;color:inherit}
+/* Unlocked step badge — emphasised */
+.fnode[data-step-lock="unlocked"] .step-lock-btn{
+  background:#E0A314;color:#fff;border-color:rgba(232,148,26,.85);
+  box-shadow:0 4px 12px -2px rgba(184,116,20,.40);
+}
+.fnode[data-step-lock="unlocked"] .step-lock-btn .padlock-svg .shackle{
+  d:path("M7 11V7a5 5 0 0 1 9.9-1");
+}
+/* Unlocked step node — soft amber outline so it's spottable in the canvas */
+body[data-override="on"] .fnode[data-step-lock="unlocked"]{
+  box-shadow:0 0 0 2px rgba(232,148,26,.30), 0 8px 22px -10px rgba(184,116,20,.20);
+}
+/* Tooltip on the lock button */
+.step-lock-btn::after{
+  content:"Unlock to override this step";
+  position:absolute;bottom:calc(100% + 6px);right:0;
+  font:700 10.5px 'Plus Jakarta Sans';letter-spacing:-.005em;
+  background:var(--ink);color:#fff;
+  padding:5px 9px;border-radius:7px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:.18s;
+  box-shadow:0 6px 18px -6px rgba(40,50,80,.40);
+  z-index:6;
+}
+.step-lock-btn:hover::after{opacity:1}
+.fnode[data-step-lock="unlocked"] .step-lock-btn::after{content:"Lock this step (revert overrides)"}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
 
 /* End override system ===== */
 
@@ -3365,6 +3400,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     flow.insertBefore(buildNode(template, newIdx), addBtn);
     selectNode(flow.querySelectorAll('.fnode:not(.fnode-add)')[newIdx - 1]);
     renumber();
+    injectStepLockButtons();
     markSaved();
     flow.querySelectorAll('.fnode:not(.fnode-add)')[newIdx - 1].scrollIntoView({behavior:'smooth',block:'center'});
   }
@@ -3534,12 +3570,13 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   }
   // Backwards-compat shim for any older call sites
   function toggleMode(){ toggleOverrideMode(); }
-  // Initialize all override fields as locked
+  // Initialize all override fields as locked + inject per-step lock buttons
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.ovr').forEach(f => {
       if (!f.hasAttribute('data-locked')) f.setAttribute('data-locked','false');
       f.querySelectorAll('select,input,textarea').forEach(el => el.disabled = true);
     });
+    injectStepLockButtons();
     updateOverrideCount();
   });
 
@@ -3613,9 +3650,50 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     markSaved();
   }
 
+  // ===== Per-step lock button on each canvas .fnode =====
+  function injectStepLockButtons(){
+    document.querySelectorAll('.fnode').forEach(node => {
+      if (node.classList.contains('fnode-add')) return;
+      if (node.querySelector('.step-lock-btn')) return;
+      if (!node.hasAttribute('data-step-lock')) node.setAttribute('data-step-lock','locked');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'step-lock-btn';
+      btn.setAttribute('aria-label','Toggle step override');
+      btn.innerHTML = '<svg class="padlock-svg" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path class="shackle" d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+      btn.onclick = function(ev){
+        ev.stopPropagation();
+        toggleStepLock(node);
+      };
+      node.appendChild(btn);
+    });
+  }
+  function toggleStepLock(node){
+    const locked = node.getAttribute('data-step-lock') !== 'unlocked';
+    node.setAttribute('data-step-lock', locked ? 'unlocked' : 'locked');
+    // If we just locked it back, also reset any field-level overrides in its drawer panel
+    if (!locked) {
+      // re-locking: clear panel padlock state so when drawer reopens, fields start fresh-locked
+      document.querySelectorAll('.dr-panel[data-padlocked]').forEach(p => p.removeAttribute('data-padlocked'));
+      document.querySelectorAll('.auto-pad-wrap.auto-ovr-on').forEach(w => {
+        w.classList.remove('auto-ovr-on');
+        const inp = w.querySelector('input, textarea, select');
+        if (inp) inp.disabled = true;
+        const lb = w.querySelector('.lock-btn');
+        if (lb) lb.classList.remove('on');
+      });
+    }
+    markSaved();
+  }
+  // Track which step the drawer is currently editing (set on openDrawer)
+  let _currentEditingNode = null;
+
   // ===== Auto-inject padlocks across all drawer fields =====
   function ensureDrawerPadlocks(panel){
-    if (!panel || panel.hasAttribute('data-padlocked')) return;
+    if (!panel) return;
+    // Gate by step lock — if the currently-edited step is locked, skip field padlocks entirely
+    if (_currentEditingNode && _currentEditingNode.getAttribute('data-step-lock') !== 'unlocked') return;
+    if (panel.hasAttribute('data-padlocked')) return;
     panel.setAttribute('data-padlocked','1');
     const inputs = panel.querySelectorAll('input[type=text], textarea, select');
     inputs.forEach(inp => {
@@ -3670,9 +3748,11 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   function openDrawer(id, type){
     document.getElementById('scrim').classList.add('on');
     document.getElementById('drawer').classList.add('on');
+    // Track which step node we're editing — used to gate per-step padlock injection
+    _currentEditingNode = document.querySelector('.fnode.selected') || document.querySelectorAll('.fnode:not(.fnode-add)')[ (id||1) - 1 ];
     // Infer type from clicked fnode if not passed
     if (!type) {
-      const sel = document.querySelector('.fnode.selected') || document.querySelectorAll('.fnode:not(.fnode-add)')[ (id||1) - 1 ];
+      const sel = _currentEditingNode;
       if (sel) {
         const cat = sel.querySelector('.fcat');
         const txt = cat ? cat.textContent : '';
