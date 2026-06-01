@@ -523,6 +523,22 @@ body:not([data-override="on"]) .ovr-reset{display:none!important}
 .ovr-reset:hover{color:var(--brand)}
 .ovr[data-locked="true"] .ovr-reset{display:inline-block}
 
+/* Canvas step nodes — show a small padlock badge in Override mode */
+body[data-override="on"] .fnode::after{
+  content:"";
+  position:absolute;top:10px;right:10px;
+  width:22px;height:22px;border-radius:8px;
+  background:rgba(232,148,26,.15);border:1px solid rgba(232,148,26,.40);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='14' viewBox='0 0 24 24' fill='none' stroke='%238C6306' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='11' width='18' height='11' rx='2'/><path d='M7 11V7a5 5 0 0 1 10 0v4'/></svg>");
+  background-repeat:no-repeat;background-position:center;
+  pointer-events:none;
+  z-index:2;
+  box-shadow:0 2px 6px -2px rgba(184,116,20,.25);
+  animation:fadeIn .2s ease-out;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+.fnode{position:relative}
+
 /* End override system ===== */
 
 /* End config dashboard ===== */
@@ -1909,7 +1925,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <div class="mb-text">
           <div class="mb-scope"><b>Honda Manesar</b> · inherits <b>Global · Low DO</b></div>
           <div class="mb-sub mb-locked-txt">Locked · step fields strictly follow Global</div>
-          <div class="mb-sub mb-override-txt">Padlocks visible on overridable fields inside each step</div>
+          <div class="mb-sub mb-override-txt"><b>Click any step</b> in the canvas to see padlocks on its overridable fields</div>
         </div>
       </div>
       <div class="mb-right">
@@ -2608,8 +2624,17 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     <div class="dr-panel" data-for="actionmc">
       <div class="dr-banner" style="background:rgba(0,41,118,.06);border:1px solid rgba(0,41,118,.18);color:var(--brand)">☰ One question with 2+ options — each option can route to a different next step (branching).</div>
       <h4 class="dr-section">Question</h4>
-      <label>Primary question</label>
-      <input type="text" value="Is aeration happening equally across the tank?" oninput="markSaved()"/>
+      <div class="ovr" data-ovr="mc-question" data-global="Is aeration happening equally across the tank?">
+        <label>Primary question <span class="ovr-meta">inherited from Global</span></label>
+        <div class="ovr-wrap">
+          <input type="text" value="Is aeration happening equally across the tank?" disabled oninput="markSaved()"/>
+          <button class="lock-btn" type="button" onclick="toggleLock(this)" aria-label="Unlock to override">
+            <svg class="lk lk-closed" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <svg class="lk lk-open" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          </button>
+        </div>
+        <button class="ovr-reset" type="button" onclick="resetOverride(this)">↺ Reset to Global value</button>
+      </div>
       <label style="margin-top:12px">Helper text (optional)</label>
       <input type="text" placeholder="A short hint shown beneath the question" oninput="markSaved()"/>
 
