@@ -1692,11 +1692,15 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
         <!-- ============ 🔵 NORMAL ============ -->
         <div class="pgroup progress open">
-          <div class="pghdr"><span class="cat-dot" style="background:var(--brand)"></span><span>Normal steps</span><span class="cat-count">3</span></div>
+          <div class="pghdr"><span class="cat-dot" style="background:var(--brand)"></span><span>Normal steps</span><span class="cat-count">4</span></div>
           <div class="ptiles">
             <button class="ptile" onclick="addStep('action')">
               <div class="pico cat-normal">🛠</div>
-              <div class="ptxt"><div class="pt">Action step</div><div class="ps">Single instruction · e.g. open valve, restart pump</div></div>
+              <div class="ptxt"><div class="pt">Action step · single answer</div><div class="ps">One instruction with one input · e.g. open valve, restart pump</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('actionmc')">
+              <div class="pico cat-normal">☰</div>
+              <div class="ptxt"><div class="pt">Action step · multi-choice</div><div class="ps">Pick from 2+ options · e.g. bubble pattern, dead zones</div></div>
             </button>
             <button class="ptile" onclick="addStep('rcselect')">
               <div class="pico cat-normal">🌳</div>
@@ -2261,7 +2265,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     <label>Step type</label>
     <select id="drType" onchange="switchDrawerType(this.value)">
       <optgroup label="🔵 Normal">
-        <option value="action">Action step</option>
+        <option value="action">Action step · single answer</option>
+        <option value="actionmc">Action step · multi-choice</option>
         <option value="rcselect">Root cause selector</option>
         <option value="taskdone">Task accomplished</option>
       </optgroup>
@@ -2288,14 +2293,25 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     <label style="margin-top:14px">Description for operator (optional)</label>
     <textarea id="drDesc" oninput="markSaved()" placeholder="A short hint or context the operator will see under the title…">Walk to bay 2, locate V-204, rotate clockwise until fully open.</textarea>
 
-    <!-- ============ 🔵 ACTION CARD ============ -->
+    <!-- ============ 🔵 ACTION STEP · SINGLE ANSWER ============ -->
     <div class="dr-panel" data-for="action">
+      <div class="dr-banner" style="background:rgba(0,41,118,.06);border:1px solid rgba(0,41,118,.18);color:var(--brand)">🛠 One instruction with one definitive answer — operator types / picks / confirms a single value.</div>
       <h4 class="dr-section">Action details</h4>
       <label>Target asset / equipment</label>
       <input type="text" placeholder="e.g. Valve V-204, Pump 7, Aeration Blower 2" oninput="markSaved()"/>
       <label style="margin-top:12px">Expected outcome (1 line)</label>
       <input type="text" placeholder="e.g. Flow restored to design rate" oninput="markSaved()"/>
-      <label style="margin-top:12px">Skill required</label>
+
+      <h4 class="dr-section">Answer type</h4>
+      <select onchange="markSaved()">
+        <option>Done button (operator self-confirms)</option>
+        <option>Yes / No</option>
+        <option>Numeric input (with unit)</option>
+        <option>Free text</option>
+        <option>Photo upload</option>
+      </select>
+
+      <h4 class="dr-section">Skill required</h4>
       <select onchange="markSaved()">
         <option>General operator (anyone on shift)</option>
         <option>Mechanical</option>
@@ -2314,6 +2330,60 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <option>→ End diagnosis</option>
       </select>
       <div class="help">Every step needs an output. If this is the last step, point it to <b>End diagnosis</b>.</div>
+    </div>
+
+    <!-- ============ 🔵 ACTION STEP · MULTI-CHOICE ============ -->
+    <div class="dr-panel" data-for="actionmc">
+      <div class="dr-banner" style="background:rgba(0,41,118,.06);border:1px solid rgba(0,41,118,.18);color:var(--brand)">☰ One question with 2+ options — each option can route to a different next step (branching).</div>
+      <h4 class="dr-section">Question</h4>
+      <label>Primary question</label>
+      <input type="text" value="Is aeration happening equally across the tank?" oninput="markSaved()"/>
+      <label style="margin-top:12px">Helper text (optional)</label>
+      <input type="text" placeholder="A short hint shown beneath the question" oninput="markSaved()"/>
+
+      <h4 class="dr-section">Options &amp; routes <span class="lbl-opt">(each option routes to its own next step)</span></h4>
+      <div class="sub-list">
+        <div class="sub-item opt-item">
+          <span class="ix">A</span>
+          <span class="t opt-row">
+            <span class="opt-label" contenteditable="true">Yes, bubbles seem normal on the surface</span>
+            <span class="opt-route-row"><span class="ar">→ Goes to</span><span class="dest-chip" contenteditable="true">Step 3 · Dead-zone check</span></span>
+          </span>
+          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        </div>
+        <div class="sub-item opt-item">
+          <span class="ix">B</span>
+          <span class="t opt-row">
+            <span class="opt-label" contenteditable="true">Moderately, some bubbles are present</span>
+            <span class="opt-route-row"><span class="ar">→ Goes to</span><span class="dest-chip" contenteditable="true">Step 3 · Dead-zone check</span></span>
+          </span>
+          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        </div>
+        <div class="sub-item opt-item">
+          <span class="ix">C</span>
+          <span class="t opt-row">
+            <span class="opt-label" contenteditable="true">No, there are no bubbles in the tank</span>
+            <span class="opt-route-row"><span class="ar">→ Goes to</span><span class="dest-chip stop" contenteditable="true">Root cause · Air supply failure</span></span>
+          </span>
+          <span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span>
+        </div>
+        <button class="sub-add" onclick="addOptionRow(this)">＋ Add option</button>
+      </div>
+
+      <h4 class="dr-section">Selection mode</h4>
+      <select onchange="markSaved()">
+        <option>Single select (radio · pick one)</option>
+        <option>Multi select (checkbox · pick any that apply)</option>
+      </select>
+
+      <h4 class="dr-section">Skill required</h4>
+      <select onchange="markSaved()">
+        <option>General operator (anyone on shift)</option>
+        <option>Mechanical</option>
+        <option>Electrical / Instrumentation</option>
+        <option>Process / Lab</option>
+      </select>
+      <div class="help">Output for this step is <b>per option</b> — each row above defines its own next step.</div>
     </div>
 
     <!-- ============ 🔵 ROOT CAUSE SELECTOR ============ -->
@@ -2889,7 +2959,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     photo:       { ttl: "Photo capture step",                   chips:['📷 Photo','Hard block','👤 Operator'],          kind:'STEP_PHOTO',     cat:'todo', catLabel:'To Do · Photo gate' },
 
     // === NEW TAXONOMY · NORMAL steps ===
-    action:        { ttl: "Action step — single instruction",         chips:['🛠 Action','👤 Operator'],                        kind:'STEP_ACTION',       cat:'progress', catLabel:'Normal · Action step' },
+    action:        { ttl: "Action step · single answer",                chips:['🛠 Action','Single answer','👤 Operator'],         kind:'STEP_ACTION',        cat:'progress', catLabel:'Normal · Action step · single answer' },
+    actionmc:      { ttl: "Action step · multi-choice",                 chips:['☰ Multi-choice','2+ options · branching','👤 Operator'], kind:'STEP_ACTION_MC',    cat:'progress', catLabel:'Normal · Action step · multi-choice' },
     rcselect:      { ttl: "Root cause selector — pick from list",      chips:['🌳 Radio list','Icon + 1-line desc'],             kind:'STEP_RC_SELECT',    cat:'progress', catLabel:'Normal · Root cause selector' },
     taskdone:      { ttl: "Task accomplished",                          chips:['✓ Confirmation','Stage complete'],                kind:'STEP_TASK_DONE',    cat:'progress', catLabel:'Normal · Task accomplished' },
 
@@ -3104,19 +3175,19 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     if (panel) panel.classList.add('show');
     // update badge
     const labels = {
-      action:'Normal · Action step', rcselect:'Normal · Root cause selector', taskdone:'Normal · Task accomplished',
+      action:'Normal · Action step · single answer', actionmc:'Normal · Action step · multi-choice', rcselect:'Normal · Root cause selector', taskdone:'Normal · Task accomplished',
       skipknow:'Branch · Skip (know reason)', skipfalse:'Branch · Skip (false alarm)', reassign2:'Branch · Reassignment',
       callsup:'Exception · Call Supervisor', photosup:'Exception · Photo to Supervisor', falsealarm:'Exception · False alarm overflow',
       issuecard:'Card · Issue', contextcard:'Card · Context', confirmcard:'Card · Confirmation', summarycard:'Card · Context', progresscard:'Card · Context', completioncard:'Card · Context'
     };
     const colors = {
-      action:'var(--brand)', rcselect:'var(--brand)', taskdone:'var(--brand)',
+      action:'var(--brand)', actionmc:'var(--brand)', rcselect:'var(--brand)', taskdone:'var(--brand)',
       skipknow:'#A06F00', skipfalse:'#A06F00', reassign2:'#A06F00',
       callsup:'#B83A1F', photosup:'#B83A1F', falsealarm:'#B83A1F',
       issuecard:'#6B36B5', contextcard:'#6B36B5', confirmcard:'#6B36B5', summarycard:'#6B36B5', progresscard:'#6B36B5', completioncard:'#6B36B5'
     };
     const bgs = {
-      action:'rgba(0,41,118,.08)', rcselect:'rgba(0,41,118,.08)', taskdone:'rgba(0,41,118,.08)',
+      action:'rgba(0,41,118,.08)', actionmc:'rgba(0,41,118,.08)', rcselect:'rgba(0,41,118,.08)', taskdone:'rgba(0,41,118,.08)',
       skipknow:'rgba(232,148,26,.10)', skipfalse:'rgba(232,148,26,.10)', reassign2:'rgba(232,148,26,.10)',
       callsup:'rgba(184,58,31,.10)', photosup:'rgba(184,58,31,.10)', falsealarm:'rgba(184,58,31,.10)',
       issuecard:'rgba(107,54,181,.10)', contextcard:'rgba(107,54,181,.10)', confirmcard:'rgba(107,54,181,.10)', summarycard:'rgba(107,54,181,.10)', progresscard:'rgba(107,54,181,.10)', completioncard:'rgba(107,54,181,.10)'
@@ -3138,7 +3209,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       if (sel) {
         const cat = sel.querySelector('.fcat');
         const txt = cat ? cat.textContent : '';
-        if (/Action step/i.test(txt)) type = 'action';
+        if (/Action step.*multi-choice/i.test(txt)) type = 'actionmc';
+        else if (/Action step/i.test(txt)) type = 'action';
         else if (/Root cause selector/i.test(txt)) type = 'rcselect';
         else if (/Task accomplished/i.test(txt)) type = 'taskdone';
         else if (/Skip.*know/i.test(txt)) type = 'skipknow';
