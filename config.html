@@ -368,39 +368,65 @@ input[type=text]:focus,textarea:focus,select:focus{border-bottom-width:1.5px;pad
 *,*::before,*::after{transition-duration:.16s!important}
 .btn{transition:all .15s cubic-bezier(.4,0,.2,1)}
 
-/* ===== Mode bar · scope context for override system ===== */
+/* ===== Mode bar · Override toggle ===== */
 .mode-bar{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;
-  margin:0 0 20px;padding:11px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin:0 0 24px;padding:14px 18px;
   border-radius:14px;
-  background:linear-gradient(135deg,rgba(232,148,26,.10),rgba(232,148,26,.18));
-  border:1px solid rgba(232,148,26,.30);
-  box-shadow:0 4px 14px -6px rgba(184,116,20,.18);
-  font-size:13px;
+  background:linear-gradient(135deg,rgba(14,20,40,.04),rgba(14,20,40,.08));
+  border:1px solid rgba(14,20,40,.10);
+  box-shadow:0 4px 14px -6px rgba(40,50,80,.10);
+  font-size:13px;transition:.25s ease;
 }
-.mode-bar[data-mode="global"]{
-  background:linear-gradient(135deg,rgba(0,41,118,.08),rgba(0,41,118,.16));
-  border-color:rgba(0,41,118,.30);
-  box-shadow:0 4px 14px -6px rgba(0,41,118,.18);
+.mode-bar[data-mode="override"]{
+  background:linear-gradient(135deg,rgba(232,148,26,.10),rgba(232,148,26,.20));
+  border-color:rgba(232,148,26,.32);
+  box-shadow:0 6px 18px -8px rgba(184,116,20,.22);
 }
-.mb-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.mb-dot{width:9px;height:9px;border-radius:999px;background:#E0A314;box-shadow:0 0 0 3px rgba(232,148,26,.20);flex-shrink:0}
-.mode-bar[data-mode="global"] .mb-dot{background:var(--brand);box-shadow:0 0 0 3px rgba(0,41,118,.20)}
-.mb-scope{font:800 10.5px 'JetBrains Mono';letter-spacing:.7px;text-transform:uppercase;color:#8C6306}
-.mode-bar[data-mode="global"] .mb-scope{color:var(--brand)}
-.mb-sep{color:var(--ink-4);font-weight:600}
-.mb-site{font-weight:800;color:var(--ink);letter-spacing:-.005em;font-size:13.5px}
-.mb-count{margin-left:8px;font:600 11px 'JetBrains Mono';color:var(--ink-3);background:rgba(255,255,255,.55);padding:3px 9px;border-radius:999px;letter-spacing:.3px}
-.mb-switch{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(255,255,255,.65);border:1px solid rgba(232,148,26,.25);
-  color:#8C6306;font:700 12px 'Plus Jakarta Sans';letter-spacing:-.005em;
-  padding:7px 12px;border-radius:999px;cursor:pointer;transition:.15s;
+.mb-left{display:flex;align-items:center;gap:12px;min-width:0}
+.mb-dot{width:10px;height:10px;border-radius:999px;background:var(--ink-3);box-shadow:0 0 0 3px rgba(14,20,40,.10);flex-shrink:0;transition:.25s}
+.mode-bar[data-mode="override"] .mb-dot{background:#E0A314;box-shadow:0 0 0 3px rgba(232,148,26,.22);animation:pulse 2.4s ease-in-out infinite}
+.mb-text{display:flex;flex-direction:column;gap:1px;min-width:0}
+.mb-scope{font-size:13px;color:var(--ink-2);letter-spacing:-.005em;line-height:1.3;font-weight:500}
+.mb-scope b{color:var(--ink);font-weight:800}
+.mb-sub{font:600 11px 'JetBrains Mono';letter-spacing:.3px;color:var(--ink-3);margin-top:1px}
+/* Toggle-driven sub-text visibility */
+.mb-locked-txt{display:block}
+.mb-override-txt{display:none;color:#8C6306}
+.mode-bar[data-mode="override"] .mb-locked-txt{display:none}
+.mode-bar[data-mode="override"] .mb-override-txt{display:block}
+.mbc-num{color:#8C6306;font-weight:800;font-size:12px}
+@keyframes pulse{0%,100%{opacity:.6;transform:scale(.92)}50%{opacity:1;transform:scale(1.15)}}
+
+.mb-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.mb-tlbl{font:800 10.5px 'JetBrains Mono';letter-spacing:.7px;text-transform:uppercase;color:var(--ink-3);transition:.2s}
+.mode-bar[data-mode="override"] .mb-tlbl{color:#8C6306}
+
+/* The toggle itself — iOS-style with embedded padlock in the knob */
+.mb-toggle{
+  width:46px;height:26px;border-radius:999px;
+  background:rgba(14,20,40,.20);position:relative;cursor:pointer;
+  transition:.22s cubic-bezier(.4,0,.2,1);flex-shrink:0;
 }
-.mb-switch:hover{background:rgba(255,255,255,.95);transform:translateY(-1px)}
-.mode-bar[data-mode="global"] .mb-switch{border-color:rgba(0,41,118,.25);color:var(--brand)}
+.mb-toggle .knob{
+  position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:999px;
+  background:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 5px rgba(40,50,80,.25);transition:.22s cubic-bezier(.4,0,.2,1);
+  color:var(--ink-3);
+}
+.mb-toggle.on{background:#E0A314;box-shadow:0 0 0 3px rgba(232,148,26,.18) inset}
+.mb-toggle.on .knob{left:23px;color:#8C6306}
+.mb-toggle .lkn{display:none}
+.mb-toggle .lkn-closed{display:block}
+.mb-toggle.on .lkn-closed{display:none}
+.mb-toggle.on .lkn-open{display:block}
 
 /* ===== Field-level override · lock button + state ===== */
+/* Body-level: when override mode OFF, hide all lock buttons and meta chips */
+body:not([data-override="on"]) .lock-btn{display:none!important}
+body:not([data-override="on"]) .ovr-meta{display:none!important}
+body:not([data-override="on"]) .ovr-reset{display:none!important}
+
 .ovr{position:relative}
 .ovr label{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ovr .ovr-meta{font:600 9.5px 'JetBrains Mono';letter-spacing:.4px;text-transform:uppercase;color:var(--ink-4);padding:2px 7px;border-radius:999px;background:rgba(14,20,40,.05);font-weight:700;transition:.18s}
@@ -1495,20 +1521,21 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     <h1 class="page-h">Set up the <em>issue</em></h1>
     <p class="page-sub">Give the issue a clear identity. Plant, equipment, severity, deadline — everything operators see at the top of the screen.</p>
 
-    <!-- ===== Mode bar · context for lock/unlock state ===== -->
-    <div class="mode-bar" id="modeBar" data-mode="site">
+    <!-- ===== Mode bar · Override toggle for Set up ===== -->
+    <div class="mode-bar" data-mode="locked">
       <div class="mb-left">
         <span class="mb-dot"></span>
-        <span class="mb-scope">Site override</span>
-        <span class="mb-sep">·</span>
-        <span class="mb-site">Honda Manesar</span>
-        <span class="mb-count" id="mbCount">0 overrides</span>
+        <div class="mb-text">
+          <div class="mb-scope"><b>Honda Manesar</b> · inherits <b>Global · Low DO</b></div>
+          <div class="mb-sub mb-locked-txt">Locked · all fields strictly follow Global</div>
+          <div class="mb-sub mb-override-txt"><span class="mbc-num">0</span> overrides on this site</div>
+        </div>
       </div>
       <div class="mb-right">
-        <button class="mb-switch" onclick="toggleMode()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-          Switch scope
-        </button>
+        <span class="mb-tlbl">Override mode</span>
+        <div class="mb-toggle" onclick="toggleOverrideMode()" role="switch" aria-checked="false">
+          <div class="knob"><svg class="lkn lkn-closed" width="9" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><svg class="lkn lkn-open" width="9" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg></div>
+        </div>
       </div>
     </div>
 
@@ -1727,6 +1754,24 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     <h1 class="page-h">Define the <em>triggers</em></h1>
     <p class="page-sub">Tell the system what sensor reading, condition, and sustained duration should automatically open this issue. Add as many triggers as you need.</p>
 
+    <!-- ===== Mode bar · Override toggle for Triggers ===== -->
+    <div class="mode-bar" data-mode="locked">
+      <div class="mb-left">
+        <span class="mb-dot"></span>
+        <div class="mb-text">
+          <div class="mb-scope"><b>Honda Manesar</b> · inherits <b>Global · Low DO</b></div>
+          <div class="mb-sub mb-locked-txt">Locked · all trigger conditions follow Global</div>
+          <div class="mb-sub mb-override-txt"><span class="mbc-num">0</span> overrides on this site</div>
+        </div>
+      </div>
+      <div class="mb-right">
+        <span class="mb-tlbl">Override mode</span>
+        <div class="mb-toggle" onclick="toggleOverrideMode()" role="switch" aria-checked="false">
+          <div class="knob"><svg class="lkn lkn-closed" width="9" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><svg class="lkn lkn-open" width="9" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg></div>
+        </div>
+      </div>
+    </div>
+
     <div class="card trigger-card">
       <div class="trig-hdr">
         <h3>Trigger 1</h3>
@@ -1758,9 +1803,16 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       </div>
 
       <div class="form-grid" style="margin-top:14px">
-        <div class="ff">
-          <label>Value</label>
-          <input type="text" value="2.0" placeholder="e.g. 2.0" oninput="markSaved()"/>
+        <div class="ff ovr" data-ovr="trigger-value" data-global="2.0">
+          <label>Value <span class="ovr-meta">inherited from Global · 2.0</span></label>
+          <div class="ovr-wrap">
+            <input type="text" value="2.0" placeholder="e.g. 2.0" disabled oninput="markSaved()"/>
+            <button class="lock-btn" type="button" onclick="toggleLock(this)" aria-label="Unlock to override">
+              <svg class="lk lk-closed" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <svg class="lk lk-open" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+            </button>
+          </div>
+          <button class="ovr-reset" type="button" onclick="resetOverride(this)">↺ Reset to Global value</button>
         </div>
         <div class="ff">
           <label>Unit</label>
@@ -1775,22 +1827,29 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         </div>
       </div>
 
-      <div class="ff" style="margin-top:14px">
-        <label>Sustained for</label>
-        <div class="time-compose three">
-          <div class="tc-cell">
-            <input type="text" value="0" placeholder="0" oninput="markSaved()"/>
-            <span class="tc-u">hrs</span>
+      <div class="ff ovr" data-ovr="sustained" data-global="0h 12m 00s" style="margin-top:14px">
+        <label>Sustained for <span class="ovr-meta">inherited from Global · 12 min</span></label>
+        <div class="ovr-wrap">
+          <div class="time-compose three ovr-input">
+            <div class="tc-cell">
+              <input type="text" value="0" placeholder="0" disabled oninput="markSaved()"/>
+              <span class="tc-u">hrs</span>
+            </div>
+            <div class="tc-cell">
+              <input type="text" value="12" placeholder="00" disabled oninput="markSaved()"/>
+              <span class="tc-u">mins</span>
+            </div>
+            <div class="tc-cell">
+              <input type="text" value="00" placeholder="00" disabled oninput="markSaved()"/>
+              <span class="tc-u">secs</span>
+            </div>
           </div>
-          <div class="tc-cell">
-            <input type="text" value="12" placeholder="00" oninput="markSaved()"/>
-            <span class="tc-u">mins</span>
-          </div>
-          <div class="tc-cell">
-            <input type="text" value="00" placeholder="00" oninput="markSaved()"/>
-            <span class="tc-u">secs</span>
-          </div>
+          <button class="lock-btn" type="button" onclick="toggleLock(this)" aria-label="Unlock to override">
+            <svg class="lk lk-closed" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <svg class="lk lk-open" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          </button>
         </div>
+        <button class="ovr-reset" type="button" onclick="resetOverride(this)">↺ Reset to Global value</button>
         <div class="help">Reading must hold the condition for this duration before the issue opens. Prevents flapping on transient spikes.</div>
       </div>
 
@@ -1842,6 +1901,24 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       </button>
     </div>
     <p class="page-sub">Drag step types in from the left, hover between cards to insert, tap a card to edit it.</p>
+
+    <!-- ===== Mode bar · Override toggle for Build the flow ===== -->
+    <div class="mode-bar" data-mode="locked">
+      <div class="mb-left">
+        <span class="mb-dot"></span>
+        <div class="mb-text">
+          <div class="mb-scope"><b>Honda Manesar</b> · inherits <b>Global · Low DO</b></div>
+          <div class="mb-sub mb-locked-txt">Locked · step fields strictly follow Global</div>
+          <div class="mb-sub mb-override-txt">Padlocks visible on overridable fields inside each step</div>
+        </div>
+      </div>
+      <div class="mb-right">
+        <span class="mb-tlbl">Override mode</span>
+        <div class="mb-toggle" onclick="toggleOverrideMode()" role="switch" aria-checked="false">
+          <div class="knob"><svg class="lkn lkn-closed" width="9" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><svg class="lkn lkn-open" width="9" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg></div>
+        </div>
+      </div>
+    </div>
 
     <div class="tip-row">
       <div class="tip-ico">✨</div>
@@ -2473,8 +2550,17 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     <div class="dr-panel" data-for="action">
       <div class="dr-banner" style="background:rgba(0,41,118,.06);border:1px solid rgba(0,41,118,.18);color:var(--brand)">🛠 One instruction with one definitive answer — operator types / picks / confirms a single value.</div>
       <h4 class="dr-section">Action details</h4>
-      <label>Target asset / equipment</label>
-      <input type="text" placeholder="e.g. Valve V-204, Pump 7, Aeration Blower 2" oninput="markSaved()"/>
+      <div class="ovr" data-ovr="target-asset" data-global="Valve V-204">
+        <label>Target asset / equipment <span class="ovr-meta">inherited from Global · Valve V-204</span></label>
+        <div class="ovr-wrap">
+          <input type="text" value="Valve V-204" placeholder="e.g. Valve V-204, Pump 7, Aeration Blower 2" disabled oninput="markSaved()"/>
+          <button class="lock-btn" type="button" onclick="toggleLock(this)" aria-label="Unlock to override">
+            <svg class="lk lk-closed" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <svg class="lk lk-open" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          </button>
+        </div>
+        <button class="ovr-reset" type="button" onclick="resetOverride(this)">↺ Reset to Global value</button>
+      </div>
       <label style="margin-top:12px">Expected outcome (1 line)</label>
       <input type="text" placeholder="e.g. Flow restored to design rate" oninput="markSaved()"/>
 
@@ -2488,12 +2574,22 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       </select>
 
       <h4 class="dr-section">Skill required</h4>
-      <select onchange="markSaved()">
+      <div class="ovr" data-ovr="skill" data-global="Mechanical">
+        <label class="ovr-meta-only"><span class="ovr-meta">inherited from Global · Mechanical</span></label>
+        <div class="ovr-wrap">
+      <select disabled onchange="markSaved()">
         <option>General operator (anyone on shift)</option>
-        <option>Mechanical</option>
+        <option selected>Mechanical</option>
         <option>Electrical / Instrumentation</option>
         <option>Process / Lab</option>
       </select>
+          <button class="lock-btn" type="button" onclick="toggleLock(this)" aria-label="Unlock to override">
+            <svg class="lk lk-closed" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <svg class="lk lk-open" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          </button>
+        </div>
+        <button class="ovr-reset" type="button" onclick="resetOverride(this)">↺ Reset to Global value</button>
+      </div>
 
       <h4 class="dr-section">Output → Next step</h4>
       <label>When the operator finishes, open this step next</label>
@@ -3339,39 +3435,36 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   }
   function updateOverrideCount(){
     const n = document.querySelectorAll('.ovr[data-locked="true"]').length;
-    const el = document.getElementById('mbCount');
-    if (el) el.textContent = n === 1 ? '1 override' : n + ' overrides';
+    document.querySelectorAll('.mbc-num').forEach(el => el.textContent = String(n));
   }
-  function toggleMode(){
-    const bar = document.getElementById('modeBar');
-    if (!bar) return;
-    const next = bar.getAttribute('data-mode') === 'site' ? 'global' : 'site';
-    bar.setAttribute('data-mode', next);
-    if (next === 'global') {
-      bar.querySelector('.mb-scope').textContent = 'Global template';
-      bar.querySelector('.mb-site').textContent = 'master';
-      // In global mode, hide lock buttons & show as native (everything is "editable")
-      document.querySelectorAll('.ovr').forEach(f => {
-        f.setAttribute('data-locked','true');
-        f.querySelectorAll('select,input,textarea').forEach(el => el.disabled = false);
-        const meta = f.querySelector('.ovr-meta');
-        if (meta) { meta.textContent = 'Global value'; meta.style.background='rgba(0,41,118,.10)'; meta.style.color='var(--brand)'; }
-      });
-    } else {
-      bar.querySelector('.mb-scope').textContent = 'Site override';
-      bar.querySelector('.mb-site').textContent = 'Honda Manesar';
-      // Reset to locked / inherited
-      document.querySelectorAll('.ovr').forEach(f => {
+  function toggleOverrideMode(){
+    const on = document.body.getAttribute('data-override') === 'on';
+    document.body.setAttribute('data-override', on ? 'off' : 'on');
+    // Sync all mode bars and toggles on the page
+    document.querySelectorAll('.mode-bar').forEach(bar => {
+      bar.setAttribute('data-mode', on ? 'locked' : 'override');
+      const t = bar.querySelector('.mb-toggle');
+      if (t) t.classList.toggle('on', !on);
+      const ar = bar.querySelector('[role="switch"]');
+      if (ar) ar.setAttribute('aria-checked', String(!on));
+    });
+    // In Locked mode (override OFF) — relock everything so users see the inherited state
+    if (on) {
+      document.querySelectorAll('.ovr[data-locked="true"]').forEach(f => {
         f.setAttribute('data-locked','false');
         f.querySelectorAll('select,input,textarea').forEach(el => el.disabled = true);
         const meta = f.querySelector('.ovr-meta');
-        const globalVal = f.getAttribute('data-global') || 'Global';
-        if (meta) { meta.textContent = 'inherited from Global · ' + globalVal; meta.style.background=''; meta.style.color=''; }
+        if (meta) {
+          const g = f.getAttribute('data-global') || 'Global';
+          meta.textContent = 'inherited from Global · ' + g;
+        }
       });
     }
     updateOverrideCount();
     markSaved();
   }
+  // Backwards-compat shim for any older call sites
+  function toggleMode(){ toggleOverrideMode(); }
   // Initialize all override fields as locked
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.ovr').forEach(f => {
