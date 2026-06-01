@@ -523,6 +523,54 @@ body:not([data-override="on"]) .ovr-reset{display:none!important}
 .ovr-reset:hover{color:var(--brand)}
 .ovr[data-locked="true"] .ovr-reset{display:inline-block}
 
+/* ===== Auto-injected padlocks on drawer fields ===== */
+.auto-pad-wrap{position:relative;display:block;width:100%}
+.auto-pad-wrap > input,
+.auto-pad-wrap > textarea,
+.auto-pad-wrap > select{
+  padding-right:44px!important;
+  width:100%;
+}
+.auto-pad-wrap .lock-btn.auto-lock{
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  margin:0;
+  width:30px;height:30px;
+  border-radius:8px;
+  z-index:5;
+}
+/* Textareas need the lock at the top instead of vertically-centered */
+.auto-pad-wrap:has(textarea) .lock-btn.auto-lock{
+  top:6px;
+  transform:none;
+}
+/* Active override state */
+.auto-pad-wrap .lock-btn.auto-lock.on{
+  background:rgba(232,148,26,.16);
+  border-color:rgba(232,148,26,.45);
+  color:#8C6306;
+}
+.auto-pad-wrap .lock-btn.auto-lock.on .lk-closed{display:none}
+.auto-pad-wrap .lock-btn.auto-lock.on .lk-open{display:block}
+.auto-pad-wrap.auto-ovr-on > input,
+.auto-pad-wrap.auto-ovr-on > textarea,
+.auto-pad-wrap.auto-ovr-on > select{
+  color:var(--ink)!important;
+  border-bottom-color:var(--brand)!important;
+  border-bottom-width:1.5px!important;
+}
+.auto-pad-wrap.auto-ovr-on::after{
+  content:"● Overridden for this site";
+  display:block;
+  font:800 9.5px 'JetBrains Mono';
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  color:#8C6306;
+  margin-top:6px;
+}
+
 /* Canvas step nodes — show a small padlock badge in Override mode */
 body[data-override="on"] .fnode::after{
   content:"";
@@ -3484,6 +3532,14 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
           meta.textContent = 'inherited from Global · ' + g;
         }
       });
+      // Re-lock auto-injected padlock fields too
+      document.querySelectorAll('.auto-pad-wrap.auto-ovr-on').forEach(w => {
+        w.classList.remove('auto-ovr-on');
+        const inp = w.querySelector('input, textarea, select');
+        if (inp) inp.disabled = true;
+        const btn = w.querySelector('.lock-btn');
+        if (btn) btn.classList.remove('on');
+      });
     }
     updateOverrideCount();
     markSaved();
@@ -3564,8 +3620,65 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       badge.style.color = colors[type];
       badge.style.background = bgs[type];
     }
+    // Auto-inject padlocks into the now-visible panel
+    if (panel) ensureDrawerPadlocks(panel);
     markSaved();
   }
+
+  // ===== Auto-inject padlocks across all drawer fields =====
+  function ensureDrawerPadlocks(panel){
+    if (!panel || panel.hasAttribute('data-padlocked')) return;
+    panel.setAttribute('data-padlocked','1');
+    const inputs = panel.querySelectorAll('input[type=text], textarea, select');
+    inputs.forEach(inp => {
+      // Skip exclusions
+      if (inp.closest('.ovr')) return;             // already wrapped manually
+      if (inp.closest('.dr-banner')) return;
+      if (inp.closest('.member-chips')) return;
+      if (inp.closest('.graphic-lib')) return;
+      if (inp.closest('.fld-list')) return;
+      if (inp.closest('.sub-list')) return;
+      if (inp.closest('.auto-pad-wrap')) return;
+      if (inp.id === 'drType') return;
+      // Skip inputs that are intentionally locked by the drawer (e.g. destination locked)
+      if (inp.disabled && inp.style && inp.style.opacity && parseFloat(inp.style.opacity) < 1) return;
+      if (inp.disabled && inp.getAttribute('disabled') === 'disabled' && inp.value && inp.value.indexOf('locked') !== -1) return;
+
+      // Wrap
+      const wrap = document.createElement('div');
+      wrap.className = 'auto-pad-wrap';
+      inp.parentNode.insertBefore(wrap, inp);
+      wrap.appendChild(inp);
+
+      // Padlock button
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'lock-btn auto-lock';
+      btn.setAttribute('aria-label','Unlock to override');
+      btn.innerHTML = '<svg class="lk lk-closed" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><svg class="lk lk-open" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>';
+      btn.onclick = function(){ toggleAutoLock(this); };
+      wrap.appendChild(btn);
+
+      // Initial state: locked (inherits Global)
+      inp.disabled = true;
+    });
+  }
+  function toggleAutoLock(btn){
+    const wrap = btn.parentElement;
+    const inp = wrap.querySelector('input, textarea, select');
+    if (!inp) return;
+    if (inp.disabled){
+      inp.disabled = false;
+      wrap.classList.add('auto-ovr-on');
+      btn.classList.add('on');
+    } else {
+      inp.disabled = true;
+      wrap.classList.remove('auto-ovr-on');
+      btn.classList.remove('on');
+    }
+    markSaved();
+  }
+
   function openDrawer(id, type){
     document.getElementById('scrim').classList.add('on');
     document.getElementById('drawer').classList.add('on');
