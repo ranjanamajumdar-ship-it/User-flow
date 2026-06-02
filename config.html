@@ -1151,8 +1151,9 @@ body:not([data-step-mode="multi"]) #vfTree{display:none!important}
 body:not([data-step-mode="multi"]) .opt-input-row{display:none!important}
 body:not([data-step-mode="multi"]) #optAddRow{display:none!important}
 body:not([data-step-mode="multi"]) #mcQuestionBlock{display:none!important}
-/* When editing a multi-select, hide all form panels and show the visual builder */
+/* When editing a multi-select, hide all form panels + the generic Step-title block, show the visual builder */
 body[data-step-mode="multi"] .dr-panel{display:none!important}
+body[data-step-mode="multi"] .dr-title-block{display:none!important}
 body[data-step-mode="multi"] #vfTree{display:block!important}
 /* Hide the legacy view-mode toggle in all cases */
 .dr-viewmode{display:none!important}
@@ -1170,9 +1171,59 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
 .mc-q-help{font-size:12.5px;color:var(--ink-3);margin:10px 0 0;line-height:1.55;font-weight:500;letter-spacing:-.005em}
 
 /* Multi-select chip strip — simpler than 9-chip palette */
-.vfc-chips-mc{justify-content:space-between;align-items:center}
+.vfc-chips-mc{justify-content:flex-start;align-items:center;gap:10px;flex-wrap:wrap}
 .vfc-chip-add{font-size:13px;padding:9px 16px}
-.vfc-chips-hint{font:600 11.5px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.2px}
+.vfc-chips-hint{font:600 11.5px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.2px;margin-left:auto}
+
+/* Destination chip + dropdown menu */
+.vfc-dest-wrap{position:relative;display:inline-block}
+.vfc-dest-btn{
+  background:rgba(31,157,85,.10);border:1.5px solid rgba(31,157,85,.42);color:var(--ok-ink);
+  font:700 13px 'Plus Jakarta Sans';padding:9px 14px 9px 16px;border-radius:999px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;letter-spacing:-.005em;transition:.14s;
+}
+.vfc-dest-btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px -3px rgba(31,157,85,.30)}
+.vfc-chev{font-size:11px;font-weight:800;transition:transform .15s}
+.vfc-dest-wrap.open .vfc-chev{transform:rotate(180deg)}
+.vfc-dest-menu{
+  position:absolute;top:calc(100% + 6px);left:0;
+  background:#fff;border:1px solid var(--line-soft);border-radius:14px;
+  box-shadow:0 12px 30px -10px rgba(40,50,80,.25);
+  padding:6px;min-width:280px;z-index:50;
+  display:none;
+  max-height:380px;overflow-y:auto;
+}
+.vfc-dest-wrap.open .vfc-dest-menu{display:block}
+.vfc-dest-menu button{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  background:transparent;border:none;padding:9px 11px;border-radius:10px;
+  font:700 13px 'Plus Jakarta Sans';color:var(--ink);cursor:pointer;
+  letter-spacing:-.005em;transition:.12s;
+}
+.vfc-dest-menu button:hover{background:rgba(0,41,118,.06)}
+.vdm-ic{width:24px;height:24px;border-radius:7px;background:rgba(14,20,40,.05);display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.vdm-sub{display:block;margin-left:auto;font:600 11px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.2px;text-align:right;max-width:140px;line-height:1.3}
+
+/* Destination nodes on canvas — green border, white background, pill-ish */
+.vfc-node[data-kind="destination"]{
+  background:#fff;
+  border-color:#1F9D55;
+  border-width:2px;
+  border-radius:14px;
+  padding:12px 16px;
+  min-width:180px;
+  max-width:240px;
+  box-shadow:0 4px 14px -4px rgba(31,157,85,.30), 0 1px 0 rgba(255,255,255,.7) inset;
+  transform:none;
+  font:700 13px 'Plus Jakarta Sans';
+}
+.vfc-node[data-kind="destination"]:hover{transform:translateY(-2px);box-shadow:0 8px 22px -4px rgba(31,157,85,.40)}
+.vfc-node[data-kind="destination"] .vfc-node-kind{color:var(--ok-ink);letter-spacing:.6px}
+.vfc-node[data-kind="destination"] .vfc-node-ttl{color:var(--ink);font-weight:700}
+.vfc-node[data-kind="destination"]::before{
+  content:"";position:absolute;top:8px;right:32px;
+  width:8px;height:8px;border-radius:999px;background:#1F9D55;box-shadow:0 0 0 3px rgba(31,157,85,.18);
+}
 
 /* FigJam-like sticky-note nodes when in multi-select option mode */
 .vfc-node[data-kind="option"]{
@@ -3281,10 +3332,23 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     <!-- Visual flow editor (always visible — primary editor) -->
     <div class="vf-editor" id="vfTree" style="display:none">
 
-      <!-- Single "Add option" chip for multi-select editor -->
+      <!-- Two chips for multi-select editor: Add option + Add destination (dropdown) -->
       <div class="vfc-chips vfc-chips-mc">
         <button class="vfc-chip vfc-answer vfc-chip-add" onclick="vfcAddNode('option','New option')">＋ Add option</button>
-        <span class="vfc-chips-hint">Drop options onto the canvas · drag to arrange · drag anchors to connect</span>
+        <div class="vfc-dest-wrap">
+          <button class="vfc-chip vfc-dest-btn" onclick="toggleDestMenu()" id="vfcDestBtn">＋ Add destination <span class="vfc-chev">⌄</span></button>
+          <div class="vfc-dest-menu" id="vfcDestMenu">
+            <button onclick="vfcAddNode('destination','Close stage');closeDestMenu()"><span class="vdm-ic">🏁</span>Close stage<span class="vdm-sub">Terminal · ends the issue</span></button>
+            <button onclick="vfcAddNode('destination','End diagnosis');closeDestMenu()"><span class="vdm-ic">⏹</span>End diagnosis<span class="vdm-sub">Stop the flow here</span></button>
+            <button onclick="vfcAddNode('destination','Confirmation card');closeDestMenu()"><span class="vdm-ic">✓</span>Confirmation card<span class="vdm-sub">Success / Failure outcome</span></button>
+            <button onclick="vfcAddNode('destination','Closure card');closeDestMenu()"><span class="vdm-ic">🏁</span>Closure card<span class="vdm-sub">Photo · notes · voice capture</span></button>
+            <button onclick="vfcAddNode('destination','Root cause selector');closeDestMenu()"><span class="vdm-ic">🌳</span>Root cause selector<span class="vdm-sub">Pick the confirmed cause</span></button>
+            <button onclick="vfcAddNode('destination','Wait for recovery');closeDestMenu()"><span class="vdm-ic">⏱</span>Wait for recovery<span class="vdm-sub">Hold then re-check</span></button>
+            <button onclick="vfcAddNode('destination','Reassignment');closeDestMenu()"><span class="vdm-ic">👥</span>Reassignment<span class="vdm-sub">Hand off to another operator</span></button>
+            <button onclick="vfcAddNode('destination','Specific step…');closeDestMenu()"><span class="vdm-ic">▸</span>Specific step…<span class="vdm-sub">Pick from this flow</span></button>
+          </div>
+        </div>
+        <span class="vfc-chips-hint">Drop options & destinations · drag anchors between nodes to connect them</span>
       </div>
 
       <!-- Canvas: dotted grid background, draggable nodes, SVG connection layer -->
@@ -4738,8 +4802,25 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     question:'Question', answersingle:'Single answer', answermulti:'Multi-select', answernumeric:'Numeric answer',
     rcselectv2:'Root cause selector', successfail:'Success / Failure', closurecard:'Closure card',
     waitrecovery:'Wait for recovery', skiptoend:'Skip to end',
-    option:'Option'
+    option:'Option',
+    destination:'Destination'
   };
+  function toggleDestMenu(){
+    const wrap = document.querySelector('.vfc-dest-wrap');
+    if (!wrap) return;
+    wrap.classList.toggle('open');
+  }
+  function closeDestMenu(){
+    const wrap = document.querySelector('.vfc-dest-wrap');
+    if (wrap) wrap.classList.remove('open');
+  }
+  // Close dest menu on outside click
+  document.addEventListener('click', function(e){
+    const wrap = document.querySelector('.vfc-dest-wrap.open');
+    if (!wrap) return;
+    if (wrap.contains(e.target)) return;
+    wrap.classList.remove('open');
+  });
   function vfcAddNode(kind, title){
     const canvas = document.getElementById('vfCanvas');
     if (!canvas) return;
