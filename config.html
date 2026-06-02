@@ -1124,7 +1124,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
   opacity:0;pointer-events:none;transition:.22s;z-index:50}
 .scrim.on{opacity:1;pointer-events:auto}
-.drawer{position:fixed;top:14px;right:14px;bottom:14px;width:540px;max-width:calc(100vw - 28px);
+.drawer{position:fixed;top:14px;right:14px;bottom:14px;width:840px;max-width:calc(100vw - 28px);
   background:rgba(255,255,255,.78);
   -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
   border:1px solid rgba(255,255,255,.85);
@@ -1138,7 +1138,43 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .dr-head .x{width:36px;height:36px;border-radius:999px;background:rgba(255,255,255,.6);border:1px solid var(--line);cursor:pointer;font-size:14px;color:var(--ink-2);
   box-shadow:var(--shadow-soft)}
 .dr-head .x:hover{background:rgba(255,255,255,.9)}
-.dr-body{flex:1;overflow:auto;padding:22px 26px}
+.dr-body{flex:1;overflow:auto;padding:30px 32px 36px}
+.dr-body > *{max-width:680px;margin-left:auto;margin-right:auto}
+.dr-body > .vf-editor{max-width:none;margin-left:0;margin-right:0;width:100%}
+/* Larger title + description block */
+.dr-title-block{padding:22px 24px 24px!important;border-radius:18px!important;text-align:left}
+.dr-title-input{font-size:24px!important;letter-spacing:-.022em!important;font-weight:800!important}
+.dr-desc-input{font-size:15px!important;line-height:1.6!important;min-height:60px!important}
+.dr-mini{font-size:10px}
+/* Hide ALL form panels — we only use the visual builder now */
+.dr-panel{display:none!important}
+/* Hide the view-mode toggle — visual is the only view */
+.dr-viewmode{display:none!important}
+/* Show vfTree by default */
+#vfTree{display:block!important}
+/* The option-input row */
+.opt-input-row{
+  display:flex;align-items:flex-end;gap:10px;
+  padding:18px 20px;margin:14px 0;
+  border-radius:14px;
+  background:rgba(255,255,255,.55);border:1px solid var(--line-soft);
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset;
+}
+.opt-input-row .ff{flex:1;min-width:0;margin:0}
+.opt-input-row .ff label{margin-bottom:6px}
+.opt-input-row .ff-type{flex:0 0 200px}
+.opt-input-row .opt-add-btn{
+  background:linear-gradient(135deg,#002976,#1B3A8C);color:#fff;
+  border:none;padding:12px 20px;border-radius:12px;
+  font:800 13px 'Plus Jakarta Sans';cursor:pointer;letter-spacing:-.005em;
+  flex-shrink:0;
+  box-shadow:0 4px 14px -4px rgba(0,41,118,.40);
+  transition:.14s;
+}
+.opt-input-row .opt-add-btn:hover{transform:translateY(-1px);box-shadow:0 8px 22px -6px rgba(0,41,118,.50)}
+.opt-input-row .opt-add-btn:active{transform:translateY(0)}
+/* Canvas auto-expands as more nodes are added */
+.vfc-canvas{height:auto!important;min-height:380px}
 .dr-body::-webkit-scrollbar{width:8px}
 .dr-body::-webkit-scrollbar-thumb{background:rgba(140,150,180,.3);border-radius:4px}
 .dr-foot{padding:16px 26px;border-top:1px solid var(--line-soft);display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.4)}
@@ -3193,7 +3229,30 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       </div>
     </div>
 
-    <!-- Visual flow editor (rendered when view=visual) -->
+    <!-- Quick option-input row: type a label, pick a type, drop it onto the canvas -->
+    <div class="opt-input-row">
+      <div class="ff">
+        <label class="dr-mini">Add a step</label>
+        <input type="text" id="optAddLabel" placeholder="Type the option / step label, then press + Add or Enter" onkeydown="if(event.key==='Enter')optInputAdd()"/>
+      </div>
+      <div class="ff ff-type">
+        <label class="dr-mini">Step type</label>
+        <select id="optAddType">
+          <option value="question">❓ Question</option>
+          <option value="answersingle" selected>⭕ Single answer</option>
+          <option value="answermulti">☑ Multi-select</option>
+          <option value="answernumeric">🔢 Numeric</option>
+          <option value="rcselectv2">🌳 Root cause</option>
+          <option value="successfail">✓ Success / Failure</option>
+          <option value="closurecard">🏁 Closure</option>
+          <option value="waitrecovery">⏱ Waiting</option>
+          <option value="skiptoend">⏯ Skip to end</option>
+        </select>
+      </div>
+      <button class="opt-add-btn" type="button" onclick="optInputAdd()">＋ Add</button>
+    </div>
+
+    <!-- Visual flow editor (always visible — primary editor) -->
     <div class="vf-editor" id="vfTree" style="display:none">
 
       <!-- Step-type chip palette (click a chip to drop a node onto the canvas) -->
@@ -4675,6 +4734,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     VFC.nodes.push(node);
     vfcRenderNode(node);
     vfcUpdateMeta();
+    vfcRecalcHeight();
   }
   function vfcRenderNode(n){
     const canvas = document.getElementById('vfCanvas');
@@ -4725,6 +4785,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     const el = document.getElementById(node.id);
     if (el){ el.style.left = node.x + 'px'; el.style.top = node.y + 'px'; }
     vfcRenderEdges();
+    vfcRecalcHeight();
   });
   document.addEventListener('mouseup', function(){
     if (VFC.draggingId){
@@ -4808,6 +4869,31 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     vfcRenderEdges();
     vfcUpdateMeta();
   }
+  // Add a node from the top option-input row
+  function optInputAdd(){
+    const lblEl = document.getElementById('optAddLabel');
+    const typeEl = document.getElementById('optAddType');
+    if (!lblEl || !typeEl) return;
+    const label = (lblEl.value || '').trim() || 'New step';
+    const kind = typeEl.value;
+    vfcAddNode(kind, label);
+    lblEl.value = '';
+    lblEl.focus();
+    vfcRecalcHeight();
+  }
+  // Keep canvas tall enough to hold the bottom-most node
+  function vfcRecalcHeight(){
+    const canvas = document.getElementById('vfCanvas');
+    if (!canvas) return;
+    let maxBottom = 380;
+    VFC.nodes.forEach(n => {
+      const el = document.getElementById(n.id);
+      const h = el ? el.offsetHeight : 80;
+      maxBottom = Math.max(maxBottom, n.y + h + 40);
+    });
+    canvas.style.minHeight = maxBottom + 'px';
+  }
+
   // Seed a sample flow on first visual open (so user sees something)
   function vfcSeedIfEmpty(){
     if (VFC.nodes.length > 0) return;
@@ -4892,9 +4978,12 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   }
   // When drawer opens or panel switches, default to form view
   function _resetDrawerView(){
-    const vm = document.getElementById('drViewMode');
-    if (!vm) return;
-    setDrawerView('form');
+    // Visual is the only view now — make sure the canvas is seeded/visible
+    const tree = document.getElementById('vfTree');
+    if (tree) tree.style.display = 'block';
+    vfcSeedIfEmpty();
+    vfcRenderEdges();
+    vfcRecalcHeight();
   }
 
   // Branch row · add a new option/range/cause to a branch list
