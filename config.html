@@ -1277,6 +1277,44 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .cat-legend .cl.done .d{background:#1F9D55}
 .cat-legend .cl.action .d{background:#6B36B5}
 
+/* ===== Issue card template picker (top of Build the flow) ===== */
+.ict-card{background:linear-gradient(160deg,rgba(107,54,181,.04),rgba(107,54,181,.10))!important;border:1px solid rgba(107,54,181,.18)!important;margin-bottom:24px}
+.ict-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.ict-meta{font:800 9.5px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;color:#6B36B5;background:rgba(107,54,181,.12);padding:5px 10px;border-radius:999px}
+.ict-templates{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:18px}
+.ict-tpl{display:flex;align-items:center;gap:11px;padding:13px;border-radius:14px;background:rgba(255,255,255,.6);border:1px solid var(--line-soft);cursor:pointer;transition:.15s;text-align:left}
+.ict-tpl:hover{background:rgba(255,255,255,.92);border-color:rgba(107,54,181,.30);transform:translateY(-1px)}
+.ict-tpl.on{background:rgba(107,54,181,.10);border-color:rgba(107,54,181,.55);box-shadow:0 4px 14px -4px rgba(107,54,181,.30)}
+.ict-tpl-ic{width:36px;height:36px;border-radius:11px;background:linear-gradient(145deg,#ECDFFB,#D6BFF5);color:#6B36B5;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ict-tpl.ict-new .ict-tpl-ic{background:rgba(14,20,40,.06);color:var(--ink-3)}
+.ict-tpl-tx{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0;font:600 12px 'Plus Jakarta Sans'}
+.ict-tpl-tx b{color:var(--ink);font-size:12.5px;font-weight:800;letter-spacing:-.005em}
+.ict-tpl-tx span{font:600 10.5px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.3px}
+.ict-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:18px}
+@media (max-width:720px){.ict-grid{grid-template-columns:1fr}}
+.ovr-meta-inline{font:600 9.5px 'JetBrains Mono';letter-spacing:.4px;text-transform:uppercase;color:var(--ink-4);margin-left:6px;padding:2px 7px;border-radius:999px;background:rgba(14,20,40,.05)}
+
+/* Equipment graphic editor */
+.eqg{padding:16px;border-radius:14px;background:rgba(255,255,255,.5);border:1px solid var(--line-soft)}
+.eqg-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.eqg-l{font:800 10.5px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;color:var(--ink-2);margin-bottom:2px}
+.eqg-s{font-size:11.5px;color:var(--ink-3);line-height:1.5;font-weight:500;max-width:380px}
+.eqg-tabs{display:inline-flex;gap:4px;background:rgba(14,20,40,.05);padding:3px;border-radius:999px}
+.eqg-tab{padding:6px 12px;border-radius:999px;background:transparent;border:none;font:700 11px 'Plus Jakarta Sans';color:var(--ink-3);cursor:pointer;transition:.15s;letter-spacing:-.005em}
+.eqg-tab:hover{color:var(--ink)}
+.eqg-tab.on{background:#fff;color:var(--brand);box-shadow:0 2px 6px -2px rgba(40,50,80,.18)}
+.eqg-canvas{background:linear-gradient(160deg,rgba(220,229,245,.45),rgba(168,184,222,.22));border:1px solid var(--line-soft);border-radius:14px;padding:12px;display:flex;justify-content:center}
+.eqg-canvas svg{width:100%;max-width:640px;height:auto;display:block}
+.eqg-list{margin-top:14px}
+.eqg-list-l{font:800 9.5px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+.asset-chips{display:flex;flex-wrap:wrap;gap:6px}
+.achip{display:inline-flex;align-items:center;gap:6px;padding:5px 8px 5px 7px;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid var(--line-soft);font-size:12px;font-weight:600;color:var(--ink);letter-spacing:-.005em}
+.achip .ach-ic{font-size:13px}
+.achip button{background:transparent;border:none;color:var(--ink-4);font-size:13px;cursor:pointer;padding:0 2px;line-height:1}
+.achip button:hover{color:var(--crit)}
+.achip-add{padding:5px 11px;border-radius:999px;background:transparent;border:1px dashed rgba(0,41,118,.30);color:var(--brand);font:700 11.5px 'Plus Jakarta Sans';cursor:pointer;letter-spacing:-.005em}
+.achip-add:hover{background:rgba(0,41,118,.06);border-style:solid}
+
 /* ===== Day-chip multiselect (shift days) ===== */
 .day-chips{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .dc{
@@ -2115,106 +2153,214 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <span class="cl card"><span class="d"></span>Cards · 3 types</span>
     </div>
 
+    <!-- ===== Issue card template · top of Build the flow ===== -->
+    <div class="card ict-card">
+      <div class="ict-head">
+        <div>
+          <h3 style="margin:0">Issue card template</h3>
+          <p class="helper" style="margin:2px 0 0">Pick the Issue card this flow is for. Name, ID, and equipment graphic are inherited — edit anything below.</p>
+        </div>
+        <span class="ict-meta">Inherited from Global · editable</span>
+      </div>
+
+      <!-- Template picker -->
+      <div class="ict-templates">
+        <button class="ict-tpl on" onclick="pickIctTpl(this,'lowdo')">
+          <div class="ict-tpl-ic">💧</div>
+          <div class="ict-tpl-tx"><b>Low DO · Aeration Tank</b><span>ISS-AER-DO-001 · used at 7 plants</span></div>
+        </button>
+        <button class="ict-tpl" onclick="pickIctTpl(this,'tmp')">
+          <div class="ict-tpl-ic">📐</div>
+          <div class="ict-tpl-tx"><b>High TMP · MBR</b><span>ISS-MBR-TMP-002 · used at 4 plants</span></div>
+        </button>
+        <button class="ict-tpl" onclick="pickIctTpl(this,'vfd')">
+          <div class="ict-tpl-ic">⚡</div>
+          <div class="ict-tpl-tx"><b>VFD overcurrent trip</b><span>ISS-MBR-VFD-003 · used at 3 plants</span></div>
+        </button>
+        <button class="ict-tpl ict-new" onclick="pickIctTpl(this,'new')">
+          <div class="ict-tpl-ic">＋</div>
+          <div class="ict-tpl-tx"><b>New Issue card</b><span>Build from blank</span></div>
+        </button>
+      </div>
+
+      <!-- Inherited fields (editable) -->
+      <div class="ict-grid">
+        <div class="ff">
+          <label>Issue name <span class="ovr-meta-inline">inherited · editable</span></label>
+          <input type="text" value="Low DO in Aeration Tank 1" oninput="markSaved()"/>
+        </div>
+        <div class="ff">
+          <label>Issue ID <span class="ovr-meta-inline">auto-generated</span></label>
+          <input type="text" value="ISS-AER-DO-001" disabled style="opacity:.7"/>
+        </div>
+      </div>
+
+      <!-- Equipment graphic editor -->
+      <div class="eqg">
+        <div class="eqg-head">
+          <div>
+            <div class="eqg-l">Equipment graphic</div>
+            <div class="eqg-s">Derived from the Issue card asset. Edit connected assets inside & outside the tank.</div>
+          </div>
+          <div class="eqg-tabs">
+            <button class="eqg-tab on" onclick="setEqgTab(this,'inside')">Inside</button>
+            <button class="eqg-tab" onclick="setEqgTab(this,'upstream')">Upstream</button>
+            <button class="eqg-tab" onclick="setEqgTab(this,'downstream')">Downstream</button>
+          </div>
+        </div>
+
+        <!-- The graphic itself -->
+        <div class="eqg-canvas">
+          <svg viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg" aria-label="Aeration tank graphic editor">
+            <!-- Upstream slot -->
+            <g class="eqg-slot-up">
+              <rect x="10" y="80" width="80" height="50" rx="10" fill="rgba(14,20,40,.04)" stroke="rgba(14,20,40,.16)" stroke-width="1.5" stroke-dasharray="4 4"/>
+              <text x="50" y="100" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#6A7185">UPSTREAM</text>
+              <text x="50" y="116" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="10" font-weight="600" fill="#9AA0B0">+ Add</text>
+            </g>
+            <!-- Arrow into tank -->
+            <line x1="92" y1="105" x2="118" y2="105" stroke="#6A7185" stroke-width="1.6" stroke-linecap="round"/>
+            <polygon points="118,101 124,105 118,109" fill="#6A7185"/>
+
+            <!-- Main: Aeration Tank -->
+            <g>
+              <rect x="126" y="50" width="220" height="120" rx="8" fill="#BFD3F5" opacity=".5"/>
+              <rect x="126" y="50" width="220" height="120" rx="8" fill="none" stroke="#2563EB" stroke-width="2.4"/>
+              <path d="M134 64 Q150 60 166 64 T198 64 T230 64 T262 64 T294 64 T326 64 T340 64" stroke="#2563EB" stroke-width="1.4" fill="none" opacity=".6"/>
+              <text x="236" y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#2563EB">AERATION TANK 1</text>
+              <!-- Bubbles -->
+              <circle cx="160" cy="130" r="3" fill="#fff" opacity=".8"/>
+              <circle cx="180" cy="120" r="2.4" fill="#fff" opacity=".7"/>
+              <circle cx="200" cy="135" r="3" fill="#fff" opacity=".8"/>
+              <circle cx="220" cy="115" r="2.6" fill="#fff" opacity=".75"/>
+              <circle cx="240" cy="130" r="3" fill="#fff" opacity=".8"/>
+              <circle cx="260" cy="120" r="2.4" fill="#fff" opacity=".7"/>
+              <circle cx="280" cy="135" r="3" fill="#fff" opacity=".8"/>
+              <circle cx="300" cy="115" r="2.6" fill="#fff" opacity=".75"/>
+              <!-- Internal: Pump 1 -->
+              <g class="eqg-internal">
+                <circle cx="180" cy="155" r="12" fill="#fff" stroke="#1F9D55" stroke-width="2"/>
+                <text x="180" y="159" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" fill="#0F5C2F">P1</text>
+              </g>
+              <!-- Internal: Pump 2 -->
+              <g class="eqg-internal">
+                <circle cx="280" cy="155" r="12" fill="#fff" stroke="#1F9D55" stroke-width="2"/>
+                <text x="280" y="159" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" fill="#0F5C2F">P2</text>
+              </g>
+              <!-- Add new internal -->
+              <g class="eqg-add" onclick="alert('Pick from internal asset library')" style="cursor:pointer">
+                <circle cx="236" cy="155" r="11" fill="none" stroke="#9AA0B0" stroke-width="1.5" stroke-dasharray="3 3"/>
+                <text x="236" y="159" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="13" font-weight="700" fill="#9AA0B0">＋</text>
+              </g>
+            </g>
+
+            <!-- Arrow out of tank -->
+            <line x1="354" y1="105" x2="380" y2="105" stroke="#6A7185" stroke-width="1.6" stroke-linecap="round"/>
+            <polygon points="380,101 386,105 380,109" fill="#6A7185"/>
+            <!-- Downstream slot -->
+            <g class="eqg-slot-down">
+              <rect x="390" y="80" width="80" height="50" rx="10" fill="rgba(14,20,40,.04)" stroke="rgba(14,20,40,.16)" stroke-width="1.5" stroke-dasharray="4 4"/>
+              <text x="430" y="100" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#6A7185">DOWNSTREAM</text>
+              <text x="430" y="116" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="10" font-weight="600" fill="#9AA0B0">+ Add</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Asset chips list (per active tab) -->
+        <div class="eqg-list">
+          <div class="eqg-list-l">Inside Aeration Tank 1</div>
+          <div class="asset-chips">
+            <span class="achip"><span class="ach-ic">⚙</span>Pump P1<button>×</button></span>
+            <span class="achip"><span class="ach-ic">⚙</span>Pump P2<button>×</button></span>
+            <span class="achip"><span class="ach-ic">📡</span>DO-3 sensor<button>×</button></span>
+            <span class="achip"><span class="ach-ic">▦</span>Diffuser grid<button>×</button></span>
+            <button class="achip-add">＋ Add internal asset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="builder">
 
-      <!-- ===== Palette · Steps + Cards model ===== -->
+      <!-- ===== Palette · Restructured for Build the flow v2 ===== -->
       <div class="palette">
-        <h4>Step &amp; Card library</h4>
+        <h4>Step library</h4>
 
-        <!-- ============ 🔵 NORMAL ============ -->
+        <!-- ============ ❓ QUESTION ============ -->
         <div class="pgroup progress open">
-          <div class="pghdr"><span class="cat-dot" style="background:var(--brand)"></span><span>Normal steps</span><span class="cat-count">6</span></div>
+          <div class="pghdr"><span class="cat-dot" style="background:#1B3A8C"></span><span>Question</span><span class="cat-count">1</span></div>
           <div class="ptiles">
-            <button class="ptile" onclick="addStep('action')">
-              <div class="pico cat-normal">🛠</div>
-              <div class="ptxt"><div class="pt">Action step · single answer</div><div class="ps">One instruction with one input · e.g. open valve, restart pump</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('actionmc')">
-              <div class="pico cat-normal">☰</div>
-              <div class="ptxt"><div class="pt">Action step · multi-choice</div><div class="ps">Pick from 2+ options · e.g. bubble pattern, dead zones</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('rcselect')">
-              <div class="pico cat-normal">🌳</div>
-              <div class="ptxt"><div class="pt">Root cause selector</div><div class="ps">Radio list · icon + one-line description</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('taskdone')">
-              <div class="pico cat-normal">✓</div>
-              <div class="ptxt"><div class="pt">Task accomplished</div><div class="ps">Confirmation / stage complete</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('nextsteps')">
-              <div class="pico cat-normal">📋</div>
-              <div class="ptxt"><div class="pt">Here are the next steps</div><div class="ps">Agenda preview before operator starts</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('timedwait')">
-              <div class="pico cat-normal">⏱</div>
-              <div class="ptxt"><div class="pt">Timed wait + action</div><div class="ps">Wait N min, then perform an action</div></div>
+            <button class="ptile" onclick="addStep('question')">
+              <div class="pico cat-normal">❓</div>
+              <div class="ptxt"><div class="pt">Question</div><div class="ps">Ask the operator a single thing</div></div>
             </button>
           </div>
         </div>
 
-        <!-- ============ 🟡 BRANCH ============ -->
-        <div class="pgroup todo open">
-          <div class="pghdr"><span class="cat-dot" style="background:#E0A314"></span><span>Branch (choice / shortcut)</span><span class="cat-count">4</span></div>
+        <!-- ============ ✏️ ANSWER STEPS ============ -->
+        <div class="pgroup progress open">
+          <div class="pghdr"><span class="cat-dot" style="background:#1F9D55"></span><span>Answer</span><span class="cat-count">3</span></div>
           <div class="ptiles">
-            <button class="ptile" onclick="addStep('skipknow')">
-              <div class="pico cat-branch">⤴</div>
-              <div class="ptxt"><div class="pt">Skip ahead — I know the cause</div><div class="ps">Jump from Intake to Root Cause</div></div>
+            <button class="ptile" onclick="addStep('answersingle')">
+              <div class="pico" style="background:linear-gradient(145deg,#DCF1E6,#B7E1C9);color:#0F5C2F">⭕</div>
+              <div class="ptxt"><div class="pt">Single answer</div><div class="ps">Pick one option · Yes/No, A/B/C, free text</div></div>
             </button>
-            <button class="ptile" onclick="addStep('skipfalse')">
-              <div class="pico cat-branch">⏭</div>
-              <div class="ptxt"><div class="pt">Skip ahead — false alarm</div><div class="ps">Jump straight to Close</div></div>
+            <button class="ptile" onclick="addStep('answermulti')">
+              <div class="pico" style="background:linear-gradient(145deg,#DCF1E6,#B7E1C9);color:#0F5C2F">☑</div>
+              <div class="ptxt"><div class="pt">Multi-select answer</div><div class="ps">Tick any number of checkboxes</div></div>
             </button>
+            <button class="ptile" onclick="addStep('answernumeric')">
+              <div class="pico" style="background:linear-gradient(145deg,#DCF1E6,#B7E1C9);color:#0F5C2F">🔢</div>
+              <div class="ptxt"><div class="pt">Numeric answer</div><div class="ps">Enter a reading or value with unit</div></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============ 🌳 ROOT CAUSE SELECTOR (with False alarm) ============ -->
+        <div class="pgroup progress open">
+          <div class="pghdr"><span class="cat-dot" style="background:#6B36B5"></span><span>Root cause</span><span class="cat-count">1</span></div>
+          <div class="ptiles">
+            <button class="ptile" onclick="addStep('rcselectv2')">
+              <div class="pico" style="background:linear-gradient(145deg,#ECDFFB,#D6BFF5);color:#6B36B5">🌳</div>
+              <div class="ptxt"><div class="pt">Root cause selector</div><div class="ps">Radio list of causes · includes a False alarm option</div></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============ ✅ SUCCESS / FAILURE ============ -->
+        <div class="pgroup progress open">
+          <div class="pghdr"><span class="cat-dot" style="background:#1F9D55"></span><span>Success / Failure</span><span class="cat-count">1</span></div>
+          <div class="ptiles">
+            <button class="ptile" onclick="addStep('successfail')">
+              <div class="pico" style="background:linear-gradient(145deg,#DCF1E6,#B7E1C9);color:#0F5C2F">✓</div>
+              <div class="ptxt"><div class="pt">Success / Failure</div><div class="ps">Did the action work? Two states with outcomes</div></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============ ⏱ WAITING ============ -->
+        <div class="pgroup todo open">
+          <div class="pghdr"><span class="cat-dot" style="background:#E0A314"></span><span>Waiting</span><span class="cat-count">1</span></div>
+          <div class="ptiles">
+            <button class="ptile" onclick="addStep('waitrecovery')">
+              <div class="pico cat-branch">⏱</div>
+              <div class="ptxt"><div class="pt">Wait for recovery</div><div class="ps">Hold for sensors to recover · then re-check</div></div>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============ ⏯ SKIP TO END ============ -->
+        <div class="pgroup todo open">
+          <div class="pghdr"><span class="cat-dot" style="background:#E0A314"></span><span>Skip</span><span class="cat-count">1</span></div>
+          <div class="ptiles">
             <button class="ptile" onclick="addStep('skiptoend')">
               <div class="pico cat-branch">⏯</div>
               <div class="ptxt"><div class="pt">Skip to end</div><div class="ps">Jump directly to the Confirmation card</div></div>
             </button>
-            <button class="ptile" onclick="addStep('reassign2')">
-              <div class="pico cat-branch">👥</div>
-              <div class="ptxt"><div class="pt">Reassignment</div><div class="ps">Op→Sup · Sup→Op · Op→Op · with reason</div></div>
-            </button>
           </div>
         </div>
 
-        <!-- ============ 🟠 EXCEPTION ============ -->
-        <div class="pgroup actions open">
-          <div class="pghdr"><span class="cat-dot" style="background:#B83A1F"></span><span>Exception (something went sideways)</span><span class="cat-count">3</span></div>
-          <div class="ptiles">
-            <button class="ptile" onclick="addStep('callsup')">
-              <div class="pico cat-exception">📞</div>
-              <div class="ptxt"><div class="pt">Call Supervisor</div><div class="ps">Async escalation · operator stuck</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('photosup')">
-              <span class="hardblock">⛔ Hard block</span>
-              <div class="pico cat-exception">📷</div>
-              <div class="ptxt"><div class="pt">Photo to Supervisor</div><div class="ps">Cannot proceed until approved</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('falsealarm')">
-              <div class="pico cat-exception">⚠</div>
-              <div class="ptxt"><div class="pt">False alarm overflow</div><div class="ps">Free-text · SME notified · routes to Close</div></div>
-            </button>
-          </div>
-        </div>
-
-        <!-- ============ 🟣 CARDS ============ -->
-        <div class="pgroup actions open">
-          <div class="pghdr"><span class="cat-dot" style="background:#6B36B5"></span><span>Cards (passive · 1 CTA)</span><span class="cat-count">3</span></div>
-          <div class="ptiles">
-            <button class="ptile" onclick="addStep('issuecard')">
-              <div class="pico cat-card">📋</div>
-              <div class="ptxt"><div class="pt">Issue card</div><div class="ps">Shown when a new issue is assigned</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('contextcard')">
-              <div class="pico cat-card">📑</div>
-              <div class="ptxt"><div class="pt">Context card</div><div class="ps">For Op A after reassignment · morphs through 3 states</div></div>
-            </button>
-            <button class="ptile" onclick="addStep('confirmcard')">
-              <div class="pico cat-card">✓</div>
-              <div class="ptxt"><div class="pt">Confirmation card</div><div class="ps">Success / Failure outcome of a step</div></div>
-            </button>
-          </div>
-        </div>
-
-        <div class="ptip"><b>Steps</b> = operator acts. <b>Cards</b> = system shows a summary. The <b>Issue card</b> opens diagnosis; the <b>Context card</b> sits in Op A's feed after handoff and morphs <i>Summary → Progress → Completion</i> as Op B works the issue.</div>
+        <div class="ptip">Every step has a <b>destination</b> — which step it routes to next. Branching (multiple destinations per step) comes next.</div>
 </div>
 
       <!-- ===== Canvas ===== -->
@@ -2230,12 +2376,12 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
         <div id="canvasFlow">
           <div id="canvasEmpty" class="canvas-empty">
-            <div class="ce-ico">🌱</div>
-            <div class="ce-ttl">Empty canvas — let's build the flow</div>
-            <div class="ce-sub">Tap a step type on the left palette to drop in your first card, or pick a template above to pre-fill the canvas with a saved flow.</div>
+            <div class="ce-ico">📋</div>
+            <div class="ce-ttl">Flow inherited from <b>Low DO · Aeration Tank</b></div>
+            <div class="ce-sub">The diagnostic steps below come from this Issue card template. Tap any step type on the left palette to add a new step. Branching configuration comes next.</div>
             <div class="ce-actions">
-              <button class="primary" onclick="addStep('action')">＋ Add first step</button>
-              <button onclick="setMode('tpls')">Open templates →</button>
+              <button class="primary" onclick="addStep('question')">＋ Add a Question</button>
+              <button onclick="addStep('answersingle')">＋ Add an Answer</button>
             </div>
           </div>
           <!-- Seed: Action step (Normal) -->
@@ -3511,6 +3657,15 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     skipknow:      { ttl: "Skip ahead — I know the cause",              chips:['⤴ Shortcut','Intake → Root Cause'],              kind:'STEP_SKIP_KNOW',    cat:'todo',     catLabel:'Branch · Skip (know reason)' },
     skipfalse:     { ttl: "Skip ahead — false alarm",                   chips:['⏭ Shortcut','→ Close'],                          kind:'STEP_SKIP_FALSE',   cat:'todo',     catLabel:'Branch · Skip (false alarm)' },
     skiptoend:     { ttl: "Skip directly to the end",                   chips:['⏯ Shortcut','→ Confirmation card'],              kind:'STEP_SKIP_END',     cat:'todo',     catLabel:'Branch · Skip to end' },
+
+    // === Build-the-flow v2 · new step palette ===
+    question:      { ttl: "Question — ask a single thing",              chips:['❓ Question','One ask'],                          kind:'STEP_Q_V2',         cat:'progress', catLabel:'Question' },
+    answersingle:  { ttl: "Single answer",                              chips:['⭕ Single','Yes/No · A/B/C'],                     kind:'STEP_ANS_SINGLE',   cat:'progress', catLabel:'Answer · Single' },
+    answermulti:   { ttl: "Multi-select answer",                        chips:['☑ Multi-select','Tick any'],                     kind:'STEP_ANS_MULTI',    cat:'progress', catLabel:'Answer · Multi-select' },
+    answernumeric: { ttl: "Numeric answer",                             chips:['🔢 Numeric','With unit'],                         kind:'STEP_ANS_NUM',      cat:'progress', catLabel:'Answer · Numeric' },
+    rcselectv2:    { ttl: "Root cause selector",                        chips:['🌳 Radio list','Includes False alarm'],          kind:'STEP_RC_V2',        cat:'progress', catLabel:'Root cause selector' },
+    successfail:   { ttl: "Success / Failure",                          chips:['✓ Two states','Outcome of action'],              kind:'STEP_SUCCESS',      cat:'progress', catLabel:'Success / Failure' },
+    waitrecovery:  { ttl: "Wait for recovery",                          chips:['⏱ Hold','Sensor recovery'],                       kind:'STEP_WAIT_REC',     cat:'todo',     catLabel:'Waiting · Recovery' },
     reassign2:     { ttl: "Reassignment — hand off with reason",        chips:['👥 Reassign','Op→Sup · Sup→Op · Op→Op','Reason required'], kind:'STEP_REASSIGN',     cat:'todo',     catLabel:'Branch · Reassignment' },
 
     // === NEW TAXONOMY · EXCEPTION steps ===
@@ -3783,6 +3938,30 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     el.parentNode.querySelectorAll('.rcard').forEach(c => c.classList.remove('on'));
     el.classList.add('on');
     markSaved();
+  }
+
+  // Issue card template picker
+  function pickIctTpl(btn, key){
+    const wrap = btn.closest('.ict-templates');
+    if (!wrap) return;
+    wrap.querySelectorAll('.ict-tpl').forEach(t => t.classList.remove('on'));
+    btn.classList.add('on');
+    markSaved();
+    _toast('Loaded "' + (btn.querySelector('b')?.textContent || 'template') + '" — fields below are inherited');
+  }
+  // Equipment graphic tab switcher
+  function setEqgTab(btn, mode){
+    const wrap = btn.closest('.eqg-tabs');
+    if (!wrap) return;
+    wrap.querySelectorAll('.eqg-tab').forEach(t => t.classList.remove('on'));
+    btn.classList.add('on');
+    const labels = {
+      inside: 'Inside Aeration Tank 1',
+      upstream: 'Upstream of Aeration Tank 1',
+      downstream: 'Downstream of Aeration Tank 1'
+    };
+    const lst = document.querySelector('.eqg-list-l');
+    if (lst) lst.textContent = labels[mode] || labels.inside;
   }
 
   function pickGraphic(btn){

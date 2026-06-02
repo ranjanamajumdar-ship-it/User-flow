@@ -52,6 +52,13 @@ jobs:
           path: config-final
         continue-on-error: true
 
+      - name: Checkout build-flow-v2
+        uses: actions/checkout@v4
+        with:
+          ref: build-flow-v2
+          path: build-flow-v2
+        continue-on-error: true
+
       - name: Checkout diagnostic-flow
         uses: actions/checkout@v4
         with:
@@ -90,6 +97,12 @@ jobs:
             mkdir -p dist/config-final
             cp -R config-final/. dist/config-final/ 2>/dev/null || true
             rm -rf dist/config-final/.git dist/config-final/.github
+          fi
+          # /build-flow-v2/ = build-flow-v2 branch contents
+          if [ -d build-flow-v2 ]; then
+            mkdir -p dist/build-flow-v2
+            cp -R build-flow-v2/. dist/build-flow-v2/ 2>/dev/null || true
+            rm -rf dist/build-flow-v2/.git dist/build-flow-v2/.github
           fi
           # /diagnostic-flow/ = diagnostic-flow branch contents
           if [ -d diagnostic-flow ]; then
