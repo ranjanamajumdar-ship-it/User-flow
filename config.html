@@ -2368,6 +2368,17 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
           </div>
         </div>
 
+        <!-- ============ 🏁 CLOSURE ============ -->
+        <div class="pgroup actions open">
+          <div class="pghdr"><span class="cat-dot" style="background:#6B36B5"></span><span>Closure</span><span class="cat-count">1</span></div>
+          <div class="ptiles">
+            <button class="ptile" onclick="addStep('closurecard')">
+              <div class="pico cat-card">🏁</div>
+              <div class="ptxt"><div class="pt">Closure card</div><div class="ps">Capture photo, notes, voice before final close</div></div>
+            </button>
+          </div>
+        </div>
+
         <!-- ============ ⏱ WAITING ============ -->
         <div class="pgroup todo open">
           <div class="pghdr"><span class="cat-dot" style="background:#E0A314"></span><span>Waiting</span><span class="cat-count">1</span></div>
@@ -2897,6 +2908,9 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <optgroup label="✓ Outcome">
         <option value="successfail">Success / Failure</option>
       </optgroup>
+      <optgroup label="🏁 Closure">
+        <option value="closurecard">Closure card (photo · notes · voice)</option>
+      </optgroup>
       <optgroup label="⏱ Waiting">
         <option value="waitrecovery">Wait for recovery</option>
       </optgroup>
@@ -3178,8 +3192,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <h4 class="dr-section">Shortcut configuration</h4>
       <label>Trigger label on operator screen</label>
       <input type="text" value="I already know the cause — skip diagnosis" oninput="markSaved()"/>
-      <label style="margin-top:12px">Destination (locked)</label>
-      <input type="text" value="→ Root Cause stage" disabled style="opacity:.6"/>
+      <label style="margin-top:12px">Destination</label>
+      <select onchange="markSaved()"><option>→ Root Cause stage</option><option>→ Skip ahead — false alarm</option><option>→ End diagnosis</option><option>→ Specific step…</option></select>
       <div class="help">Branch shortcut from Intake straight to Root Cause. Destination is fixed.</div>
     </div>
 
@@ -3190,8 +3204,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <input type="text" value="This is a false alarm — skip to Close" oninput="markSaved()"/>
       <label style="margin-top:12px">Reason input prompt</label>
       <input type="text" value="Why do you think it's a false alarm?" oninput="markSaved()"/>
-      <label style="margin-top:12px">Destination (locked)</label>
-      <input type="text" value="→ Close stage" disabled style="opacity:.6"/>
+      <label style="margin-top:12px">Destination</label>
+      <select onchange="markSaved()"><option>→ Close stage</option><option>→ Closure card</option><option>→ Confirmation card</option><option>→ End diagnosis</option><option>→ Specific step…</option></select>
       <div class="tog" style="margin-top:14px">
         <div class="lbl"><div class="t">Notify SME</div><div class="s">SME reviews false alarms and updates the diagnostic tree</div></div>
         <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
@@ -3205,8 +3219,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       <input type="text" value="Skip to end — I'm done here" oninput="markSaved()"/>
       <label style="margin-top:12px">Confirmation prompt (shown before jumping)</label>
       <input type="text" value="Are you sure you want to skip to the end?" oninput="markSaved()"/>
-      <label style="margin-top:12px">Destination (locked)</label>
-      <input type="text" value="→ Confirmation card" disabled style="opacity:.6"/>
+      <label style="margin-top:12px">Destination</label>
+      <select onchange="markSaved()"><option>→ Confirmation card</option><option>→ Closure card</option><option>→ Close stage</option><option>→ End diagnosis</option><option>→ Specific step…</option></select>
       <div class="help">Lets the operator bail out of the rest of the flow and go straight to the final Confirmation card. Useful when they already know the outcome.</div>
     </div>
 
@@ -3291,8 +3305,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <div class="lbl"><div class="t">Notify SME</div><div class="s">Locked ON — SME reviews and updates the diagnostic tree</div></div>
         <div class="sw on locked" style="opacity:.7;pointer-events:none"></div>
       </div>
-      <label style="margin-top:14px">Destination (locked)</label>
-      <input type="text" value="→ Close stage" disabled style="opacity:.6"/>
+      <label style="margin-top:14px">Destination</label>
+      <select onchange="markSaved()"><option>→ Close stage</option><option>→ Closure card</option><option>→ Confirmation card</option><option>→ End diagnosis</option><option>→ Specific step…</option></select>
     </div>
 
     <!-- ============ 🟪 ISSUE CARD ============ -->
@@ -3754,8 +3768,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <input type="text" class="br-label" value="False alarm — nothing wrong" oninput="markSaved()"/>
         <input type="text" class="br-desc" value="Capture why this turned out to be a false alarm" oninput="markSaved()"/>
         <span class="br-arr">→</span>
-        <input type="text" class="br-dest-locked" value="Close stage" disabled style="opacity:.6"/>
-        <span class="br-lockmark">🔒</span>
+        <select class="br-dest" onchange="markSaved()"><option>Close stage</option><option>Closure card</option><option>Confirmation card · False alarm</option><option>End diagnosis</option></select><button class="br-del" onclick="this.closest('.br-row').remove();markSaved()">×</button>
       </div>
       <div class="help">A False alarm routes are always preserved here. SME gets notified automatically when picked.</div>
     </div>
@@ -3793,6 +3806,54 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <option>Step 6 · Root cause selector</option>
         <option>Wait for recovery</option>
         <option>Reassignment</option>
+      </select>
+    </div>
+
+    <!-- ============ 🏁 CLOSURE CARD ============ -->
+    <div class="dr-panel" data-for="closurecard">
+      <div class="dr-banner" style="background:rgba(107,54,181,.08);border:1px solid rgba(107,54,181,.22);color:#6B36B5">🏁 Final capture before the issue closes. Operators / supervisors add photos, written notes, and a voice memo for the audit trail.</div>
+
+      <h4 class="dr-section">Card content</h4>
+      <label>Headline</label>
+      <input type="text" value="Capture closure details" oninput="markSaved()"/>
+      <label style="margin-top:12px">Body / instructions</label>
+      <textarea oninput="markSaved()">Before closing this issue, add what was done and what was observed. This becomes part of the equipment history.</textarea>
+
+      <h4 class="dr-section">Capture inputs <span class="lbl-opt">choose what to collect</span></h4>
+      <div class="fld-list">
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>📷 Photo upload</b><span>One or more photos · before / after / proof</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>📝 Written notes</b><span>Free-text · what was done, root cause confirmed, parts replaced</span></div></label>
+        <label class="fld"><input type="checkbox" checked oninput="markSaved()"><div><b>🎙 Voice memo</b><span>Operator records up to 2 minutes · auto-transcribed in 5 languages</span></div></label>
+        <label class="fld"><input type="checkbox" oninput="markSaved()"><div><b>📎 Document upload</b><span>PDF / spreadsheet · invoice for parts, lab report</span></div></label>
+        <label class="fld"><input type="checkbox" oninput="markSaved()"><div><b>👤 Supervisor signature</b><span>Required for safety-critical issues — supervisor approves before close</span></div></label>
+      </div>
+
+      <h4 class="dr-section">Field rules</h4>
+      <div class="form-grid">
+        <div class="ff">
+          <label>Minimum photos</label>
+          <input type="text" value="1" oninput="markSaved()"/>
+        </div>
+        <div class="ff">
+          <label>Minimum note characters</label>
+          <input type="text" value="20" oninput="markSaved()"/>
+        </div>
+      </div>
+      <div class="tog" style="margin-top:14px">
+        <div class="lbl"><div class="t">Block close until all required captures provided</div><div class="s">Operator cannot finalise the close until photo + notes (and signature, if on) are filled</div></div>
+        <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
+      </div>
+
+      <h4 class="dr-section">CTA</h4>
+      <label>Button label</label>
+      <input type="text" value="Submit & close issue" oninput="markSaved()"/>
+
+      <h4 class="dr-section">Output → Next step</h4>
+      <select onchange="markSaved()">
+        <option>→ Close stage (terminal)</option>
+        <option>→ End diagnosis</option>
+        <option>→ Confirmation card</option>
+        <option>→ Specific step…</option>
       </select>
     </div>
 
@@ -4035,6 +4096,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     rcselectv2:    { ttl: "Root cause selector",                        chips:['🌳 Radio list','Includes False alarm'],          kind:'STEP_RC_V2',        cat:'progress', catLabel:'Root cause selector' },
     successfail:   { ttl: "Success / Failure",                          chips:['✓ Two states','Outcome of action'],              kind:'STEP_SUCCESS',      cat:'progress', catLabel:'Success / Failure' },
     waitrecovery:  { ttl: "Wait for recovery",                          chips:['⏱ Hold','Sensor recovery'],                       kind:'STEP_WAIT_REC',     cat:'todo',     catLabel:'Waiting · Recovery' },
+    closurecard:   { ttl: "Closure card",                                chips:['🏁 Closure','Photo · notes · voice','Pre-close audit'], kind:'CARD_CLOSURE',  cat:'action',   catLabel:'Closure card' },
     reassign2:     { ttl: "Reassignment — hand off with reason",        chips:['👥 Reassign','Op→Sup · Sup→Op · Op→Op','Reason required'], kind:'STEP_REASSIGN',     cat:'todo',     catLabel:'Branch · Reassignment' },
 
     // === NEW TAXONOMY · EXCEPTION steps ===
@@ -4376,21 +4438,21 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       action:'Normal · Action step · single answer', actionmc:'Normal · Action step · multi-choice', rcselect:'Normal · Root cause selector', taskdone:'Normal · Task accomplished', nextsteps:'Normal · Next steps preview', timedwait:'Normal · Timed wait + action',
       skiptoend:'Branch · Skip to end',
       question:'Question', answersingle:'Answer · Single', answermulti:'Answer · Multi-select', answernumeric:'Answer · Numeric',
-      rcselectv2:'Root cause selector', successfail:'Success / Failure', waitrecovery:'Waiting · Recovery',
+      rcselectv2:'Root cause selector', successfail:'Success / Failure', waitrecovery:'Waiting · Recovery', closurecard:'Closure card',
       skipknow:'Branch · Skip (know reason)', skipfalse:'Branch · Skip (false alarm)', reassign2:'Branch · Reassignment',
       callsup:'Exception · Call Supervisor', photosup:'Exception · Photo to Supervisor', falsealarm:'Exception · False alarm overflow',
       issuecard:'Card · Issue', contextcard:'Card · Context', confirmcard:'Card · Confirmation', summarycard:'Card · Context', progresscard:'Card · Context', completioncard:'Card · Context'
     };
     const colors = {
       action:'var(--brand)', actionmc:'var(--brand)', rcselect:'var(--brand)', taskdone:'var(--brand)', nextsteps:'var(--brand)', timedwait:'var(--brand)', skiptoend:'#A06F00',
-      question:'var(--brand)', answersingle:'#0F5C2F', answermulti:'#0F5C2F', answernumeric:'#0F5C2F', rcselectv2:'#6B36B5', successfail:'#0F5C2F', waitrecovery:'#A06F00',
+      question:'var(--brand)', answersingle:'#0F5C2F', answermulti:'#0F5C2F', answernumeric:'#0F5C2F', rcselectv2:'#6B36B5', successfail:'#0F5C2F', waitrecovery:'#A06F00', closurecard:'#6B36B5',
       skipknow:'#A06F00', skipfalse:'#A06F00', reassign2:'#A06F00',
       callsup:'#B83A1F', photosup:'#B83A1F', falsealarm:'#B83A1F',
       issuecard:'#6B36B5', contextcard:'#6B36B5', confirmcard:'#6B36B5', summarycard:'#6B36B5', progresscard:'#6B36B5', completioncard:'#6B36B5'
     };
     const bgs = {
       action:'rgba(0,41,118,.08)', actionmc:'rgba(0,41,118,.08)', rcselect:'rgba(0,41,118,.08)', taskdone:'rgba(0,41,118,.08)', nextsteps:'rgba(0,41,118,.08)', timedwait:'rgba(0,41,118,.08)', skiptoend:'rgba(232,148,26,.10)',
-      question:'rgba(0,41,118,.08)', answersingle:'rgba(31,157,85,.10)', answermulti:'rgba(31,157,85,.10)', answernumeric:'rgba(31,157,85,.10)', rcselectv2:'rgba(107,54,181,.10)', successfail:'rgba(31,157,85,.10)', waitrecovery:'rgba(232,148,26,.10)',
+      question:'rgba(0,41,118,.08)', answersingle:'rgba(31,157,85,.10)', answermulti:'rgba(31,157,85,.10)', answernumeric:'rgba(31,157,85,.10)', rcselectv2:'rgba(107,54,181,.10)', successfail:'rgba(31,157,85,.10)', waitrecovery:'rgba(232,148,26,.10)', closurecard:'rgba(107,54,181,.10)',
       skipknow:'rgba(232,148,26,.10)', skipfalse:'rgba(232,148,26,.10)', reassign2:'rgba(232,148,26,.10)',
       callsup:'rgba(184,58,31,.10)', photosup:'rgba(184,58,31,.10)', falsealarm:'rgba(184,58,31,.10)',
       issuecard:'rgba(107,54,181,.10)', contextcard:'rgba(107,54,181,.10)', confirmcard:'rgba(107,54,181,.10)', summarycard:'rgba(107,54,181,.10)', progresscard:'rgba(107,54,181,.10)', completioncard:'rgba(107,54,181,.10)'
@@ -4524,6 +4586,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         else if (/Root cause selector/i.test(txt)) type = 'rcselectv2';
         else if (/Success.*Failure/i.test(txt)) type = 'successfail';
         else if (/Wait.*Recovery|Wait for recovery/i.test(txt)) type = 'waitrecovery';
+        else if (/Closure card/i.test(txt)) type = 'closurecard';
         else if (/Root cause selector/i.test(txt)) type = 'rcselect';
         else if (/Task accomplished/i.test(txt)) type = 'taskdone';
         else if (/Skip.*know/i.test(txt)) type = 'skipknow';
