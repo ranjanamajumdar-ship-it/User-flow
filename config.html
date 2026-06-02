@@ -2552,12 +2552,14 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
           </select>
         </div>
         <div class="ff">
-          <label>Scope</label>
+          <label>Trigger to</label>
           <select onchange="markSaved()">
-            <option selected>User Group</option>
-            <option>Workspace</option>
-            <option>Asset</option>
-            <option>System</option>
+            <option>— Pick role —</option>
+            <option selected>Operator</option>
+            <option>Supervisor</option>
+            <option>SME</option>
+            <option>Electrical Engineer</option>
+            <option>Mechanical Engineer</option>
           </select>
         </div>
         <div class="ff">
@@ -2729,7 +2731,7 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
       <h1 class="page-h" style="margin-bottom:0">Build the <em>flow</em></h1>
       <button class="btn-template" onclick="saveAsTemplate()" title="Save current flow as a reusable template">
         <span class="bt-ic">📐</span>
-        <span class="bt-tx"><b>Save as template</b><span>Reuse this flow on other plants</span></span>
+        <span class="bt-tx"><b>Save as Diagnostic Flow Template</b><span>Templates · 2 of 3 · reuse this flow on other plants</span></span>
       </button>
     </div>
     <p class="page-sub">Drag step types in from the left, hover between cards to insert, tap a card to edit it.</p>
@@ -2893,7 +2895,7 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
         <div class="eqg-foot">
           <button class="eqg-save-tpl" onclick="saveAsIssueTemplate()">
             <span class="esti-ic">💾</span>
-            <span class="esti-tx"><b>Save as Issue Template</b><span>Reuse this Issue card across plants & flows</span></span>
+            <span class="esti-tx"><b>Save as Issue Card Template</b><span>Templates · 1 of 3 · reuse this Issue card across plants & flows</span></span>
           </button>
         </div>
       </div>
@@ -3550,6 +3552,7 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
             <button onclick="vfcAddNode('destination','Closure card');closeDestMenu()"><span class="vdm-ic">🏁</span>Closure card<span class="vdm-sub">Photo · notes · voice capture</span></button>
             <button onclick="vfcAddNode('destination','Root cause selector');closeDestMenu()"><span class="vdm-ic">🌳</span>Root cause selector<span class="vdm-sub">Pick the confirmed cause</span></button>
             <button onclick="vfcAddNode('destination','Wait for recovery');closeDestMenu()"><span class="vdm-ic">⏱</span>Wait for recovery<span class="vdm-sub">Hold then re-check</span></button>
+            <button onclick="vfcAddNode('destination','Context / Summary card');closeDestMenu()"><span class="vdm-ic">📑</span>Context / Summary card<span class="vdm-sub">Op A's handoff status · 3 states</span></button>
             <button onclick="vfcAddNode('destination','Reassignment');closeDestMenu()"><span class="vdm-ic">👥</span>Reassignment<span class="vdm-sub">Hand off to another operator</span></button>
             <button onclick="vfcAddNode('destination','Specific step…');closeDestMenu()"><span class="vdm-ic">▸</span>Specific step…<span class="vdm-sub">Pick from this flow</span></button>
           </div>
@@ -4039,9 +4042,17 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
       <div class="help">⚠ Rule — must point to a step that is <b>different</b> from the one that triggered this card.</div>
     </div>
 
-    <!-- ============ 🟪 CONTEXT CARD (3 states in one) ============ -->
+    <!-- ============ 🟪 CONTEXT / SUMMARY CARD (3 states in one) ============ -->
     <div class="dr-panel" data-for="contextcard">
       <div class="dr-banner card">📑 Sits in <b>Operator A's</b> feed after reassignment. Morphs through three states automatically as Op B works the issue. One CTA per state, label changes with the state.</div>
+
+      <!-- Save-as-template button at the top of the panel -->
+      <div class="eqg-foot" style="justify-content:flex-start;margin:0 0 18px">
+        <button class="eqg-save-tpl" onclick="saveAsSummaryCardTemplate()" style="background:linear-gradient(135deg,#7C46C5,#5C2D8E);box-shadow:0 8px 22px -8px rgba(107,54,181,.45)">
+          <span class="esti-ic">💾</span>
+          <span class="esti-tx"><b>Save as Summary Card Template</b><span>Templates · 3 of 3 · reuse this Context card configuration</span></span>
+        </button>
+      </div>
 
       <!-- Constant chrome -->
       <h4 class="dr-section">Constant chrome (shown in every state)</h4>
@@ -4893,7 +4904,7 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   }
 
   function saveAsTemplate(){
-    if (typeof _toast === 'function') _toast('Saved as template: Low DO · Aeration');
+    if (typeof _toast === 'function') _toast('Diagnostic Flow Template saved (Templates · 2 of 3)');
   }
   // ===== Override system =====
   function toggleLock(btn){
@@ -5440,7 +5451,11 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   });
 
   function saveAsIssueTemplate(){
-    _toast('Issue card template saved — reusable across plants');
+    _toast('Issue Card Template saved (Templates · 1 of 3)');
+    markSaved();
+  }
+  function saveAsSummaryCardTemplate(){
+    _toast('Summary Card Template saved (Templates · 3 of 3)');
     markSaved();
   }
 
