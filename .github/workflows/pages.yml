@@ -66,6 +66,13 @@ jobs:
           path: diagnostic-flow
         continue-on-error: true
 
+      - name: Checkout flow-canvas
+        uses: actions/checkout@v4
+        with:
+          ref: flow-canvas
+          path: flow-canvas
+        continue-on-error: true
+
       - name: Assemble site
         run: |
           mkdir -p dist
@@ -109,6 +116,12 @@ jobs:
             mkdir -p dist/diagnostic-flow
             cp -R diagnostic-flow/. dist/diagnostic-flow/ 2>/dev/null || true
             rm -rf dist/diagnostic-flow/.git dist/diagnostic-flow/.github
+          fi
+          # /flow-canvas/ = flow-canvas branch contents
+          if [ -d flow-canvas ]; then
+            mkdir -p dist/flow-canvas
+            cp -R flow-canvas/. dist/flow-canvas/ 2>/dev/null || true
+            rm -rf dist/flow-canvas/.git dist/flow-canvas/.github
           fi
           # Simple landing index for the previews dir
           cat > dist/previews.html <<'EOF'
