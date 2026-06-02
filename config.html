@@ -1146,12 +1146,54 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .dr-title-input{font-size:24px!important;letter-spacing:-.022em!important;font-weight:800!important}
 .dr-desc-input{font-size:15px!important;line-height:1.6!important;min-height:60px!important}
 .dr-mini{font-size:10px}
-/* Hide ALL form panels — we only use the visual builder now */
-.dr-panel{display:none!important}
-/* Hide the view-mode toggle — visual is the only view */
+/* When NOT editing a multi-select, show form panels and hide the visual builder + option input */
+body:not([data-step-mode="multi"]) #vfTree{display:none!important}
+body:not([data-step-mode="multi"]) .opt-input-row{display:none!important}
+body:not([data-step-mode="multi"]) #optAddRow{display:none!important}
+body:not([data-step-mode="multi"]) #mcQuestionBlock{display:none!important}
+/* When editing a multi-select, hide all form panels and show the visual builder */
+body[data-step-mode="multi"] .dr-panel{display:none!important}
+body[data-step-mode="multi"] #vfTree{display:block!important}
+/* Hide the legacy view-mode toggle in all cases */
 .dr-viewmode{display:none!important}
-/* Show vfTree by default */
-#vfTree{display:block!important}
+/* Multi-select Question block — primary input above the canvas */
+.mc-q-block{padding:20px 24px 22px;margin:14px 0 16px;border-radius:18px;background:linear-gradient(160deg,rgba(0,41,118,.05),rgba(0,41,118,.10));border:1px solid rgba(0,41,118,.20);box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
+.mc-q-input{
+  font:800 22px 'Plus Jakarta Sans'!important;letter-spacing:-.022em!important;
+  color:var(--ink)!important;
+  background:transparent!important;
+  border:none!important;border-bottom:1.5px solid rgba(0,41,118,.30)!important;
+  padding:6px 0!important;width:100%;
+  transition:border-color .12s ease;
+}
+.mc-q-input:focus{border-bottom-color:var(--brand)!important;border-bottom-width:2px!important;outline:none}
+.mc-q-help{font-size:12.5px;color:var(--ink-3);margin:10px 0 0;line-height:1.55;font-weight:500;letter-spacing:-.005em}
+
+/* Multi-select chip strip — simpler than 9-chip palette */
+.vfc-chips-mc{justify-content:space-between;align-items:center}
+.vfc-chip-add{font-size:13px;padding:9px 16px}
+.vfc-chips-hint{font:600 11.5px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.2px}
+
+/* FigJam-like sticky-note nodes when in multi-select option mode */
+.vfc-node[data-kind="option"]{
+  background:#FEFDC4;
+  border-color:#E0C414;
+  border-style:solid;
+  border-width:2px;
+  border-radius:10px;
+  padding:14px 16px;
+  min-width:180px;
+  max-width:240px;
+  box-shadow:0 6px 16px -4px rgba(180,140,10,.35), 0 1px 0 rgba(255,255,255,.6) inset;
+  transform:rotate(-.5deg);
+  font:700 13.5px 'Plus Jakarta Sans';
+}
+.vfc-node[data-kind="option"]:nth-child(odd){transform:rotate(.6deg)}
+.vfc-node[data-kind="option"]:hover{transform:rotate(0) translateY(-2px);box-shadow:0 10px 26px -4px rgba(180,140,10,.45)}
+.vfc-node[data-kind="option"].dragging{transform:rotate(0)}
+.vfc-node[data-kind="option"] .vfc-node-kind{color:#8C6306;letter-spacing:.6px}
+.vfc-node[data-kind="option"] .vfc-node-ttl{color:#3D3500;font-size:14px;font-weight:700}
+
 /* The option-input row */
 .opt-input-row{
   display:flex;align-items:flex-end;gap:10px;
@@ -3229,43 +3271,20 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       </div>
     </div>
 
-    <!-- Quick option-input row: type a label, pick a type, drop it onto the canvas -->
-    <div class="opt-input-row">
-      <div class="ff">
-        <label class="dr-mini">Add a step</label>
-        <input type="text" id="optAddLabel" placeholder="Type the option / step label, then press + Add or Enter" onkeydown="if(event.key==='Enter')optInputAdd()"/>
-      </div>
-      <div class="ff ff-type">
-        <label class="dr-mini">Step type</label>
-        <select id="optAddType">
-          <option value="question">❓ Question</option>
-          <option value="answersingle" selected>⭕ Single answer</option>
-          <option value="answermulti">☑ Multi-select</option>
-          <option value="answernumeric">🔢 Numeric</option>
-          <option value="rcselectv2">🌳 Root cause</option>
-          <option value="successfail">✓ Success / Failure</option>
-          <option value="closurecard">🏁 Closure</option>
-          <option value="waitrecovery">⏱ Waiting</option>
-          <option value="skiptoend">⏯ Skip to end</option>
-        </select>
-      </div>
-      <button class="opt-add-btn" type="button" onclick="optInputAdd()">＋ Add</button>
+    <!-- Multi-select QUESTION block -->
+    <div class="mc-q-block" id="mcQuestionBlock">
+      <label class="dr-mini">The question shown to the operator</label>
+      <input type="text" id="mcQuestion" class="mc-q-input" value="Which of these are present in the tank? (tick all that apply)" oninput="markSaved()"/>
+      <p class="mc-q-help">Each option below becomes a checkbox. The operator can tick any number — each ticked option routes to its own next step.</p>
     </div>
 
     <!-- Visual flow editor (always visible — primary editor) -->
     <div class="vf-editor" id="vfTree" style="display:none">
 
-      <!-- Step-type chip palette (click a chip to drop a node onto the canvas) -->
-      <div class="vfc-chips">
-        <button class="vfc-chip vfc-question" onclick="vfcAddNode('question','New question')">❓ Question</button>
-        <button class="vfc-chip vfc-answer" onclick="vfcAddNode('answersingle','Single answer')">⭕ Single answer</button>
-        <button class="vfc-chip vfc-answer" onclick="vfcAddNode('answermulti','Multi-select')">☑ Multi-select</button>
-        <button class="vfc-chip vfc-answer" onclick="vfcAddNode('answernumeric','Numeric answer')">🔢 Numeric</button>
-        <button class="vfc-chip vfc-rc" onclick="vfcAddNode('rcselectv2','Root cause selector')">🌳 Root cause</button>
-        <button class="vfc-chip vfc-success" onclick="vfcAddNode('successfail','Success / Failure')">✓ Success / Failure</button>
-        <button class="vfc-chip vfc-closure" onclick="vfcAddNode('closurecard','Closure card')">🏁 Closure</button>
-        <button class="vfc-chip vfc-wait" onclick="vfcAddNode('waitrecovery','Wait for recovery')">⏱ Waiting</button>
-        <button class="vfc-chip vfc-skip" onclick="vfcAddNode('skiptoend','Skip to end')">⏯ Skip to end</button>
+      <!-- Single "Add option" chip for multi-select editor -->
+      <div class="vfc-chips vfc-chips-mc">
+        <button class="vfc-chip vfc-answer vfc-chip-add" onclick="vfcAddNode('option','New option')">＋ Add option</button>
+        <span class="vfc-chips-hint">Drop options onto the canvas · drag to arrange · drag anchors to connect</span>
       </div>
 
       <!-- Canvas: dotted grid background, draggable nodes, SVG connection layer -->
@@ -4718,7 +4737,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   const VFC_KIND_LABEL = {
     question:'Question', answersingle:'Single answer', answermulti:'Multi-select', answernumeric:'Numeric answer',
     rcselectv2:'Root cause selector', successfail:'Success / Failure', closurecard:'Closure card',
-    waitrecovery:'Wait for recovery', skiptoend:'Skip to end'
+    waitrecovery:'Wait for recovery', skiptoend:'Skip to end',
+    option:'Option'
   };
   function vfcAddNode(kind, title){
     const canvas = document.getElementById('vfCanvas');
@@ -4897,17 +4917,30 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   // Seed a sample flow on first visual open (so user sees something)
   function vfcSeedIfEmpty(){
     if (VFC.nodes.length > 0) return;
-    vfcAddNode('question','Is aeration happening equally across the tank?');
-    vfcAddNode('answersingle','Yes / Moderately / No');
-    vfcAddNode('rcselectv2','Pick root cause');
-    vfcAddNode('successfail','Did the fix work?');
-    vfcAddNode('closurecard','Closure card · final notes');
-    // Position them in a vertical pipeline
-    VFC.nodes.forEach((n,i) => { n.x = 80; n.y = 30 + i * 110; });
-    VFC.nodes.forEach(n => { const el = document.getElementById(n.id); if (el){ el.style.left = n.x+'px'; el.style.top = n.y+'px'; } });
-    // Seed edges in sequence
-    for (let i = 0; i < VFC.nodes.length - 1; i++) {
-      VFC.edges.push({ from: VFC.nodes[i].id, to: VFC.nodes[i+1].id });
+    const isMulti = document.body.getAttribute('data-step-mode') === 'multi';
+    if (isMulti) {
+      // FigJam-style sticky-note options
+      vfcAddNode('option','Sludge accumulation at the bottom');
+      vfcAddNode('option','Uneven DO readings across the tank');
+      vfcAddNode('option','Dark wastewater patches');
+      vfcAddNode('option','Poor treatment performance');
+      // Lay out in a 2-col staggered grid
+      VFC.nodes.forEach((n,i) => {
+        n.x = 30 + (i % 2) * 260;
+        n.y = 30 + Math.floor(i / 2) * 140;
+      });
+      VFC.nodes.forEach(n => { const el = document.getElementById(n.id); if (el){ el.style.left = n.x+'px'; el.style.top = n.y+'px'; } });
+    } else {
+      vfcAddNode('question','Is aeration happening equally across the tank?');
+      vfcAddNode('answersingle','Yes / Moderately / No');
+      vfcAddNode('rcselectv2','Pick root cause');
+      vfcAddNode('successfail','Did the fix work?');
+      vfcAddNode('closurecard','Closure card · final notes');
+      VFC.nodes.forEach((n,i) => { n.x = 80; n.y = 30 + i * 110; });
+      VFC.nodes.forEach(n => { const el = document.getElementById(n.id); if (el){ el.style.left = n.x+'px'; el.style.top = n.y+'px'; } });
+      for (let i = 0; i < VFC.nodes.length - 1; i++) {
+        VFC.edges.push({ from: VFC.nodes[i].id, to: VFC.nodes[i+1].id });
+      }
     }
     vfcRenderEdges();
     vfcUpdateMeta();
@@ -5080,6 +5113,22 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     }
     // Auto-inject padlocks into the now-visible panel
     if (panel) ensureDrawerPadlocks(panel);
+    // Gate the multi-select visual-only mode
+    if (type === 'answermulti') {
+      document.body.setAttribute('data-step-mode','multi');
+      // Reset canvas so we get the right seed (sticky-note options)
+      VFC.nodes = []; VFC.edges = []; VFC.nodeSeq = 0;
+      const canvas = document.getElementById('vfCanvas');
+      if (canvas){
+        canvas.querySelectorAll('.vfc-node').forEach(n => n.remove());
+        canvas.classList.remove('has-nodes');
+      }
+      vfcRenderEdges();
+      vfcSeedIfEmpty();
+      vfcRecalcHeight();
+    } else {
+      document.body.removeAttribute('data-step-mode');
+    }
     markSaved();
   }
 
@@ -5228,6 +5277,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   function closeDrawer(){
     document.getElementById('scrim').classList.remove('on');
     document.getElementById('drawer').classList.remove('on');
+    document.body.removeAttribute('data-step-mode');
     // commit any in-progress edits
     document.querySelectorAll('.sub-item [contenteditable="true"]').forEach(el => {
       el.removeAttribute('contenteditable');
