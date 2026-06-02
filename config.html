@@ -836,7 +836,41 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
 /* === Drawer · type-aware panels === */
 .dr-typebadge{display:inline-block;font:700 10px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:rgba(0,41,118,.08);color:var(--brand);margin-left:8px;vertical-align:middle}
-.dr-section{margin:22px 0 12px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3)}
+.dr-section{margin:24px 0 14px;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ink);padding-bottom:6px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;gap:8px;position:relative}
+.dr-section::before{content:"";display:inline-block;width:3px;height:14px;border-radius:2px;background:linear-gradient(180deg,var(--brand),#1B3A8C);flex-shrink:0;margin-right:2px}
+
+/* Step title block — primary headline of the drawer */
+.dr-title-block{margin:6px 0 10px;padding:14px 16px 16px;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.30));border:1px solid var(--line-soft);box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
+.dr-mini{display:block;font:800 9.5px 'JetBrains Mono';letter-spacing:.6px;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.dr-mini-opt{font-weight:600;color:var(--ink-4);text-transform:none;letter-spacing:0;font-family:'Plus Jakarta Sans';font-size:10px}
+.dr-title-input{
+  font:800 19px 'Plus Jakarta Sans'!important;letter-spacing:-.018em!important;
+  color:var(--ink)!important;
+  background:transparent!important;
+  border:none!important;border-bottom:1.5px solid rgba(14,20,40,.20)!important;
+  padding:5px 0!important;width:100%;
+  transition:border-color .12s ease;
+}
+.dr-title-input:focus{border-bottom-color:var(--brand)!important;border-bottom-width:2px!important;padding-bottom:4px!important;outline:none}
+.dr-desc-input{
+  font:500 13.5px 'Plus Jakarta Sans'!important;line-height:1.55;color:var(--ink-2)!important;
+  background:transparent!important;border:none!important;border-bottom:1px solid rgba(14,20,40,.14)!important;
+  padding:6px 0!important;width:100%;min-height:46px!important;resize:vertical;
+  transition:border-color .12s ease;
+}
+.dr-desc-input:focus{border-bottom-color:var(--brand)!important;border-bottom-width:1.5px!important;padding-bottom:5.5px!important;outline:none}
+
+/* Doherty's threshold — snap interactions under 200ms */
+.dr-panel,.dr-panel *{transition-duration:.14s!important}
+.dr-panel select:focus,.dr-panel input:focus,.dr-panel textarea:focus{transition-duration:.10s!important}
+
+/* Cause-option / branch-row — proper card style (visual hierarchy for RC selector) */
+.br-row.br-rc{background:rgba(255,255,255,.7);border:1px solid var(--line-soft);border-radius:14px;padding:14px;display:grid;grid-template-columns:auto 1fr 1fr auto auto auto;gap:10px;align-items:center;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 1px 3px -1px rgba(40,50,80,.06);transition:background .14s,border-color .14s,transform .14s}
+.br-row.br-rc:hover{background:rgba(255,255,255,.95);border-color:rgba(0,41,118,.18);transform:translateY(-1px);box-shadow:0 4px 14px -6px rgba(40,50,80,.12)}
+.br-row.br-rc .br-ic{width:32px;height:32px;border-radius:10px;background:linear-gradient(145deg,#ECDFFB,#D6BFF5);font-size:17px}
+.br-row.br-rc.br-fa{background:linear-gradient(135deg,rgba(232,148,26,.06),rgba(232,148,26,.12));border-color:rgba(232,148,26,.30)}
+.br-row.br-rc.br-fa .br-ic{background:rgba(232,148,26,.22)}
+@media (max-width:560px){.br-row.br-rc{grid-template-columns:auto 1fr;gap:8px}.br-row.br-rc .br-arr{display:none}}
 .dr-panel{display:none;padding-top:8px;margin-top:8px;border-top:1px solid rgba(14,20,40,.06)}
 .dr-panel.show{display:block}
 .dr-banner{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:12px;font-size:12.5px;line-height:1.5;margin:18px 0 4px;font-weight:600;letter-spacing:-.005em}
@@ -2898,62 +2932,40 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   <div class="dr-body">
 
     <!-- ============ UNIVERSAL FIELDS ============ -->
-    <label>Step type</label>
-    <select id="drType" onchange="switchDrawerType(this.value)">
-      <optgroup label="❓ Question">
-        <option value="question">Question</option>
-      </optgroup>
-      <optgroup label="✏️ Answer">
-        <option value="answersingle">Single answer</option>
-        <option value="answermulti">Multi-select answer</option>
-        <option value="answernumeric">Numeric answer</option>
-      </optgroup>
-      <optgroup label="🌳 Root cause">
-        <option value="rcselectv2">Root cause selector (with False alarm)</option>
-      </optgroup>
-      <optgroup label="✓ Outcome">
-        <option value="successfail">Success / Failure</option>
-      </optgroup>
-      <optgroup label="🏁 Closure">
-        <option value="closurecard">Closure card (photo · notes · voice)</option>
-      </optgroup>
-      <optgroup label="⏱ Waiting">
-        <option value="waitrecovery">Wait for recovery</option>
-      </optgroup>
-      <optgroup label="⏯ Skip">
-        <option value="skiptoend">Skip to end</option>
-      </optgroup>
-      <optgroup label="🔵 Legacy steps">
-        <option value="action">Action step · single answer</option>
-        <option value="actionmc">Action step · multi-choice</option>
-        <option value="rcselect">Root cause selector (legacy)</option>
-        <option value="taskdone">Task accomplished</option>
-        <option value="nextsteps">Here are the next steps</option>
-        <option value="timedwait">Timed wait + action</option>
-      </optgroup>
-      <optgroup label="🟡 Branch">
-        <option value="skipknow">Skip ahead — I know the cause</option>
-        <option value="skipfalse">Skip ahead — false alarm</option>
-        <option value="skiptoend">Skip to end</option>
-        <option value="reassign2">Reassignment</option>
-      </optgroup>
-      <optgroup label="🔴 Exception">
-        <option value="callsup">Call Supervisor</option>
-        <option value="photosup">Photo to Supervisor (hard block)</option>
-        <option value="falsealarm">False alarm overflow</option>
-      </optgroup>
-      <optgroup label="🟪 Cards">
-        <option value="issuecard">Issue card</option>
-        <option value="contextcard">Context card (Summary → Progress → Completion)</option>
-        <option value="confirmcard">Confirmation card (Success / Failure)</option>
-      </optgroup>
+    <!-- Step type is set when adding from the palette; not editable here. Kept as hidden select for JS compatibility. -->
+    <select id="drType" onchange="switchDrawerType(this.value)" style="display:none">
+      <option value="question">Question</option>
+      <option value="answersingle">Single answer</option>
+      <option value="answermulti">Multi-select answer</option>
+      <option value="answernumeric">Numeric answer</option>
+      <option value="rcselectv2">Root cause selector (with False alarm)</option>
+      <option value="successfail">Success / Failure</option>
+      <option value="closurecard">Closure card</option>
+      <option value="waitrecovery">Wait for recovery</option>
+      <option value="skiptoend">Skip to end</option>
+      <option value="action">Action step · single answer</option>
+      <option value="actionmc">Action step · multi-choice</option>
+      <option value="rcselect">Root cause selector (legacy)</option>
+      <option value="taskdone">Task accomplished</option>
+      <option value="nextsteps">Here are the next steps</option>
+      <option value="timedwait">Timed wait + action</option>
+      <option value="skipknow">Skip ahead — I know the cause</option>
+      <option value="skipfalse">Skip ahead — false alarm</option>
+      <option value="reassign2">Reassignment</option>
+      <option value="callsup">Call Supervisor</option>
+      <option value="photosup">Photo to Supervisor (hard block)</option>
+      <option value="falsealarm">False alarm overflow</option>
+      <option value="issuecard">Issue card</option>
+      <option value="contextcard">Context card (Summary → Progress → Completion)</option>
+      <option value="confirmcard">Confirmation card (Success / Failure)</option>
     </select>
 
-    <label style="margin-top:18px">Title</label>
-    <input type="text" id="drTitleField" value="Open valve V-204 and confirm flow" oninput="markSaved()"/>
-
-    <label style="margin-top:14px">Description for operator (optional)</label>
-    <textarea id="drDesc" oninput="markSaved()" placeholder="A short hint or context the operator will see under the title…">Walk to bay 2, locate V-204, rotate clockwise until fully open.</textarea>
+    <div class="dr-title-block">
+      <label class="dr-mini">Step title</label>
+      <input type="text" id="drTitleField" class="dr-title-input" value="Open valve V-204 and confirm flow" oninput="markSaved()"/>
+      <label class="dr-mini" style="margin-top:10px">Description for the operator <span class="dr-mini-opt">(optional)</span></label>
+      <textarea id="drDesc" class="dr-desc-input" oninput="markSaved()" placeholder="A short hint or context the operator will see under the title…">Walk to bay 2, locate V-204, rotate clockwise until fully open.</textarea>
+    </div>
 
     <!-- ============ 🔵 ACTION STEP · SINGLE ANSWER ============ -->
     <div class="dr-panel" data-for="action">
