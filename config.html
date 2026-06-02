@@ -1277,8 +1277,45 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .cat-legend .cl.done .d{background:#1F9D55}
 .cat-legend .cl.action .d{background:#6B36B5}
 
+/* ===== Day-chip multiselect (shift days) ===== */
+.day-chips{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.dc{
+  width:34px;height:34px;border-radius:10px;
+  background:rgba(14,20,40,.04);border:1px solid var(--line-soft);
+  color:var(--ink-3);font:700 12px 'Plus Jakarta Sans';cursor:pointer;
+  transition:.15s;display:inline-flex;align-items:center;justify-content:center;
+}
+.dc:hover{background:rgba(14,20,40,.08)}
+.dc.on{
+  background:linear-gradient(145deg,#1B3A8C,#002976);color:#fff;
+  border-color:transparent;
+  box-shadow:0 3px 8px -2px rgba(0,41,118,.30);
+}
+
+/* ===== Step 0 · permanent template-pick first step ===== */
+.s0-card{
+  background:linear-gradient(135deg,rgba(0,41,118,.04),rgba(0,41,118,.10))!important;
+  border:1px solid rgba(0,41,118,.20)!important;
+  position:relative;
+}
+.s0-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.s0-num{
+  width:36px;height:36px;border-radius:12px;
+  background:linear-gradient(145deg,#1B3A8C,#002976);color:#fff;
+  font:800 16px 'JetBrains Mono';letter-spacing:-.02em;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 4px 12px -4px rgba(0,41,118,.45);
+}
+.s0-tx{flex:1;min-width:0}
+.s0-lock{
+  font:800 10px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;
+  color:var(--brand);background:rgba(0,41,118,.10);
+  padding:5px 11px;border-radius:999px;border:1px solid rgba(0,41,118,.22);
+  flex-shrink:0;
+}
+
 /* ===== Quick start tiles (Step 1 entry) ===== */
-.qs-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+.qs-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:8px}
 .qs-tile{display:flex;align-items:center;gap:11px;padding:13px 14px;border-radius:14px;cursor:pointer;
   background:rgba(255,255,255,.55);border:1px solid var(--line);
   font:inherit;color:var(--ink);text-align:left;width:100%;
@@ -1617,6 +1654,55 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     <h1 class="page-h">Set up the <em>issue</em></h1>
     <p class="page-sub">Give the issue a clear identity. Plant, equipment, severity, deadline — everything operators see at the top of the screen.</p>
 
+    <!-- ===== Step 0 · Pick a starting point (locked first step) ===== -->
+    <div class="card s0-card">
+      <div class="s0-head">
+        <span class="s0-num">0</span>
+        <div class="s0-tx">
+          <h3 style="margin:0">Pick a starting point</h3>
+          <p class="helper" style="margin:2px 0 0">Every diagnostic tree starts here — choose a saved template or start blank. This is a permanent first step.</p>
+        </div>
+        <span class="s0-lock" title="Mandatory first step">🔒 Required</span>
+      </div>
+      <div class="qs-row">
+        <button class="qs-tile on" onclick="setStartMode(this,'lowdo')">
+          <span class="qs-ico">💧</span>
+          <div class="qs-body">
+            <div class="qs-ttl">Low DO · Aeration</div>
+            <div class="qs-sub">DT-001 · 6 steps · used at 7 plants</div>
+          </div>
+        </button>
+        <button class="qs-tile" onclick="setStartMode(this,'tmp')">
+          <span class="qs-ico">📐</span>
+          <div class="qs-body">
+            <div class="qs-ttl">High TMP · MBR</div>
+            <div class="qs-sub">DT-002 · 5 steps · used at 4 plants</div>
+          </div>
+        </button>
+        <button class="qs-tile" onclick="setStartMode(this,'vfd')">
+          <span class="qs-ico">⚡</span>
+          <div class="qs-body">
+            <div class="qs-ttl">VFD overcurrent</div>
+            <div class="qs-sub">DT-003 · 4 steps · used at 3 plants</div>
+          </div>
+        </button>
+        <button class="qs-tile" onclick="setStartMode(this,'browse')">
+          <span class="qs-ico">→</span>
+          <div class="qs-body">
+            <div class="qs-ttl">Browse all templates</div>
+            <div class="qs-sub">22 in DP library · 6 saved by your team</div>
+          </div>
+        </button>
+        <button class="qs-tile" onclick="setStartMode(this,'blank')">
+          <span class="qs-ico">＋</span>
+          <div class="qs-body">
+            <div class="qs-ttl">Start blank</div>
+            <div class="qs-sub">Build from scratch (advanced)</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
     <!-- ===== Mode bar · Override toggle for Set up ===== -->
     <div class="mode-bar" data-mode="locked">
       <div class="mb-left">
@@ -1780,46 +1866,48 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <div class="help">If unavailable on shift, the system auto-routes within the same Role + Skill pool.</div>
       </div>
 
+      <!-- Shift-based timings -->
       <div class="ff" style="margin-top:14px">
-        <label>Assign to group <span class="lbl-opt">(optional — overrides single assignee)</span></label>
-        <div class="group-row">
-          <select onchange="onGroupChange(this)">
-            <option>— No group —</option>
-            <option>Aeration team A</option>
-            <option>MBR night shift</option>
-            <option>Chemical handling crew</option>
-            <option data-create="1">＋ Create new group…</option>
-          </select>
-          <button type="button" class="group-edit" onclick="toggleGroupEditor()">Edit</button>
+        <label>Working shift</label>
+        <p class="helper" style="margin:0 0 10px">When is this assignee actually on-duty? If an alert fires outside their shift, the system auto-escalates to whoever is on.</p>
+        <div class="form-grid">
+          <div class="ff">
+            <label style="font-size:10px">Shift type</label>
+            <select onchange="markSaved()">
+              <option>Morning · 06:00 – 14:00</option>
+              <option>Day · 09:00 – 18:00</option>
+              <option>Evening · 14:00 – 22:00</option>
+              <option>Night · 22:00 – 06:00</option>
+              <option>Custom…</option>
+            </select>
+          </div>
+          <div class="ff">
+            <label style="font-size:10px">Days on duty</label>
+            <div class="day-chips">
+              <button type="button" class="dc on" onclick="this.classList.toggle('on');markSaved()">M</button>
+              <button type="button" class="dc on" onclick="this.classList.toggle('on');markSaved()">T</button>
+              <button type="button" class="dc on" onclick="this.classList.toggle('on');markSaved()">W</button>
+              <button type="button" class="dc on" onclick="this.classList.toggle('on');markSaved()">T</button>
+              <button type="button" class="dc on" onclick="this.classList.toggle('on');markSaved()">F</button>
+              <button type="button" class="dc on" onclick="this.classList.toggle('on');markSaved()">S</button>
+              <button type="button" class="dc" onclick="this.classList.toggle('on');markSaved()">S</button>
+            </div>
+          </div>
         </div>
-        <div class="group-preview">
-          4 members · Sharma ji (Site Engineer) · Dheeraj (Operator) · Anil (Supervisor) · Ravi (SME)
-        </div>
-
-        <!-- Group editor (hidden by default, shown when creating/editing) -->
-        <div class="group-editor" id="groupEditor" style="display:none">
-          <div class="ge-head">
-            <div class="ge-ttl">New group</div>
-            <button type="button" class="ge-x" onclick="toggleGroupEditor()">×</button>
+        <div class="form-grid" style="margin-top:10px">
+          <div class="ff">
+            <label style="font-size:10px">Shift starts</label>
+            <div class="time-compose two">
+              <div class="tc-cell"><input type="text" value="06" oninput="markSaved()"/><span class="tc-u">hh</span></div>
+              <div class="tc-cell"><input type="text" value="00" oninput="markSaved()"/><span class="tc-u">mm</span></div>
+            </div>
           </div>
-          <label>Group name</label>
-          <input type="text" placeholder="e.g. Aeration team A" oninput="markSaved()"/>
-          <label style="margin-top:14px">Members</label>
-          <div class="member-chips">
-            <span class="mchip"><span class="mrole op">OP</span>Dheeraj <button>×</button></span>
-            <span class="mchip"><span class="mrole eng">ENG</span>Sharma ji <button>×</button></span>
-            <span class="mchip"><span class="mrole sup">SUP</span>Anil <button>×</button></span>
-            <span class="mchip"><span class="mrole sme">SME</span>Ravi <button>×</button></span>
-          </div>
-          <div class="member-add">
-            <button type="button" class="ma-btn">＋ Add Operator</button>
-            <button type="button" class="ma-btn">＋ Add Supervisor</button>
-            <button type="button" class="ma-btn">＋ Add SME</button>
-            <button type="button" class="ma-btn">＋ Add Engineer</button>
-          </div>
-          <div class="ge-actions">
-            <button type="button" class="ge-cancel" onclick="toggleGroupEditor()">Cancel</button>
-            <button type="button" class="ge-save" onclick="saveGroup()">Save group</button>
+          <div class="ff">
+            <label style="font-size:10px">Shift ends</label>
+            <div class="time-compose two">
+              <div class="tc-cell"><input type="text" value="14" oninput="markSaved()"/><span class="tc-u">hh</span></div>
+              <div class="tc-cell"><input type="text" value="00" oninput="markSaved()"/><span class="tc-u">mm</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -2035,7 +2123,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
         <!-- ============ 🔵 NORMAL ============ -->
         <div class="pgroup progress open">
-          <div class="pghdr"><span class="cat-dot" style="background:var(--brand)"></span><span>Normal steps</span><span class="cat-count">4</span></div>
+          <div class="pghdr"><span class="cat-dot" style="background:var(--brand)"></span><span>Normal steps</span><span class="cat-count">6</span></div>
           <div class="ptiles">
             <button class="ptile" onclick="addStep('action')">
               <div class="pico cat-normal">🛠</div>
@@ -2053,12 +2141,20 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
               <div class="pico cat-normal">✓</div>
               <div class="ptxt"><div class="pt">Task accomplished</div><div class="ps">Confirmation / stage complete</div></div>
             </button>
+            <button class="ptile" onclick="addStep('nextsteps')">
+              <div class="pico cat-normal">📋</div>
+              <div class="ptxt"><div class="pt">Here are the next steps</div><div class="ps">Agenda preview before operator starts</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('timedwait')">
+              <div class="pico cat-normal">⏱</div>
+              <div class="ptxt"><div class="pt">Timed wait + action</div><div class="ps">Wait N min, then perform an action</div></div>
+            </button>
           </div>
         </div>
 
         <!-- ============ 🟡 BRANCH ============ -->
         <div class="pgroup todo open">
-          <div class="pghdr"><span class="cat-dot" style="background:#E0A314"></span><span>Branch (choice / shortcut)</span><span class="cat-count">3</span></div>
+          <div class="pghdr"><span class="cat-dot" style="background:#E0A314"></span><span>Branch (choice / shortcut)</span><span class="cat-count">4</span></div>
           <div class="ptiles">
             <button class="ptile" onclick="addStep('skipknow')">
               <div class="pico cat-branch">⤴</div>
@@ -2067,6 +2163,10 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
             <button class="ptile" onclick="addStep('skipfalse')">
               <div class="pico cat-branch">⏭</div>
               <div class="ptxt"><div class="pt">Skip ahead — false alarm</div><div class="ps">Jump straight to Close</div></div>
+            </button>
+            <button class="ptile" onclick="addStep('skiptoend')">
+              <div class="pico cat-branch">⏯</div>
+              <div class="ptxt"><div class="pt">Skip to end</div><div class="ps">Jump directly to the Confirmation card</div></div>
             </button>
             <button class="ptile" onclick="addStep('reassign2')">
               <div class="pico cat-branch">👥</div>
@@ -2612,10 +2712,13 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <option value="actionmc">Action step · multi-choice</option>
         <option value="rcselect">Root cause selector</option>
         <option value="taskdone">Task accomplished</option>
+        <option value="nextsteps">Here are the next steps</option>
+        <option value="timedwait">Timed wait + action</option>
       </optgroup>
       <optgroup label="🟡 Branch">
         <option value="skipknow">Skip ahead — I know the cause</option>
         <option value="skipfalse">Skip ahead — false alarm</option>
+        <option value="skiptoend">Skip to end</option>
         <option value="reassign2">Reassignment</option>
       </optgroup>
       <optgroup label="🔴 Exception">
@@ -2816,6 +2919,64 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       </select>
     </div>
 
+    <!-- ============ 🔵 NEXT STEPS PREVIEW ============ -->
+    <div class="dr-panel" data-for="nextsteps">
+      <div class="dr-banner" style="background:rgba(0,41,118,.06);border:1px solid rgba(0,41,118,.18);color:var(--brand)">📋 Agenda-style preview — operator sees what's coming before they start. Sets expectations.</div>
+      <h4 class="dr-section">Card content</h4>
+      <label>Headline</label>
+      <input type="text" value="Here's what we'll do next" oninput="markSaved()"/>
+      <label style="margin-top:12px">Intro paragraph (optional)</label>
+      <textarea oninput="markSaved()" placeholder="A short note before the list — e.g. 'We'll walk through 3 checks together. Should take about 10 minutes.'"></textarea>
+      <h4 class="dr-section">Upcoming steps (operator-facing)</h4>
+      <div class="help" style="margin-top:0">Each line is one bullet shown to the operator. Auto-populates from downstream steps — edit anything.</div>
+      <div class="sub-list">
+        <div class="sub-item"><span class="ix">1</span><span class="t" contenteditable="true">Walk the tank — check aeration distribution</span><span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
+        <div class="sub-item"><span class="ix">2</span><span class="t" contenteditable="true">Inspect for dead zones &amp; settled solids</span><span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
+        <div class="sub-item"><span class="ix">3</span><span class="t" contenteditable="true">Confirm root cause &amp; remediate</span><span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
+        <button class="sub-add" onclick="addSubItem(this,'option')">＋ Add step preview</button>
+      </div>
+      <h4 class="dr-section">Output → Next step</h4>
+      <label>When operator taps Start, open this step</label>
+      <select onchange="markSaved()">
+        <option>→ Next step in flow</option>
+        <option>→ Action step · single answer</option>
+        <option>→ Action step · multi-choice</option>
+      </select>
+    </div>
+
+    <!-- ============ 🔵 TIMED WAIT + ACTION ============ -->
+    <div class="dr-panel" data-for="timedwait">
+      <div class="dr-banner" style="background:rgba(0,41,118,.06);border:1px solid rgba(0,41,118,.18);color:var(--brand)">⏱ Operator taps Start, system holds for the configured duration, then prompts the next action.</div>
+      <h4 class="dr-section">Wait duration</h4>
+      <div class="time-compose three">
+        <div class="tc-cell"><input type="text" value="0" oninput="markSaved()"/><span class="tc-u">hrs</span></div>
+        <div class="tc-cell"><input type="text" value="10" oninput="markSaved()"/><span class="tc-u">mins</span></div>
+        <div class="tc-cell"><input type="text" value="00" oninput="markSaved()"/><span class="tc-u">secs</span></div>
+      </div>
+      <div class="help">Wait will count down on the operator's screen. Operator can pause/resume.</div>
+
+      <h4 class="dr-section">Wait message</h4>
+      <label>Shown to operator during the wait</label>
+      <input type="text" value="Wait 10 min before re-checking the reading" oninput="markSaved()"/>
+
+      <h4 class="dr-section">Action after wait</h4>
+      <label>Instruction shown when the timer ends</label>
+      <input type="text" value="Re-check DO at sensor DO-3" oninput="markSaved()"/>
+      <div class="tog" style="margin-top:10px">
+        <div class="lbl"><div class="t">Auto-advance when timer ends</div><div class="s">Skip the "Ready to continue?" prompt and jump straight to the action</div></div>
+        <div class="sw" onclick="this.classList.toggle('on');markSaved()"></div>
+      </div>
+
+      <h4 class="dr-section">Output → Next step</h4>
+      <label>After the action, open this step</label>
+      <select onchange="markSaved()">
+        <option>→ Next step in flow</option>
+        <option>→ Action step · single answer</option>
+        <option>→ Confirmation card</option>
+        <option>→ Root cause selector</option>
+      </select>
+    </div>
+
     <!-- ============ 🟡 SKIP AHEAD — KNOW REASON ============ -->
     <div class="dr-panel" data-for="skipknow">
       <h4 class="dr-section">Shortcut configuration</h4>
@@ -2839,6 +3000,18 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         <div class="lbl"><div class="t">Notify SME</div><div class="s">SME reviews false alarms and updates the diagnostic tree</div></div>
         <div class="sw on" onclick="this.classList.toggle('on');markSaved()"></div>
       </div>
+    </div>
+
+    <!-- ============ 🟡 SKIP TO END ============ -->
+    <div class="dr-panel" data-for="skiptoend">
+      <h4 class="dr-section">Shortcut configuration</h4>
+      <label>Trigger label on operator screen</label>
+      <input type="text" value="Skip to end — I'm done here" oninput="markSaved()"/>
+      <label style="margin-top:12px">Confirmation prompt (shown before jumping)</label>
+      <input type="text" value="Are you sure you want to skip to the end?" oninput="markSaved()"/>
+      <label style="margin-top:12px">Destination (locked)</label>
+      <input type="text" value="→ Confirmation card" disabled style="opacity:.6"/>
+      <div class="help">Lets the operator bail out of the rest of the flow and go straight to the final Confirmation card. Useful when they already know the outcome.</div>
     </div>
 
     <!-- ============ 🟡 REASSIGNMENT ============ -->
@@ -3331,10 +3504,13 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     actionmc:      { ttl: "Action step · multi-choice",                 chips:['☰ Multi-choice','2+ options · branching','👤 Operator'], kind:'STEP_ACTION_MC',    cat:'progress', catLabel:'Normal · Action step · multi-choice' },
     rcselect:      { ttl: "Root cause selector — pick from list",      chips:['🌳 Radio list','Icon + 1-line desc'],             kind:'STEP_RC_SELECT',    cat:'progress', catLabel:'Normal · Root cause selector' },
     taskdone:      { ttl: "Task accomplished",                          chips:['✓ Confirmation','Stage complete'],                kind:'STEP_TASK_DONE',    cat:'progress', catLabel:'Normal · Task accomplished' },
+    nextsteps:     { ttl: "Here are the next steps",                    chips:['📋 Agenda','Preview of upcoming steps'],          kind:'STEP_NEXT_STEPS',   cat:'progress', catLabel:'Normal · Here are the next steps' },
+    timedwait:     { ttl: "Wait N then perform an action",              chips:['⏱ Timed wait','+ Instruction after'],            kind:'STEP_TIMED_WAIT',   cat:'progress', catLabel:'Normal · Timed wait + action' },
 
     // === NEW TAXONOMY · BRANCH steps ===
     skipknow:      { ttl: "Skip ahead — I know the cause",              chips:['⤴ Shortcut','Intake → Root Cause'],              kind:'STEP_SKIP_KNOW',    cat:'todo',     catLabel:'Branch · Skip (know reason)' },
     skipfalse:     { ttl: "Skip ahead — false alarm",                   chips:['⏭ Shortcut','→ Close'],                          kind:'STEP_SKIP_FALSE',   cat:'todo',     catLabel:'Branch · Skip (false alarm)' },
+    skiptoend:     { ttl: "Skip directly to the end",                   chips:['⏯ Shortcut','→ Confirmation card'],              kind:'STEP_SKIP_END',     cat:'todo',     catLabel:'Branch · Skip to end' },
     reassign2:     { ttl: "Reassignment — hand off with reason",        chips:['👥 Reassign','Op→Sup · Sup→Op · Op→Op','Reason required'], kind:'STEP_REASSIGN',     cat:'todo',     catLabel:'Branch · Reassignment' },
 
     // === NEW TAXONOMY · EXCEPTION steps ===
@@ -3622,19 +3798,20 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     if (panel) panel.classList.add('show');
     // update badge
     const labels = {
-      action:'Normal · Action step · single answer', actionmc:'Normal · Action step · multi-choice', rcselect:'Normal · Root cause selector', taskdone:'Normal · Task accomplished',
+      action:'Normal · Action step · single answer', actionmc:'Normal · Action step · multi-choice', rcselect:'Normal · Root cause selector', taskdone:'Normal · Task accomplished', nextsteps:'Normal · Next steps preview', timedwait:'Normal · Timed wait + action',
+      skiptoend:'Branch · Skip to end',
       skipknow:'Branch · Skip (know reason)', skipfalse:'Branch · Skip (false alarm)', reassign2:'Branch · Reassignment',
       callsup:'Exception · Call Supervisor', photosup:'Exception · Photo to Supervisor', falsealarm:'Exception · False alarm overflow',
       issuecard:'Card · Issue', contextcard:'Card · Context', confirmcard:'Card · Confirmation', summarycard:'Card · Context', progresscard:'Card · Context', completioncard:'Card · Context'
     };
     const colors = {
-      action:'var(--brand)', actionmc:'var(--brand)', rcselect:'var(--brand)', taskdone:'var(--brand)',
+      action:'var(--brand)', actionmc:'var(--brand)', rcselect:'var(--brand)', taskdone:'var(--brand)', nextsteps:'var(--brand)', timedwait:'var(--brand)', skiptoend:'#A06F00',
       skipknow:'#A06F00', skipfalse:'#A06F00', reassign2:'#A06F00',
       callsup:'#B83A1F', photosup:'#B83A1F', falsealarm:'#B83A1F',
       issuecard:'#6B36B5', contextcard:'#6B36B5', confirmcard:'#6B36B5', summarycard:'#6B36B5', progresscard:'#6B36B5', completioncard:'#6B36B5'
     };
     const bgs = {
-      action:'rgba(0,41,118,.08)', actionmc:'rgba(0,41,118,.08)', rcselect:'rgba(0,41,118,.08)', taskdone:'rgba(0,41,118,.08)',
+      action:'rgba(0,41,118,.08)', actionmc:'rgba(0,41,118,.08)', rcselect:'rgba(0,41,118,.08)', taskdone:'rgba(0,41,118,.08)', nextsteps:'rgba(0,41,118,.08)', timedwait:'rgba(0,41,118,.08)', skiptoend:'rgba(232,148,26,.10)',
       skipknow:'rgba(232,148,26,.10)', skipfalse:'rgba(232,148,26,.10)', reassign2:'rgba(232,148,26,.10)',
       callsup:'rgba(184,58,31,.10)', photosup:'rgba(184,58,31,.10)', falsealarm:'rgba(184,58,31,.10)',
       issuecard:'rgba(107,54,181,.10)', contextcard:'rgba(107,54,181,.10)', confirmcard:'rgba(107,54,181,.10)', summarycard:'rgba(107,54,181,.10)', progresscard:'rgba(107,54,181,.10)', completioncard:'rgba(107,54,181,.10)'
@@ -3758,6 +3935,9 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         const txt = cat ? cat.textContent : '';
         if (/Action step.*multi-choice/i.test(txt)) type = 'actionmc';
         else if (/Action step/i.test(txt)) type = 'action';
+        else if (/Next steps/i.test(txt)) type = 'nextsteps';
+        else if (/Timed wait/i.test(txt)) type = 'timedwait';
+        else if (/Skip to end/i.test(txt)) type = 'skiptoend';
         else if (/Root cause selector/i.test(txt)) type = 'rcselect';
         else if (/Task accomplished/i.test(txt)) type = 'taskdone';
         else if (/Skip.*know/i.test(txt)) type = 'skipknow';
