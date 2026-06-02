@@ -2213,14 +2213,20 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
         </button>
       </div>
 
-      <!-- Inherited fields (editable) -->
+      <!-- Inherited fields (editable · supports override) -->
       <div class="ict-grid">
-        <div class="ff">
-          <label>Issue name <span class="ovr-meta-inline">inherited · editable</span></label>
-          <input type="text" value="Low DO in Aeration Tank 1" oninput="markSaved()"/>
+        <div class="ff ovr" data-ovr="ict-name" data-global="Low DO in Aeration Tank">
+          <label>Issue name <span class="ovr-meta">inherited from Global · Low DO in Aeration Tank</span></label>
+          <div class="ovr-wrap">
+            <input type="text" value="Low DO in Aeration Tank 1" disabled oninput="markSaved()"/>
+            <button class="lock-btn" type="button" onclick="toggleLock(this)" aria-label="Unlock to override">
+              <svg class="padlock-svg" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path class="shackle" d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </button>
+          </div>
+          <button class="ovr-reset" type="button" onclick="resetOverride(this)">↺ Reset to Global value</button>
         </div>
         <div class="ff">
-          <label>Issue ID <span class="ovr-meta-inline">auto-generated</span></label>
+          <label>Issue ID <span class="ovr-meta-inline">auto-generated · not overridable</span></label>
           <input type="text" value="ISS-AER-DO-001" disabled style="opacity:.7"/>
         </div>
       </div>
@@ -4522,6 +4528,9 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       if (inp.closest('.graphic-lib')) return;
       if (inp.closest('.fld-list')) return;
       if (inp.closest('.sub-list')) return;
+      if (inp.closest('.br-list')) return;         // branching rows — per-option destinations are already configurable
+      if (inp.closest('.br-row')) return;
+      if (inp.closest('.time-compose')) return;    // composite time inputs — wrap parent instead, not each cell
       if (inp.closest('.auto-pad-wrap')) return;
       if (inp.id === 'drType') return;
       // Skip inputs that are intentionally locked by the drawer (e.g. destination locked)
