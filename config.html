@@ -860,6 +860,80 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 }
 .dr-desc-input:focus{border-bottom-color:var(--brand)!important;border-bottom-width:1.5px!important;padding-bottom:5.5px!important;outline:none}
 
+/* View-mode toggle (Form / Visual flow) */
+.dr-viewmode{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:14px 0 18px;padding:12px 14px;
+  border-radius:14px;background:rgba(14,20,40,.03);border:1px solid var(--line-soft);
+}
+.dr-vm-l{display:flex;flex-direction:column;gap:1px;min-width:0}
+.dr-vm-l .dr-mini{margin-bottom:1px}
+.dr-vm-sub{font-size:11px;color:var(--ink-3);font-weight:500;letter-spacing:-.005em}
+.dr-vm-pills{display:inline-flex;gap:3px;background:rgba(14,20,40,.05);padding:3px;border-radius:999px}
+.vm-pill{
+  padding:7px 13px;border-radius:999px;
+  background:transparent;border:none;color:var(--ink-3);
+  font:700 11.5px 'Plus Jakarta Sans';letter-spacing:-.005em;
+  cursor:pointer;transition:.14s;
+}
+.vm-pill:hover{color:var(--ink)}
+.vm-pill.on{background:#fff;color:var(--brand);box-shadow:0 2px 6px -2px rgba(40,50,80,.18)}
+
+/* Visual flow tree */
+.vf-tree{
+  padding:24px 18px 28px;
+  border-radius:16px;
+  background:linear-gradient(160deg,rgba(255,255,255,.7),rgba(255,255,255,.40));
+  border:1px solid var(--line-soft);
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset;
+  margin-bottom:14px;
+}
+.vf-node{
+  display:inline-block;padding:14px 18px;
+  border-radius:14px;
+  background:#fff;border:2px solid var(--brand);
+  font:800 14px 'Plus Jakarta Sans';letter-spacing:-.012em;color:var(--ink);
+  box-shadow:0 4px 14px -6px rgba(0,41,118,.30);
+  max-width:480px;line-height:1.35;text-align:left;
+}
+.vf-question{display:block;margin:0 auto 12px;max-width:520px;text-align:center}
+.vf-branches{position:relative;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;padding-top:24px}
+.vf-branches::before{
+  content:"";position:absolute;top:0;left:50%;width:2px;height:14px;
+  background:rgba(0,41,118,.30);border-radius:1px;
+}
+.vf-branch{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  position:relative;padding-top:14px;min-width:130px;
+}
+.vf-branch::before{
+  content:"";position:absolute;top:0;left:50%;width:2px;height:14px;
+  background:rgba(0,41,118,.30);border-radius:1px;
+  transform:translateX(-50%);
+}
+.vf-branch-lbl{
+  font:700 11.5px 'JetBrains Mono';letter-spacing:.3px;color:var(--ink-2);
+  background:rgba(0,41,118,.08);padding:5px 11px;border-radius:999px;
+  border:1px solid rgba(0,41,118,.18);
+  max-width:160px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.vf-arrow{font-size:18px;color:var(--ink-4);font-weight:700;line-height:1}
+.vf-dest{
+  display:inline-block;padding:9px 14px;
+  border-radius:12px;background:#fff;border:1.5px solid rgba(31,157,85,.45);
+  font:800 12px 'Plus Jakarta Sans';color:var(--ok-ink);
+  box-shadow:0 3px 10px -3px rgba(31,157,85,.20);
+  max-width:160px;text-align:center;letter-spacing:-.005em;line-height:1.3;
+}
+.vf-dest.terminal{border-color:rgba(184,58,31,.45);color:var(--crit);background:rgba(184,58,31,.05)}
+.vf-empty{text-align:center;padding:40px 20px;color:var(--ink-3);font-size:13px}
+.vf-empty b{display:block;color:var(--ink);font-size:15px;font-weight:800;margin-bottom:6px}
+/* Connecting horizontal line between top of branches when multiple */
+.vf-branches.multi::after{
+  content:"";position:absolute;top:14px;left:10%;right:10%;height:2px;
+  background:rgba(0,41,118,.30);border-radius:1px;
+}
+
 /* Doherty's threshold — snap interactions under 200ms */
 .dr-panel,.dr-panel *{transition-duration:.14s!important}
 .dr-panel select:focus,.dr-panel input:focus,.dr-panel textarea:focus{transition-duration:.10s!important}
@@ -2962,9 +3036,29 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
     <div class="dr-title-block">
       <label class="dr-mini">Step title</label>
-      <input type="text" id="drTitleField" class="dr-title-input" value="Open valve V-204 and confirm flow" oninput="markSaved()"/>
+      <input type="text" id="drTitleField" class="dr-title-input" value="Open valve V-204 and confirm flow" oninput="markSaved();syncVisualFlow()"/>
       <label class="dr-mini" style="margin-top:10px">Description for the operator <span class="dr-mini-opt">(optional)</span></label>
       <textarea id="drDesc" class="dr-desc-input" oninput="markSaved()" placeholder="A short hint or context the operator will see under the title…">Walk to bay 2, locate V-204, rotate clockwise until fully open.</textarea>
+    </div>
+
+    <!-- View-mode toggle: Form vs Visual flow -->
+    <div class="dr-viewmode" id="drViewMode" data-view="form">
+      <div class="dr-vm-l">
+        <div class="dr-mini">View</div>
+        <div class="dr-vm-sub">Configure as a form, or see the branches as a tree.</div>
+      </div>
+      <div class="dr-vm-pills">
+        <button class="vm-pill on" type="button" onclick="setDrawerView('form')">📝 Form</button>
+        <button class="vm-pill" type="button" onclick="setDrawerView('visual')">🌳 Visual flow</button>
+      </div>
+    </div>
+
+    <!-- Visual flow tree (rendered when view=visual) -->
+    <div class="vf-tree" id="vfTree" style="display:none">
+      <div class="vf-node vf-question" id="vfQuestion">Step title appears here</div>
+      <div class="vf-branches" id="vfBranches">
+        <!-- branches rendered by JS based on the current step's options/destinations -->
+      </div>
     </div>
 
     <!-- ============ 🔵 ACTION STEP · SINGLE ANSWER ============ -->
@@ -3616,50 +3710,55 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 
     <!-- ============ ☑ MULTI-SELECT ANSWER ============ -->
     <div class="dr-panel" data-for="answermulti">
-      <div class="dr-banner" style="background:rgba(31,157,85,.08);border:1px solid rgba(31,157,85,.22);color:var(--ok-ink)">☑ Operator ticks any number of options. <b>Each option contributes to the route — minimum-N or exact-match rules.</b></div>
+      <div class="dr-banner" style="background:rgba(31,157,85,.08);border:1px solid rgba(31,157,85,.22);color:var(--ok-ink)">☑ Operator ticks any number of options. <b>Each option has its own destination — operator advances down the branch matching their selection.</b></div>
 
-      <h4 class="dr-section">Options (operator can tick any)</h4>
-      <div class="sub-list">
-        <div class="sub-item"><span class="ix">☐</span><span class="t" contenteditable="true">Sludge accumulation at the bottom</span><span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
-        <div class="sub-item"><span class="ix">☐</span><span class="t" contenteditable="true">Uneven DO readings across the tank</span><span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
-        <div class="sub-item"><span class="ix">☐</span><span class="t" contenteditable="true">Dark wastewater patches</span><span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
-        <div class="sub-item"><span class="ix">☐</span><span class="t" contenteditable="true">Poor treatment performance</span><span class="ctrl"><button class="del" onclick="removeSubItem(this,event)">×</button></span></div>
-        <button class="sub-add" onclick="addSubItem(this,'option')">＋ Add option</button>
-      </div>
-
-      <h4 class="dr-section">Routes <span class="lbl-opt">(based on tick count or specific combinations)</span></h4>
+      <h4 class="dr-section">Options &amp; branches <span class="lbl-opt">(one destination per option)</span></h4>
       <div class="br-list">
         <div class="br-row">
-          <span class="br-ix br-cond">if</span>
-          <select class="br-op" onchange="markSaved()">
-            <option>1 or more ticked</option>
-            <option>2 or more ticked</option>
-            <option>All ticked</option>
-            <option>Exactly N ticked…</option>
-            <option>Specific combination…</option>
-          </select>
+          <span class="br-ix">☐</span>
+          <input type="text" class="br-label" value="Sludge accumulation at the bottom" oninput="markSaved()"/>
           <span class="br-arr">→</span>
           <select class="br-dest" onchange="markSaved()">
             <option>Root cause · Diffuser blockage</option>
             <option>Step 4 · Root cause selector</option>
+            <option>Specific step…</option>
           </select>
           <button class="br-del" onclick="this.closest('.br-row').remove();markSaved()">×</button>
         </div>
         <div class="br-row">
-          <span class="br-ix br-cond">if</span>
-          <select class="br-op" onchange="markSaved()">
-            <option>Nothing ticked</option>
-            <option>0 ticked</option>
-          </select>
+          <span class="br-ix">☐</span>
+          <input type="text" class="br-label" value="Uneven DO readings across the tank" oninput="markSaved()"/>
           <span class="br-arr">→</span>
           <select class="br-dest" onchange="markSaved()">
+            <option>Root cause · Diffuser blockage</option>
             <option>Root cause · DO sensor failure</option>
-            <option>Step 7 · Sensor check</option>
+            <option>Step 5 · Sensor recheck</option>
           </select>
           <button class="br-del" onclick="this.closest('.br-row').remove();markSaved()">×</button>
         </div>
-        <button class="br-add" onclick="addBranchRow(this,'multi')">＋ Add rule</button>
+        <div class="br-row">
+          <span class="br-ix">☐</span>
+          <input type="text" class="br-label" value="Dark wastewater patches" oninput="markSaved()"/>
+          <span class="br-arr">→</span>
+          <select class="br-dest" onchange="markSaved()">
+            <option>Root cause · Anaerobic zone</option>
+            <option>Step 6 · Investigate dead zones</option>
+          </select>
+          <button class="br-del" onclick="this.closest('.br-row').remove();markSaved()">×</button>
+        </div>
+        <div class="br-row">
+          <span class="br-ix">☐</span>
+          <input type="text" class="br-label" value="Poor treatment performance" oninput="markSaved()"/>
+          <span class="br-arr">→</span>
+          <select class="br-dest" onchange="markSaved()">
+            <option>Root cause · Biology shift</option>
+            <option>Step 7 · Biology check</option>
+          </select>
+          <button class="br-del" onclick="this.closest('.br-row').remove();markSaved()">×</button>
+        </div>
+        <button class="br-add" onclick="addBranchRow(this,'opt')">＋ Add option</button>
       </div>
+      <div class="help">If multiple options are ticked, the operator advances down each matching branch in order. Configure runtime priority in the flow's settings.</div>
     </div>
 
     <!-- ============ 🔢 NUMERIC ANSWER (range branching) ============ -->
@@ -4389,6 +4488,73 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     markSaved();
   }
 
+  // View-mode toggle (Form vs Visual flow)
+  function setDrawerView(mode){
+    const vm = document.getElementById('drViewMode');
+    if (!vm) return;
+    vm.setAttribute('data-view', mode);
+    vm.querySelectorAll('.vm-pill').forEach(p => p.classList.remove('on'));
+    vm.querySelector('.vm-pill:nth-child(' + (mode === 'visual' ? 2 : 1) + ')').classList.add('on');
+    const tree = document.getElementById('vfTree');
+    const showVisual = (mode === 'visual');
+    if (tree) tree.style.display = showVisual ? 'block' : 'none';
+    // Hide/show all dr-panels' .show as form bodies — keep .show but visually hide if visual
+    document.querySelectorAll('.dr-panel').forEach(p => {
+      p.style.opacity = showVisual ? '0' : '';
+      p.style.pointerEvents = showVisual ? 'none' : '';
+      p.style.maxHeight = showVisual ? '0' : '';
+      p.style.overflow = showVisual ? 'hidden' : '';
+      p.style.marginTop = showVisual ? '0' : '';
+    });
+    if (showVisual) syncVisualFlow();
+  }
+  function syncVisualFlow(){
+    const tree = document.getElementById('vfTree');
+    if (!tree) return;
+    const qEl = document.getElementById('vfQuestion');
+    const brEl = document.getElementById('vfBranches');
+    const titleField = document.getElementById('drTitleField');
+    if (qEl) qEl.textContent = (titleField && titleField.value) || 'Step title';
+    // Read branches from the currently-visible dr-panel's .br-row elements
+    const panel = document.querySelector('.dr-panel.show');
+    let rows = [];
+    if (panel) rows = Array.from(panel.querySelectorAll('.br-row'));
+    if (!rows.length) {
+      brEl.innerHTML = '<div class="vf-empty"><b>No branches yet</b>Add options or branches in Form view, then switch back here to see the tree.</div>';
+      return;
+    }
+    brEl.classList.toggle('multi', rows.length > 1);
+    brEl.innerHTML = '';
+    rows.forEach(row => {
+      const label = row.querySelector('.br-label')?.value
+                 || row.querySelector('.br-op')?.value
+                 || row.querySelector('.br-ix')?.textContent
+                 || 'branch';
+      const numV = row.querySelector('.br-num-v');
+      const labelText = numV
+        ? ((row.querySelector('.br-op')?.value || '') + ' ' + numV.value + (row.querySelectorAll('.br-num-v')[1] ? ' – ' + row.querySelectorAll('.br-num-v')[1].value : '')).trim()
+        : label;
+      const dest = row.querySelector('.br-dest')?.value
+                || row.querySelector('.br-dest-locked')?.value
+                || 'next step';
+      const isTerminal = /close|end diagnosis|confirmation|stop/i.test(dest);
+      const html = `
+        <div class="vf-branch">
+          <div class="vf-branch-lbl" title="${labelText}">${labelText}</div>
+          <div class="vf-arrow">↓</div>
+          <div class="vf-dest ${isTerminal ? 'terminal' : ''}" title="${dest}">${dest}</div>
+        </div>
+      `;
+      brEl.insertAdjacentHTML('beforeend', html);
+    });
+  }
+  // When drawer opens or panel switches, default to form view
+  function _resetDrawerView(){
+    const vm = document.getElementById('drViewMode');
+    if (!vm) return;
+    setDrawerView('form');
+  }
+
   // Branch row · add a new option/range/cause to a branch list
   function addBranchRow(btn, kind){
     const list = btn.parentElement;
@@ -4626,6 +4792,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     const typeSel = document.getElementById('drType');
     if (typeSel) typeSel.value = type;
     switchDrawerType(type);
+    _resetDrawerView();
   }
   function closeDrawer(){
     document.getElementById('scrim').classList.remove('on');
