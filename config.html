@@ -879,6 +879,131 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .vm-pill:hover{color:var(--ink)}
 .vm-pill.on{background:#fff;color:var(--brand);box-shadow:0 2px 6px -2px rgba(40,50,80,.18)}
 
+/* ===== ICT → Flow canvas connector ===== */
+.ict-connector{display:flex;flex-direction:column;align-items:center;margin:-6px 0 6px}
+.ict-c-line{width:2px;height:32px;background:linear-gradient(180deg,rgba(107,54,181,.6),rgba(0,41,118,.4));border-radius:1px}
+.ict-c-arrow{font-size:18px;color:var(--brand);font-weight:800;line-height:1;margin-top:-4px}
+
+/* ===== Big Flow Canvas card (Section 4) ===== */
+.flow-canvas-card{
+  background:rgba(255,255,255,.55);
+  border:1px solid var(--line-soft);
+  border-radius:20px;
+  padding:0;overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 12px 36px -14px rgba(40,50,80,.12);
+  margin-bottom:24px;
+}
+.fcc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:18px 22px 14px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.fcc-eyebrow{font:800 10.5px 'JetBrains Mono';letter-spacing:.6px;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.fcc-sub{font-size:12.5px;color:var(--ink-3);font-weight:500;line-height:1.55}
+.fcc-meta{font:600 11.5px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.2px}
+.fcc-meta b{color:var(--ink);font-weight:800}
+.fcc-meta-sep{color:var(--ink-4);margin:0 4px}
+
+/* Toolbar with step chips */
+.fcc-toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:12px 18px;background:rgba(252,252,255,.7);border-bottom:1px solid var(--line-soft)}
+.fcc-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 12px;border-radius:999px;
+  font:700 12px 'Plus Jakarta Sans';letter-spacing:-.005em;
+  cursor:pointer;transition:.14s;border:1.5px solid;
+}
+.fcc-chip:hover{transform:translateY(-1px);box-shadow:0 3px 8px -2px rgba(40,50,80,.16)}
+.fcc-q{background:rgba(0,41,118,.06);border-color:rgba(0,41,118,.30);color:var(--brand)}
+.fcc-a{background:rgba(31,157,85,.08);border-color:rgba(31,157,85,.35);color:var(--ok-ink)}
+.fcc-rc{background:rgba(107,54,181,.08);border-color:rgba(107,54,181,.35);color:#6B36B5}
+.fcc-ok{background:rgba(31,157,85,.10);border-color:rgba(31,157,85,.42);color:var(--ok-ink)}
+.fcc-c{background:rgba(107,54,181,.08);border-color:rgba(107,54,181,.35);color:#6B36B5}
+.fcc-w{background:rgba(232,148,26,.10);border-color:rgba(232,148,26,.42);color:#8C6306}
+.fcc-blank{background:rgba(14,20,40,.04);border-color:rgba(14,20,40,.18);color:var(--ink-2);border-style:dashed}
+.fcc-dest{background:rgba(31,157,85,.10);border-color:rgba(31,157,85,.42);color:var(--ok-ink)}
+.fcc-divider{display:inline-block;width:1px;height:22px;background:var(--line-soft);margin:0 6px}
+.fcc-toolbar-spacer{flex:1}
+.fcc-tool-btn{background:transparent;border:1px solid var(--line-soft);color:var(--ink-3);padding:6px 12px;border-radius:999px;font:700 11.5px 'Plus Jakarta Sans';cursor:pointer;letter-spacing:-.005em;transition:.14s}
+.fcc-tool-btn:hover{background:rgba(184,58,31,.06);border-color:rgba(184,58,31,.30);color:var(--crit)}
+.fcc-chev{font-size:10px;font-weight:800;transition:transform .15s}
+.fcc-dest-wrap{position:relative;display:inline-block}
+.fcc-dest-wrap.open .fcc-chev{transform:rotate(180deg)}
+.fcc-dest-menu{
+  position:absolute;top:calc(100% + 6px);left:0;
+  background:#fff;border:1px solid var(--line-soft);border-radius:14px;
+  box-shadow:0 12px 30px -10px rgba(40,50,80,.25);
+  padding:6px;min-width:240px;z-index:50;display:none;
+}
+.fcc-dest-wrap.open .fcc-dest-menu{display:block}
+.fcc-dest-menu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:none;padding:9px 11px;border-radius:10px;font:700 13px 'Plus Jakarta Sans';color:var(--ink);cursor:pointer;letter-spacing:-.005em;transition:.12s}
+.fcc-dest-menu button:hover{background:rgba(0,41,118,.06)}
+
+/* Canvas with dotted background; expands both ways */
+.fcc-canvas{
+  position:relative;
+  width:100%;
+  min-height:560px;
+  background-color:rgba(252,252,255,.55);
+  background-image:radial-gradient(circle, rgba(14,20,40,.16) 1px, transparent 1px);
+  background-size:18px 18px;
+  overflow:auto;
+}
+.fcc-help{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,calc(-50% + 60px));
+  font-size:13px;color:var(--ink-3);text-align:center;font-weight:500;
+  max-width:380px;padding:18px 22px;
+  background:rgba(255,255,255,.85);border:1px dashed rgba(14,20,40,.18);border-radius:14px;
+  pointer-events:none;
+}
+.fcc-canvas.has-nodes .fcc-help{display:none}
+.fcc-connections{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.fcc-connections path.fcc-edge{stroke:#6A7185;stroke-width:2;fill:none}
+
+/* Anchor (ICT inheritance) node at the top of canvas */
+.fcc-anchor-node{
+  position:absolute;top:20px;left:20px;
+  padding:11px 14px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(107,54,181,.10),rgba(107,54,181,.20));
+  border:2px dashed rgba(107,54,181,.50);
+  color:#6B36B5;font:800 13px 'Plus Jakarta Sans';letter-spacing:-.005em;
+  min-width:200px;max-width:240px;z-index:3;
+  box-shadow:0 4px 14px -6px rgba(107,54,181,.30);
+}
+.fcc-anchor-node .fcan-kind{font:800 8.5px 'JetBrains Mono';letter-spacing:.6px;text-transform:uppercase;color:#6B36B5;margin-bottom:4px;opacity:.8}
+.fcc-anchor-node .fcan-ttl{color:#3F1B73;line-height:1.3}
+
+/* Flow canvas step nodes */
+.fcc-node{
+  position:absolute;
+  min-width:170px;max-width:220px;
+  padding:11px 13px;border-radius:12px;
+  background:#fff;border:2px solid;
+  font:700 12.5px 'Plus Jakarta Sans';letter-spacing:-.005em;
+  color:var(--ink);cursor:grab;z-index:2;
+  box-shadow:0 4px 14px -6px rgba(40,50,80,.20);
+  transition:box-shadow .12s,transform .12s;
+  user-select:none;
+}
+.fcc-node:hover{box-shadow:0 8px 22px -6px rgba(40,50,80,.30);transform:translateY(-1px)}
+.fcc-node.dragging{cursor:grabbing;z-index:5;box-shadow:0 12px 32px -8px rgba(40,50,80,.40)}
+.fcc-node.selected{outline:3px solid rgba(0,41,118,.30);outline-offset:1px}
+.fcc-node[data-kind="question"]{border-color:var(--brand);background:rgba(0,41,118,.04)}
+.fcc-node[data-kind="answersingle"],.fcc-node[data-kind="answermulti"],.fcc-node[data-kind="answernumeric"]{border-color:#1F9D55;background:rgba(31,157,85,.06)}
+.fcc-node[data-kind="rcselectv2"]{border-color:#6B36B5;background:rgba(107,54,181,.06)}
+.fcc-node[data-kind="successfail"]{border-color:#1F9D55;background:rgba(31,157,85,.08)}
+.fcc-node[data-kind="closurecard"]{border-color:#6B36B5;background:rgba(107,54,181,.06)}
+.fcc-node[data-kind="waitrecovery"],.fcc-node[data-kind="skiptoend"]{border-color:#E0A314;background:rgba(232,148,26,.08)}
+.fcc-node[data-kind="blank"]{border-color:rgba(14,20,40,.30);background:#fff;border-style:dashed}
+.fcc-node[data-kind="destination"]{border-color:#1F9D55;background:#fff;border-radius:14px;box-shadow:0 4px 14px -4px rgba(31,157,85,.30)}
+.fcn-kind{display:block;font:800 8.5px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+.fcn-ttl{display:block;line-height:1.3}
+.fcn-ttl[contenteditable]:focus{outline:none;background:rgba(0,41,118,.04);padding:2px 4px;margin:-2px -4px;border-radius:4px}
+.fcn-anchor{position:absolute;width:10px;height:10px;border-radius:999px;background:#fff;border:2px solid var(--brand);cursor:crosshair;opacity:0;transition:opacity .14s,transform .14s}
+.fcc-node:hover .fcn-anchor,.fcc-node.selected .fcn-anchor{opacity:1}
+.fcn-anchor:hover{transform:scale(1.4);background:var(--brand)}
+.fcn-anchor.top{top:-5px;left:50%;margin-left:-5px}
+.fcn-anchor.right{right:-5px;top:50%;margin-top:-5px}
+.fcn-anchor.bottom{bottom:-5px;left:50%;margin-left:-5px}
+.fcn-anchor.left{left:-5px;top:50%;margin-top:-5px}
+.fcn-del{position:absolute;top:-7px;right:-7px;width:18px;height:18px;border-radius:999px;background:var(--crit);color:#fff;border:2px solid #fff;font:800 11px 'Plus Jakarta Sans';line-height:1;cursor:pointer;opacity:0;transition:opacity .14s;display:flex;align-items:center;justify-content:center;padding:0}
+.fcc-node:hover .fcn-del,.fcc-node.selected .fcn-del{opacity:1}
+
 /* ===== Visual Flow EDITOR (canvas-based) ===== */
 .vf-editor{
   padding:0;
@@ -2693,7 +2818,70 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
       </div>
     </div>
 
-    <div class="builder">
+    <!-- ===== ICT → Flow canvas connector ===== -->
+    <div class="ict-connector"><div class="ict-c-line"></div><div class="ict-c-arrow">▾</div></div>
+
+    <!-- ===== Flow Canvas (FigJam-style for entire flow) ===== -->
+    <div class="flow-canvas-card">
+      <div class="fcc-head">
+        <div>
+          <div class="fcc-eyebrow">Flow canvas</div>
+          <div class="fcc-sub">Drop steps onto the canvas, drag to arrange, drag anchors to connect them.</div>
+        </div>
+        <div class="fcc-meta">
+          <span><b id="fccNodeCount">0</b> nodes</span><span class="fcc-meta-sep">·</span>
+          <span><b id="fccEdgeCount">0</b> connections</span>
+        </div>
+      </div>
+
+      <!-- Toolbar with all step-type chips + Add blank + Add destination dropdown -->
+      <div class="fcc-toolbar">
+        <button class="fcc-chip fcc-q" onclick="fccAddNode('question','New question')">❓ Question</button>
+        <button class="fcc-chip fcc-a" onclick="fccAddNode('answersingle','Single answer')">⭕ Single answer</button>
+        <button class="fcc-chip fcc-a" onclick="fccAddNode('answermulti','Multi-select')">☑ Multi-select</button>
+        <button class="fcc-chip fcc-a" onclick="fccAddNode('answernumeric','Numeric answer')">🔢 Numeric</button>
+        <button class="fcc-chip fcc-rc" onclick="fccAddNode('rcselectv2','Root cause selector')">🌳 Root cause</button>
+        <button class="fcc-chip fcc-ok" onclick="fccAddNode('successfail','Success / Failure')">✓ Success / Failure</button>
+        <button class="fcc-chip fcc-c" onclick="fccAddNode('closurecard','Closure card')">🏁 Closure</button>
+        <button class="fcc-chip fcc-w" onclick="fccAddNode('waitrecovery','Wait for recovery')">⏱ Waiting</button>
+        <button class="fcc-chip fcc-w" onclick="fccAddNode('skiptoend','Skip to end')">⏯ Skip to end</button>
+        <span class="fcc-divider"></span>
+        <button class="fcc-chip fcc-blank" onclick="fccAddNode('blank','New step')">＋ Add blank step</button>
+        <div class="fcc-dest-wrap" id="fccDestWrap">
+          <button class="fcc-chip fcc-dest" onclick="fccToggleDestMenu()">＋ Add destination <span class="fcc-chev">⌄</span></button>
+          <div class="fcc-dest-menu" id="fccDestMenu">
+            <button onclick="fccAddNode('destination','Close stage');fccCloseDestMenu()"><span class="vdm-ic">🏁</span>Close stage</button>
+            <button onclick="fccAddNode('destination','End diagnosis');fccCloseDestMenu()"><span class="vdm-ic">⏹</span>End diagnosis</button>
+            <button onclick="fccAddNode('destination','Confirmation card');fccCloseDestMenu()"><span class="vdm-ic">✓</span>Confirmation card</button>
+            <button onclick="fccAddNode('destination','Closure card');fccCloseDestMenu()"><span class="vdm-ic">🏁</span>Closure card</button>
+            <button onclick="fccAddNode('destination','Reassignment');fccCloseDestMenu()"><span class="vdm-ic">👥</span>Reassignment</button>
+            <button onclick="fccAddNode('destination','Specific step…');fccCloseDestMenu()"><span class="vdm-ic">▸</span>Specific step…</button>
+          </div>
+        </div>
+        <span class="fcc-toolbar-spacer"></span>
+        <button class="fcc-tool-btn" onclick="fccClear()" title="Clear canvas">🗑 Clear</button>
+      </div>
+
+      <!-- The big canvas -->
+      <div class="fcc-canvas" id="fccCanvas">
+        <!-- Inherited "Issue card" anchor node at the top (read-only, comes from ICT above) -->
+        <div class="fcc-anchor-node" id="fccAnchorNode">
+          <div class="fcan-kind">Inherited · Issue card</div>
+          <div class="fcan-ttl">Low DO · Aeration Tank 1</div>
+        </div>
+        <svg class="fcc-connections" id="fccConnections" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="fccArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#6A7185"/>
+            </marker>
+          </defs>
+        </svg>
+        <div class="fcc-help" id="fccHelp">Click a step-type chip above to drop your first node onto the canvas. Drag to arrange. Drag anchor dots to connect.</div>
+      </div>
+    </div>
+
+    <!-- Hidden: old palette + canvas (kept in DOM so legacy JS still resolves; not rendered) -->
+    <div class="builder" style="display:none">
 
       <!-- ===== Palette · Restructured for Build the flow v2 ===== -->
       <div class="palette">
@@ -4796,7 +4984,213 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     markSaved();
   }
 
-  // ============== Visual Flow Canvas Editor ==============
+  // ============== Section 4 · Flow Canvas (FigJam-style, full-page) ==============
+  const FCC = { nodes:[], edges:[], seq:0, dragId:null, dragOff:{x:0,y:0}, connectFrom:null };
+  const FCC_KIND_LABEL = {
+    question:'Question', answersingle:'Single answer', answermulti:'Multi-select', answernumeric:'Numeric',
+    rcselectv2:'Root cause', successfail:'Success / Failure', closurecard:'Closure',
+    waitrecovery:'Waiting', skiptoend:'Skip to end', blank:'Blank step', destination:'Destination'
+  };
+  function fccAddNode(kind, title){
+    const canvas = document.getElementById('fccCanvas');
+    if (!canvas) return;
+    canvas.classList.add('has-nodes');
+    FCC.seq++;
+    const id = 'fcn-' + FCC.seq;
+    const i = FCC.nodes.length;
+    // Grid-stagger: 4 cols × N rows, starting below the anchor node
+    const x = 280 + (i % 4) * 240;
+    const y = 30 + Math.floor(i / 4) * 130;
+    const node = { id, kind, title, x, y };
+    FCC.nodes.push(node);
+    fccRenderNode(node);
+    fccUpdateMeta();
+    fccRecalcSize();
+    // If this is the first node, auto-connect from the inherited ICT anchor for visual context
+    if (FCC.nodes.length === 1) {
+      FCC.edges.push({ from:'__ictAnchor', to: id });
+      fccRenderEdges();
+      fccUpdateMeta();
+    }
+  }
+  function fccRenderNode(n){
+    const canvas = document.getElementById('fccCanvas');
+    if (!canvas) return;
+    const el = document.createElement('div');
+    el.className = 'fcc-node';
+    el.id = n.id;
+    el.setAttribute('data-kind', n.kind);
+    el.style.left = n.x + 'px';
+    el.style.top  = n.y + 'px';
+    el.innerHTML = `
+      <button class="fcn-del" type="button" onclick="fccDeleteNode('${n.id}',event)" title="Delete">×</button>
+      <span class="fcn-kind">${FCC_KIND_LABEL[n.kind] || n.kind}</span>
+      <span class="fcn-ttl" contenteditable="true" oninput="fccUpdateTitle('${n.id}',this.textContent)">${n.title}</span>
+      <div class="fcn-anchor top" data-anchor="top"></div>
+      <div class="fcn-anchor right" data-anchor="right"></div>
+      <div class="fcn-anchor bottom" data-anchor="bottom"></div>
+      <div class="fcn-anchor left" data-anchor="left"></div>
+    `;
+    canvas.appendChild(el);
+    fccAttachDrag(el, n.id);
+    fccAttachAnchorConnect(el, n.id);
+  }
+  function fccAttachDrag(el, id){
+    el.addEventListener('mousedown', function(e){
+      if (e.target.closest('.fcn-anchor') || e.target.closest('.fcn-del') || e.target.isContentEditable) return;
+      e.preventDefault();
+      FCC.dragId = id;
+      const rect = el.getBoundingClientRect();
+      FCC.dragOff = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      el.classList.add('dragging');
+      document.querySelectorAll('.fcc-node').forEach(n => n.classList.remove('selected'));
+      el.classList.add('selected');
+    });
+  }
+  document.addEventListener('mousemove', function(e){
+    if (!FCC.dragId) return;
+    const canvas = document.getElementById('fccCanvas');
+    if (!canvas) return;
+    const r = canvas.getBoundingClientRect();
+    const n = FCC.nodes.find(n => n.id === FCC.dragId);
+    if (!n) return;
+    n.x = Math.max(0, e.clientX - r.left - FCC.dragOff.x + canvas.scrollLeft);
+    n.y = Math.max(0, e.clientY - r.top - FCC.dragOff.y + canvas.scrollTop);
+    const el = document.getElementById(n.id);
+    if (el){ el.style.left = n.x+'px'; el.style.top = n.y+'px'; }
+    fccRenderEdges();
+    fccRecalcSize();
+  });
+  document.addEventListener('mouseup', function(){
+    if (FCC.dragId){
+      const el = document.getElementById(FCC.dragId);
+      if (el) el.classList.remove('dragging');
+      FCC.dragId = null;
+    }
+  });
+  function fccAttachAnchorConnect(el, id){
+    el.querySelectorAll('.fcn-anchor').forEach(a => {
+      a.addEventListener('mousedown', function(e){ e.stopPropagation();e.preventDefault();FCC.connectFrom = id; });
+      a.addEventListener('mouseup', function(e){
+        e.stopPropagation();
+        if (FCC.connectFrom && FCC.connectFrom !== id){
+          if (!FCC.edges.find(ed => ed.from === FCC.connectFrom && ed.to === id)){
+            FCC.edges.push({ from:FCC.connectFrom, to:id });
+            fccRenderEdges();
+            fccUpdateMeta();
+          }
+        }
+        FCC.connectFrom = null;
+      });
+    });
+  }
+  function fccRenderEdges(){
+    const svg = document.getElementById('fccConnections');
+    if (!svg) return;
+    Array.from(svg.querySelectorAll('path.fcc-edge')).forEach(p => p.remove());
+    FCC.edges.forEach(ed => {
+      // Special: ICT anchor node uses fixed id "__ictAnchor"
+      const aEl = ed.from === '__ictAnchor'
+        ? document.getElementById('fccAnchorNode')
+        : document.getElementById(ed.from);
+      const bEl = document.getElementById(ed.to);
+      if (!aEl || !bEl) return;
+      const ax = aEl.offsetLeft + aEl.offsetWidth/2;
+      const ay = aEl.offsetTop + aEl.offsetHeight;
+      const bx = bEl.offsetLeft + bEl.offsetWidth/2;
+      const by = bEl.offsetTop;
+      const midY = (ay + by) / 2;
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('class','fcc-edge');
+      path.setAttribute('d', `M ${ax} ${ay} C ${ax} ${midY}, ${bx} ${midY}, ${bx} ${by}`);
+      path.setAttribute('marker-end','url(#fccArrow)');
+      svg.appendChild(path);
+    });
+  }
+  function fccDeleteNode(id, e){
+    if (e) e.stopPropagation();
+    FCC.nodes = FCC.nodes.filter(n => n.id !== id);
+    FCC.edges = FCC.edges.filter(ed => ed.from !== id && ed.to !== id);
+    const el = document.getElementById(id);
+    if (el) el.remove();
+    fccRenderEdges();
+    fccUpdateMeta();
+    const canvas = document.getElementById('fccCanvas');
+    if (canvas && FCC.nodes.length === 0) canvas.classList.remove('has-nodes');
+  }
+  function fccUpdateTitle(id, txt){
+    const n = FCC.nodes.find(n => n.id === id);
+    if (n) n.title = txt;
+    markSaved();
+  }
+  function fccUpdateMeta(){
+    const nc = document.getElementById('fccNodeCount');
+    const ec = document.getElementById('fccEdgeCount');
+    if (nc) nc.textContent = String(FCC.nodes.length);
+    if (ec) ec.textContent = String(FCC.edges.length);
+  }
+  function fccRecalcSize(){
+    const canvas = document.getElementById('fccCanvas');
+    if (!canvas) return;
+    let maxRight = 0, maxBottom = 560;
+    FCC.nodes.forEach(n => {
+      const el = document.getElementById(n.id);
+      const w = el ? el.offsetWidth : 180;
+      const h = el ? el.offsetHeight : 80;
+      maxRight = Math.max(maxRight, n.x + w + 40);
+      maxBottom = Math.max(maxBottom, n.y + h + 40);
+    });
+    canvas.style.minHeight = maxBottom + 'px';
+    // Width — canvas itself stays at parent width but content can extend via SVG/nodes
+    const svg = document.getElementById('fccConnections');
+    if (svg) svg.style.width = Math.max(maxRight, canvas.clientWidth) + 'px';
+  }
+  function fccClear(){
+    if (!FCC.nodes.length || !confirm('Clear all nodes and connections?')) return;
+    FCC.nodes = []; FCC.edges = []; FCC.seq = 0;
+    document.querySelectorAll('#fccCanvas .fcc-node').forEach(n => n.remove());
+    const canvas = document.getElementById('fccCanvas');
+    if (canvas) canvas.classList.remove('has-nodes');
+    fccRenderEdges();
+    fccUpdateMeta();
+  }
+  function fccToggleDestMenu(){
+    const w = document.getElementById('fccDestWrap');
+    if (w) w.classList.toggle('open');
+  }
+  function fccCloseDestMenu(){
+    const w = document.getElementById('fccDestWrap');
+    if (w) w.classList.remove('open');
+  }
+  document.addEventListener('click', function(e){
+    const w = document.getElementById('fccDestWrap');
+    if (!w || !w.classList.contains('open')) return;
+    if (w.contains(e.target)) return;
+    w.classList.remove('open');
+  });
+  // Seed an initial sample on load (visible immediately on Section 4)
+  window.addEventListener('load', function(){
+    setTimeout(() => {
+      if (FCC.nodes.length || !document.getElementById('fccCanvas')) return;
+      fccAddNode('question','Is aeration happening equally?');
+      fccAddNode('answersingle','Pick severity');
+      fccAddNode('rcselectv2','Pick root cause');
+      fccAddNode('successfail','Did the fix work?');
+      fccAddNode('destination','Closure card');
+      // Position the seed in a horizontal pipeline below the ICT anchor
+      FCC.nodes.forEach((n,i) => { n.x = 280 + i*200; n.y = 60; });
+      FCC.nodes.forEach(n => { const el = document.getElementById(n.id); if (el){ el.style.left = n.x+'px'; el.style.top = n.y+'px'; } });
+      // Chain edges
+      for (let i = 0; i < FCC.nodes.length - 1; i++){
+        FCC.edges.push({ from: FCC.nodes[i].id, to: FCC.nodes[i+1].id });
+      }
+      fccRenderEdges();
+      fccUpdateMeta();
+      fccRecalcSize();
+    }, 200);
+  });
+
+  // ============== Visual Flow Canvas Editor (drawer-internal, for multi-select) ==============
   const VFC = { nodes: [], edges: [], nodeSeq: 0, selectedId: null, draggingId: null, dragOff: {x:0,y:0}, connectFrom: null };
   const VFC_KIND_LABEL = {
     question:'Question', answersingle:'Single answer', answermulti:'Multi-select', answernumeric:'Numeric answer',

@@ -59,6 +59,13 @@ jobs:
           path: build-flow-v2
         continue-on-error: true
 
+      - name: Checkout flow-canvas
+        uses: actions/checkout@v4
+        with:
+          ref: flow-canvas
+          path: flow-canvas
+        continue-on-error: true
+
       - name: Checkout diagnostic-flow
         uses: actions/checkout@v4
         with:
@@ -103,6 +110,12 @@ jobs:
             mkdir -p dist/build-flow-v2
             cp -R build-flow-v2/. dist/build-flow-v2/ 2>/dev/null || true
             rm -rf dist/build-flow-v2/.git dist/build-flow-v2/.github
+          fi
+          # /flow-canvas/ = flow-canvas branch contents
+          if [ -d flow-canvas ]; then
+            mkdir -p dist/flow-canvas
+            cp -R flow-canvas/. dist/flow-canvas/ 2>/dev/null || true
+            rm -rf dist/flow-canvas/.git dist/flow-canvas/.github
           fi
           # /diagnostic-flow/ = diagnostic-flow branch contents
           if [ -d diagnostic-flow ]; then
