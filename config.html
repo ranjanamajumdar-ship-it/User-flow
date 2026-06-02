@@ -879,6 +879,146 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .vm-pill:hover{color:var(--ink)}
 .vm-pill.on{background:#fff;color:var(--brand);box-shadow:0 2px 6px -2px rgba(40,50,80,.18)}
 
+/* ===== Visual Flow EDITOR (canvas-based) ===== */
+.vf-editor{
+  padding:0;
+  border-radius:18px;
+  background:linear-gradient(160deg,rgba(255,255,255,.7),rgba(255,255,255,.40));
+  border:1px solid var(--line-soft);
+  margin-bottom:14px;
+  overflow:hidden;
+}
+/* Chip palette at top */
+.vfc-chips{
+  display:flex;flex-wrap:wrap;gap:6px;
+  padding:12px 14px;border-bottom:1px solid var(--line-soft);
+  background:rgba(255,255,255,.55);
+}
+.vfc-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 12px;border-radius:999px;
+  font:700 11.5px 'Plus Jakarta Sans';letter-spacing:-.005em;
+  cursor:pointer;transition:.14s;
+  border:1.5px solid;
+}
+.vfc-chip:hover{transform:translateY(-1px);box-shadow:0 4px 10px -3px rgba(40,50,80,.18)}
+.vfc-chip:active{transform:translateY(0)}
+.vfc-question{background:rgba(0,41,118,.06);border-color:rgba(0,41,118,.30);color:var(--brand)}
+.vfc-answer{background:rgba(31,157,85,.08);border-color:rgba(31,157,85,.35);color:var(--ok-ink)}
+.vfc-rc{background:rgba(107,54,181,.08);border-color:rgba(107,54,181,.35);color:#6B36B5}
+.vfc-success{background:rgba(31,157,85,.10);border-color:rgba(31,157,85,.42);color:var(--ok-ink)}
+.vfc-closure{background:rgba(107,54,181,.08);border-color:rgba(107,54,181,.35);color:#6B36B5}
+.vfc-wait{background:rgba(232,148,26,.10);border-color:rgba(232,148,26,.42);color:#8C6306}
+.vfc-skip{background:rgba(232,148,26,.10);border-color:rgba(232,148,26,.42);color:#8C6306}
+
+/* Canvas with dotted grid background */
+.vfc-canvas{
+  position:relative;
+  width:100%;height:520px;
+  background-color:rgba(252,252,255,.55);
+  background-image:radial-gradient(circle, rgba(14,20,40,.16) 1px, transparent 1px);
+  background-size:18px 18px;
+  overflow:auto;
+}
+.vfc-help{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:13px;color:var(--ink-3);text-align:center;font-weight:500;
+  max-width:380px;padding:18px 22px;
+  background:rgba(255,255,255,.85);border:1px dashed rgba(14,20,40,.18);border-radius:14px;
+  pointer-events:none;
+}
+.vfc-canvas.has-nodes .vfc-help{display:none}
+
+/* Connection SVG layer · sits behind nodes */
+.vfc-connections{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:1;
+}
+.vfc-connections line, .vfc-connections path.vfc-edge{
+  stroke:#6A7185;stroke-width:2;fill:none;
+}
+.vfc-connections path.vfc-edge.preview{stroke:var(--brand);stroke-dasharray:5 4}
+
+/* Step nodes on canvas */
+.vfc-node{
+  position:absolute;
+  min-width:160px;max-width:200px;
+  padding:11px 13px;border-radius:12px;
+  background:#fff;border:2px solid;
+  font:700 12.5px 'Plus Jakarta Sans';letter-spacing:-.005em;
+  color:var(--ink);cursor:grab;
+  z-index:2;
+  box-shadow:0 4px 14px -6px rgba(40,50,80,.20);
+  transition:box-shadow .12s, transform .12s;
+  user-select:none;
+}
+.vfc-node:hover{box-shadow:0 8px 22px -6px rgba(40,50,80,.30);transform:translateY(-1px)}
+.vfc-node.dragging{cursor:grabbing;z-index:5;box-shadow:0 12px 32px -8px rgba(40,50,80,.40)}
+.vfc-node.selected{outline:3px solid rgba(0,41,118,.30);outline-offset:1px}
+
+.vfc-node[data-kind="question"]{border-color:var(--brand);background:rgba(0,41,118,.04)}
+.vfc-node[data-kind="answersingle"],.vfc-node[data-kind="answermulti"],.vfc-node[data-kind="answernumeric"]{border-color:#1F9D55;background:rgba(31,157,85,.06)}
+.vfc-node[data-kind="rcselectv2"]{border-color:#6B36B5;background:rgba(107,54,181,.06)}
+.vfc-node[data-kind="successfail"]{border-color:#1F9D55;background:rgba(31,157,85,.08)}
+.vfc-node[data-kind="closurecard"]{border-color:#6B36B5;background:rgba(107,54,181,.06)}
+.vfc-node[data-kind="waitrecovery"],.vfc-node[data-kind="skiptoend"]{border-color:#E0A314;background:rgba(232,148,26,.08)}
+
+.vfc-node-kind{
+  display:block;
+  font:800 8.5px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:4px;
+}
+.vfc-node-ttl{
+  display:block;line-height:1.3;
+}
+.vfc-node-ttl[contenteditable]:focus{
+  outline:none;background:rgba(0,41,118,.04);padding:2px 4px;margin:-2px -4px;border-radius:4px;
+}
+/* Anchor dots — visible on hover */
+.vfc-anchor{
+  position:absolute;width:10px;height:10px;border-radius:999px;
+  background:#fff;border:2px solid var(--brand);
+  cursor:crosshair;opacity:0;transition:opacity .14s, transform .14s;
+}
+.vfc-node:hover .vfc-anchor,.vfc-node.selected .vfc-anchor{opacity:1}
+.vfc-anchor:hover{transform:scale(1.4);background:var(--brand)}
+.vfc-anchor.top{top:-5px;left:50%;margin-left:-5px}
+.vfc-anchor.right{right:-5px;top:50%;margin-top:-5px}
+.vfc-anchor.bottom{bottom:-5px;left:50%;margin-left:-5px}
+.vfc-anchor.left{left:-5px;top:50%;margin-top:-5px}
+
+/* Delete button on node */
+.vfc-node-del{
+  position:absolute;top:-7px;right:-7px;
+  width:18px;height:18px;border-radius:999px;
+  background:var(--crit);color:#fff;
+  border:2px solid #fff;
+  font:800 11px 'Plus Jakarta Sans';line-height:1;
+  cursor:pointer;
+  opacity:0;transition:opacity .14s;
+  display:flex;align-items:center;justify-content:center;
+  padding:0;
+}
+.vfc-node:hover .vfc-node-del,.vfc-node.selected .vfc-node-del{opacity:1}
+
+/* Canvas footer meta */
+.vfc-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;border-top:1px solid var(--line-soft);
+  font:600 11.5px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.3px;
+  background:rgba(255,255,255,.55);
+}
+.vfc-meta b{color:var(--ink);font-weight:800}
+.vfc-clear{
+  padding:6px 12px;border-radius:999px;
+  background:transparent;border:1px solid var(--line-soft);
+  color:var(--ink-3);font:700 11px 'Plus Jakarta Sans';cursor:pointer;
+  letter-spacing:-.005em;transition:.14s;
+}
+.vfc-clear:hover{background:rgba(184,58,31,.06);border-color:rgba(184,58,31,.30);color:var(--crit)}
+
+/* Old vf-tree visual styles (kept for back-compat references) */
+.vf-tree-OLD-hidden{display:none}
 /* Visual flow tree */
 .vf-tree{
   padding:24px 18px 28px;
@@ -3053,11 +3193,37 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       </div>
     </div>
 
-    <!-- Visual flow tree (rendered when view=visual) -->
-    <div class="vf-tree" id="vfTree" style="display:none">
-      <div class="vf-node vf-question" id="vfQuestion">Step title appears here</div>
-      <div class="vf-branches" id="vfBranches">
-        <!-- branches rendered by JS based on the current step's options/destinations -->
+    <!-- Visual flow editor (rendered when view=visual) -->
+    <div class="vf-editor" id="vfTree" style="display:none">
+
+      <!-- Step-type chip palette (click a chip to drop a node onto the canvas) -->
+      <div class="vfc-chips">
+        <button class="vfc-chip vfc-question" onclick="vfcAddNode('question','New question')">❓ Question</button>
+        <button class="vfc-chip vfc-answer" onclick="vfcAddNode('answersingle','Single answer')">⭕ Single answer</button>
+        <button class="vfc-chip vfc-answer" onclick="vfcAddNode('answermulti','Multi-select')">☑ Multi-select</button>
+        <button class="vfc-chip vfc-answer" onclick="vfcAddNode('answernumeric','Numeric answer')">🔢 Numeric</button>
+        <button class="vfc-chip vfc-rc" onclick="vfcAddNode('rcselectv2','Root cause selector')">🌳 Root cause</button>
+        <button class="vfc-chip vfc-success" onclick="vfcAddNode('successfail','Success / Failure')">✓ Success / Failure</button>
+        <button class="vfc-chip vfc-closure" onclick="vfcAddNode('closurecard','Closure card')">🏁 Closure</button>
+        <button class="vfc-chip vfc-wait" onclick="vfcAddNode('waitrecovery','Wait for recovery')">⏱ Waiting</button>
+        <button class="vfc-chip vfc-skip" onclick="vfcAddNode('skiptoend','Skip to end')">⏯ Skip to end</button>
+      </div>
+
+      <!-- Canvas: dotted grid background, draggable nodes, SVG connection layer -->
+      <div class="vfc-canvas" id="vfCanvas">
+        <svg class="vfc-connections" id="vfConnections" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="vfArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="#6A7185"/>
+            </marker>
+          </defs>
+        </svg>
+        <div class="vfc-help" id="vfHelp">Click a step-type chip above to drop your first node. Drag to move · click a node to edit · drag an anchor to connect.</div>
+      </div>
+
+      <div class="vfc-meta">
+        <span class="vfc-meta-l"><b id="vfNodeCount">0</b> nodes · <b id="vfEdgeCount">0</b> connections</span>
+        <button class="vfc-clear" onclick="vfcClear()">Clear canvas</button>
       </div>
     </div>
 
@@ -4488,6 +4654,179 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
     markSaved();
   }
 
+  // ============== Visual Flow Canvas Editor ==============
+  const VFC = { nodes: [], edges: [], nodeSeq: 0, selectedId: null, draggingId: null, dragOff: {x:0,y:0}, connectFrom: null };
+  const VFC_KIND_LABEL = {
+    question:'Question', answersingle:'Single answer', answermulti:'Multi-select', answernumeric:'Numeric answer',
+    rcselectv2:'Root cause selector', successfail:'Success / Failure', closurecard:'Closure card',
+    waitrecovery:'Wait for recovery', skiptoend:'Skip to end'
+  };
+  function vfcAddNode(kind, title){
+    const canvas = document.getElementById('vfCanvas');
+    if (!canvas) return;
+    canvas.classList.add('has-nodes');
+    VFC.nodeSeq++;
+    const id = 'vfn-' + VFC.nodeSeq;
+    // Stagger initial positions in a 3-col grid
+    const idx = VFC.nodes.length;
+    const x = 40 + (idx % 3) * 240;
+    const y = 40 + Math.floor(idx / 3) * 130;
+    const node = { id, kind, title, x, y };
+    VFC.nodes.push(node);
+    vfcRenderNode(node);
+    vfcUpdateMeta();
+  }
+  function vfcRenderNode(n){
+    const canvas = document.getElementById('vfCanvas');
+    if (!canvas) return;
+    const el = document.createElement('div');
+    el.className = 'vfc-node';
+    el.id = n.id;
+    el.setAttribute('data-kind', n.kind);
+    el.style.left = n.x + 'px';
+    el.style.top  = n.y + 'px';
+    el.innerHTML = `
+      <button class="vfc-node-del" type="button" onclick="vfcDeleteNode('${n.id}',event)" title="Delete">×</button>
+      <span class="vfc-node-kind">${VFC_KIND_LABEL[n.kind] || n.kind}</span>
+      <span class="vfc-node-ttl" contenteditable="true" oninput="vfcUpdateTitle('${n.id}',this.textContent)">${n.title}</span>
+      <div class="vfc-anchor top" data-anchor="top"></div>
+      <div class="vfc-anchor right" data-anchor="right"></div>
+      <div class="vfc-anchor bottom" data-anchor="bottom"></div>
+      <div class="vfc-anchor left" data-anchor="left"></div>
+    `;
+    canvas.appendChild(el);
+    vfcAttachDrag(el, n.id);
+    vfcAttachAnchorConnect(el, n.id);
+  }
+  function vfcAttachDrag(el, id){
+    el.addEventListener('mousedown', function(e){
+      // Skip if user clicked an anchor, delete button, or contenteditable title
+      if (e.target.closest('.vfc-anchor') || e.target.closest('.vfc-node-del') || e.target.isContentEditable) return;
+      e.preventDefault();
+      VFC.draggingId = id;
+      const node = VFC.nodes.find(n => n.id === id);
+      const rect = el.getBoundingClientRect();
+      VFC.dragOff = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      el.classList.add('dragging');
+      VFC.selectedId = id;
+      document.querySelectorAll('.vfc-node').forEach(n => n.classList.remove('selected'));
+      el.classList.add('selected');
+    });
+  }
+  document.addEventListener('mousemove', function(e){
+    if (!VFC.draggingId) return;
+    const canvas = document.getElementById('vfCanvas');
+    if (!canvas) return;
+    const canvasRect = canvas.getBoundingClientRect();
+    const node = VFC.nodes.find(n => n.id === VFC.draggingId);
+    if (!node) return;
+    node.x = Math.max(0, e.clientX - canvasRect.left - VFC.dragOff.x + canvas.scrollLeft);
+    node.y = Math.max(0, e.clientY - canvasRect.top - VFC.dragOff.y + canvas.scrollTop);
+    const el = document.getElementById(node.id);
+    if (el){ el.style.left = node.x + 'px'; el.style.top = node.y + 'px'; }
+    vfcRenderEdges();
+  });
+  document.addEventListener('mouseup', function(){
+    if (VFC.draggingId){
+      const el = document.getElementById(VFC.draggingId);
+      if (el) el.classList.remove('dragging');
+      VFC.draggingId = null;
+    }
+  });
+  // Anchor-to-anchor connect
+  function vfcAttachAnchorConnect(el, id){
+    el.querySelectorAll('.vfc-anchor').forEach(a => {
+      a.addEventListener('mousedown', function(e){
+        e.stopPropagation();e.preventDefault();
+        VFC.connectFrom = id;
+      });
+      a.addEventListener('mouseup', function(e){
+        e.stopPropagation();
+        if (VFC.connectFrom && VFC.connectFrom !== id){
+          // Avoid duplicate edges
+          if (!VFC.edges.find(ed => ed.from === VFC.connectFrom && ed.to === id)){
+            VFC.edges.push({ from: VFC.connectFrom, to: id });
+            vfcRenderEdges();
+            vfcUpdateMeta();
+          }
+        }
+        VFC.connectFrom = null;
+      });
+    });
+  }
+  function vfcRenderEdges(){
+    const svg = document.getElementById('vfConnections');
+    if (!svg) return;
+    // Clear existing edge paths but keep defs
+    Array.from(svg.querySelectorAll('path.vfc-edge')).forEach(p => p.remove());
+    VFC.edges.forEach(ed => {
+      const a = document.getElementById(ed.from);
+      const b = document.getElementById(ed.to);
+      if (!a || !b) return;
+      const ax = a.offsetLeft + a.offsetWidth/2;
+      const ay = a.offsetTop + a.offsetHeight;
+      const bx = b.offsetLeft + b.offsetWidth/2;
+      const by = b.offsetTop;
+      const midY = (ay + by) / 2;
+      const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('class','vfc-edge');
+      path.setAttribute('d', `M ${ax} ${ay} C ${ax} ${midY}, ${bx} ${midY}, ${bx} ${by}`);
+      path.setAttribute('marker-end','url(#vfArrow)');
+      svg.appendChild(path);
+    });
+  }
+  function vfcDeleteNode(id, e){
+    if (e) e.stopPropagation();
+    VFC.nodes = VFC.nodes.filter(n => n.id !== id);
+    VFC.edges = VFC.edges.filter(ed => ed.from !== id && ed.to !== id);
+    const el = document.getElementById(id);
+    if (el) el.remove();
+    vfcRenderEdges();
+    vfcUpdateMeta();
+    const canvas = document.getElementById('vfCanvas');
+    if (canvas && VFC.nodes.length === 0) canvas.classList.remove('has-nodes');
+  }
+  function vfcUpdateTitle(id, txt){
+    const n = VFC.nodes.find(n => n.id === id);
+    if (n) n.title = txt;
+    markSaved();
+  }
+  function vfcUpdateMeta(){
+    const nc = document.getElementById('vfNodeCount');
+    const ec = document.getElementById('vfEdgeCount');
+    if (nc) nc.textContent = String(VFC.nodes.length);
+    if (ec) ec.textContent = String(VFC.edges.length);
+  }
+  function vfcClear(){
+    if (!VFC.nodes.length || !confirm('Clear all nodes and connections?')) return;
+    VFC.nodes = []; VFC.edges = []; VFC.nodeSeq = 0;
+    const canvas = document.getElementById('vfCanvas');
+    if (canvas){
+      canvas.querySelectorAll('.vfc-node').forEach(n => n.remove());
+      canvas.classList.remove('has-nodes');
+    }
+    vfcRenderEdges();
+    vfcUpdateMeta();
+  }
+  // Seed a sample flow on first visual open (so user sees something)
+  function vfcSeedIfEmpty(){
+    if (VFC.nodes.length > 0) return;
+    vfcAddNode('question','Is aeration happening equally across the tank?');
+    vfcAddNode('answersingle','Yes / Moderately / No');
+    vfcAddNode('rcselectv2','Pick root cause');
+    vfcAddNode('successfail','Did the fix work?');
+    vfcAddNode('closurecard','Closure card · final notes');
+    // Position them in a vertical pipeline
+    VFC.nodes.forEach((n,i) => { n.x = 80; n.y = 30 + i * 110; });
+    VFC.nodes.forEach(n => { const el = document.getElementById(n.id); if (el){ el.style.left = n.x+'px'; el.style.top = n.y+'px'; } });
+    // Seed edges in sequence
+    for (let i = 0; i < VFC.nodes.length - 1; i++) {
+      VFC.edges.push({ from: VFC.nodes[i].id, to: VFC.nodes[i+1].id });
+    }
+    vfcRenderEdges();
+    vfcUpdateMeta();
+  }
+
   // View-mode toggle (Form vs Visual flow)
   function setDrawerView(mode){
     const vm = document.getElementById('drViewMode');
@@ -4506,7 +4845,10 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
       p.style.overflow = showVisual ? 'hidden' : '';
       p.style.marginTop = showVisual ? '0' : '';
     });
-    if (showVisual) syncVisualFlow();
+    if (showVisual) {
+      vfcSeedIfEmpty();
+      vfcRenderEdges();
+    }
   }
   function syncVisualFlow(){
     const tree = document.getElementById('vfTree');
