@@ -418,11 +418,13 @@ input[type=text]:focus,textarea:focus,select:focus{border-bottom-width:1.5px;pad
 .mb-toggle.on .knob{left:23px;color:#8C6306}
 .mb-toggle.on .padlock-knob .shackle{d:path("M7 11V7a5 5 0 0 1 9.9-1")}
 
-/* ===== Field-level override · lock button + state ===== */
-/* Body-level: when override mode OFF, hide all lock buttons and meta chips */
-body:not([data-override="on"]) .lock-btn{display:none!important}
-body:not([data-override="on"]) .ovr-meta{display:none!important}
-body:not([data-override="on"]) .ovr-reset{display:none!important}
+/* ===== Per-field LOCK-IN (replaces Override mode) ===== */
+/* Padlocks are always visible on .ovr fields. Click to lock the field's value into the template. */
+.lock-btn{position:relative}
+.lock-btn:hover::after{content:"Lock this field for template" !important}
+.ovr[data-locked="true"] .lock-btn:hover::after{content:"Unlock (editable per instance)" !important}
+/* Show field padlocks regardless of body-level state */
+.lock-btn{display:inline-flex!important}
 
 .ovr{position:relative}
 .ovr label{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -584,7 +586,7 @@ body:not([data-override="on"]) .ovr-reset{display:none!important}
   box-shadow:0 2px 6px -2px rgba(184,116,20,.20);
   animation:fadeIn .22s ease-out;
 }
-body[data-override="on"] .step-lock-btn{display:inline-flex}
+.step-lock-btn{display:inline-flex}
 .step-lock-btn:hover{
   background:rgba(232,148,26,.24);
   border-color:rgba(232,148,26,.55);
@@ -601,7 +603,7 @@ body[data-override="on"] .step-lock-btn{display:inline-flex}
   d:path("M7 11V7a5 5 0 0 1 9.9-1");
 }
 /* Unlocked step node — soft amber outline so it's spottable in the canvas */
-body[data-override="on"] .fnode[data-step-lock="unlocked"]{
+.fnode[data-step-lock="unlocked"]{
   box-shadow:0 0 0 2px rgba(232,148,26,.30), 0 8px 22px -10px rgba(184,116,20,.20);
 }
 /* Tooltip on the lock button */
@@ -1847,6 +1849,31 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
 .achip-add{padding:5px 11px;border-radius:999px;background:transparent;border:1px dashed rgba(0,41,118,.30);color:var(--brand);font:700 11.5px 'Plus Jakarta Sans';cursor:pointer;letter-spacing:-.005em}
 .achip-add:hover{background:rgba(0,41,118,.06);border-style:solid}
 
+/* ===== Equipment graphic v3 · typed picker + animated SVG ===== */
+.eqg-v3{padding:16px;border-radius:16px;background:rgba(255,255,255,.55);border:1px solid var(--line-soft);box-shadow:0 1px 0 rgba(255,255,255,.6) inset}
+.eqg-typebar{display:flex;gap:14px;margin:12px 0 16px}
+.eqg-typebar .ff{margin:0}
+.eqg-stage{padding:24px 18px 28px;border-radius:14px;background:linear-gradient(160deg,rgba(220,229,245,.45),rgba(168,184,222,.20));border:1px solid var(--line-soft);text-align:center}
+.eqg-stage-label{font:800 12px 'JetBrains Mono';letter-spacing:.5px;text-transform:uppercase;color:#2563EB;margin-bottom:10px}
+.eqg-stage-svg{display:flex;justify-content:center;align-items:center;min-height:200px}
+.eqg-stage-svg svg{width:280px;height:auto;max-width:100%;filter:drop-shadow(0 6px 16px rgba(37,99,235,.14))}
+@keyframes eq-rotate{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes eq-pulse{0%,100%{opacity:.4;transform:scale(.95)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes eq-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-30}}
+.eq-spin{animation:eq-rotate 3s linear infinite;transform-origin:center;transform-box:fill-box}
+.eq-pulse{animation:eq-pulse 2.4s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+.eq-flow{stroke-dasharray:6 4;animation:eq-flow 1.4s linear infinite}
+
+/* Create condition button (Triggers) */
+.create-cond-btn{display:flex;align-items:center;gap:14px;width:100%;margin-top:20px;padding:14px 18px;border-radius:14px;border:2px dashed rgba(0,41,118,.30);background:rgba(0,41,118,.05);color:var(--brand);text-align:left;cursor:pointer;transition:.15s}
+.create-cond-btn:hover{background:rgba(0,41,118,.10);border-color:var(--brand);border-style:solid;transform:translateY(-1px)}
+.ccb-ic{font-size:24px;flex-shrink:0}
+.ccb-tx{flex:1;display:flex;flex-direction:column;gap:2px}
+.ccb-tx b{font:800 13.5px 'Plus Jakarta Sans';letter-spacing:-.005em;color:var(--ink)}
+.ccb-tx span{font:600 11.5px 'JetBrains Mono';color:var(--ink-3);letter-spacing:.2px}
+.ccb-arr{font:800 16px 'Plus Jakarta Sans';color:var(--brand);flex-shrink:0}
+.obsres-grid-single{display:block!important}
+
 /* ===== Day-chip multiselect (shift days) ===== */
 .day-chips{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 .dc{
@@ -2273,24 +2300,6 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
       </div>
     </div>
 
-    <!-- ===== Mode bar · Override toggle for Set up ===== -->
-    <div class="mode-bar" data-mode="locked">
-      <div class="mb-left">
-        <span class="mb-dot"></span>
-        <div class="mb-text">
-          <div class="mb-scope"><b>Honda Manesar</b> · inherits <b>Global · Low DO</b></div>
-          <div class="mb-sub mb-locked-txt">Locked · all fields strictly follow Global</div>
-          <div class="mb-sub mb-override-txt"><span class="mbc-num">0</span> overrides on this site</div>
-        </div>
-      </div>
-      <div class="mb-right">
-        <span class="mb-tlbl">Override mode</span>
-        <div class="mb-toggle" onclick="toggleOverrideMode()" role="switch" aria-checked="false">
-          <div class="knob"><svg class="padlock-svg padlock-knob" width="9" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path class="shackle" d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-        </div>
-      </div>
-    </div>
-
     <div class="card">
       <h3>Issue details</h3>
       <p class="helper">These fields define what operators see at the top of the screen. Pick from dropdowns where possible — type to add new entries.</p>
@@ -2417,27 +2426,32 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
         </div>
       </div>
 
-      <div class="ff ovr" data-ovr="assignee" data-global="Sharma ji" style="margin-top:14px">
-        <label>Assignee name <span class="ovr-meta">inherited from Global · Sharma ji</span></label>
-        <div class="ovr-wrap">
-          <select disabled onchange="markFieldDone(1,'assignee',this.value);markSaved()">
-            <option>— Pick a person —</option>
-            <option selected>Sharma ji (Site Engineer · Mechanical)</option>
-            <option>Dheeraj (Operator · General)</option>
-            <option>Anil (Supervisor)</option>
-            <option>Ravi (SME · Process)</option>
-            <option>Nagesh (Operator · Mechanical)</option>
-          </select>
-          <button class="lock-btn" type="button" onclick="toggleLock(this)" aria-label="Unlock to override">
-            <svg class="padlock-svg" width="14" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path class="shackle" d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </button>
-        </div>
-        <button class="ovr-reset" type="button" onclick="resetOverride(this)">↺ Reset to Global value</button>
-        <div class="help">If unavailable on shift, the system auto-routes within the same Role + Skill pool.</div>
+      <div class="ff" style="margin-top:14px">
+        <label>Assignee</label>
+        <select id="assigneeRole" onchange="onAssigneeRoleChange(this);markSaved()">
+          <option value="general">General (anyone on shift)</option>
+          <option value="biology">Biology</option>
+          <option value="mechanical">Mechanical</option>
+          <option value="electrical">Electrical / Instrumentation</option>
+          <option value="process">Process / Lab</option>
+          <option value="specific" selected>Assign to a specific person</option>
+        </select>
+        <div class="help" id="assigneeHelp">A specific person is set — Working shift defines their on-duty hours below. If unavailable, the system auto-escalates.</div>
       </div>
 
-      <!-- Shift-based timings -->
-      <div class="ff" style="margin-top:14px">
+      <div class="ff" id="specificPersonBlock" style="margin-top:14px">
+        <label>Specific person</label>
+        <select onchange="markSaved()">
+          <option selected>Sharma ji (Site Engineer · Mechanical)</option>
+          <option>Dheeraj (Operator · General)</option>
+          <option>Anil (Supervisor)</option>
+          <option>Ravi (SME · Process)</option>
+          <option>Nagesh (Operator · Mechanical)</option>
+        </select>
+      </div>
+
+      <!-- Shift-based timings (only meaningful for a specific person) -->
+      <div class="ff" id="workingShiftBlock" style="margin-top:14px">
         <label>Working shift</label>
         <p class="helper" style="margin:0 0 10px">When is this assignee actually on-duty? If an alert fires outside their shift, the system auto-escalates to whoever is on.</p>
         <div class="form-grid">
@@ -2483,44 +2497,12 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
       </div>
     </div>
 
-    <div class="card">
-      <h3>Libraries</h3>
-      <p class="helper">Turn on the libraries this issue should use. Off means operators won't see icons / translations for steps in this flow.</p>
-
-      <div class="tog">
-        <div class="lbl"><div class="t">Graphic library</div><div class="s">Visual icons + illustrations from your saved graphic library (equipment, sensors, controls)</div></div>
-        <div class="sw on" onclick="this.classList.toggle('on');markFieldDone(1,'graphiclib',this.classList.contains('on')?'On':'');markSaved()"></div>
-      </div>
-      <div class="tog">
-        <div class="lbl"><div class="t">Language library</div><div class="s">Auto-translate operator-facing copy into the operator's chosen language (Hindi, Telugu, Tamil, Kannada)</div></div>
-        <div class="sw on" onclick="this.classList.toggle('on');markFieldDone(1,'langlib',this.classList.contains('on')?'On':'');markSaved()"></div>
-      </div>
-    </div>
-
   </section>
 
     <!-- ============== STEP 2 · Triggers ============== -->
   <section class="panel" id="p-2">
     <h1 class="page-h">Define the <em>triggers</em></h1>
     <p class="page-sub">Tell the system what sensor reading, condition, and sustained duration should automatically open this issue. Add as many triggers as you need.</p>
-
-    <!-- ===== Mode bar · Override toggle for Triggers ===== -->
-    <div class="mode-bar" data-mode="locked">
-      <div class="mb-left">
-        <span class="mb-dot"></span>
-        <div class="mb-text">
-          <div class="mb-scope"><b>Honda Manesar</b> · inherits <b>Global · Low DO</b></div>
-          <div class="mb-sub mb-locked-txt">Locked · all trigger conditions follow Global</div>
-          <div class="mb-sub mb-override-txt"><span class="mbc-num">0</span> overrides on this site</div>
-        </div>
-      </div>
-      <div class="mb-right">
-        <span class="mb-tlbl">Override mode</span>
-        <div class="mb-toggle" onclick="toggleOverrideMode()" role="switch" aria-checked="false">
-          <div class="knob"><svg class="padlock-svg padlock-knob" width="9" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path class="shackle" d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-        </div>
-      </div>
-    </div>
 
     <div class="card trigger-card">
       <div class="trig-hdr">
@@ -2650,24 +2632,6 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     </div>
     <p class="page-sub">Drag step types in from the left, hover between cards to insert, tap a card to edit it.</p>
 
-    <!-- ===== Mode bar · Override toggle for Build the flow ===== -->
-    <div class="mode-bar" data-mode="locked">
-      <div class="mb-left">
-        <span class="mb-dot"></span>
-        <div class="mb-text">
-          <div class="mb-scope"><b>Honda Manesar</b> · inherits <b>Global · Low DO</b></div>
-          <div class="mb-sub mb-locked-txt">Locked · step fields strictly follow Global</div>
-          <div class="mb-sub mb-override-txt"><b>Click any step</b> in the canvas to see padlocks on its overridable fields</div>
-        </div>
-      </div>
-      <div class="mb-right">
-        <span class="mb-tlbl">Override mode</span>
-        <div class="mb-toggle" onclick="toggleOverrideMode()" role="switch" aria-checked="false">
-          <div class="knob"><svg class="padlock-svg padlock-knob" width="9" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path class="shackle" d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-        </div>
-      </div>
-    </div>
-
     <div class="tip-row">
       <div class="tip-ico">✨</div>
       <div>Drop in <b>Steps</b> (operator does the work) — completion triggers a <b>Card</b> (passive summary with one CTA). Every card&rsquo;s CTA must route to a <i>different</i> step than the one that opened it.</div>
@@ -2733,86 +2697,37 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
         </div>
       </div>
 
-      <!-- Equipment graphic editor -->
-      <div class="eqg">
+      <!-- ===== Equipment graphic · typed picker + animated SVG ===== -->
+      <div class="eqg-v3">
         <div class="eqg-head">
           <div>
             <div class="eqg-l">Equipment graphic</div>
-            <div class="eqg-s">Derived from the Issue card asset. Edit connected assets inside & outside the tank.</div>
-          </div>
-          <div class="eqg-tabs">
-            <button class="eqg-tab on" onclick="setEqgTab(this,'inside')">Inside</button>
-            <button class="eqg-tab" onclick="setEqgTab(this,'upstream')">Upstream</button>
-            <button class="eqg-tab" onclick="setEqgTab(this,'downstream')">Downstream</button>
+            <div class="eqg-s">Pick the equipment type. The chosen graphic renders on the operator screen with subtle micro-animations.</div>
           </div>
         </div>
 
-        <!-- The graphic itself -->
-        <div class="eqg-canvas">
-          <svg viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg" aria-label="Aeration tank graphic editor">
-            <!-- Upstream slot -->
-            <g class="eqg-slot-up">
-              <rect x="10" y="80" width="80" height="50" rx="10" fill="rgba(14,20,40,.04)" stroke="rgba(14,20,40,.16)" stroke-width="1.5" stroke-dasharray="4 4"/>
-              <text x="50" y="100" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#6A7185">UPSTREAM</text>
-              <text x="50" y="116" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="10" font-weight="600" fill="#9AA0B0">+ Add</text>
-            </g>
-            <!-- Arrow into tank -->
-            <line x1="92" y1="105" x2="118" y2="105" stroke="#6A7185" stroke-width="1.6" stroke-linecap="round"/>
-            <polygon points="118,101 124,105 118,109" fill="#6A7185"/>
-
-            <!-- Main: Aeration Tank -->
-            <g>
-              <rect x="126" y="50" width="220" height="120" rx="8" fill="#BFD3F5" opacity=".5"/>
-              <rect x="126" y="50" width="220" height="120" rx="8" fill="none" stroke="#2563EB" stroke-width="2.4"/>
-              <path d="M134 64 Q150 60 166 64 T198 64 T230 64 T262 64 T294 64 T326 64 T340 64" stroke="#2563EB" stroke-width="1.4" fill="none" opacity=".6"/>
-              <text x="236" y="46" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#2563EB">AERATION TANK 1</text>
-              <!-- Bubbles -->
-              <circle cx="160" cy="130" r="3" fill="#fff" opacity=".8"/>
-              <circle cx="180" cy="120" r="2.4" fill="#fff" opacity=".7"/>
-              <circle cx="200" cy="135" r="3" fill="#fff" opacity=".8"/>
-              <circle cx="220" cy="115" r="2.6" fill="#fff" opacity=".75"/>
-              <circle cx="240" cy="130" r="3" fill="#fff" opacity=".8"/>
-              <circle cx="260" cy="120" r="2.4" fill="#fff" opacity=".7"/>
-              <circle cx="280" cy="135" r="3" fill="#fff" opacity=".8"/>
-              <circle cx="300" cy="115" r="2.6" fill="#fff" opacity=".75"/>
-              <!-- Internal: Pump 1 -->
-              <g class="eqg-internal">
-                <circle cx="180" cy="155" r="12" fill="#fff" stroke="#1F9D55" stroke-width="2"/>
-                <text x="180" y="159" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" fill="#0F5C2F">P1</text>
-              </g>
-              <!-- Internal: Pump 2 -->
-              <g class="eqg-internal">
-                <circle cx="280" cy="155" r="12" fill="#fff" stroke="#1F9D55" stroke-width="2"/>
-                <text x="280" y="159" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="11" fill="#0F5C2F">P2</text>
-              </g>
-              <!-- Add new internal -->
-              <g class="eqg-add" onclick="alert('Pick from internal asset library')" style="cursor:pointer">
-                <circle cx="236" cy="155" r="11" fill="none" stroke="#9AA0B0" stroke-width="1.5" stroke-dasharray="3 3"/>
-                <text x="236" y="159" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="13" font-weight="700" fill="#9AA0B0">＋</text>
-              </g>
-            </g>
-
-            <!-- Arrow out of tank -->
-            <line x1="354" y1="105" x2="380" y2="105" stroke="#6A7185" stroke-width="1.6" stroke-linecap="round"/>
-            <polygon points="380,101 386,105 380,109" fill="#6A7185"/>
-            <!-- Downstream slot -->
-            <g class="eqg-slot-down">
-              <rect x="390" y="80" width="80" height="50" rx="10" fill="rgba(14,20,40,.04)" stroke="rgba(14,20,40,.16)" stroke-width="1.5" stroke-dasharray="4 4"/>
-              <text x="430" y="100" text-anchor="middle" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#6A7185">DOWNSTREAM</text>
-              <text x="430" y="116" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="10" font-weight="600" fill="#9AA0B0">+ Add</text>
-            </g>
-          </svg>
+        <div class="eqg-typebar">
+          <div class="ff" style="flex:1">
+            <label class="dr-mini">Equipment type</label>
+            <select id="eqTypeSel" onchange="renderEqGraphic(this.value)">
+              <option value="tank" selected>Tank (Aeration / Equalisation)</option>
+              <option value="blower">Blower</option>
+              <option value="pump">Pump</option>
+              <option value="filter">Filter</option>
+              <option value="ro">RO · Reverse Osmosis</option>
+              <option value="uf">UF · Ultrafiltration</option>
+            </select>
+          </div>
+          <div class="ff" style="flex:1">
+            <label class="dr-mini">Equipment name</label>
+            <input type="text" id="eqNameInput" value="Aeration Tank 1" oninput="updateEqLabel(this.value);markSaved()"/>
+          </div>
         </div>
 
-        <!-- Asset chips list (per active tab) -->
-        <div class="eqg-list">
-          <div class="eqg-list-l">Inside Aeration Tank 1</div>
-          <div class="asset-chips">
-            <span class="achip"><span class="ach-ic">⚙</span>Pump P1<button>×</button></span>
-            <span class="achip"><span class="ach-ic">⚙</span>Pump P2<button>×</button></span>
-            <span class="achip"><span class="ach-ic">📡</span>DO-3 sensor<button>×</button></span>
-            <span class="achip"><span class="ach-ic">▦</span>Diffuser grid<button>×</button></span>
-            <button class="achip-add">＋ Add internal asset</button>
+        <div class="eqg-stage">
+          <div class="eqg-stage-label" id="eqStageLabel">Aeration Tank 1</div>
+          <div class="eqg-stage-svg" id="eqStageSlot">
+            <!-- Default tank — replaced by renderEqGraphic() -->
           </div>
         </div>
       </div>
@@ -5519,6 +5434,136 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     }
     list.insertBefore(row, btn);
     markSaved();
+  }
+
+  // ============== Equipment graphic v3 · 6 typed animated SVGs ==============
+  const EQG_GRAPHICS = {
+    tank: `<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 50 L30 180 Q30 188 38 188 L322 188 Q330 188 330 180 L330 50" stroke="#2563EB" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <line x1="26" y1="50" x2="334" y2="50" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M38 72 Q60 64 82 72 T126 72 T170 72 T214 72 T258 72 T302 72 T326 72" stroke="#2563EB" stroke-width="1.6" fill="none" stroke-linecap="round"><animate attributeName="d" dur="3s" repeatCount="indefinite" values="M38 72 Q60 64 82 72 T126 72 T170 72 T214 72 T258 72 T302 72 T326 72;M38 72 Q60 78 82 72 T126 72 T170 72 T214 72 T258 72 T302 72 T326 72;M38 72 Q60 64 82 72 T126 72 T170 72 T214 72 T258 72 T302 72 T326 72"/></path>
+      <line x1="50" y1="170" x2="310" y2="170" stroke="#2563EB" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+      <g stroke="#2563EB" stroke-width="1.4" fill="none" opacity=".6">
+        <circle cx="80" cy="150" r="3"><animate attributeName="cy" values="170;90" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.7;0" dur="2.4s" repeatCount="indefinite"/></circle>
+        <circle cx="140" cy="155" r="3"><animate attributeName="cy" values="170;90" dur="2.8s" repeatCount="indefinite" begin=".3s"/><animate attributeName="opacity" values="0;.7;0" dur="2.8s" repeatCount="indefinite" begin=".3s"/></circle>
+        <circle cx="200" cy="150" r="3"><animate attributeName="cy" values="170;90" dur="2.6s" repeatCount="indefinite" begin=".6s"/><animate attributeName="opacity" values="0;.7;0" dur="2.6s" repeatCount="indefinite" begin=".6s"/></circle>
+        <circle cx="260" cy="155" r="3"><animate attributeName="cy" values="170;90" dur="2.5s" repeatCount="indefinite" begin=".9s"/><animate attributeName="opacity" values="0;.7;0" dur="2.5s" repeatCount="indefinite" begin=".9s"/></circle>
+      </g>
+    </svg>`,
+    blower: `<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+      <rect x="40" y="60" width="200" height="120" rx="14" stroke="#2563EB" stroke-width="2.5" fill="none"/>
+      <circle cx="140" cy="120" r="46" stroke="#2563EB" stroke-width="2.5" fill="none"/>
+      <g class="eq-spin" style="transform-origin:140px 120px">
+        <path d="M140 80 L150 120 L140 160 L130 120 Z" fill="#2563EB" opacity=".75"/>
+        <path d="M180 120 L140 130 L100 120 L140 110 Z" fill="#2563EB" opacity=".55"/>
+      </g>
+      <circle cx="140" cy="120" r="6" fill="#2563EB"/>
+      <path d="M240 100 L300 100 L320 120 L300 140 L240 140 Z" stroke="#2563EB" stroke-width="2.2" fill="none"/>
+      <line x1="270" y1="120" x2="320" y2="120" class="eq-flow" stroke="#2563EB" stroke-width="2"/>
+    </svg>`,
+    pump: `<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="180" cy="110" r="62" stroke="#2563EB" stroke-width="2.5" fill="none"/>
+      <g class="eq-spin" style="transform-origin:180px 110px">
+        <line x1="180" y1="48" x2="180" y2="172" stroke="#2563EB" stroke-width="2.2"/>
+        <line x1="118" y1="110" x2="242" y2="110" stroke="#2563EB" stroke-width="2.2"/>
+        <line x1="136" y1="66" x2="224" y2="154" stroke="#2563EB" stroke-width="1.8" opacity=".7"/>
+        <line x1="224" y1="66" x2="136" y2="154" stroke="#2563EB" stroke-width="1.8" opacity=".7"/>
+      </g>
+      <circle cx="180" cy="110" r="8" fill="#2563EB"/>
+      <line x1="38" y1="110" x2="118" y2="110" class="eq-flow" stroke="#2563EB" stroke-width="2"/>
+      <line x1="242" y1="110" x2="322" y2="110" class="eq-flow" stroke="#2563EB" stroke-width="2"/>
+      <path d="M38 110 L46 104 L46 116 Z" fill="#2563EB"/>
+      <path d="M322 110 L314 104 L314 116 Z" fill="#2563EB"/>
+    </svg>`,
+    filter: `<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+      <path d="M120 40 L240 40 L210 200 L150 200 Z" stroke="#2563EB" stroke-width="2.5" fill="none"/>
+      <line x1="124" y1="70" x2="236" y2="70" stroke="#2563EB" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <line x1="128" y1="100" x2="232" y2="100" stroke="#2563EB" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <line x1="132" y1="130" x2="228" y2="130" stroke="#2563EB" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <line x1="136" y1="160" x2="224" y2="160" stroke="#2563EB" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <line x1="180" y1="0" x2="180" y2="40" class="eq-flow" stroke="#2563EB" stroke-width="2"/>
+      <path d="M180 40 L172 32 L188 32 Z" fill="#2563EB"/>
+      <g opacity=".55">
+        <circle cx="170" cy="55" r="2.5" fill="#2563EB"><animate attributeName="cy" values="50;195" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;.7;0" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="190" cy="55" r="2.5" fill="#2563EB"><animate attributeName="cy" values="50;195" dur="3.4s" repeatCount="indefinite" begin=".4s"/><animate attributeName="opacity" values="0;.7;0" dur="3.4s" repeatCount="indefinite" begin=".4s"/></circle>
+        <circle cx="180" cy="55" r="2.5" fill="#2563EB"><animate attributeName="cy" values="50;195" dur="3.2s" repeatCount="indefinite" begin=".8s"/><animate attributeName="opacity" values="0;.7;0" dur="3.2s" repeatCount="indefinite" begin=".8s"/></circle>
+      </g>
+      <line x1="180" y1="200" x2="180" y2="220" class="eq-flow" stroke="#2563EB" stroke-width="2"/>
+    </svg>`,
+    ro: `<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+      <rect x="40" y="70" width="280" height="80" rx="40" stroke="#2563EB" stroke-width="2.5" fill="none"/>
+      <line x1="120" y1="70" x2="120" y2="150" stroke="#2563EB" stroke-width="1.6"/>
+      <line x1="180" y1="70" x2="180" y2="150" stroke="#2563EB" stroke-width="1.6"/>
+      <line x1="240" y1="70" x2="240" y2="150" stroke="#2563EB" stroke-width="1.6"/>
+      <text x="180" y="180" text-anchor="middle" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="#2563EB">R · O · MEMBRANE</text>
+      <line x1="0" y1="110" x2="40" y2="110" class="eq-flow" stroke="#2563EB" stroke-width="2"/>
+      <line x1="320" y1="100" x2="360" y2="100" class="eq-flow" stroke="#2563EB" stroke-width="2"/>
+      <line x1="320" y1="130" x2="360" y2="130" class="eq-flow" stroke="#2563EB" stroke-width="2" stroke-dasharray="3 3" opacity=".5"/>
+      <path d="M360 100 L352 94 L352 106 Z" fill="#2563EB"/>
+      <path d="M360 130 L352 124 L352 136 Z" fill="#2563EB" opacity=".5"/>
+      <g class="eq-pulse" style="transform-origin:180px 110px">
+        <circle cx="80" cy="110" r="2.5" fill="#2563EB" opacity=".7"/>
+        <circle cx="140" cy="110" r="2.5" fill="#2563EB" opacity=".55"/>
+        <circle cx="200" cy="110" r="2.5" fill="#2563EB" opacity=".45"/>
+        <circle cx="260" cy="110" r="2.5" fill="#2563EB" opacity=".35"/>
+      </g>
+    </svg>`,
+    uf: `<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
+      <rect x="60" y="50" width="240" height="120" rx="6" stroke="#2563EB" stroke-width="2.5" fill="none"/>
+      <g stroke="#2563EB" stroke-width="1.6" fill="none">
+        <line x1="80" y1="60" x2="80" y2="160"/>
+        <line x1="110" y1="60" x2="110" y2="160"/>
+        <line x1="140" y1="60" x2="140" y2="160"/>
+        <line x1="170" y1="60" x2="170" y2="160"/>
+        <line x1="200" y1="60" x2="200" y2="160"/>
+        <line x1="230" y1="60" x2="230" y2="160"/>
+        <line x1="260" y1="60" x2="260" y2="160"/>
+        <line x1="280" y1="60" x2="280" y2="160"/>
+      </g>
+      <text x="180" y="190" text-anchor="middle" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="#2563EB">U · F · HOLLOW FIBRE</text>
+      <line x1="0" y1="110" x2="60" y2="110" class="eq-flow" stroke="#2563EB" stroke-width="2"/>
+      <path d="M60 110 L52 104 L52 116 Z" fill="#2563EB"/>
+      <line x1="300" y1="110" x2="360" y2="110" class="eq-flow" stroke="#2563EB" stroke-width="2"/>
+      <path d="M360 110 L352 104 L352 116 Z" fill="#2563EB"/>
+      <g class="eq-pulse" style="transform-origin:180px 110px">
+        <circle cx="90" cy="110" r="3" fill="#2563EB" opacity=".7"/>
+        <circle cx="150" cy="110" r="3" fill="#2563EB" opacity=".55"/>
+        <circle cx="210" cy="110" r="3" fill="#2563EB" opacity=".45"/>
+        <circle cx="270" cy="110" r="3" fill="#2563EB" opacity=".4"/>
+      </g>
+    </svg>`
+  };
+  function renderEqGraphic(kind){
+    const slot = document.getElementById('eqStageSlot');
+    if (!slot) return;
+    slot.innerHTML = EQG_GRAPHICS[kind] || EQG_GRAPHICS.tank;
+    markSaved();
+  }
+  function updateEqLabel(val){
+    const el = document.getElementById('eqStageLabel');
+    if (el) el.textContent = val || 'Equipment';
+  }
+  // Bootstrap on load
+  window.addEventListener('load', function(){
+    if (document.getElementById('eqStageSlot')) renderEqGraphic('tank');
+  });
+
+  // Assignee role onchange — toggles specific-person + working-shift blocks
+  function onAssigneeRoleChange(sel){
+    const isSpecific = sel.value === 'specific';
+    const sp = document.getElementById('specificPersonBlock');
+    const ws = document.getElementById('workingShiftBlock');
+    const help = document.getElementById('assigneeHelp');
+    if (sp) sp.style.display = isSpecific ? '' : 'none';
+    if (ws) ws.style.display = isSpecific ? '' : 'none';
+    if (help) help.textContent = isSpecific
+      ? 'A specific person is set — Working shift defines their on-duty hours below. If unavailable, the system auto-escalates.'
+      : 'Anyone matching this role on the current shift is eligible. No working-shift block needed.';
+  }
+
+  // Triggers · Create condition button — opens the analytical engine in a new tab (placeholder)
+  function openCreateCondition(){
+    if (typeof _toast === 'function') _toast('Opening Analytical Engine — Create condition…');
   }
 
   // Issue card template picker
