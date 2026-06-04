@@ -2342,55 +2342,6 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     <h1 class="page-h">Set up the <em>issue</em></h1>
     <p class="page-sub">Give the issue a clear identity. Plant, equipment, severity, deadline — everything operators see at the top of the screen.</p>
 
-    <!-- ===== Step 0 · Pick a starting point (locked first step) ===== -->
-    <div class="card s0-card">
-      <div class="s0-head">
-        <span class="s0-num">0</span>
-        <div class="s0-tx">
-          <h3 style="margin:0">Pick a starting point</h3>
-          <p class="helper" style="margin:2px 0 0">Every diagnostic tree starts here — choose a saved template or start blank. This is a permanent first step.</p>
-        </div>
-        <span class="s0-lock" title="Mandatory first step">🔒 Required</span>
-      </div>
-      <div class="qs-row">
-        <button class="qs-tile on" onclick="setStartMode(this,'lowdo')">
-          <span class="qs-ico">💧</span>
-          <div class="qs-body">
-            <div class="qs-ttl">Low DO · Aeration</div>
-            <div class="qs-sub">DT-001 · 6 steps · used at 7 plants</div>
-          </div>
-        </button>
-        <button class="qs-tile" onclick="setStartMode(this,'tmp')">
-          <span class="qs-ico">📐</span>
-          <div class="qs-body">
-            <div class="qs-ttl">High TMP · MBR</div>
-            <div class="qs-sub">DT-002 · 5 steps · used at 4 plants</div>
-          </div>
-        </button>
-        <button class="qs-tile" onclick="setStartMode(this,'vfd')">
-          <span class="qs-ico">⚡</span>
-          <div class="qs-body">
-            <div class="qs-ttl">VFD overcurrent</div>
-            <div class="qs-sub">DT-003 · 4 steps · used at 3 plants</div>
-          </div>
-        </button>
-        <button class="qs-tile" onclick="setStartMode(this,'browse')">
-          <span class="qs-ico">→</span>
-          <div class="qs-body">
-            <div class="qs-ttl">Browse all templates</div>
-            <div class="qs-sub">22 in DP library · 6 saved by your team</div>
-          </div>
-        </button>
-        <button class="qs-tile" onclick="setStartMode(this,'blank')">
-          <span class="qs-ico">＋</span>
-          <div class="qs-body">
-            <div class="qs-ttl">Start blank</div>
-            <div class="qs-sub">Build from scratch (advanced)</div>
-          </div>
-        </button>
-      </div>
-    </div>
-
     <div class="card">
       <h3>Issue details</h3>
       <p class="helper">These fields define what operators see at the top of the screen. Pick from dropdowns where possible — type to add new entries.</p>

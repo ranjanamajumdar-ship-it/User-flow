@@ -294,26 +294,26 @@ input,textarea,select{font-family:inherit;}
   transition:width .18s ease;
 }
 .cv-palette.is-collapsed{
-  width:46px!important;
+  width:64px!important;
+  padding-left:8px!important;padding-right:8px!important;
 }
 .cv-palette.is-collapsed .cv-chip-tx,
 .cv-palette.is-collapsed .cv-palette-h,
 .cv-palette.is-collapsed .cv-palette-tip{display:none}
-.cv-palette.is-collapsed .cv-chip{justify-content:center;padding:8px}
+.cv-palette.is-collapsed .cv-chip{
+  justify-content:center;padding:6px;width:48px;height:48px;gap:0;margin:0 auto;
+}
+.cv-palette.is-collapsed .cv-chip-ic{width:32px;height:32px;flex:0 0 32px}
 
-/* Right inspector — opens automatically when a node is selected, closes when nothing is selected. */
+/* Right inspector — always present (no collapse). */
 .cv-inspector{
   position:relative;
-  width:0!important;
-  transition:width .22s cubic-bezier(.4,.0,.2,1);
-  overflow:hidden;
-}
-.cv-inspector.open{
   width:var(--inspectorW,344px)!important;
   overflow:visible;
+  flex:none;
 }
 .cv-inspector.is-collapsed{
-  width:0!important;
+  width:var(--inspectorW,344px)!important;
 }
 
 /* ===== Save-as-template bottom bar ===== */
@@ -390,7 +390,7 @@ input,textarea,select{font-family:inherit;}
 }
 .drawer-resize:hover,.drawer-resize.is-dragging{background:rgba(10,110,158,.18)}
 .cv-palette > .drawer-resize{right:-3px}
-.cv-inspector > .drawer-resize{left:-3px}
+.cv-inspector > .drawer-resize{display:none}
 
 /* Collapse/expand toggle button (corner of each drawer) */
 .drawer-toggle{
@@ -402,7 +402,7 @@ input,textarea,select{font-family:inherit;}
 }
 .drawer-toggle:hover{color:var(--accent);border-color:var(--accent)}
 .cv-palette > .drawer-toggle{right:6px}
-.cv-inspector > .drawer-toggle{left:6px}
+.cv-inspector > .drawer-toggle{display:none!important}
 .cv-palette.is-collapsed > .drawer-toggle,
 .cv-inspector.is-collapsed > .drawer-toggle{left:50%;right:auto;transform:translateX(-50%)}
 
@@ -1613,18 +1613,18 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
         <button className="cv-tbtn" onClick={() => setScale(s => Math.min(1.7, s * 1.15))} title="Zoom in"><MiniIcon name="plus" size={16} /></button>
       </div>
 
-      <div className={'cv-inspector vt-inspector' + ((selNode || Object.keys(nodes).length > 0) ? ' open' : '')}>
+      <div className="cv-inspector vt-inspector open">
         {selNode ? (
           <NodeEditor node={selNode} nodes={nodes}
             onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
             onDelete={deleteNode} onDuplicate={duplicateNode} />
-        ) : (Object.keys(nodes).length > 0 && (
+        ) : (
           <div className="cv-insp-empty">
             <div className="cv-insp-empty-ic"><MiniIcon name="grip" size={20} /></div>
             <p><b>Click any node</b> to edit it here.</p>
             <p className="muted">You can also type directly inside each node, or drag the cards around freely.</p>
           </div>
-        ))}
+        )}
       </div>
 
       {/* Save-as-template bar (bottom of canvas) */}
