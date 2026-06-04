@@ -926,8 +926,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 /* Section 2 + 3 are merged into Section 1 — fully hidden */
 #p-2,#p-3{display:none !important}
 
-/* On the Review step (#p-5) hide the bottom footer entirely — only the two summary cards remain. */
-body:has(#p-5.on) .footer{display:none !important}
+/* Bottom footer removed globally — navigation happens via the stepper. */
+.footer{display:none !important}
 
 /* ===== Padlock feature removed — hide every related UI artifact ===== */
 .lock-btn,
