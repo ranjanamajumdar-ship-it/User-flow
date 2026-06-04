@@ -1044,8 +1044,10 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
                 p.options = (node.options && node.options.length >= 2) ? node.options
                   : [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }, { id: uid('o'), label: 'Option C', target: null }];
               } else if (v === 'single') {
-                p.options = (node.options && node.options.length) ? node.options
-                  : [{ id: uid('o'), label: 'Answer A', target: null }, { id: uid('o'), label: 'Answer B', target: null }];
+                // Single answer = exactly ONE response slot. Collapse to the first existing
+                // option (preserving its target) or create a fresh empty one.
+                const first = (node.options && node.options[0]) || { id: uid('o'), label: 'Answer', target: null };
+                p.options = [first];
               }
             }
             patch(p);
