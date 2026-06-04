@@ -4835,7 +4835,13 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   }
 
   function saveAsTemplate(){
-    if (typeof _toast === 'function') _toast('Saved as template: Low DO · Aeration');
+    const name = prompt('Name this template — e.g. "Low DO · standard tree"', 'Low DO · Aeration');
+    if (!name) return;
+    const f = document.querySelector('.vt-embed-iframe');
+    if (f && f.contentWindow) {
+      f.contentWindow.postMessage({ type: 'dp:save-template', name: name.trim() }, '*');
+    }
+    if (typeof _toast === 'function') _toast('Saved as template · ' + name);
   }
   // ===== Override system =====
   // Padlock feature removed — these are no-ops kept only because legacy markup still references them.

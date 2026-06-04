@@ -1410,6 +1410,19 @@ window.FlowCanvas = FlowCanvas;
 /* Vertical branching tree — auto top-to-bottom layout, click to edit. */
 const VT_CARD_W = 264;
 function VerticalTree({ nodes, onNodes, selected, setSelected }){
+  // Listen for "save as template" requests from the parent window (config.html footer button)
+  useEffect(() => {
+    const onMsg = (e) => {
+      const d = e.data || {};
+      if (d.type === 'dp:save-template' && d.name) {
+        saveTemplate(d.name, nodes);
+        // Notify parent of the new count
+        try { window.parent.postMessage({ type: 'dp:tpl-count', count: listTemplates().length }, '*'); } catch(_){}
+      }
+    };
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, [nodes]);
   const scrollRef = useRef(null);
   const worldRef = useRef(null);
   const nodeRefs = useRef({});
@@ -1670,22 +1683,6 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
         )}
       </div>
 
-      {/* Save-as-template bar (bottom of canvas) */}
-      <div className="vt-tplbar">
-        <div className="vt-tplbar-list">
-          {listTemplates().map(t =>
-            <button key={t.id} className="vt-tpl-chip" title={'Load template · ' + t.count + ' steps'}
-              onClick={() => { if (confirm('Load template "' + t.name + '"?\\nThis replaces the current flow.')) onNodes(JSON.parse(JSON.stringify(t.nodes))); }}>
-              <span className="vt-tpl-chip-name">{t.name}</span>
-              <span className="vt-tpl-chip-n">{t.count}</span>
-              <span className="vt-tpl-chip-x" onClick={(e) => { e.stopPropagation(); if (confirm('Delete template "' + t.name + '"?')) { const all = listTemplates().filter(x => x.id !== t.id); localStorage.setItem(TPL_KEY, JSON.stringify(all)); onNodes(Object.assign({}, nodes)); } }}>×</span>
-            </button>
-          )}
-        </div>
-        <button className="vt-tplbar-save" onClick={() => { const n = prompt('Template name?', 'DO failure flow'); if (n) { saveTemplate(n, nodes); onNodes(Object.assign({}, nodes)); } }}>
-          <MiniIcon name="plus" size={14} /> Save as template
-        </button>
-      </div>
     </div>
   );
 }
