@@ -990,6 +990,11 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
   const cat = CAT_META[meta.cat];
   const tgts = targetOptions(nodes, node.id);
   const isNumericQ = node.type === 'question' && node.qType === 'numeric';
+  // Answer nodes with multi/single/yes-no/MCQ subtypes should expose an editable options list,
+  // just like Questions do — so the user can add / remove answer choices.
+  const ANSWER_MULTI = new Set(['single','yesno','mcq_single','range']);
+  const isMultiAnswer = node.type === 'answer' && ANSWER_MULTI.has(node.aType || 'single');
+  const showOpts = meta.branching || isMultiAnswer;
 
   const patch = (p) => onChange(Object.assign({}, node, p));
   const setOpt = (oid, p) => patch({ options: node.options.map(o => o.id === oid ? Object.assign({}, o, p) : o) });
@@ -1060,8 +1065,8 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
       React.createElement('textarea', { className: 'ed-input ed-area', value: node.detail || '', rows: compact ? 2 : 3,
         placeholder: meta.hint, onChange: e => patch({ detail: e.target.value }) })),
 
-    meta.branching && React.createElement('div', { className: 'ed-block' },
-      React.createElement('div', { className: 'ed-blockhead' }, isNumericQ ? 'Threshold bands & routing' : 'Answers & routing',
+    showOpts && React.createElement('div', { className: 'ed-block' },
+      React.createElement('div', { className: 'ed-blockhead' }, isNumericQ ? 'Threshold bands & routing' : (isMultiAnswer ? 'Answer choices & routing' : 'Answers & routing'),
         React.createElement('span', { className: 'ed-count' }, (node.options || []).length)),
       (node.options || []).map((o, i) =>
         React.createElement('div', { className: 'ed-optrow', key: o.id },
@@ -1078,10 +1083,10 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
           React.createElement('button', { className: 'ed-x', title: 'Remove answer', onClick: () => delOpt(o.id) },
             React.createElement(MiniIcon, { name: 'close', size: 13 })))),
       React.createElement('button', { className: 'ed-addopt', onClick: addOpt },
-        React.createElement(MiniIcon, { name: 'plus', size: 13 }), isNumericQ ? ' Add band' : ' Add answer')
+        React.createElement(MiniIcon, { name: 'plus', size: 13 }), isNumericQ ? ' Add band' : (isMultiAnswer ? ' Add choice' : ' Add answer'))
     ),
 
-    (!meta.branching && !meta.terminal) && React.createElement(Field, { label: 'Routes to next step' },
+    (!showOpts && !meta.terminal) && React.createElement(Field, { label: 'Routes to next step' },
       React.createElement('div', { className: 'ed-route' },
         React.createElement('span', { className: 'ed-arrow' }, '→'),
         React.createElement('select', { className: 'ed-select', value: node.next || '',
@@ -1907,7 +1912,7 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
                   <textarea className="cv-node-detail cv-node-detail-input" value={n.detail || ''} placeholder="Add a description or instruction…" rows={2}
                     onChange={e => onNodes(Object.assign({}, nodes, { [n.id]: Object.assign({}, nodes[n.id], { detail: e.target.value }) }))}
                     onPointerDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} />
-                  {m.branching ? (
+                  {(m.branching || (n.options && n.options.length > 0)) ? (
                     <div className="cv-opts">
                       {(n.options || []).map((o, i) => (
                         <div className="cv-opt" data-opt={o.id} key={o.id}>
