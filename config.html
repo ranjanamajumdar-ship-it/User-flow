@@ -933,6 +933,9 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 /* Bottom footer removed globally — navigation happens via the stepper. */
 .footer{display:none !important}
 
+/* On Build the flow, tighten the gap between the stepper and the canvas */
+body:has(#p-4.on) .wrap{margin-top:8px!important;margin-bottom:0!important;padding:0!important;max-width:none!important}
+
 /* ===== Padlock feature removed — hide every related UI artifact ===== */
 .lock-btn,
 .padlock-svg,
