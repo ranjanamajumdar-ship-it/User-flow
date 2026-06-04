@@ -906,6 +906,23 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 /* Save-as-template card-style button when used inside the footer */
 .footer-tpl-btn{margin-left:auto}
 
+/* Builder / Templates toggle in the top app bar */
+.bt-toggle{display:inline-flex;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:10px}
+.bt-tab{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 16px;border-radius:999px;border:0;cursor:pointer;
+  font:600 12.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink-2,#2B3A60);
+  background:transparent;letter-spacing:.1px;transition:.15s;
+}
+.bt-tab:hover{color:var(--ink)}
+.bt-tab.on{background:var(--brand);color:#fff;box-shadow:0 1px 3px rgba(0,41,118,.22)}
+.bt-tab-n{
+  display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;
+  font:700 10.5px 'IBM Plex Mono',monospace;border-radius:999px;
+  background:rgba(255,255,255,.18);color:inherit;
+}
+.bt-tab:not(.on) .bt-tab-n{background:rgba(20,33,48,.08);color:var(--ink-3)}
+
 /* Section 2 + 3 are merged into Section 1 — fully hidden */
 #p-2,#p-3{display:none !important}
 
@@ -2306,6 +2323,11 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     </div>
     <div class="spacer"></div>
     <div class="savetag"><span class="pulse"></span><span id="saveTxt">Saved</span></div>
+    <!-- Builder / Templates toggle (controls the embedded tree-builder via postMessage) -->
+    <div class="bt-toggle" id="btToggle">
+      <button class="bt-tab on" data-tab="builder" onclick="setBuilderTab('builder')">Builder</button>
+      <button class="bt-tab" data-tab="templates" onclick="setBuilderTab('templates')">Templates <span class="bt-tab-n" id="btTplCount">0</span></button>
+    </div>
   </div>
 </header>
 
@@ -2342,8 +2364,6 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
 <div class="wrap-form">
 
   <section class="panel on" id="p-1">
-    <h1 class="page-h">Set up the <em>issue</em></h1>
-    <p class="page-sub">Give the issue a clear identity. Plant, equipment, severity, deadline — everything operators see at the top of the screen.</p>
 
     <div class="card">
       <h3>Issue details</h3>
@@ -2691,10 +2711,6 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
 
   <!-- ============== STEP 4 · Build the flow ============== -->
   <section class="panel" id="p-4">
-    <div class="page-h-row">
-      <h1 class="page-h" style="margin-bottom:0">Build the <em>flow</em></h1>
-    </div>
-    <p class="page-sub">Drag step types in from the left, hover between cards to insert, tap a card to edit it.</p>
 
     <div class="tip-row" style="display:none">
       <div class="tip-ico">✨</div>
@@ -3031,8 +3047,6 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
 
   <!-- ============== STEP 4 · Review ============== -->
   <section class="panel" id="p-5">
-    <h1 class="page-h">Review &amp; <em>publish</em></h1>
-    <p class="page-sub">Final check before publishing to all operators.</p>
 
     <div class="rv-cards">
       <!-- ====== Card 1: Issue basics ====== -->
@@ -4826,6 +4840,24 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   // Padlock feature removed — these are no-ops kept only because legacy markup still references them.
   function toggleLock(){ return; }
   function resetOverride(){ return; }
+
+  // ----- Builder / Templates toggle (postMessage bridge to embedded tree-builder) -----
+  function setBuilderTab(tab){
+    document.querySelectorAll('#btToggle .bt-tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+    const f = document.querySelector('.vt-embed-iframe');
+    if (f && f.contentWindow) f.contentWindow.postMessage({ type: 'dp:set-tab', tab }, '*');
+  }
+  // Receive count + tab updates from the iframe
+  window.addEventListener('message', (e) => {
+    const d = e.data || {};
+    if (d.type === 'dp:tpl-count') {
+      const el = document.getElementById('btTplCount');
+      if (el) el.textContent = String(d.count || 0);
+    }
+    if (d.type === 'dp:tab') {
+      document.querySelectorAll('#btToggle .bt-tab').forEach(b => b.classList.toggle('on', b.dataset.tab === d.tab));
+    }
+  });
   function updateOverrideCount(){
     const n = document.querySelectorAll('.ovr[data-locked="true"]').length;
     document.querySelectorAll('.mbc-num').forEach(el => el.textContent = String(n));

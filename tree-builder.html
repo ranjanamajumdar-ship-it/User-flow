@@ -1796,6 +1796,28 @@ function App(){
   const [tpls, setTpls] = useState(() => listTemplates());
   const [tab, setTab] = useState('builder'); // 'builder' | 'templates'
 
+  // Bridge with the parent (config.html top-bar Builder/Templates toggle)
+  useEffect(() => {
+    const onMsg = (e) => {
+      const d = e.data || {};
+      if (d.type === 'dp:set-tab' && (d.tab === 'builder' || d.tab === 'templates')) {
+        if (d.tab === 'templates') setTpls(listTemplates());
+        setTab(d.tab);
+      }
+    };
+    window.addEventListener('message', onMsg);
+    // Tell the parent how many templates we have on boot
+    try { window.parent.postMessage({ type: 'dp:tpl-count', count: listTemplates().length }, '*'); } catch(_){}
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+  // Keep parent in sync whenever templates list or tab changes
+  useEffect(() => {
+    try { window.parent.postMessage({ type: 'dp:tpl-count', count: tpls.length }, '*'); } catch(_){}
+  }, [tpls]);
+  useEffect(() => {
+    try { window.parent.postMessage({ type: 'dp:tab', tab }, '*'); } catch(_){}
+  }, [tab]);
+
   // debounced persist
   const tRef = useRef(null);
   useEffect(() => {
@@ -1857,12 +1879,6 @@ function App(){
 
         <div className="hdr-right">
           <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving…' : '✓ Saved'}</span>
-          <div className="bt-toggle">
-            <button className={'bt-tab' + (tab === 'builder' ? ' on' : '')} onClick={() => setTab('builder')}>Builder</button>
-            <button className={'bt-tab' + (tab === 'templates' ? ' on' : '')} onClick={() => { setTpls(listTemplates()); setTab('templates'); }}>
-              Templates <span className="bt-tab-n">{tpls.length}</span>
-            </button>
-          </div>
         </div>
       </header>
 
