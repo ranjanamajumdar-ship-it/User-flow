@@ -133,10 +133,13 @@ input,textarea,select{font-family:inherit;}
 .cv-anchor{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--c);cursor:crosshair;z-index:3;transition:transform .12s,background .12s,box-shadow .12s;}
 .cv-anchor.cv-in{left:-7px;top:22px;border-color:var(--ink3);}
 .cv-anchor.cv-out{right:-7px;}
-/* Option-level outbound anchor sits flush against the option row — drag from right next to the option label */
-.cv-opt{padding-right:24px}
-.cv-opt .cv-out{top:50%;right:4px;transform:translateY(-50%);box-shadow:0 0 0 3px rgba(255,255,255,.95),0 1px 3px rgba(20,33,48,.18)}
-.cv-opt:hover .cv-out{box-shadow:0 0 0 3px rgba(255,255,255,.95),0 0 0 6px var(--cs)}
+/* Option-level outbound anchor — pinned to the card's outer right edge so connection lines clearly emerge from each option's circle. */
+.cv-opt{padding-right:8px}
+.cv-opt .cv-out{
+  top:50%;right:-24px;transform:translateY(-50%);
+  box-shadow:0 0 0 3px #fff,0 1px 3px rgba(20,33,48,.22);
+}
+.cv-opt:hover .cv-out{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--cs)}
 .cv-out-single{right:-7px;top:22px;}
 .cv-anchor:hover{background:var(--c);transform:scale(1.2);}
 .cv-opt .cv-out:hover{transform:translateY(-50%) scale(1.2);}
@@ -1590,7 +1593,8 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
   const srcPt = (n, optId) => {
     const g = geom[n.id] || {};
     if (optId && g.opts && g.opts[optId] != null) {
-      return { x: n.x + VT_CARD_W, y: n.y + g.opts[optId] };
+      // Anchor sits at right:-24px relative to the row, i.e. ~7px past the card's outer right edge.
+      return { x: n.x + VT_CARD_W + 7, y: n.y + g.opts[optId] };
     }
     const y = (g.outY != null) ? g.outY : ((g.h || 150));
     return { x: n.x + VT_CARD_W / 2, y: n.y + y };
@@ -1610,7 +1614,8 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
   // live drag preview starts at the option's right-side handle
   const handlePt = (id, optId) => { const n = laid[id]; const g = geom[id] || {};
     const y = optId ? (g.opts && g.opts[optId] != null ? g.opts[optId] : (g.h || 80) / 2) : (g.outY != null ? g.outY : (g.h || 80) / 2);
-    return { x: n.x + VT_CARD_W, y: n.y + y }; };
+    // optId rows have the dot at the card's outer right edge (+7px past the card border)
+    return { x: n.x + VT_CARD_W + (optId ? 7 : 0), y: n.y + y }; };
   const previewD = (s, t) => { const dx = Math.max(30, Math.abs(t.x - s.x) * 0.4); return `M${s.x},${s.y} C${s.x + dx},${s.y} ${t.x},${t.y - 30} ${t.x},${t.y}`; };
 
   const selNode = selected ? nodes[selected] : null;
