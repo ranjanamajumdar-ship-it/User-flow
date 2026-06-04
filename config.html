@@ -903,26 +903,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 }
 @media (max-width:900px){.vt-embed-iframe{height:600px}}
 
-/* Sticky save-as-template bar (only on Build the flow) */
-.sticky-tpl-bar{
-  position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
-  z-index:90;display:none;pointer-events:auto;
-}
-#p-4.on ~ .sticky-tpl-bar,
-.panel#p-4.on .sticky-tpl-bar{display:block}
-.sticky-tpl-btn{
-  display:inline-flex;align-items:center;gap:12px;
-  padding:12px 20px;border-radius:999px;border:0;cursor:pointer;
-  background:linear-gradient(135deg,#0E1428,#2B3A60);
-  color:#fff;font-family:'Plus Jakarta Sans',sans-serif;
-  box-shadow:0 14px 36px -10px rgba(20,30,60,.55),0 0 0 1px rgba(255,255,255,.05) inset;
-  transition:.18s;
-}
-.sticky-tpl-btn:hover{transform:translateY(-1px);box-shadow:0 18px 42px -10px rgba(20,30,60,.65)}
-.stb-ic{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.12);font-size:15px}
-.stb-tx{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2}
-.stb-tx b{font-size:13px;font-weight:800;letter-spacing:-.005em}
-.stb-tx span{font-size:11px;color:rgba(255,255,255,.65);font-weight:500;letter-spacing:.1px}
+/* Save-as-template card-style button when used inside the footer */
+.footer-tpl-btn{margin-left:auto}
 
 /* Section 2 + 3 are merged into Section 1 — fully hidden */
 #p-2,#p-3{display:none !important}
@@ -3045,13 +3027,6 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
       </div>
     </div>
 
-    <!-- Sticky save-as-template bar, visible while on Build the flow -->
-    <div class="sticky-tpl-bar">
-      <button class="sticky-tpl-btn" onclick="saveAsTemplate()" title="Save current flow as a reusable template">
-        <span class="stb-ic">📐</span>
-        <span class="stb-tx"><b>Save as template</b><span>Reuse this flow on other plants</span></span>
-      </button>
-    </div>
   </section>
 
   <!-- ============== STEP 4 · Review ============== -->
@@ -3400,6 +3375,11 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     <div class="meta">Section <b id="stepNow">1</b> of 5 · DT-001 · v3.2 draft</div>
     <button class="btn outline lg" id="backBtn" onclick="prevStep()" style="display:none">‹ Back</button>
     <button class="btn primary lg" id="nextBtn" onclick="nextStep()">Continue ›</button>
+    <!-- On Build the flow we replace Publish with the Save-as-template card-style button -->
+    <button class="btn-template footer-tpl-btn" id="footerTplBtn" onclick="saveAsTemplate()" style="display:none" title="Save current flow as a reusable template">
+      <span class="bt-ic">📐</span>
+      <span class="bt-tx"><b>Save as template</b><span>Reuse this flow on other plants</span></span>
+    </button>
   </div>
 </div>
 
@@ -4585,9 +4565,19 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     if (typeof syncSideDash === 'function') syncSideDash(n);
     document.getElementById('backBtn').style.display = n > 1 ? '' : 'none';
     const next = document.getElementById('nextBtn');
-    next.textContent = n === 4 ? 'Publish to operators' : 'Continue ›';
-    if (n === 4) next.style.background = '#1F9D55', next.style.borderColor = '#1F9D55';
-    else next.style.background = '', next.style.borderColor = '';
+    const ftpl = document.getElementById('footerTplBtn');
+    // Step 4 = Build the flow → replace the right-side primary CTA with the Save-as-template card.
+    // Step 5 = Review → show the Publish CTA (green).
+    if (n === 4) {
+      next.style.display = 'none';
+      if (ftpl) ftpl.style.display = '';
+    } else {
+      next.style.display = '';
+      if (ftpl) ftpl.style.display = 'none';
+      next.textContent = n === 5 ? 'Publish to operators' : 'Continue ›';
+      if (n === 5) { next.style.background = '#1F9D55'; next.style.borderColor = '#1F9D55'; }
+      else { next.style.background = ''; next.style.borderColor = ''; }
+    }
     // widen container on Step 3 for the canvas
     document.querySelector('.wrap').classList.toggle('wide', n === 3);
     // pull values into review
