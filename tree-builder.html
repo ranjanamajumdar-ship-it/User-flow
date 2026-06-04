@@ -173,6 +173,38 @@ input,textarea,select{font-family:inherit;}
   border-color:var(--accent)!important;
   box-shadow:0 0 0 2px var(--accent),0 14px 34px -10px rgba(10,110,158,.35)!important;
 }
+
+/* Free-floating images dropped onto the canvas */
+.vt-image{
+  position:absolute;display:block;
+  border-radius:10px;overflow:visible;
+  box-shadow:0 2px 4px rgba(14,20,40,.08),0 10px 28px rgba(14,20,40,.12);
+  cursor:grab;user-select:none;z-index:5;
+  background:#fff;
+}
+.vt-image.is-dragging{cursor:grabbing;outline:2px solid var(--accent);outline-offset:2px}
+.vt-image:hover{outline:2px solid var(--accent);outline-offset:2px}
+.vt-image img{width:100%;height:100%;display:block;border-radius:10px;pointer-events:none;object-fit:cover}
+.vt-img-del{
+  position:absolute;top:-12px;right:-12px;width:24px;height:24px;border-radius:50%;
+  background:#fff;border:1.5px solid var(--line);color:var(--ink2);
+  display:none;align-items:center;justify-content:center;cursor:pointer;
+  font:700 14px 'Plus Jakarta Sans',sans-serif;line-height:1;z-index:2;
+  box-shadow:0 4px 10px rgba(14,20,40,.18);
+}
+.vt-image:hover .vt-img-del{display:flex}
+.vt-img-del:hover{background:#fdecea;color:#c0473a;border-color:#c0473a}
+.vt-img-handle{
+  position:absolute;width:14px;height:14px;border-radius:50%;
+  background:#fff;border:2px solid var(--accent);
+  display:none;z-index:2;
+  box-shadow:0 1px 3px rgba(14,20,40,.18);
+}
+.vt-image:hover .vt-img-handle,.vt-image.is-dragging .vt-img-handle{display:block}
+.vt-img-nw{top:-7px;left:-7px;cursor:nwse-resize}
+.vt-img-ne{top:-7px;right:-7px;cursor:nesw-resize}
+.vt-img-sw{bottom:-7px;left:-7px;cursor:nesw-resize}
+.vt-img-se{bottom:-7px;right:-7px;cursor:nwse-resize}
 .cv-tbtn{display:flex;align-items:center;gap:5px;padding:7px 9px;border-radius:7px;color:var(--ink2);font-size:12px;font-weight:600;}
 .cv-tbtn:hover{background:var(--line2);color:var(--ink);}
 .cv-tbpct{min-width:48px;justify-content:center;font-variant-numeric:tabular-nums;}
@@ -823,9 +855,9 @@ const STORE_KEY = 'dp_flow_builder_v10_diagram';
 function loadState(){
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (raw) { const p = JSON.parse(raw); if (p && p.nodes) return p; }
+    if (raw) { const p = JSON.parse(raw); if (p && p.nodes) return Object.assign({ images: [] }, p); }
   } catch(e){}
-  return { nodes: seedTree(), view: { x: 20, y: 10, k: 0.86 }, mode: 'canvas', collapsed: {} };
+  return { nodes: seedTree(), images: [], view: { x: 20, y: 10, k: 0.86 }, mode: 'canvas', collapsed: {} };
 }
 function saveState(state){
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
@@ -1467,7 +1499,9 @@ window.FlowCanvas = FlowCanvas;
 /*__js/outline.jsx__*/
 /* Vertical branching tree — auto top-to-bottom layout, click to edit. */
 const VT_CARD_W = 264;
-function VerticalTree({ nodes, onNodes, selected, setSelected }){
+function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setImages = () => {} }){
+  // Image drag / resize state
+  const [imgDrag, setImgDrag] = useState(null);   // { id, mode: 'move' | 'resize', ox, oy }
   // Listen for "save as template" requests from the parent window (config.html footer button)
   useEffect(() => {
     const onMsg = (e) => {
@@ -1493,6 +1527,37 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
   const [multiSel, setMultiSel] = useState(() => new Set());
   const [marquee, setMarquee] = useState(null); // { x0, y0, x1, y1 } in world coords
   const laid = useMemo(() => verticalLayout(nodes), [nodes]);
+
+  // Image move / resize pointer handlers
+  useEffect(() => {
+    if (!imgDrag) return;
+    const onMove = (e) => {
+      const wr = worldRef.current?.getBoundingClientRect();
+      if (!wr) return;
+      const wx = (e.clientX - wr.left) / scale;
+      const wy = (e.clientY - wr.top) / scale;
+      if (imgDrag.mode === 'move') {
+        setImages(prev => prev.map(img => img.id === imgDrag.id ? Object.assign({}, img, { x: wx - imgDrag.ox, y: wy - imgDrag.oy }) : img));
+      } else if (imgDrag.mode === 'resize') {
+        // Anchor the opposite corner; resize from the dragged corner toward the pointer.
+        const a = imgDrag.anchor; // { x, y } — the corner that stays put
+        const c = imgDrag.corner; // 'nw' | 'ne' | 'sw' | 'se'
+        const ratio = imgDrag.aspect;
+        let nx, ny, nw, nh;
+        if (c === 'se') { nw = Math.max(48, wx - a.x); nh = ratio ? nw / ratio : Math.max(48, wy - a.y); nx = a.x; ny = a.y; }
+        else if (c === 'sw') { nw = Math.max(48, a.x - wx); nh = ratio ? nw / ratio : Math.max(48, wy - a.y); nx = a.x - nw; ny = a.y; }
+        else if (c === 'ne') { nw = Math.max(48, wx - a.x); nh = ratio ? nw / ratio : Math.max(48, a.y - wy); nx = a.x; ny = a.y - nh; }
+        else /* nw */ { nw = Math.max(48, a.x - wx); nh = ratio ? nw / ratio : Math.max(48, a.y - wy); nx = a.x - nw; ny = a.y - nh; }
+        setImages(prev => prev.map(img => img.id === imgDrag.id ? Object.assign({}, img, { x: nx, y: ny, w: nw, h: nh }) : img));
+      }
+    };
+    const onUp = () => setImgDrag(null);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    return () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+  }, [imgDrag, scale, setImages]);
+
+  const deleteImage = (id) => setImages(prev => prev.filter(i => i.id !== id));
 
   // Marquee drag: select all nodes whose bounding box intersects the rectangle.
   useEffect(() => {
@@ -1693,7 +1758,36 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
         <div className="cv-palette-tip">Click to add · or drag the dot on a step’s right edge onto another step to connect them.</div>
       </div>
 
-      <div className="vt-scroll" ref={scrollRef}>
+      <div className="vt-scroll" ref={scrollRef}
+        onDragOver={(e) => { e.preventDefault(); }}
+        onDrop={(e) => {
+          e.preventDefault();
+          const files = Array.from(e.dataTransfer?.files || []).filter(f => f.type.startsWith('image/'));
+          if (!files.length) return;
+          const wr = worldRef.current?.getBoundingClientRect();
+          if (!wr) return;
+          const baseX = (e.clientX - wr.left) / scale;
+          const baseY = (e.clientY - wr.top) / scale;
+          files.forEach((file, i) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              const src = ev.target.result;
+              const img = new Image();
+              img.onload = () => {
+                const maxW = 360;
+                const ratio = img.width / img.height;
+                const w = Math.min(maxW, img.width);
+                const h = w / ratio;
+                setImages(prev => prev.concat([{
+                  id: 'img_' + (prev.length + 1) + '_' + Math.floor(performance.now()),
+                  src, x: baseX + i * 20, y: baseY + i * 20, w, h
+                }]));
+              };
+              img.src = src;
+            };
+            reader.readAsDataURL(file);
+          });
+        }}>
         <div className="vt-sizer" style={{ width: contentW * scale, height: contentH * scale }}>
           <div className="vt-world" ref={worldRef}
             style={{ width: contentW, height: contentH, transform: `scale(${scale})` }}
@@ -1741,6 +1835,38 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
                 return <rect x={x} y={y} width={w} height={h} fill="rgba(10,110,158,.08)" stroke="#0a6e9e" strokeWidth="1.5" strokeDasharray="6 4" rx="6" />;
               })()}
             </svg>
+            {/* Free-floating images (drag-drop onto canvas) */}
+            {images.map(img => (
+              <div key={img.id} className={'vt-image' + (imgDrag && imgDrag.id === img.id ? ' is-dragging' : '')}
+                style={{ left: img.x, top: img.y, width: img.w, height: img.h }}
+                onPointerDown={(e) => {
+                  if (e.target.closest('.vt-img-handle') || e.target.closest('.vt-img-del')) return;
+                  e.stopPropagation();
+                  const wr = worldRef.current?.getBoundingClientRect();
+                  if (!wr) return;
+                  const wx = (e.clientX - wr.left) / scale;
+                  const wy = (e.clientY - wr.top) / scale;
+                  setImgDrag({ id: img.id, mode: 'move', ox: wx - img.x, oy: wy - img.y });
+                  try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_){}
+                }}>
+                <img src={img.src} alt="" draggable={false} />
+                <button className="vt-img-del" title="Delete image" onPointerDown={e => e.stopPropagation()} onClick={() => deleteImage(img.id)}>×</button>
+                {['nw','ne','sw','se'].map(corner => (
+                  <span key={corner} className={'vt-img-handle vt-img-' + corner}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      const anchors = {
+                        nw: { x: img.x + img.w, y: img.y + img.h }, // opposite: SE
+                        ne: { x: img.x,         y: img.y + img.h }, // opposite: SW
+                        sw: { x: img.x + img.w, y: img.y },         // opposite: NE
+                        se: { x: img.x,         y: img.y }          // opposite: NW
+                      };
+                      setImgDrag({ id: img.id, mode: 'resize', aspect: img.w / img.h, corner, anchor: anchors[corner] });
+                      try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_){}
+                    }} />
+                ))}
+              </div>
+            ))}
             {Object.values(laid).map(n => {
               const m = NODE_TYPES[n.type] || NODE_TYPES.task; const c = CAT_META[m.cat];
               const isTgt = hoverTarget === n.id && conn;
@@ -1936,6 +2062,7 @@ window.WizardView = WizardView;
 function App(){
   const initial = useMemo(() => loadState(), []);
   const [nodes, setNodes] = useState(initial.nodes);
+  const [images, setImages] = useState(initial.images || []);
   const [view, setView] = useState(initial.view || { x: 20, y: 10, k: 0.86 });
   const [mode, setMode] = useState('tree');
   const [collapsed, setCollapsed] = useState(initial.collapsed || {});
@@ -1972,8 +2099,8 @@ function App(){
   useEffect(() => {
     setSavedAt('saving');
     clearTimeout(tRef.current);
-    tRef.current = setTimeout(() => { saveState({ nodes, view, mode, collapsed }); setSavedAt('saved'); }, 500);
-  }, [nodes, view, mode, collapsed]);
+    tRef.current = setTimeout(() => { saveState({ nodes, images, view, mode, collapsed }); setSavedAt('saved'); }, 500);
+  }, [nodes, images, view, mode, collapsed]);
 
   const onNodes = (nn) => setNodes(nn);
 
@@ -2041,7 +2168,7 @@ function App(){
         {tab === 'builder' ? (
           <React.Fragment>
             {mode === 'canvas' && <FlowCanvas nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} view={view} setView={setView} />}
-            {mode === 'tree' && <VerticalTree nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />}
+            {mode === 'tree' && <VerticalTree nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} images={images} setImages={setImages} />}
             {mode === 'wizard' && <WizardView nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />}
           </React.Fragment>
         ) : (
