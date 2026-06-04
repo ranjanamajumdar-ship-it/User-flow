@@ -931,7 +931,7 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 #p-2,#p-3{display:none !important}
 
 /* Bottom footer removed globally — navigation happens via the stepper. */
-.footer{display:none !important}
+.footer,#nextBtn,#backBtn,#stepNow{display:none !important}
 
 /* ===== Publish bar (Review screen) ===== */
 .publish-bar{
@@ -3355,9 +3355,9 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   <span class="bt-tx"><b>Save as template</b></span>
 </button>
 <!-- Hidden no-op stand-ins for legacy JS references -->
-<button id="backBtn" style="display:none"></button>
-<button id="nextBtn" style="display:none"></button>
-<span id="stepNow" style="display:none"></span>
+<button id="backBtn" style="display:none !important"></button>
+<button id="nextBtn" style="display:none !important"></button>
+<span id="stepNow" style="display:none !important"></span>
 
 <!-- ========== Drawer ========== -->
 <div class="scrim" id="scrim" onclick="closeDrawer()"></div>
@@ -4539,21 +4539,14 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     });
     document.getElementById('stepNow').textContent = n;
     if (typeof syncSideDash === 'function') syncSideDash(n);
-    document.getElementById('backBtn').style.display = n > 1 ? '' : 'none';
+    // Footer/back/next legacy buttons are permanently hidden — navigation lives in the stepper and per-page CTAs.
+    const back = document.getElementById('backBtn');
     const next = document.getElementById('nextBtn');
     const ftpl = document.getElementById('footerTplBtn');
-    // Step 4 = Build the flow → replace the right-side primary CTA with the Save-as-template card.
-    // Step 5 = Review → show the Publish CTA (green).
-    if (n === 4) {
-      next.style.display = 'none';
-      if (ftpl) ftpl.style.display = '';
-    } else {
-      next.style.display = '';
-      if (ftpl) ftpl.style.display = 'none';
-      next.textContent = n === 5 ? 'Publish to operators' : 'Continue ›';
-      if (n === 5) { next.style.background = '#1F9D55'; next.style.borderColor = '#1F9D55'; }
-      else { next.style.background = ''; next.style.borderColor = ''; }
-    }
+    if (back) back.style.display = 'none';
+    if (next) { next.style.display = 'none'; next.textContent = ''; next.style.background = ''; next.style.borderColor = ''; }
+    // Sticky "Save as template" floats only on Build the flow
+    if (ftpl) ftpl.style.display = (n === 4) ? '' : 'none';
     // widen container on Step 3 for the canvas
     document.querySelector('.wrap').classList.toggle('wide', n === 3);
     // pull values into review
