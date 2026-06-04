@@ -1629,10 +1629,6 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
 
       {/* Save-as-template bar (bottom of canvas) */}
       <div className="vt-tplbar">
-        <div className="vt-tplbar-left">
-          <span className="vt-tplbar-h">Templates</span>
-          <span className="vt-tplbar-sub">Save the current flow as a reusable template, or click one to load it.</span>
-        </div>
         <div className="vt-tplbar-list">
           {listTemplates().map(t =>
             <button key={t.id} className="vt-tpl-chip" title={'Load template · ' + t.count + ' steps'}
@@ -1821,28 +1817,6 @@ function App(){
           <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving…' : '✓ Saved'}</span>
           <button className="hdr-btn" onClick={blank}>Start blank</button>
           <button className="hdr-btn" onClick={reset}>Reset seed</button>
-          <div className="hdr-menuwrap">
-            <button className="hdr-btn" onClick={() => setTplOpen(o => !o)}>Templates ▾</button>
-            {tplOpen && <div className="menu-backdrop" onClick={() => setTplOpen(false)} />}
-            {tplOpen && (
-              <div className="hdr-menu">
-                <button className="hdr-menu-save" onClick={saveTpl}><MiniIcon name="save" size={15} /> Save current flow as template</button>
-                <div className="hdr-menu-h">Saved templates <span>{tpls.length}</span></div>
-                <div className="hdr-menu-list">
-                  {tpls.length ? tpls.map(t => (
-                    <div key={t.id} className="hdr-tpl">
-                      <span className="hdr-tpl-ic"><Icon glyph="issue" size={15} color="#0a6e9e" /></span>
-                      <span className="hdr-tpl-tx" onClick={() => loadTpl(t)}>
-                        <span className="hdr-tpl-name">{t.name}</span>
-                        <span className="hdr-tpl-meta">{t.count} steps · {new Date(t.createdAt).toLocaleDateString()}</span>
-                      </span>
-                      <button className="hdr-tpl-del" title="Delete template" onClick={(e) => delTpl(e, t.id)}><MiniIcon name="trash" size={14} /></button>
-                    </div>
-                  )) : <div className="hdr-menu-empty">No saved templates yet. Build a flow, then “Save current flow as template” to reuse it.</div>}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </header>
 
