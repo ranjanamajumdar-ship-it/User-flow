@@ -1613,12 +1613,18 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
         <button className="cv-tbtn" onClick={() => setScale(s => Math.min(1.7, s * 1.15))} title="Zoom in"><MiniIcon name="plus" size={16} /></button>
       </div>
 
-      <div className={'cv-inspector vt-inspector' + (selNode ? ' open' : '')}>
-        {selNode && (
+      <div className={'cv-inspector vt-inspector' + ((selNode || Object.keys(nodes).length > 0) ? ' open' : '')}>
+        {selNode ? (
           <NodeEditor node={selNode} nodes={nodes}
             onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
             onDelete={deleteNode} onDuplicate={duplicateNode} />
-        )}
+        ) : (Object.keys(nodes).length > 0 && (
+          <div className="cv-insp-empty">
+            <div className="cv-insp-empty-ic"><MiniIcon name="grip" size={20} /></div>
+            <p><b>Click any node</b> to edit it here.</p>
+            <p className="muted">You can also type directly inside each node, or drag the cards around freely.</p>
+          </div>
+        ))}
       </div>
 
       {/* Save-as-template bar (bottom of canvas) */}
