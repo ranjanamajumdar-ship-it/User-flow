@@ -915,8 +915,8 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
   border-radius:18px;
 }
 .vt-embed-full .vt-embed-iframe{
-  height:calc(100vh - 260px);
-  min-height:640px;
+  height:1600px;
+  min-height:1200px;
   border-radius:0 0 18px 18px;
 }
 
@@ -941,15 +941,26 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .freq-input{position:relative;display:flex;align-items:center}
 .freq-input input{flex:1;padding-right:54px}
 .freq-input .freq-u{position:absolute;right:12px;font:600 11px 'JetBrains Mono',monospace;color:var(--ink-3);letter-spacing:.3px;text-transform:uppercase}
-.cond-input{display:flex;gap:0;border:1px solid var(--line-soft);border-radius:10px;overflow:hidden;background:#fff}
-.cond-input .cond-create{
+.cond-split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cond-half{display:flex;align-items:stretch;border:1px solid var(--line-soft);border-radius:10px;overflow:hidden;background:#fff;min-height:42px}
+.cond-half .cond-create{
   flex:0 0 auto;padding:0 14px;font:600 12px 'Plus Jakarta Sans',sans-serif;
   background:rgba(0,41,118,.06);color:var(--brand);border:0;border-right:1px solid var(--line-soft);cursor:pointer;letter-spacing:.1px;
 }
-.cond-input .cond-create:hover{background:rgba(0,41,118,.11)}
-.cond-input .cond-select{flex:1;border:0;border-radius:0;background:transparent}
-.comm-grid{grid-template-columns:1fr 1fr;gap:14px 18px}
-.comm-ic{display:inline-block;margin-right:6px;font-size:13px;filter:grayscale(.1)}
+.cond-half .cond-create:hover{background:rgba(0,41,118,.11)}
+.cond-half .cond-create.is-active{background:var(--brand);color:#fff}
+.cond-half .cond-create-input{
+  flex:1;border:0;background:transparent;padding:0 12px;font:500 13px 'Plus Jakarta Sans',sans-serif;color:var(--ink);
+  display:none;min-width:0;
+}
+.cond-half .cond-create-input:focus{outline:none}
+.cond-half.is-creating .cond-create-input{display:block}
+.cond-half .cond-save{
+  flex:0 0 auto;padding:0 14px;font:700 11.5px 'Plus Jakarta Sans',sans-serif;
+  background:#1F9D55;color:#fff;border:0;cursor:pointer;display:none;letter-spacing:.2px;
+}
+.cond-half.is-creating .cond-save{display:block}
+.cond-half .cond-select{flex:1;border:0;border-radius:0;background:transparent;min-width:0}
 
 
 /* ===== Big Flow Canvas card (Section 4) ===== */
@@ -2453,21 +2464,25 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
       </div>
     </div>
 
-    <!-- ===== Assignee · 3 options + progressive disclosure ===== -->
-    <div class="ff" style="margin-top:18px">
-      <label>Assignee</label>
-      <select id="assigneeRole" onchange="onAssigneeRoleChangeV2(this);markSaved()">
-        <option value="general" selected>General</option>
-        <option value="onshift">Anyone on shift</option>
-        <option value="specific">Assign to a specific person</option>
-      </select>
-      <div class="help" id="assigneeHelp">Anyone with the right role on shift is eligible.</div>
+    <!-- ===== Assignment card (unified) ===== -->
+    <div class="card">
+      <h3>Assignment</h3>
+      <p class="helper" style="margin:0 0 14px">Who gets this issue when it fires.</p>
+      <div class="ff">
+        <label>Assignee</label>
+        <select id="assigneeRole" onchange="onAssigneeRoleChangeV2(this);markSaved()">
+          <option value="general" selected>General</option>
+          <option value="onshift">Anyone on shift</option>
+          <option value="specific">Assign to a specific person</option>
+        </select>
+        <div class="help" id="assigneeHelp">Anyone with the right role on shift is eligible.</div>
+      </div>
     </div>
 
-    <!-- ===== Triggers section (heading + 2 inputs) ===== -->
-    <div class="block-mini" style="margin-top:28px">
-      <h3 class="mini-h">Triggers</h3>
-      <p class="helper" style="margin:0 0 12px">Define when this issue auto-opens. Closing logic lives on the Analytical Engine.</p>
+    <!-- ===== Triggers card ===== -->
+    <div class="card">
+      <h3>Triggers</h3>
+      <p class="helper" style="margin:0 0 14px">Define when this issue auto-opens. Closing logic lives on the Analytical Engine.</p>
       <div class="form-grid">
         <div class="ff">
           <label>Observation frequency</label>
@@ -2478,62 +2493,40 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
         </div>
         <div class="ff">
           <label>Observation condition</label>
-          <div class="cond-input">
-            <button type="button" class="cond-create" onclick="_toast('Open formula builder in Analytical Engine')">＋ Create</button>
-            <select class="cond-select" onchange="markSaved()">
-              <option>— Select condition —</option>
-              <option>DO &lt; 2.0 mg/L sustained 12 min</option>
-              <option>MLSS &gt; 4.0 g/L sustained 30 min</option>
-              <option>Flow drop &gt; 20%</option>
-              <option>pH out of 6.5–8.5 sustained 15 min</option>
-              <option>Blower OFF / TRIP</option>
-            </select>
+          <div class="cond-input cond-split">
+            <div class="cond-half">
+              <button type="button" class="cond-create" id="condCreateBtn" onclick="enterCreateCondition()">＋ Create</button>
+              <input type="text" class="cond-create-input" id="condCreateInput" placeholder="Type formula · e.g. DO &lt; 2.0 sustained 12m" oninput="markSaved()"/>
+              <button type="button" class="cond-save" id="condSaveBtn" onclick="saveCreatedCondition()">Save</button>
+            </div>
+            <div class="cond-half">
+              <select class="cond-select" onchange="markSaved()">
+                <option>— Select condition —</option>
+                <option>DO &lt; 2.0 mg/L sustained 12 min</option>
+                <option>MLSS &gt; 4.0 g/L sustained 30 min</option>
+                <option>Flow drop &gt; 20%</option>
+                <option>pH out of 6.5–8.5 sustained 15 min</option>
+                <option>Blower OFF / TRIP</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ===== Communication section (4 channel inputs with dropdowns) ===== -->
-    <div class="block-mini" style="margin-top:28px">
-      <h3 class="mini-h">Communication</h3>
-      <p class="helper" style="margin:0 0 12px">Pick the message template per channel.</p>
-      <div class="form-grid comm-grid">
-        <div class="ff">
-          <label><span class="comm-ic">💬</span> SMS</label>
-          <select onchange="markSaved()">
-            <option>— Select template —</option>
-            <option>SMS · short alert · low DO</option>
-            <option>SMS · critical · escalation</option>
-            <option>SMS · resolved · close-out</option>
-          </select>
-        </div>
-        <div class="ff">
-          <label><span class="comm-ic">🟢</span> WhatsApp alert</label>
-          <select onchange="markSaved()">
-            <option>— Select template —</option>
-            <option>WA · alert + deeplink</option>
-            <option>WA · supervisor escalation</option>
-            <option>WA · acknowledgment request</option>
-          </select>
-        </div>
-        <div class="ff">
-          <label><span class="comm-ic">📞</span> Phone call</label>
-          <select onchange="markSaved()">
-            <option>— Select template —</option>
-            <option>Call · critical only · auto-dial</option>
-            <option>Call · supervisor on no-response</option>
-            <option>Disabled</option>
-          </select>
-        </div>
-        <div class="ff">
-          <label><span class="comm-ic">📧</span> Email</label>
-          <select onchange="markSaved()">
-            <option>— Select template —</option>
-            <option>Email · daily digest</option>
-            <option>Email · with session report</option>
-            <option>Email · weekly RCA roll-up</option>
-          </select>
-        </div>
+    <!-- ===== Communication card (single dropdown · 4 channels) ===== -->
+    <div class="card">
+      <h3>Communication</h3>
+      <p class="helper" style="margin:0 0 14px">Choose the channel for sending out alerts.</p>
+      <div class="ff">
+        <label>Channel</label>
+        <select onchange="markSaved()">
+          <option>— Select channel —</option>
+          <option>SMS</option>
+          <option>WhatsApp</option>
+          <option>Call</option>
+          <option>Message</option>
+        </select>
       </div>
     </div>
 
@@ -5658,6 +5651,33 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   // Triggers · Create condition button — opens the analytical engine in a new tab (placeholder)
   function openCreateCondition(){
     if (typeof _toast === 'function') _toast('Opening Analytical Engine — Create condition…');
+  }
+  // Inline create-condition: turn the left half into a free-text formula input
+  function enterCreateCondition(){
+    const half = document.getElementById('condCreateBtn')?.closest('.cond-half');
+    if (!half) return;
+    half.classList.add('is-creating');
+    document.getElementById('condCreateBtn')?.classList.add('is-active');
+    const inp = document.getElementById('condCreateInput');
+    if (inp) { inp.focus(); }
+  }
+  function saveCreatedCondition(){
+    const inp = document.getElementById('condCreateInput');
+    const val = (inp?.value || '').trim();
+    if (!val) { if (typeof _toast === 'function') _toast('Type a formula first'); return; }
+    // Add as a new option in the Select condition dropdown and select it.
+    const sel = document.querySelector('.cond-half .cond-select');
+    if (sel) {
+      const opt = document.createElement('option');
+      opt.textContent = val; opt.selected = true;
+      sel.appendChild(opt);
+    }
+    const half = document.getElementById('condCreateBtn')?.closest('.cond-half');
+    half?.classList.remove('is-creating');
+    document.getElementById('condCreateBtn')?.classList.remove('is-active');
+    if (inp) inp.value = '';
+    if (typeof _toast === 'function') _toast('Condition saved · "' + val + '"');
+    markSaved();
   }
 
   // Issue card template picker

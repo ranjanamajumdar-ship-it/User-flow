@@ -1383,7 +1383,9 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
 
   let maxX = 0, maxY = 0;
   Object.values(laid).forEach(n => { maxX = Math.max(maxX, n.x + VT_CARD_W); maxY = Math.max(maxY, n.y + ((geom[n.id] && geom[n.id].h) || 170)); });
-  const contentW = maxX + 160, contentH = maxY + 160;
+  // Give the canvas a tall vertical runway so users can keep scrolling and adding/dragging nodes downward.
+  const contentW = Math.max(maxX + 160, 1600);
+  const contentH = Math.max(maxY + 1600, 4000);
 
   const toWorld = (cx, cy) => { const r = worldRef.current.getBoundingClientRect(); return { x: (cx - r.left) / scale, y: (cy - r.top) / scale }; };
   const nodeAt = (wx, wy) => {
