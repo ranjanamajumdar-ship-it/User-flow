@@ -958,8 +958,9 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .vt-embed-full .vt-embed-iframe{
   display:block;
   width:100vw;
-  height:1600px;
-  min-height:1200px;
+  /* Lock the iframe to the viewport so ONLY the inner canvas scrolls, not the outer page */
+  height:calc(100vh - 64px);
+  min-height:560px;
   border:0;
   border-radius:0;
 }
