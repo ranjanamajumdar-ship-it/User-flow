@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DP · Diagnostic Tree Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#fafbfc; --panel:#ffffff; --line:#ebeef2; --line2:#f3f5f8;
+  --ink:#1f2733; --ink2:#5f6b7a; --ink3:#9aa6b4;
+  --accent:#0a6e9e; --accent-soft:#e6f2f8; --accent-ink:#06465f;
+  --radius:16px; --shadow:0 1px 2px rgba(20,33,48,.04),0 14px 36px rgba(20,33,48,.08);
+  --shadow-sm:0 1px 2px rgba(20,33,48,.05);
+  --font:'Hanken Grotesk',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden;}
+#root{height:100vh;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,textarea,select{font-family:inherit;}
+.muted{color:var(--ink3);}
+
+.app{display:flex;flex-direction:column;height:100vh;}
+
+/* ---------- header ---------- */
+.hdr{display:flex;align-items:center;gap:20px;padding:0 18px;height:58px;background:var(--panel);border-bottom:1px solid var(--line);flex:none;}
+.hdr-left{display:flex;align-items:center;gap:12px;min-width:230px;}
+.hdr-logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;font-size:13px;letter-spacing:.5px;}
+.hdr-titles{line-height:1.15;}
+.hdr-title{font-weight:700;font-size:14.5px;}
+.hdr-crumb{font-size:11.5px;color:var(--ink3);}
+.hdr-crumb strong{color:var(--ink2);font-weight:600;}
+.hdr-modes{display:flex;gap:6px;margin:0 auto;background:#eef2f6;padding:4px;border-radius:11px;}
+.modebtn{display:flex;flex-direction:column;align-items:flex-start;padding:6px 15px;border-radius:8px;line-height:1.2;transition:.15s;white-space:nowrap;}
+.modebtn-l{font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap;}
+.modebtn-s{font-size:10.5px;color:var(--ink3);}
+.modebtn.on{background:var(--panel);box-shadow:var(--shadow-sm);}
+.modebtn.on .modebtn-l{color:var(--accent);}
+.modebtn:hover:not(.on){background:rgba(255,255,255,.6);}
+.hdr-right{display:flex;align-items:center;gap:8px;min-width:230px;justify-content:flex-end;}
+.savechip{font-size:11.5px;color:var(--ink3);padding:4px 8px;border-radius:6px;}
+.savechip.saving{color:var(--accent);}
+.hdr-btn{font-size:12px;font-weight:600;color:var(--ink2);padding:6px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);transition:.15s;}
+.hdr-btn:hover{border-color:var(--ink3);color:var(--ink);}
+
+.hint-bar{flex:none;padding:7px 18px;font-size:12px;color:var(--ink2);background:#fbfcfd;border-bottom:1px solid var(--line2);}
+.stage{flex:1;min-height:0;position:relative;}
+
+/* ============ CANVAS ============ */
+.cv-root{display:flex;height:100%;}
+.cv-palette{width:212px;flex:none;background:var(--panel);border-right:1px solid var(--line);padding:14px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;}
+.cv-palette-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);padding:2px 4px 7px;}
+.cv-chip{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);text-align:left;transition:.13s;touch-action:none;}
+.cv-chip:hover{border-color:var(--c);background:var(--cs);transform:translateX(2px);}
+.cv-chip-ic{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;flex:none;}
+.cv-chip-tx{font-size:14px;font-weight:600;color:var(--ink);}
+.cv-palette-tip{margin-top:auto;font-size:11px;color:var(--ink3);padding:10px 4px 2px;line-height:1.5;}
+
+.cv-viewport{position:relative;flex:1;min-width:0;overflow:hidden;background:var(--bg);touch-action:none;}
+.cv-dots{position:absolute;inset:0;background-image:radial-gradient(circle,#e4e8ed 1px,transparent 1px);pointer-events:none;}
+.cv-world{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform;}
+.cv-edges{position:absolute;top:0;left:0;overflow:visible;pointer-events:none;}
+.cv-edgehit{stroke:transparent;stroke-width:18px;fill:none;pointer-events:stroke;cursor:pointer;}
+.cv-edgelabel{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:20px;font-size:10px;font-weight:600;color:var(--ink2);padding:3px 10px;white-space:nowrap;line-height:1.3;box-shadow:0 1px 3px rgba(20,33,48,.06);max-width:150px;overflow:hidden;text-overflow:ellipsis;text-align:center;}
+.cv-edgedel{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--ink3);box-shadow:var(--shadow);cursor:pointer;pointer-events:auto;transition:.12s;}
+.cv-edgedel:hover{background:#fdecea;border-color:#e7a59c;color:#c0473a;transform:scale(1.08);}
+
+.cv-node{position:absolute;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(20,33,48,.04),0 8px 22px rgba(20,33,48,.05);padding:15px 17px 16px;cursor:grab;user-select:none;transition:box-shadow .16s,transform .16s,border-color .16s;}
+.cv-node:hover{box-shadow:0 2px 6px rgba(20,33,48,.06),0 18px 44px rgba(20,33,48,.11);transform:translateY(-1px);}
+.cv-node.is-sel{border-color:var(--c);box-shadow:0 0 0 2px var(--c),0 18px 44px rgba(20,33,48,.12);}
+.cv-node.is-tgt{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.cv-node-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.cv-node-ic{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;flex:none;}
+.cv-node-cat{display:inline-flex;align-items:center;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ci);background:var(--cg);padding:4px 11px;border-radius:20px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:175px;}
+.cv-node-sub{font-weight:600;opacity:.7;}
+.cv-node-tools{margin-left:auto;display:flex;gap:2px;opacity:0;transition:.12s;}
+.cv-node:hover .cv-node-tools{opacity:1;}
+.cv-tool{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;color:var(--ink3);}
+.cv-tool:hover{background:var(--line2);color:var(--ink);}
+.cv-node-title{font-size:15px;font-weight:600;line-height:1.34;color:var(--ink);letter-spacing:-.01em;}
+.cv-node-detail{font-size:12.5px;color:var(--ink2);line-height:1.46;margin-top:5px;}
+.cv-opts{margin-top:12px;padding-top:9px;border-top:1px solid var(--line2);display:flex;flex-direction:column;gap:1px;}
+.cv-opt{position:relative;display:flex;align-items:center;gap:10px;padding:7px 5px;font-size:12.5px;border-radius:9px;transition:background .12s;}
+.cv-opt:hover{background:var(--cs);}
+.cv-opt-l{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--c);background:#fff;color:var(--c);font-weight:700;font-size:10px;flex:none;}
+.cv-opt-tx{color:var(--ink2);font-weight:500;line-height:1.3;overflow:hidden;}
+
+.cv-anchor{position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;border:2px solid var(--c);cursor:crosshair;z-index:3;transition:transform .12s,background .12s;}
+.cv-anchor.cv-in{left:-7px;top:22px;border-color:var(--ink3);}
+.cv-anchor.cv-out{right:-7px;}
+.cv-opt .cv-out{top:50%;transform:translateY(-50%);}
+.cv-out-single{right:-7px;top:22px;}
+.cv-anchor:hover{background:var(--c);transform:scale(1.2);}
+.cv-opt .cv-out:hover{transform:translateY(-50%) scale(1.2);}
+
+/* ============ VERTICAL TREE ============ */
+.vt-root{display:flex;height:100%;}
+.vt-scroll{flex:1;min-width:0;overflow:auto;position:relative;background:var(--bg);background-image:radial-gradient(circle,#e4e8ed 1px,transparent 1px);background-size:24px 24px;}
+.vt-sizer{position:relative;}
+.vt-world{position:absolute;top:0;left:0;transform-origin:0 0;}
+.vt-edges{position:absolute;top:0;left:0;overflow:visible;pointer-events:none;}
+.vt-card{cursor:pointer;}
+.vt-add{position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--ink3);box-shadow:var(--shadow);opacity:0;transition:.12s;z-index:5;}
+.vt-card:hover .vt-add{opacity:1;}
+.vt-add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+
+.cv-ghost{position:fixed;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--c);border-left:3px solid var(--c);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:600;box-shadow:var(--shadow);pointer-events:none;z-index:999;opacity:.95;}
+
+.cv-toolbar{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:5px;box-shadow:var(--shadow);}
+.cv-tbtn{display:flex;align-items:center;gap:5px;padding:7px 9px;border-radius:7px;color:var(--ink2);font-size:12px;font-weight:600;}
+.cv-tbtn:hover{background:var(--line2);color:var(--ink);}
+.cv-tbpct{min-width:48px;justify-content:center;font-variant-numeric:tabular-nums;}
+.cv-tbsep{width:1px;height:20px;background:var(--line);margin:0 3px;}
+.cv-stats{position:absolute;bottom:18px;right:16px;font-size:11px;color:var(--ink3);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:4px 9px;font-variant-numeric:tabular-nums;}
+
+/* inspector */
+.cv-inspector{width:0;flex:none;background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;transition:width .18s;}
+.cv-inspector.open{width:330px;}
+.vt-inspector{width:344px;}
+.dash{padding:18px 16px;display:flex;flex-direction:column;gap:16px;}
+.dash-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);}
+.dash-trigger{background:var(--accent-soft);border:1px solid #cfe6f1;border-radius:13px;padding:13px 14px;}
+.dash-trigger-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);}
+.dash-trigger-t{font-size:15px;font-weight:700;color:var(--accent-ink);margin-top:4px;line-height:1.3;}
+.dash-trigger-d{font-size:12px;color:#3d6f86;margin-top:5px;line-height:1.45;}
+.dash-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.dash-stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 13px;}
+.dash-stat.warn{background:#fdf4ec;border-color:#f0d8bf;}
+.dash-statval{font-size:24px;font-weight:700;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums;}
+.dash-stat.warn .dash-statval{color:#b5751b;}
+.dash-statlabel{font-size:11px;color:var(--ink3);margin-top:5px;font-weight:600;}
+.dash-sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin-bottom:-6px;}
+.dash-list{display:flex;flex-direction:column;gap:9px;}
+.dash-row{display:flex;align-items:center;gap:9px;}
+.dash-dot{width:9px;height:9px;border-radius:50%;flex:none;}
+.dash-name{font-size:12.5px;color:var(--ink2);font-weight:500;width:82px;flex:none;}
+.dash-bar{flex:1;height:7px;background:var(--line2);border-radius:6px;overflow:hidden;}
+.dash-barfill{display:block;height:100%;border-radius:6px;}
+.dash-count{font-size:12.5px;font-weight:700;color:var(--ink);width:18px;text-align:right;flex:none;font-variant-numeric:tabular-nums;}
+.dash-tip{font-size:11.5px;color:var(--ink3);line-height:1.5;border-top:1px solid var(--line2);padding-top:12px;}
+.cv-insp-empty{padding:40px 24px;text-align:center;color:var(--ink2);}
+.cv-insp-empty-ic{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--line2);color:var(--ink3);margin:0 auto 14px;}
+.cv-insp-empty p{font-size:13px;margin:6px 0;}
+.cv-insp-empty .muted{font-size:11.5px;line-height:1.5;}
+
+/* ---------- editor (shared) ---------- */
+.editor{padding:16px;display:flex;flex-direction:column;gap:13px;}
+.ed-typehead{display:flex;align-items:center;gap:10px;padding-bottom:13px;border-bottom:1px solid var(--line2);}
+.ed-typeicon{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;flex:none;}
+.ed-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);}
+.ed-typeselect{font-size:13.5px;font-weight:600;color:var(--ink);border:none;background:none;padding:1px 0;cursor:pointer;max-width:230px;}
+.ed-subselect{display:block;margin-top:3px;font-size:11.5px;font-weight:600;color:var(--c);background:var(--cs);border:1px solid var(--c);border-radius:7px;padding:3px 7px;cursor:pointer;max-width:230px;}
+.ed-tpl{background:linear-gradient(120deg,#f3f0fb,#eef5f2);border:1px solid #e7e3f3;border-radius:13px;padding:11px;}
+.ed-tplhead{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#6a5aa6;margin-bottom:8px;}
+.ed-tplsearch{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 9px;color:var(--ink3);}
+.ed-tplsearch:focus-within{border-color:#9a86d6;box-shadow:0 0 0 3px #ece5fb;}
+.ed-tplinput{flex:1;border:none;background:none;font-size:13px;color:var(--ink);min-width:0;}
+.ed-tplinput:focus{outline:none;}
+.ed-tplclose{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;color:var(--ink3);}
+.ed-tplclose:hover{background:var(--line2);color:var(--ink);}
+.ed-tpllist{margin-top:7px;max-height:230px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:5px;}
+.ed-tplitem{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 9px;border-radius:8px;text-align:left;transition:.12s;}
+.ed-tplitem:hover{background:#f3f0fb;}
+.ed-tplitem.on{background:#ece5fb;}
+.ed-tplname{font-size:12.5px;font-weight:500;color:var(--ink);line-height:1.25;}
+.ed-tpltag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#6a5aa6;background:#efeafb;padding:2px 7px;border-radius:20px;flex:none;}
+.ed-tplempty{padding:12px;font-size:12px;color:var(--ink3);text-align:center;}
+
+/* header templates menu */
+.hdr-menuwrap{position:relative;}
+.hdr-menu{position:absolute;top:calc(100% + 8px);right:0;width:300px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:8px;z-index:60;}
+.hdr-menu-h{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);}
+.hdr-menu-save{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px;border-radius:10px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;margin-bottom:8px;}
+.hdr-menu-save:hover{background:var(--accent-ink);}
+.hdr-menu-list{max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:2px;}
+.hdr-menu-empty{padding:18px 12px;font-size:12px;color:var(--ink3);text-align:center;line-height:1.5;}
+.hdr-tpl{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:9px;transition:.12s;}
+.hdr-tpl:hover{background:var(--line2);}
+.hdr-tpl-ic{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent);flex:none;}
+.hdr-tpl-tx{flex:1;min-width:0;cursor:pointer;}
+.hdr-tpl-name{font-size:12.5px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hdr-tpl-meta{font-size:10.5px;color:var(--ink3);}
+.hdr-tpl-del{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;color:var(--ink3);flex:none;opacity:0;transition:.12s;}
+.hdr-tpl:hover .hdr-tpl-del{opacity:1;}
+.hdr-tpl-del:hover{background:#fdecea;color:#c0473a;}
+.menu-backdrop{position:fixed;inset:0;z-index:55;}
+.ed-field{display:flex;flex-direction:column;gap:5px;}
+.ed-label{font-size:11px;font-weight:600;color:var(--ink2);}
+.ed-input{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--ink);background:#fff;transition:.13s;}
+.ed-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.ed-input-sm{padding:6px 9px;font-size:12px;}
+.ed-area{resize:vertical;line-height:1.45;}
+.ed-block{display:flex;flex-direction:column;gap:8px;}
+.ed-blockhead{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);}
+.ed-count{display:grid;place-items:center;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--line2);color:var(--ink2);font-size:10px;}
+.ed-optrow{display:flex;gap:7px;align-items:flex-start;}
+.ed-optletter{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:10px;flex:none;margin-top:6px;}
+.ed-optfields{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;}
+.ed-route{display:flex;align-items:center;gap:6px;}
+.ed-arrow{color:var(--ink3);font-size:13px;}
+.ed-select{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px;background:#fff;color:var(--ink2);min-width:0;}
+.ed-select:focus{outline:none;border-color:var(--accent);}
+.ed-x{display:grid;place-items:center;width:24px;height:24px;border-radius:6px;color:var(--ink3);flex:none;margin-top:4px;}
+.ed-x:hover{background:#f9e9e6;color:#b54234;}
+.ed-addopt{display:flex;align-items:center;gap:5px;align-self:flex-start;font-size:12px;font-weight:600;color:var(--accent);padding:5px 9px;border-radius:7px;border:1px dashed var(--line);}
+.ed-addopt:hover{background:var(--accent-soft);border-color:var(--accent);}
+.ed-terminal{font-size:12px;color:var(--ink2);background:var(--line2);border-radius:8px;padding:10px 12px;text-align:center;}
+.ed-actions{display:flex;gap:8px;padding-top:6px;border-top:1px solid var(--line2);}
+.ed-btn{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink2);padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:#fff;}
+.ed-btn:hover{border-color:var(--ink3);color:var(--ink);}
+.ed-btn-danger{color:#b54234;}
+.ed-btn-danger:hover{border-color:#b54234;background:#f9e9e6;}
+
+/* ============ OUTLINE ============ */
+.ol-root{display:flex;height:100%;}
+.ol-main{flex:1;min-width:0;overflow:auto;padding:26px 0 60px;}
+.ol-doc{max-width:760px;margin:0 auto;padding:0 24px;}
+.ol-row{position:relative;display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;cursor:pointer;min-height:38px;transition:background .1s;}
+.ol-row:hover{background:#fff;box-shadow:var(--shadow-sm);}
+.ol-row.is-sel{background:#fff;box-shadow:0 0 0 1px var(--accent),var(--shadow-sm);}
+.ol-row.is-ref{opacity:.7;cursor:default;}
+.ol-row.is-ref:hover{background:none;box-shadow:none;}
+.ol-guide{position:absolute;top:0;bottom:0;width:1px;background:var(--line);}
+.ol-caret{display:grid;place-items:center;width:18px;height:18px;flex:none;color:var(--ink3);transition:transform .12s;}
+.ol-caret.empty{visibility:hidden;}
+.ol-ic{display:grid;place-items:center;width:22px;height:22px;border-radius:6px;flex:none;}
+.ol-branch{font-size:10.5px;font-weight:600;padding:1px 8px;border:1px solid;border-radius:20px;white-space:nowrap;}
+.ol-title{font-size:13.5px;font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ol-cat{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;opacity:.7;}
+.ol-refmark{margin-left:auto;font-size:11px;color:var(--ink3);}
+.ol-rowtools{margin-left:auto;opacity:0;transition:.12s;}
+.ol-row:hover .ol-rowtools{opacity:1;}
+.ol-tool{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;color:var(--accent);background:var(--accent-soft);}
+.ol-tool:hover{background:var(--accent);color:#fff;}
+.ol-side{width:0;flex:none;background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;transition:width .18s;}
+.ol-side.open{width:340px;}
+
+/* ============ WIZARD ============ */
+.wz-root{display:flex;height:100%;}
+.wz-rail{width:280px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;}
+.wz-rail-h{display:flex;align-items:center;gap:8px;padding:16px 18px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);}
+.wz-railcount{display:grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--line2);color:var(--ink2);font-size:10.5px;}
+.wz-list{flex:1;overflow-y:auto;padding:0 10px;display:flex;flex-direction:column;gap:3px;}
+.wz-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;text-align:left;transition:.12s;}
+.wz-item:hover{background:var(--line2);}
+.wz-item.is-cur{background:var(--accent-soft);}
+.wz-num{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--line2);color:var(--ink2);font-size:10.5px;font-weight:700;flex:none;}
+.wz-item.is-cur .wz-num{background:var(--accent);color:#fff;}
+.wz-item-ic{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;flex:none;}
+.wz-item-tx{display:flex;flex-direction:column;line-height:1.25;min-width:0;}
+.wz-item-title{font-size:12.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wz-item-sub{font-size:10.5px;color:var(--ink3);}
+.wz-add{display:flex;align-items:center;justify-content:center;gap:7px;margin:10px;padding:10px;border-radius:9px;border:1px dashed var(--line);color:var(--accent);font-size:12.5px;font-weight:600;}
+.wz-add:hover{background:var(--accent-soft);border-color:var(--accent);}
+.wz-stage{flex:1;min-width:0;overflow-y:auto;display:flex;justify-content:center;padding:34px 24px 60px;}
+.wz-card{width:100%;max-width:560px;background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;height:fit-content;}
+.wz-card-top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line2);background:#fbfcfd;}
+.wz-step-of{font-size:12px;font-weight:600;color:var(--ink2);}
+.wz-card-cat{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.wz-editorwrap .editor{padding:20px;gap:16px;}
+.wz-editorwrap .ed-input{padding:10px 12px;font-size:14px;}
+.wz-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--line2);background:#fbfcfd;}
+.wz-navbtn{font-size:12.5px;font-weight:600;color:var(--ink2);padding:8px 15px;border:1px solid var(--line);border-radius:9px;background:#fff;transition:.13s;}
+.wz-navbtn:hover:not(:disabled){border-color:var(--ink3);color:var(--ink);}
+.wz-navbtn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.wz-navbtn.primary:hover:not(:disabled){background:var(--accent-ink);}
+.wz-navbtn:disabled{opacity:.4;cursor:not-allowed;}
+.wz-dots{display:flex;gap:5px;}
+.wz-dot{width:6px;height:6px;border-radius:50%;background:var(--line);}
+.wz-dot.on{background:var(--accent);width:18px;border-radius:3px;}
+
+@media (max-width:900px){
+  .hdr-left,.hdr-right{min-width:0;}
+  .hdr-crumb{display:none;}
+  .modebtn-s{display:none;}
+}
+/* Embedded-mode overrides — locked to vertical tree */
+.hdr-modes{display:none!important}
+.hdr{height:46px;padding:0 14px}
+.hdr-left{min-width:0}
+.hdr-logo{width:26px;height:26px;font-size:11px}
+.hdr-title{font-size:13px}
+.hint-bar{padding:6px 14px;font-size:11.5px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<template id="__bundler_thumbnail">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#0a6e9e"/><g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><rect x="22" y="30" width="22" height="14" rx="3"/><rect x="56" y="20" width="22" height="14" rx="3"/><rect x="56" y="44" width="22" height="14" rx="3"/><rect x="39" y="66" width="22" height="14" rx="3"/><path d="M44 37h6M50 37v-10h6M50 37v14h6M44 73h-3v-29"/></g></svg>
+</template>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" data-from="js/model.jsx">
+/*__js/model.jsx__*/
+/* ============================================================
+   DP Issue Module — Flow Builder
+   Shared data model, node-type registry, seed tree, store, layout.
+   Exposed on window for the other JSX files.
+   ============================================================ */
+
+/* ---- Node type registry --------------------------------- */
+// branching: node routes via per-option edges (each option -> target)
+// linear:    node routes via single .next
+// terminal:  node has no outgoing
+// subKey:    field whose value picks a sub-type (rendered as a 2nd dropdown)
+const NODE_TYPES = {
+  issue:        { label: 'Issue / Trigger',     cat: 'start',     glyph: 'issue',        branching: false, terminal: false, hint: 'The alert that opens the diagnostic flow' },
+  question:     { label: 'Question',            cat: 'question',  glyph: 'question',     branching: true,  terminal: false, subKey: 'qType',    hint: 'Ask the operator something — each answer routes onward' },
+  answer:       { label: 'Answer',              cat: 'answer',    glyph: 'answer',       branching: false, terminal: false, subKey: 'aType',    hint: 'A captured response that continues the flow' },
+  waiting:      { label: 'Waiting',             cat: 'status',    glyph: 'wait',         branching: false, terminal: false, hint: 'Hold / wait for recovery or a process before continuing' },
+  rootcause:    { label: 'Root cause selector', cat: 'cause',     glyph: 'root',         branching: true,  terminal: false, hint: 'Operator selects the confirmed cause — each routes to its remedy' },
+  task:         { label: 'Action',              cat: 'task',      glyph: 'task',         branching: false, terminal: false, subKey: 'taskType', hint: 'A diagnostic or remedial step to perform' },
+  media:        { label: 'Media upload',        cat: 'capture',   glyph: 'media',        branching: false, terminal: false, hint: 'Capture a photo / video / file as evidence' },
+  validation:   { label: 'Validation step',     cat: 'capture',   glyph: 'validation',   branching: false, terminal: false, hint: 'Confirm the fix worked before closing' },
+  escalation:   { label: 'Escalation',          cat: 'exception', glyph: 'escalation',   branching: false, terminal: false, subKey: 'escType',  hint: 'Escalate the issue — call the supervisor or an expert' },
+  link:         { label: 'Link to next tree',   cat: 'link',      glyph: 'link',         branching: false, terminal: false, hint: 'Hand off to another diagnostic tree' },
+  done:         { label: 'Done',                cat: 'terminal',  glyph: 'done',         branching: false, terminal: true,  hint: 'Closes the flow — issue resolved' },
+};
+
+// sub-type option lists (value, label)
+const SUBTYPES = {
+  qType:    [ ['single','Single answer'], ['yesno','Yes / No'], ['mcq','Multiple choice'], ['numeric','Numeric input'] ],
+  aType:    [ ['single','Single'], ['yesno','Yes / No'], ['mcq_single','Single-select (in MCQ)'], ['numeric','Numerical input'], ['sensor','Sensor data / input'], ['range','Range slider'] ],
+  taskType: [ ['diagnostic','Diagnostic step'], ['remedial','Remedial step'] ],
+  role:     [ ['operator','Operator'], ['supervisor','Supervisor'] ],
+  escType:  [ ['call_supervisor','Call the supervisor'], ['call_expert','Call an expert'] ],
+};
+function subLabel(node){
+  const meta = NODE_TYPES[node.type]; if (!meta || !meta.subKey) return '';
+  const list = SUBTYPES[meta.subKey] || []; const v = node[meta.subKey];
+  const f = list.find(x => x[0] === v); return f ? f[1] : (list[0] ? list[0][1] : '');
+}
+function defaultSub(type){
+  const meta = NODE_TYPES[type]; if (!meta || !meta.subKey) return {};
+  return { [meta.subKey]: SUBTYPES[meta.subKey][0][0] };
+}
+
+// premade issue triggers (operator picks one, or types their own)
+const ISSUE_TEMPLATES = [
+  { title: 'Low DO in Aeration Tank',        tag: 'Aeration', detail: 'Dissolved oxygen has held below 2.0 mg/L.' },
+  { title: 'High DO in Aeration Tank',       tag: 'Aeration', detail: 'DO above set-point — blower over-running / wasted power.' },
+  { title: 'DO Sensor Failure',              tag: 'Sensor',   detail: 'DO probe reading is erratic or flat-lined.' },
+  { title: 'High MLSS in Aeration Tank',     tag: 'Aeration', detail: 'MLSS above the operating band.' },
+  { title: 'Low MLSS in Aeration Tank',      tag: 'Aeration', detail: 'MLSS below the operating band.' },
+  { title: 'Sludge Bulking',                 tag: 'Clarifier',detail: 'Poor settling / high SVI in the clarifier.' },
+  { title: 'Excessive Foaming',              tag: 'Aeration', detail: 'Foam blanket forming on the tank surface.' },
+  { title: 'High Turbidity in Outlet',       tag: 'Quality',  detail: 'Treated-water turbidity above the limit.' },
+  { title: 'pH Out of Range',                tag: 'Quality',  detail: 'pH outside the 6.5 – 8.5 operating window.' },
+  { title: 'High Ammonia in Outlet',         tag: 'Quality',  detail: 'Effluent ammonia above consent.' },
+  { title: 'Blower Tripped',                 tag: 'Equipment',detail: 'Aeration blower stopped / fault raised.' },
+  { title: 'Transfer Pump Failure',          tag: 'Equipment',detail: 'Pump not running — no flow.' },
+  { title: 'Power Failure at Plant',         tag: 'Equipment',detail: 'Mains supply interruption.' },
+  { title: 'Clarifier Sludge Carryover',     tag: 'Clarifier',detail: 'Solids carrying over the weir.' },
+  { title: 'Membrane Fouling (MBR)',         tag: 'Equipment',detail: 'TMP rising / permeate flux dropping.' },
+];
+
+const CAT_META = {
+  start:     { name: 'Trigger',    color: '#0a6e9e', soft: '#e6f2f8', ink: '#06465f', grad: 'linear-gradient(100deg,#e3f0fb,#eaf6f1)' },
+  question:  { name: 'Question',   color: '#b7791f', soft: '#fbf3e2', ink: '#7a5212', grad: 'linear-gradient(100deg,#fbf0db,#fdeae0)' },
+  answer:    { name: 'Answer',     color: '#0e8f8f', soft: '#e2f4f4', ink: '#0a5a5a', grad: 'linear-gradient(100deg,#def3f1,#e8f5ea)' },
+  status:    { name: 'Waiting',    color: '#7857c8', soft: '#efe9fb', ink: '#4c3a86', grad: 'linear-gradient(100deg,#ece5fb,#f4e8f7)' },
+  cause:     { name: 'Root cause', color: '#c0418a', soft: '#fbe8f2', ink: '#7e2a5b', grad: 'linear-gradient(100deg,#fbe3f0,#f1e6f8)' },
+  people:    { name: 'Reassign',   color: '#3a5bd0', soft: '#e8ecfb', ink: '#28408f', grad: 'linear-gradient(100deg,#e4e9fb,#e8f1fb)' },
+  task:      { name: 'Action',     color: '#4f6275', soft: '#eaeef2', ink: '#2f3c49', grad: 'linear-gradient(100deg,#eaeef3,#eff2f5)' },
+  control:   { name: 'Control',    color: '#6b7785', soft: '#eef1f4', ink: '#424d59', grad: 'linear-gradient(100deg,#eef1f4,#f1f3f5)' },
+  capture:   { name: 'Capture',    color: '#1f8a5b', soft: '#e6f4ec', ink: '#145c3c', grad: 'linear-gradient(100deg,#e2f3e8,#edf6e6)' },
+  exception: { name: 'Escalation', color: '#c0473a', soft: '#f9e9e6', ink: '#7c2c22', grad: 'linear-gradient(100deg,#fbe5e1,#fdece0)' },
+  link:      { name: 'Link',       color: '#0e7fa8', soft: '#e3f1f7', ink: '#0a4f68', grad: 'linear-gradient(100deg,#dcf0f6,#e4f1f7)' },
+  terminal:  { name: 'Done',       color: '#1f8a5b', soft: '#e6f4ec', ink: '#145c3c', grad: 'linear-gradient(100deg,#e2f3e8,#eef6e4)' },
+};
+
+const BRANCHING = new Set(Object.keys(NODE_TYPES).filter(k => NODE_TYPES[k].branching));
+
+function catOf(type){ return (NODE_TYPES[type] || { cat: 'task' }).cat; }
+function colorOf(type){ return (CAT_META[catOf(type)] || CAT_META.task).color; }
+
+/* ---- ID helper ------------------------------------------ */
+let _idc = 0;
+function uid(p){ _idc += 1; return (p || 'n') + '_' + Date.now().toString(36).slice(-4) + (_idc).toString(36); }
+
+/* ---- Seed: "Low DO in Aeration Tank" -------------------- */
+// option helper
+const opt = (label, target) => ({ id: uid('o'), label, target });
+
+function seedTree(){
+  const n = {};
+  const add = (id, o) => { n[id] = Object.assign({ id, options: [], next: null, detail: '' }, o); };
+
+  add('issue', { type: 'issue', title: 'Low DO in Aeration Tank', detail: 'DO has held below 2.0 mg/L. Walk the candidate causes.', next: 'doread', x: 40, y: 460 });
+
+  // numeric-input question that branches on threshold bands
+  add('doread', { type: 'question', qType: 'numeric', title: 'Enter current DO reading',
+    detail: 'Operator types the live DO value (mg/L).', x: 340, y: 460, options: [
+      opt('< 2.0 mg/L  (low)', 's1'),
+      opt('2.0 – 4.0 mg/L  (borderline)', 'waitstep'),
+      opt('≥ 4.0 mg/L  (normal)', 'normEnd'),
+    ]});
+  add('waitstep', { type: 'waiting', title: 'Wait 30 min, then re-check', detail: 'Hold and let readings settle before continuing.', next: 's1', x: 660, y: 640 });
+  add('normEnd', { type: 'done', title: 'DO normal — close issue', x: 660, y: 780 });
+
+  // single-answer question
+  add('s1', { type: 'question', qType: 'single', title: 'Check aeration across the tank',
+    detail: 'Is aeration happening equally across the whole tank?', x: 660, y: 420, options: [
+      opt('Yes, bubbles normal', 's2'),
+      opt('Moderate, some bubbles', 's2'),
+      opt('No bubbles on surface', 'nobub'),
+      opt('Jump to closure', 'skip1'),
+    ]});
+
+  add('nobub', { type: 'question', qType: 'single', title: 'No bubbles — pick outcome',
+    detail: 'No surface bubbling observed.', x: 980, y: 160, options: [
+      opt('Call supervisor', 'reassignSup'),
+      opt('Diffusers choked', 'media1'),
+    ]});
+  add('reassignSup', { type: 'escalation', escType: 'call_supervisor', title: 'Call the supervisor', detail: 'Escalate the call to the supervisor on duty.', next: 'ans1', x: 1300, y: 100 });
+  add('ans1', { type: 'answer', aType: 'single', title: 'Supervisor advice recorded', detail: 'Captured response from the call.', next: 'end1', x: 1620, y: 100 });
+  add('end1', { type: 'done', title: 'Done', x: 1940, y: 100 });
+  add('media1', { type: 'media', title: 'Upload image of diffusers', detail: 'Attach a photo as evidence.', next: 'rc1', x: 1300, y: 260 });
+
+  add('skip1', { type: 'task', taskType: 'diagnostic', title: 'Jump to closure', detail: 'Operator opts to jump to closure.', next: 'media2', x: 980, y: 560 });
+  add('media2', { type: 'media', title: 'Upload image + RCA', detail: 'Capture media and note a root cause.', next: 'taskMsg', x: 1300, y: 560 });
+  add('taskMsg', { type: 'task', taskType: 'remedial', title: 'Send message to supervisor', detail: 'Notify supervisor of the closure.', next: 'end2', x: 1620, y: 560 });
+  add('end2', { type: 'done', title: 'Done', x: 1940, y: 560 });
+
+  // multiple-choice question
+  add('s2', { type: 'question', qType: 'mcq', title: 'Check for dead zones in the tank',
+    detail: 'Which symptom is present?', x: 980, y: 380, options: [
+      opt('Reduced treatment performance', 'sym1'),
+      opt('Dark / black-coloured water', 'sym2'),
+      opt('Sludge accumulation at bottom', 'sym3'),
+      opt('Uneven DO readings', 'sym4'),
+      opt('Jump to closure', 'skip2'),
+      opt('Escalate', 'fb1'),
+    ]});
+
+  add('sym1', { type: 'question', qType: 'yesno', title: 'Reduced performance despite a normal blower?', x: 1320, y: 360, options: [ opt('Yes', 'rc1'), opt('No', 'nextstep') ]});
+  add('sym2', { type: 'question', qType: 'yesno', title: 'Dark / black water in a localized area?', x: 1320, y: 500, options: [ opt('Yes', 'nextstep'), opt('No', 'nextstep') ]});
+  add('sym3', { type: 'question', qType: 'yesno', title: 'Sludge accumulation in certain areas?', x: 1320, y: 640, options: [ opt('Yes', 'nextstep'), opt('No', 'nextstep') ]});
+  add('sym4', { type: 'question', qType: 'yesno', title: 'Uneven DO readings across the tank?', x: 1320, y: 780, options: [ opt('Yes', 'nextstep'), opt('No', 'nextstep') ]});
+
+  // root-cause selector -> remedy -> validation -> close
+  add('rc1', { type: 'rootcause', title: 'Confirm the root cause', detail: 'Operator selects the confirmed cause.', x: 1660, y: 300, options: [
+      opt('Diffusers choked & need cleaning', 'cleanTask'),
+      opt('Blower under-performing', 'cleanTask'),
+    ]});
+  add('cleanTask', { type: 'task', taskType: 'remedial', title: 'Clean / unclog the diffusers', detail: 'Carry out the remedial action.', next: 'validate', x: 1980, y: 300 });
+  add('validate', { type: 'validation', title: 'Re-check DO is back above 2.0 mg/L', detail: 'Confirm the fix worked before closing.', next: 'closed', x: 2300, y: 300 });
+  add('closed', { type: 'done', title: 'Resolved', x: 2620, y: 300 });
+
+  add('nextstep', { type: 'task', taskType: 'diagnostic', title: 'Proceed to next diagnostic step', detail: 'Convergence point.', next: 'nexttree', x: 1660, y: 620 });
+
+  add('skip2', { type: 'task', taskType: 'diagnostic', title: 'Jump to closure', next: 'media3', x: 1320, y: 920 });
+  add('media3', { type: 'media', title: 'Media upload + RCA', next: 'nexttree', x: 1660, y: 920 });
+
+  add('fb1', { type: 'escalation', escType: 'call_expert', title: 'Escalate — call an expert', next: 'nexttree', x: 1320, y: 1060 });
+
+  add('nexttree', { type: 'link', title: 'Next diagnostic tree', next: 'dosensor', x: 2300, y: 620 });
+  add('dosensor', { type: 'link', title: 'DO Sensor Failure (next flow)', next: null, x: 2620, y: 620 });
+
+  return n;
+}
+
+/* ---- Edge derivation ------------------------------------ */
+function deriveEdges(nodes){
+  const edges = [];
+  Object.values(nodes).forEach(node => {
+    if (BRANCHING.has(node.type)) {
+      (node.options || []).forEach(o => {
+        if (o.target && nodes[o.target]) edges.push({ id: node.id + '::' + o.id, from: node.id, to: o.target, label: o.label, optId: o.id, kind: 'branch' });
+      });
+    } else if (NODE_TYPES[node.type] && !NODE_TYPES[node.type].terminal) {
+      if (node.next && nodes[node.next]) edges.push({ id: node.id + '::next', from: node.id, to: node.next, label: '', kind: 'next' });
+    }
+  });
+  return edges;
+}
+
+/* ---- Auto layout: layered left-to-right ----------------- */
+function autoLayout(nodes){
+  const ids = Object.keys(nodes);
+  const edges = deriveEdges(nodes);
+  const outAdj = {}, inDeg = {};
+  ids.forEach(id => { outAdj[id] = []; inDeg[id] = 0; });
+  edges.forEach(e => { outAdj[e.from].push(e.to); });
+  // longest-path layering with cycle guard
+  const layer = {}; ids.forEach(id => layer[id] = 0);
+  const roots = ids.filter(id => !edges.some(e => e.to === id));
+  const start = roots.length ? roots : [ids[0]];
+  const seen = {};
+  const queue = start.map(id => [id, 0]);
+  let guard = 0;
+  while (queue.length && guard < 20000) {
+    guard++;
+    const [id, d] = queue.shift();
+    if (d > layer[id]) layer[id] = d;
+    if (seen[id] && seen[id] >= d) continue;
+    seen[id] = d;
+    outAdj[id].forEach(t => { if (d + 1 <= 60) queue.push([t, d + 1]); });
+  }
+  // group by layer
+  const byLayer = {};
+  ids.forEach(id => { (byLayer[layer[id]] = byLayer[layer[id]] || []).push(id); });
+  const COLW = 320, ROWH = 150, X0 = 60, Y0 = 60;
+  const pos = {};
+  Object.keys(byLayer).map(Number).sort((a,b)=>a-b).forEach(L => {
+    byLayer[L].forEach((id, i) => { pos[id] = { x: X0 + L * COLW, y: Y0 + i * ROWH }; });
+  });
+  // barycenter ordering: two sweeps to reduce crossings
+  const inAdj = {}; ids.forEach(id => inAdj[id] = []);
+  edges.forEach(e => inAdj[e.to].push(e.from));
+  for (let sweep = 0; sweep < 3; sweep++) {
+    Object.keys(byLayer).map(Number).sort((a,b)=>a-b).forEach(L => {
+      const arr = byLayer[L];
+      arr.sort((a,b)=>{
+        const pa = inAdj[a].length ? inAdj[a].reduce((s,p)=>s+(pos[p]?pos[p].y:0),0)/inAdj[a].length : pos[a].y;
+        const pb = inAdj[b].length ? inAdj[b].reduce((s,p)=>s+(pos[p]?pos[p].y:0),0)/inAdj[b].length : pos[b].y;
+        return pa - pb;
+      });
+      arr.forEach((id,i)=>{ pos[id].y = Y0 + i * ROWH; });
+    });
+  }
+  const out = {};
+  ids.forEach(id => { out[id] = Object.assign({}, nodes[id], pos[id]); });
+  return out;
+}
+
+/* ---- Vertical layout: layered top-to-bottom ------------- */
+function verticalLayout(nodes){
+  const ids = Object.keys(nodes);
+  const edges = deriveEdges(nodes);
+  const outAdj = {}; ids.forEach(id => outAdj[id] = []);
+  edges.forEach(e => outAdj[e.from].push(e.to));
+  const layer = {}; ids.forEach(id => layer[id] = 0);
+  const roots = ids.filter(id => !edges.some(e => e.to === id));
+  const start = roots.length ? roots : [ids[0]];
+  const seen = {}; const queue = start.map(id => [id, 0]); let guard = 0;
+  while (queue.length && guard < 20000) {
+    guard++;
+    const [id, d] = queue.shift();
+    if (d > layer[id]) layer[id] = d;
+    if (seen[id] && seen[id] >= d) continue;
+    seen[id] = d;
+    outAdj[id].forEach(t => { if (d + 1 <= 80) queue.push([t, d + 1]); });
+  }
+  const byLayer = {};
+  ids.forEach(id => { (byLayer[layer[id]] = byLayer[layer[id]] || []).push(id); });
+  const estH = (n) => { let h = 96; if (n.detail) h += 26; if (BRANCHING.has(n.type)) h += 16 + (n.options || []).length * 35; return h; };
+  const COLW = 330, X0 = 80, Y0 = 60, GAP = 96;
+  const layersSorted = Object.keys(byLayer).map(Number).sort((a,b)=>a-b);
+  const layerY = {}; let cy = Y0;
+  layersSorted.forEach(L => { layerY[L] = cy; let mh = 120; byLayer[L].forEach(id => { mh = Math.max(mh, estH(nodes[id])); }); cy += mh + GAP; });
+  const pos = {};
+  layersSorted.forEach(L => {
+    byLayer[L].forEach((id, i) => { pos[id] = { x: X0 + i * COLW, y: layerY[L] }; });
+  });
+  const inAdj = {}; ids.forEach(id => inAdj[id] = []);
+  edges.forEach(e => inAdj[e.to].push(e.from));
+  for (let sweep = 0; sweep < 4; sweep++) {
+    Object.keys(byLayer).map(Number).sort((a,b)=>a-b).forEach(L => {
+      const arr = byLayer[L];
+      arr.sort((a,b)=>{
+        const pa = inAdj[a].length ? inAdj[a].reduce((s,p)=>s+(pos[p]?pos[p].x:0),0)/inAdj[a].length : pos[a].x;
+        const pb = inAdj[b].length ? inAdj[b].reduce((s,p)=>s+(pos[p]?pos[p].x:0),0)/inAdj[b].length : pos[b].x;
+        return pa - pb;
+      });
+      arr.forEach((id,i)=>{ pos[id].x = X0 + i * COLW; });
+    });
+  }
+  const out = {};
+  ids.forEach(id => { out[id] = Object.assign({}, nodes[id], pos[id]); });
+  return out;
+}
+
+/* ---- Store (localStorage) ------------------------------- */
+const STORE_KEY = 'dp_flow_builder_v7';
+function loadState(){
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) { const p = JSON.parse(raw); if (p && p.nodes) return p; }
+  } catch(e){}
+  return { nodes: seedTree(), view: { x: 20, y: 10, k: 0.86 }, mode: 'canvas', collapsed: {} };
+}
+function saveState(state){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
+}
+function resetState(){ try { localStorage.removeItem(STORE_KEY); } catch(e){} }
+
+/* ---- Template library (saved whole flows) --------------- */
+const TPL_KEY = 'dp_flow_templates';
+function listTemplates(){ try { return JSON.parse(localStorage.getItem(TPL_KEY) || '[]'); } catch(e){ return []; } }
+function saveTemplate(name, nodes){
+  const all = listTemplates();
+  all.unshift({ id: uid('tpl'), name: name, createdAt: Date.now(), count: Object.keys(nodes).length, nodes: JSON.parse(JSON.stringify(nodes)) });
+  try { localStorage.setItem(TPL_KEY, JSON.stringify(all)); } catch(e){}
+  return all;
+}
+function deleteTemplate(id){
+  const all = listTemplates().filter(t => t.id !== id);
+  try { localStorage.setItem(TPL_KEY, JSON.stringify(all)); } catch(e){}
+  return all;
+}
+
+Object.assign(window, {
+  NODE_TYPES, CAT_META, BRANCHING, SUBTYPES, ISSUE_TEMPLATES, catOf, colorOf, subLabel, defaultSub,
+  uid, opt, seedTree, deriveEdges, autoLayout, verticalLayout,
+  loadState, saveState, resetState,
+  listTemplates, saveTemplate, deleteTemplate,
+});
+
+</script>
+<script type="text/babel" data-from="js/icons.jsx">
+/*__js/icons.jsx__*/
+/* Shared icons + small UI helpers. Simple geometric SVGs only. */
+const { createElement: h } = React;
+
+function Icon({ glyph, size = 16, color = 'currentColor', stroke = 1.7 }){
+  const c = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none',
+    stroke: color, strokeWidth: stroke, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const P = {
+    issue:   ['M12 3l9 16H3z', 'M12 10v4', 'M12 16.5v.01'],
+    step:    ['M5 6h14', 'M5 12h14', 'M5 18h9'],
+    question:['M9.2 9a2.8 2.8 0 1 1 4 2.5c-1 .6-1.2 1-1.2 2', 'M12 17v.01'],
+    decision:['M12 3l9 9-9 9-9-9z'],
+    root:    ['M12 4v6', 'M12 10L6 16', 'M12 10l6 6', 'M6 19v.01', 'M12 13v.01', 'M18 19v.01'],
+    action:  ['M13 3L4 14h7l-1 7 9-11h-7z'],
+    wait:    ['M12 7v5l3 2', 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'],
+    fallback:['M9 6L4 11l5 5', 'M4 11h10a6 6 0 0 1 6 6v1'],
+    link:    ['M10 14a4 4 0 0 0 6 0l2-2a4 4 0 0 0-6-6l-1 1', 'M14 10a4 4 0 0 0-6 0l-2 2a4 4 0 0 0 6 6l1-1'],
+    end:     ['M5 12l5 5 9-10'],
+    answer:  ['M5 5h14v9H9l-4 4V5z', 'M8.5 9h7', 'M8.5 11.5h4'],
+    inprogress:['M21 12a9 9 0 1 1-3.5-7.1', 'M21 4v4h-4'],
+    reassignment:['M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6', 'M3.5 19a6 6 0 0 1 9.5-4.9', 'M15 17h6', 'M18 14l3 3-3 3'],
+    task:    ['M9 4h6v2H9z', 'M7 5H5v15h14V5h-2', 'M8.5 13l2.2 2.2 4.3-4.3'],
+    skip:    ['M6 5l8 7-8 7z', 'M16 5v14'],
+    media:   ['M3 5h18v14H3z', 'M3 16l5-5 4 4 3-3 5 5', 'M8.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3'],
+    validation:['M12 3l8 3v5c0 5-3.4 8-8 10-4.6-2-8-5-8-10V6z', 'M9 11.5l2 2 4-4'],
+    freepickup:['M4 13l2-8h12l2 8', 'M4 13v5h16v-5', 'M9 13l1 2h4l1-2'],
+    escalation:['M12 4l5 5h-3v6h-4V9H7z', 'M6 19h12'],
+    done:    ['M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18', 'M8.3 12l2.4 2.4 4.9-5'],
+  };
+  const paths = P[glyph] || P.step;
+  return h('svg', c, paths.map((d, i) => h('path', { key: i, d })));
+}
+
+// tiny generic glyphs for toolbar
+function MiniIcon({ name, size = 16 }){
+  const c = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const P = {
+    plus: ['M12 5v14', 'M5 12h14'],
+    minus: ['M5 12h14'],
+    fit: ['M4 9V5a1 1 0 0 1 1-1h4', 'M20 9V5a1 1 0 0 0-1-1h-4', 'M4 15v4a1 1 0 0 0 1 1h4', 'M20 15v4a1 1 0 0 1-1 1h-4'],
+    tidy: ['M4 6h7', 'M4 12h12', 'M4 18h7', 'M16 4v8', 'M19 9l-3 3-3-3'],
+    trash: ['M4 7h16', 'M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2', 'M6 7l1 13h10l1-13'],
+    copy: ['M9 9h10v10H9z', 'M5 15V5h10'],
+    close: ['M6 6l12 12', 'M18 6L6 18'],
+    grip: ['M9 6v.01','M9 12v.01','M9 18v.01','M15 6v.01','M15 12v.01','M15 18v.01'],
+    chevron: ['M9 6l6 6-6 6'],
+    reset: ['M4 4v6h6', 'M4 10a8 8 0 1 1 2 6'],
+    search: ['M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14', 'M20 20l-3.6-3.6'],
+    sparkle: ['M12 4l1.6 4.4L18 10l-4.4 1.6L12 16l-1.6-4.4L6 10l4.4-1.6z'],
+    save: ['M5 4h11l3 3v13H5z', 'M8 4v5h7V4', 'M8 20v-6h8v6'],
+  };
+  return h('svg', c, (P[name]||[]).map((d,i)=>h('path',{key:i,d})));
+}
+
+window.Icon = Icon;
+window.MiniIcon = MiniIcon;
+
+</script>
+<script type="text/babel" data-from="js/editor.jsx">
+/*__js/editor.jsx__*/
+/* Shared node editor — used by the canvas inspector, the outliner, and the wizard. */
+const { useState: useStateE } = React;
+
+function targetOptions(nodes, selfId){
+  return Object.values(nodes)
+    .filter(n => n.id !== selfId)
+    .map(n => ({ id: n.id, label: (NODE_TYPES[n.type] ? NODE_TYPES[n.type].label : n.type) + ' · ' + (n.title || 'Untitled') }));
+}
+
+function IssueTemplatePicker({ current, onPick }){
+  const [q, setQ] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+  const list = ISSUE_TEMPLATES.filter(t => (t.title + ' ' + t.tag).toLowerCase().includes(q.toLowerCase()));
+  return React.createElement('div', { className: 'ed-tpl' },
+    React.createElement('div', { className: 'ed-tplhead' },
+      React.createElement(MiniIcon, { name: 'sparkle', size: 13 }),
+      ' Start from a common issue'),
+    React.createElement('div', { className: 'ed-tplsearch' },
+      React.createElement(MiniIcon, { name: 'search', size: 14 }),
+      React.createElement('input', { className: 'ed-tplinput', placeholder: 'Search issue templates…', value: q,
+        onFocus: () => setOpen(true),
+        onChange: e => { setQ(e.target.value); setOpen(true); } }),
+      open && React.createElement('button', { className: 'ed-tplclose', onMouseDown: e => { e.preventDefault(); setOpen(false); } },
+        React.createElement(MiniIcon, { name: 'close', size: 12 }))),
+    open && React.createElement('div', { className: 'ed-tpllist' },
+      list.length ? list.map((t, i) => React.createElement('button', { key: i, className: 'ed-tplitem' + (current === t.title ? ' on' : ''),
+        onClick: () => { onPick(t); setOpen(false); setQ(''); } },
+        React.createElement('span', { className: 'ed-tplname' }, t.title),
+        React.createElement('span', { className: 'ed-tpltag' }, t.tag))) :
+        React.createElement('div', { className: 'ed-tplempty' }, 'No match — just type your own title below.')));
+}
+
+function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
+  if (!node) return null;
+  const meta = NODE_TYPES[node.type] || NODE_TYPES.question;
+  const cat = CAT_META[meta.cat];
+  const tgts = targetOptions(nodes, node.id);
+  const isNumericQ = node.type === 'question' && node.qType === 'numeric';
+
+  const patch = (p) => onChange(Object.assign({}, node, p));
+  const setOpt = (oid, p) => patch({ options: node.options.map(o => o.id === oid ? Object.assign({}, o, p) : o) });
+  const addOpt = () => patch({ options: (node.options || []).concat([{ id: uid('o'), label: 'New option', target: null }]) });
+  const delOpt = (oid) => patch({ options: node.options.filter(o => o.id !== oid) });
+
+  const Field = ({ label, children }) => (
+    React.createElement('label', { className: 'ed-field' },
+      React.createElement('span', { className: 'ed-label' }, label), children)
+  );
+
+  return React.createElement('div', { className: 'editor' },
+    React.createElement('div', { className: 'ed-typehead', style: { '--c': cat.color, '--cs': cat.soft } },
+      React.createElement('span', { className: 'ed-typeicon', style: { background: cat.soft, color: cat.color } },
+        React.createElement(Icon, { glyph: meta.glyph, size: 17, color: cat.color })),
+      React.createElement('div', { style: { flex: 1, minWidth: 0 } },
+        React.createElement('div', { className: 'ed-cat' }, cat.name),
+        React.createElement('select', {
+          className: 'ed-typeselect', value: node.type,
+          onChange: e => {
+            const nt = e.target.value; const nb = NODE_TYPES[nt].branching;
+            const p = Object.assign({ type: nt }, defaultSub(nt));
+            if (nb && (!node.options || !node.options.length)) p.options = [{ id: uid('o'), label: 'Option A', target: node.next || null }, { id: uid('o'), label: 'Option B', target: null }];
+            if (!nb) p.next = node.next || (node.options && node.options[0] && node.options[0].target) || null;
+            patch(p);
+          }
+        }, Object.keys(NODE_TYPES).map(k => React.createElement('option', { key: k, value: k }, NODE_TYPES[k].label))),
+        meta.subKey && React.createElement('select', {
+          className: 'ed-subselect', value: node[meta.subKey] || SUBTYPES[meta.subKey][0][0],
+          onChange: e => patch({ [meta.subKey]: e.target.value })
+        }, SUBTYPES[meta.subKey].map(s => React.createElement('option', { key: s[0], value: s[0] }, s[1])))
+      )
+    ),
+
+    node.type === 'issue' && React.createElement(IssueTemplatePicker, { current: node.title,
+      onPick: (t) => patch({ title: t.title, detail: t.detail }) }),
+
+    React.createElement(Field, { label: 'Title' },
+      React.createElement('input', { className: 'ed-input', value: node.title || '', placeholder: node.type === 'issue' ? 'Type the issue name…' : 'Step title',
+        onChange: e => patch({ title: e.target.value }) })),
+
+    React.createElement(Field, { label: 'Instruction to operator' },
+      React.createElement('textarea', { className: 'ed-input ed-area', value: node.detail || '', rows: compact ? 2 : 3,
+        placeholder: meta.hint, onChange: e => patch({ detail: e.target.value }) })),
+
+    meta.branching && React.createElement('div', { className: 'ed-block' },
+      React.createElement('div', { className: 'ed-blockhead' }, isNumericQ ? 'Threshold bands & routing' : 'Answers & routing',
+        React.createElement('span', { className: 'ed-count' }, (node.options || []).length)),
+      (node.options || []).map((o, i) =>
+        React.createElement('div', { className: 'ed-optrow', key: o.id },
+          React.createElement('span', { className: 'ed-optletter' }, isNumericQ ? (i + 1) : String.fromCharCode(65 + i)),
+          React.createElement('div', { className: 'ed-optfields' },
+            React.createElement('input', { className: 'ed-input ed-input-sm', value: o.label, placeholder: isNumericQ ? 'e.g. < 2.0 mg/L' : 'Answer label',
+              onChange: e => setOpt(o.id, { label: e.target.value }) }),
+            React.createElement('div', { className: 'ed-route' },
+              React.createElement('span', { className: 'ed-arrow' }, '→'),
+              React.createElement('select', { className: 'ed-select', value: o.target || '',
+                onChange: e => setOpt(o.id, { target: e.target.value || null }) },
+                React.createElement('option', { value: '' }, '— pick next step —'),
+                tgts.map(t => React.createElement('option', { key: t.id, value: t.id }, t.label))))),
+          React.createElement('button', { className: 'ed-x', title: 'Remove answer', onClick: () => delOpt(o.id) },
+            React.createElement(MiniIcon, { name: 'close', size: 13 })))),
+      React.createElement('button', { className: 'ed-addopt', onClick: addOpt },
+        React.createElement(MiniIcon, { name: 'plus', size: 13 }), isNumericQ ? ' Add band' : ' Add answer')
+    ),
+
+    (!meta.branching && !meta.terminal) && React.createElement(Field, { label: 'Routes to next step' },
+      React.createElement('div', { className: 'ed-route' },
+        React.createElement('span', { className: 'ed-arrow' }, '→'),
+        React.createElement('select', { className: 'ed-select', value: node.next || '',
+          onChange: e => patch({ next: e.target.value || null }) },
+          React.createElement('option', { value: '' }, '— pick next step —'),
+          tgts.map(t => React.createElement('option', { key: t.id, value: t.id }, t.label))))),
+
+    meta.terminal && React.createElement('div', { className: 'ed-terminal' }, 'This step ends the diagnostic flow.'),
+
+    React.createElement('div', { className: 'ed-actions' },
+      onDuplicate && React.createElement('button', { className: 'ed-btn', onClick: () => onDuplicate(node.id) },
+        React.createElement(MiniIcon, { name: 'copy', size: 14 }), ' Duplicate'),
+      onDelete && React.createElement('button', { className: 'ed-btn ed-btn-danger', onClick: () => onDelete(node.id) },
+        React.createElement(MiniIcon, { name: 'trash', size: 14 }), ' Delete'))
+  );
+}
+
+function FlowDashboard({ nodes }){
+  const all = Object.values(nodes);
+  const edges = deriveEdges(nodes);
+  const trigger = all.find(n => n.type === 'issue');
+  const ends = all.filter(n => (NODE_TYPES[n.type] || {}).terminal).length;
+  const loose = all.filter(n => {
+    const m = NODE_TYPES[n.type]; if (!m || m.terminal) return false;
+    if (m.branching) return !(n.options || []).some(o => o.target);
+    return !n.next;
+  }).length;
+  const counts = {};
+  all.forEach(n => { const cat = catOf(n.type); counts[cat] = (counts[cat] || 0) + 1; });
+  const cats = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+
+  const stat = (label, val, warn) => React.createElement('div', { className: 'dash-stat' + (warn ? ' warn' : ''), key: label },
+    React.createElement('div', { className: 'dash-statval' }, val),
+    React.createElement('div', { className: 'dash-statlabel' }, label));
+
+  return React.createElement('div', { className: 'dash' },
+    React.createElement('div', { className: 'dash-h' }, 'Flow overview'),
+    trigger && React.createElement('div', { className: 'dash-trigger' },
+      React.createElement('span', { className: 'dash-trigger-l' }, 'Trigger'),
+      React.createElement('div', { className: 'dash-trigger-t' }, trigger.title || 'Untitled issue'),
+      trigger.detail && React.createElement('div', { className: 'dash-trigger-d' }, trigger.detail)),
+    React.createElement('div', { className: 'dash-stats' },
+      stat('Steps', all.length),
+      stat('Links', edges.length),
+      stat('Endpoints', ends),
+      stat('Loose ends', loose, loose > 0)),
+    React.createElement('div', { className: 'dash-sec' }, 'Step types'),
+    React.createElement('div', { className: 'dash-list' },
+      cats.map(cat => {
+        const meta = CAT_META[cat];
+        return React.createElement('div', { className: 'dash-row', key: cat },
+          React.createElement('span', { className: 'dash-dot', style: { background: meta.color } }),
+          React.createElement('span', { className: 'dash-name' }, meta.name),
+          React.createElement('span', { className: 'dash-bar' },
+            React.createElement('span', { className: 'dash-barfill', style: { width: Math.max(6, counts[cat] / all.length * 100) + '%', background: meta.grad } })),
+          React.createElement('span', { className: 'dash-count' }, counts[cat]));
+      })),
+    React.createElement('div', { className: 'dash-tip' }, 'Select any step to edit it here.'));
+}
+
+window.NodeEditor = NodeEditor;
+window.FlowDashboard = FlowDashboard;
+
+</script>
+<script type="text/babel" data-from="js/canvas.jsx">
+/*__js/canvas.jsx__*/
+/* FigJam-style flow canvas: pan/zoom, drag nodes, draw connections, palette, auto-layout. */
+const { useRef, useState, useEffect, useLayoutEffect, useMemo } = React;
+
+const NODE_W = 288;
+
+function FlowCanvas({ nodes, onNodes, selected, setSelected, view, setView }){
+  const wrapRef = useRef(null);
+  const nodeRefs = useRef({});
+  const [geom, setGeom] = useState({});
+  const [drag, setDrag] = useState(null);        // node drag
+  const [pan, setPan] = useState(null);           // panning
+  const [conn, setConn] = useState(null);         // connection in progress
+  const [ghost, setGhost] = useState(null);       // palette drag ghost
+  const [hoverTarget, setHoverTarget] = useState(null);
+  const [hoverEdge, setHoverEdge] = useState(null);
+
+  const edges = useMemo(() => deriveEdges(nodes), [nodes]);
+
+  /* ---- measure node geometry ---- */
+  useLayoutEffect(() => {
+    const g = {};
+    Object.keys(nodes).forEach(id => {
+      const el = nodeRefs.current[id];
+      if (!el) return;
+      const opts = {};
+      el.querySelectorAll('[data-opt]').forEach(o => {
+        opts[o.getAttribute('data-opt')] = o.offsetTop + o.offsetHeight / 2;
+      });
+      const out = el.querySelector('[data-out]');
+      g[id] = { w: el.offsetWidth, h: el.offsetHeight, opts, outY: out ? out.offsetTop + out.offsetHeight / 2 : el.offsetHeight / 2 };
+    });
+    setGeom(prev => (JSON.stringify(prev) === JSON.stringify(g) ? prev : g));
+  });
+
+  /* ---- helpers ---- */
+  const toWorld = (cx, cy) => {
+    const r = wrapRef.current.getBoundingClientRect();
+    return { x: (cx - r.left - view.x) / view.k, y: (cy - r.top - view.y) / view.k };
+  };
+  const srcPoint = (id, optId) => {
+    const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 60 };
+    let y;
+    if (optId) y = n.y + (g.opts && g.opts[optId] != null ? g.opts[optId] : g.h / 2);
+    else y = n.y + (g.outY != null ? g.outY : g.h / 2);
+    return { x: n.x + (g.w || NODE_W), y };
+  };
+  const tgtPoint = (id) => {
+    const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 60 };
+    return { x: n.x, y: n.y + (g.h || 60) / 2 };
+  };
+  const pathD = (s, t) => {
+    const dx = Math.max(40, Math.abs(t.x - s.x) * 0.5);
+    return `M${s.x},${s.y} C${s.x + dx},${s.y} ${t.x - dx},${t.y} ${t.x},${t.y}`;
+  };
+  const nodeAt = (wx, wy) => {
+    const ids = Object.keys(nodes);
+    for (let i = ids.length - 1; i >= 0; i--) {
+      const id = ids[i]; const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 60 };
+      if (wx >= n.x && wx <= n.x + (g.w || NODE_W) && wy >= n.y && wy <= n.y + (g.h || 60)) return id;
+    }
+    return null;
+  };
+
+  /* ---- mutations ---- */
+  const setNode = (id, patch) => onNodes(Object.assign({}, nodes, { [id]: Object.assign({}, nodes[id], patch) }));
+  const addNode = (type, x, y) => {
+    const id = uid(type);
+    const base = Object.assign({ id, type, title: NODE_TYPES[type].label, detail: '', options: [], next: null, x, y }, defaultSub(type));
+    if (BRANCHING.has(type)) base.options = [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }];
+    onNodes(Object.assign({}, nodes, { [id]: base }));
+    setSelected(id);
+  };
+  const deleteNode = (id) => {
+    const copy = {};
+    Object.values(nodes).forEach(n => {
+      if (n.id === id) return;
+      const c = Object.assign({}, n);
+      if (c.next === id) c.next = null;
+      if (c.options) c.options = c.options.map(o => o.target === id ? Object.assign({}, o, { target: null }) : o);
+      copy[n.id] = c;
+    });
+    onNodes(copy);
+    if (selected === id) setSelected(null);
+  };
+  const duplicateNode = (id) => {
+    const src = nodes[id]; const nid = uid(src.type);
+    const clone = Object.assign({}, src, { id: nid, x: src.x + 36, y: src.y + 36,
+      title: (src.title || '') + ' copy',
+      options: (src.options || []).map(o => ({ id: uid('o'), label: o.label, target: o.target })) });
+    onNodes(Object.assign({}, nodes, { [nid]: clone }));
+    setSelected(nid);
+  };
+  const connect = (fromId, optId, toId) => {
+    if (fromId === toId || !toId) return;
+    const n = nodes[fromId];
+    if (BRANCHING.has(n.type)) {
+      if (optId) setNode(fromId, { options: n.options.map(o => o.id === optId ? Object.assign({}, o, { target: toId }) : o) });
+      else setNode(fromId, { options: (n.options || []).concat([{ id: uid('o'), label: 'New option', target: toId }]) });
+    } else {
+      setNode(fromId, { next: toId });
+    }
+  };
+  const deleteEdge = (e) => {
+    const n = nodes[e.from]; if (!n) return;
+    if (e.kind === 'branch') setNode(e.from, { options: (n.options || []).map(o => o.id === e.optId ? Object.assign({}, o, { target: null }) : o) });
+    else setNode(e.from, { next: null });
+    setHoverEdge(null);
+  };
+
+  /* ---- global pointer handlers ---- */
+  useEffect(() => {
+    const move = (e) => {
+      if (pan) {
+        setView(v => Object.assign({}, v, { x: pan.vx + (e.clientX - pan.sx), y: pan.vy + (e.clientY - pan.sy) }));
+      } else if (drag) {
+        const w = toWorld(e.clientX, e.clientY);
+        setNode(drag.id, { x: w.x - drag.ox, y: w.y - drag.oy });
+      } else if (conn) {
+        const w = toWorld(e.clientX, e.clientY);
+        setConn(c => Object.assign({}, c, { pt: w }));
+        setHoverTarget(nodeAt(w.x, w.y));
+      } else if (ghost) {
+        setGhost(g => Object.assign({}, g, { cx: e.clientX, cy: e.clientY }));
+      }
+    };
+    const up = (e) => {
+      if (conn) {
+        const w = toWorld(e.clientX, e.clientY);
+        const t = nodeAt(w.x, w.y);
+        if (t) connect(conn.from, conn.optId, t);
+        setConn(null); setHoverTarget(null);
+      }
+      if (ghost) {
+        const r = wrapRef.current.getBoundingClientRect();
+        if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+          const w = toWorld(e.clientX, e.clientY);
+          addNode(ghost.type, w.x - NODE_W / 2, w.y - 24);
+        }
+        setGhost(null);
+      }
+      setDrag(null); setPan(null);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    return () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+  });
+
+  /* ---- wheel zoom (non-passive) ---- */
+  useEffect(() => {
+    const el = wrapRef.current; if (!el) return;
+    const onWheel = (e) => {
+      e.preventDefault();
+      const r = el.getBoundingClientRect();
+      const sx = e.clientX - r.left, sy = e.clientY - r.top;
+      if (e.ctrlKey || e.metaKey || Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        const factor = Math.exp(-e.deltaY * 0.0015);
+        setView(v => {
+          const k = Math.min(2.2, Math.max(0.2, v.k * factor));
+          const wx = (sx - v.x) / v.k, wy = (sy - v.y) / v.k;
+          return { x: sx - wx * k, y: sy - wy * k, k };
+        });
+      } else {
+        setView(v => Object.assign({}, v, { x: v.x - e.deltaX, y: v.y - e.deltaY }));
+      }
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [view]);
+
+  const zoomBy = (f) => setView(v => {
+    const r = wrapRef.current.getBoundingClientRect();
+    const sx = r.width / 2, sy = r.height / 2;
+    const k = Math.min(2.2, Math.max(0.2, v.k * f));
+    const wx = (sx - v.x) / v.k, wy = (sy - v.y) / v.k;
+    return { x: sx - wx * k, y: sy - wy * k, k };
+  });
+  const fitView = () => {
+    const ids = Object.keys(nodes); if (!ids.length) return;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    ids.forEach(id => { const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 80 };
+      minX = Math.min(minX, n.x); minY = Math.min(minY, n.y);
+      maxX = Math.max(maxX, n.x + (g.w || NODE_W)); maxY = Math.max(maxY, n.y + (g.h || 80)); });
+    const r = wrapRef.current.getBoundingClientRect();
+    const pad = 80;
+    const k = Math.min(1.1, Math.max(0.2, Math.min((r.width - pad) / (maxX - minX), (r.height - pad) / (maxY - minY))));
+    setView({ x: (r.width - (maxX - minX) * k) / 2 - minX * k, y: (r.height - (maxY - minY) * k) / 2 - minY * k, k });
+  };
+  const tidy = () => { onNodes(autoLayout(nodes)); setTimeout(fitView, 30); };
+
+  /* ---- background pan start ---- */
+  const onBgDown = (e) => {
+    if (e.target.closest('[data-node]') || e.target.closest('[data-anchor]')) return;
+    setSelected(null);
+    setPan({ sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y });
+  };
+
+  /* ---- render ---- */
+  const selNode = selected ? nodes[selected] : null;
+
+  return (
+    <div className="cv-root">
+      {/* palette */}
+      <div className="cv-palette">
+        <div className="cv-palette-h">Add step</div>
+        {Object.keys(NODE_TYPES).map(k => {
+          const m = NODE_TYPES[k]; const c = CAT_META[m.cat];
+          return (
+            <button key={k} className="cv-chip" style={{ '--c': c.color, '--cs': c.soft }}
+              onPointerDown={(e) => { e.preventDefault(); setGhost({ type: k, cx: e.clientX, cy: e.clientY }); }}
+              onClick={() => { const r = wrapRef.current.getBoundingClientRect(); const w = toWorld(r.left + r.width / 2, r.top + r.height / 2); addNode(k, w.x - NODE_W / 2, w.y - 24); }}
+              title={m.hint}>
+              <span className="cv-chip-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={17} color={c.color} /></span>
+              <span className="cv-chip-tx">{m.label}</span>
+            </button>
+          );
+        })}
+        <div className="cv-palette-tip">Click to drop at center · drag onto canvas to place</div>
+      </div>
+
+      {/* viewport */}
+      <div className="cv-viewport" ref={wrapRef} onPointerDown={onBgDown}
+        style={{ cursor: pan ? 'grabbing' : 'default' }}>
+        <div className="cv-dots" style={{ backgroundPosition: `${view.x}px ${view.y}px`, backgroundSize: `${24 * view.k}px ${24 * view.k}px` }} />
+        <div className="cv-world" style={{ transform: `translate(${view.x}px,${view.y}px) scale(${view.k})` }}>
+          <svg className="cv-edges" width="6000" height="4000">
+            <defs>
+              <marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                <path d="M1,1 L7,4.5 L1,8" fill="none" stroke="#b8c0ca" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </marker>
+            </defs>
+            {edges.map(e => {
+              const s = srcPoint(e.from, e.kind === 'branch' ? e.optId : null);
+              const t = tgtPoint(e.to);
+              const mid = { x: (s.x + t.x) / 2, y: (s.y + t.y) / 2 };
+              const col = colorOf(nodes[e.from].type);
+              const hov = hoverEdge === e.id;
+              return (
+                <g key={e.id}
+                  onPointerOver={() => setHoverEdge(e.id)}
+                  onPointerOut={(ev) => { if (!ev.currentTarget.contains(ev.relatedTarget)) setHoverEdge(h => h === e.id ? null : h); }}>
+                  <path className="cv-edgehit" d={pathD(s, t)} />
+                  <path d={pathD(s, t)} fill="none" stroke={hov ? '#c0473a' : col} strokeOpacity={hov ? 0.9 : 0.42} strokeWidth={hov ? 2.6 : 2} markerEnd="url(#arw)" style={{ transition: 'stroke .12s' }} />
+                  {e.label && !hov && (
+                    <foreignObject x={mid.x - 75} y={mid.y - 13} width="150" height="26" style={{ overflow: 'visible' }}>
+                      <div className="cv-edgelabel">{e.label}</div>
+                    </foreignObject>
+                  )}
+                  {hov && (
+                    <foreignObject x={mid.x - 11} y={mid.y - 11} width="22" height="22" style={{ overflow: 'visible' }}>
+                      <div className="cv-edgedel" title="Delete this connection"
+                        onPointerDown={ev => { ev.stopPropagation(); }}
+                        onClick={ev => { ev.stopPropagation(); deleteEdge(e); }}>
+                        <MiniIcon name="close" size={12} />
+                      </div>
+                    </foreignObject>
+                  )}
+                </g>
+              );
+            })}
+            {conn && (() => { const s = srcPoint(conn.from, conn.optId); return (
+              <path d={pathD(s, conn.pt)} fill="none" stroke="#0a6e9e" strokeWidth="2.2" strokeDasharray="5 4" />
+            ); })()}
+          </svg>
+
+          {Object.values(nodes).map(n => {
+            const m = NODE_TYPES[n.type] || NODE_TYPES.task; const c = CAT_META[m.cat];
+            const isSel = selected === n.id; const isTgt = hoverTarget === n.id && conn;
+            return (
+              <div key={n.id} data-node ref={el => nodeRefs.current[n.id] = el}
+                className={'cv-node' + (isSel ? ' is-sel' : '') + (isTgt ? ' is-tgt' : '')}
+                style={{ left: n.x, top: n.y, width: NODE_W, '--c': c.color, '--cs': c.soft, '--ci': c.ink, '--cg': c.grad }}
+                onPointerDown={(e) => {
+                  if (e.target.closest('[data-anchor]')) return;
+                  e.stopPropagation(); setSelected(n.id);
+                  const w = toWorld(e.clientX, e.clientY);
+                  setDrag({ id: n.id, ox: w.x - n.x, oy: w.y - n.y });
+                }}>
+                {/* input anchor */}
+                {m.cat !== 'start' && <span className="cv-anchor cv-in" data-anchor title="input" />}
+                <div className="cv-node-head">
+                  <span className="cv-node-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={14} color={c.color} /></span>
+                  <span className="cv-node-cat">{c.name}{subLabel(n) ? <span className="cv-node-sub"> · {subLabel(n)}</span> : null}</span>
+                  <span className="cv-node-tools">
+                    <button className="cv-tool" title="Duplicate" onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); duplicateNode(n.id); }}><MiniIcon name="copy" size={12} /></button>
+                    <button className="cv-tool" title="Delete" onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); deleteNode(n.id); }}><MiniIcon name="trash" size={12} /></button>
+                  </span>
+                </div>
+                <div className="cv-node-title">{n.title || 'Untitled'}</div>
+                {n.detail && <div className="cv-node-detail">{n.detail}</div>}
+
+                {m.branching ? (
+                  <div className="cv-opts">
+                    {(n.options || []).map((o, i) => (
+                      <div className="cv-opt" data-opt={o.id} key={o.id}>
+                        <span className="cv-opt-l">{String.fromCharCode(65 + i)}</span>
+                        <span className="cv-opt-tx">{o.label}</span>
+                        <span className="cv-anchor cv-out" data-anchor title="drag to connect"
+                          onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: o.id, pt: w }); }} />
+                      </div>
+                    ))}
+                  </div>
+                ) : (!m.terminal && (
+                  <span className="cv-anchor cv-out cv-out-single" data-anchor data-out title="drag to connect"
+                    onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: null, pt: w }); }} />
+                ))}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ghost while dragging from palette */}
+        {ghost && (() => { const m = NODE_TYPES[ghost.type]; const c = CAT_META[m.cat]; return (
+          <div className="cv-ghost" style={{ left: ghost.cx, top: ghost.cy, '--c': c.color, '--cs': c.soft }}>
+            <span className="cv-node-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={14} color={c.color} /></span>
+            {m.label}
+          </div>
+        ); })()}
+
+        {/* toolbar */}
+        <div className="cv-toolbar">
+          <button className="cv-tbtn" onClick={tidy} title="Auto-layout"><MiniIcon name="tidy" size={16} /><span>Tidy</span></button>
+          <span className="cv-tbsep" />
+          <button className="cv-tbtn" onClick={() => zoomBy(1 / 1.2)} title="Zoom out"><MiniIcon name="minus" size={16} /></button>
+          <button className="cv-tbtn cv-tbpct" onClick={fitView} title="Fit to screen">{Math.round(view.k * 100)}%</button>
+          <button className="cv-tbtn" onClick={() => zoomBy(1.2)} title="Zoom in"><MiniIcon name="plus" size={16} /></button>
+          <button className="cv-tbtn" onClick={fitView} title="Fit"><MiniIcon name="fit" size={16} /></button>
+        </div>
+        <div className="cv-stats">{Object.keys(nodes).length} steps · {edges.length} connections</div>
+      </div>
+
+      {/* inspector */}
+      <div className={'cv-inspector' + (selNode ? ' open' : '')}>
+        {selNode ? (
+          <NodeEditor node={selNode} nodes={nodes}
+            onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
+            onDelete={deleteNode} onDuplicate={duplicateNode} />
+        ) : (
+          <div className="cv-insp-empty">
+            <div className="cv-insp-empty-ic"><MiniIcon name="grip" size={20} /></div>
+            <p>Select a step to edit it.</p>
+            <p className="muted">Drag a chip from the left onto the canvas to add a step. Drag the dot on a step's right edge to connect it to another step.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+window.FlowCanvas = FlowCanvas;
+
+</script>
+<script type="text/babel" data-from="js/outline.jsx">
+/*__js/outline.jsx__*/
+/* Vertical branching tree — auto top-to-bottom layout, click to edit. */
+const VT_CARD_W = 264;
+function VerticalTree({ nodes, onNodes, selected, setSelected }){
+  const scrollRef = useRef(null);
+  const worldRef = useRef(null);
+  const nodeRefs = useRef({});
+  const [geom, setGeom] = useState({});
+  const [scale, setScale] = useState(0.95);
+  const [conn, setConn] = useState(null);
+  const [hoverTarget, setHoverTarget] = useState(null);
+  const [ghost, setGhost] = useState(null);
+  const laid = useMemo(() => verticalLayout(nodes), [nodes]);
+  const edges = useMemo(() => deriveEdges(nodes), [nodes]);
+
+  useLayoutEffect(() => {
+    const g = {};
+    Object.keys(laid).forEach(id => {
+      const el = nodeRefs.current[id]; if (!el) return;
+      const opts = {};
+      el.querySelectorAll('[data-opt]').forEach(o => { opts[o.getAttribute('data-opt')] = o.offsetTop + o.offsetHeight / 2; });
+      const out = el.querySelector('[data-out]');
+      g[id] = { h: el.offsetHeight, opts, outY: out ? out.offsetTop + out.offsetHeight / 2 : el.offsetHeight / 2 };
+    });
+    setGeom(prev => JSON.stringify(prev) === JSON.stringify(g) ? prev : g);
+  });
+
+  let maxX = 0, maxY = 0;
+  Object.values(laid).forEach(n => { maxX = Math.max(maxX, n.x + VT_CARD_W); maxY = Math.max(maxY, n.y + ((geom[n.id] && geom[n.id].h) || 170)); });
+  const contentW = maxX + 160, contentH = maxY + 160;
+
+  const toWorld = (cx, cy) => { const r = worldRef.current.getBoundingClientRect(); return { x: (cx - r.left) / scale, y: (cy - r.top) / scale }; };
+  const nodeAt = (wx, wy) => {
+    const ids = Object.keys(laid);
+    for (let i = ids.length - 1; i >= 0; i--) { const id = ids[i]; const n = laid[id]; const h = (geom[id] && geom[id].h) || 150;
+      if (wx >= n.x && wx <= n.x + VT_CARD_W && wy >= n.y && wy <= n.y + h) return id; }
+    return null;
+  };
+
+  const setNode = (id, patch) => onNodes(Object.assign({}, nodes, { [id]: Object.assign({}, nodes[id], patch) }));
+  const deleteNode = (id) => {
+    const copy = {};
+    Object.values(nodes).forEach(n => { if (n.id === id) return; const c = Object.assign({}, n);
+      if (c.next === id) c.next = null;
+      if (c.options) c.options = c.options.map(o => o.target === id ? Object.assign({}, o, { target: null }) : o);
+      copy[n.id] = c; });
+    onNodes(copy); if (selected === id) setSelected(null);
+  };
+  const duplicateNode = (id) => {
+    const src = nodes[id]; const nid = uid(src.type);
+    onNodes(Object.assign({}, nodes, { [nid]: Object.assign({}, src, { id: nid, x: (src.x||0)+30, y: (src.y||0)+30, title: (src.title||'') + ' copy', options: (src.options||[]).map(o => ({ id: uid('o'), label: o.label, target: o.target })) }) }));
+    setSelected(nid);
+  };
+  const addNode = (type) => {
+    const id = uid(type);
+    const base = Object.assign({ id, type, title: NODE_TYPES[type].label, detail: '', options: [], next: null, x: 80, y: 80 }, defaultSub(type));
+    if (BRANCHING.has(type)) base.options = [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }];
+    onNodes(Object.assign({}, nodes, { [id]: base })); setSelected(id);
+  };
+  const addChild = (id) => {
+    const n = nodes[id]; const nid = uid('task');
+    const nn = { id: nid, type: 'task', taskType: 'diagnostic', title: 'New step', detail: '', options: [], next: null, x: (n.x||0), y: (n.y||0)+200 };
+    const copy = Object.assign({}, nodes, { [nid]: nn });
+    if (BRANCHING.has(n.type)) copy[id] = Object.assign({}, n, { options: (n.options||[]).concat([{ id: uid('o'), label: 'New answer', target: nid }]) });
+    else if (!NODE_TYPES[n.type].terminal) { nn.next = n.next; copy[id] = Object.assign({}, n, { next: nid }); }
+    onNodes(copy); setSelected(nid);
+  };
+  const connect = (fromId, optId, toId) => {
+    if (fromId === toId || !toId) return;
+    const n = nodes[fromId];
+    if (BRANCHING.has(n.type)) {
+      if (optId) setNode(fromId, { options: n.options.map(o => o.id === optId ? Object.assign({}, o, { target: toId }) : o) });
+      else setNode(fromId, { options: (n.options || []).concat([{ id: uid('o'), label: 'New option', target: toId }]) });
+    } else setNode(fromId, { next: toId });
+  };
+
+  // global handlers for connection drag + palette ghost
+  useEffect(() => {
+    const move = (e) => {
+      if (conn) { const w = toWorld(e.clientX, e.clientY); setConn(c => Object.assign({}, c, { pt: w })); setHoverTarget(nodeAt(w.x, w.y)); }
+      else if (ghost) setGhost(g => Object.assign({}, g, { cx: e.clientX, cy: e.clientY }));
+    };
+    const up = (e) => {
+      if (conn) { const w = toWorld(e.clientX, e.clientY); const t = nodeAt(w.x, w.y); if (t) connect(conn.from, conn.optId, t); setConn(null); setHoverTarget(null); }
+      if (ghost) { const r = scrollRef.current.getBoundingClientRect();
+        if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) addNode(ghost.type);
+        setGhost(null); }
+    };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up);
+    return () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+  });
+
+  // committed edges fan from the bottom (clean top-down)
+  const srcPt = (n, i, count) => ({ x: n.x + VT_CARD_W * ((i + 1) / (count + 1)), y: n.y + ((geom[n.id] && geom[n.id].h) || 150) });
+  const tgtPt = (c) => ({ x: c.x + VT_CARD_W / 2, y: c.y });
+  const pathD = (s, t) => { const dy = Math.max(28, (t.y - s.y) * 0.5); return `M${s.x},${s.y} C${s.x},${s.y + dy} ${t.x},${t.y - dy} ${t.x},${t.y}`; };
+  // live drag preview starts at the option's right-side handle
+  const handlePt = (id, optId) => { const n = laid[id]; const g = geom[id] || {};
+    const y = optId ? (g.opts && g.opts[optId] != null ? g.opts[optId] : (g.h || 80) / 2) : (g.outY != null ? g.outY : (g.h || 80) / 2);
+    return { x: n.x + VT_CARD_W, y: n.y + y }; };
+  const previewD = (s, t) => { const dx = Math.max(30, Math.abs(t.x - s.x) * 0.4); return `M${s.x},${s.y} C${s.x + dx},${s.y} ${t.x},${t.y - 30} ${t.x},${t.y}`; };
+
+  const selNode = selected ? nodes[selected] : null;
+
+  return (
+    <div className="vt-root">
+      {/* palette */}
+      <div className="cv-palette">
+        <div className="cv-palette-h">Add step</div>
+        {Object.keys(NODE_TYPES).map(k => {
+          const m = NODE_TYPES[k]; const c = CAT_META[m.cat];
+          return (
+            <button key={k} className="cv-chip" style={{ '--c': c.color, '--cs': c.soft }}
+              onPointerDown={(e) => { e.preventDefault(); setGhost({ type: k, cx: e.clientX, cy: e.clientY }); }}
+              onClick={() => addNode(k)} title={m.hint}>
+              <span className="cv-chip-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={17} color={c.color} /></span>
+              <span className="cv-chip-tx">{m.label}</span>
+            </button>
+          );
+        })}
+        <div className="cv-palette-tip">Click to add · or drag the dot on a step’s right edge onto another step to connect them.</div>
+      </div>
+
+      <div className="vt-scroll" ref={scrollRef}>
+        <div className="vt-sizer" style={{ width: contentW * scale, height: contentH * scale }}>
+          <div className="vt-world" ref={worldRef} style={{ width: contentW, height: contentH, transform: `scale(${scale})` }}>
+            <svg className="vt-edges" width={contentW} height={contentH}>
+              <defs>
+                <marker id="vtarw" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                  <path d="M1,1 L7,4.5 L1,8" fill="none" stroke="#b8c0ca" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </marker>
+              </defs>
+              {edges.map(e => {
+                const from = laid[e.from], to = laid[e.to]; if (!from || !to) return null;
+                const opts = BRANCHING.has(from.type) ? (from.options || []) : [null];
+                let idx = e.kind === 'branch' ? opts.findIndex(o => o && o.id === e.optId) : 0;
+                if (idx < 0) idx = 0;
+                const s = srcPt(from, idx, opts.length); const t = tgtPt(to);
+                const mid = { x: (s.x + t.x) / 2, y: (s.y + t.y) / 2 };
+                const col = colorOf(from.type);
+                return (
+                  <g key={e.id}>
+                    <path d={pathD(s, t)} fill="none" stroke={col} strokeOpacity="0.42" strokeWidth="2" markerEnd="url(#vtarw)" />
+                    {e.label && (
+                      <foreignObject x={mid.x - 78} y={mid.y - 13} width="156" height="26" style={{ overflow: 'visible' }}>
+                        <div className="cv-edgelabel">{e.label}</div>
+                      </foreignObject>
+                    )}
+                  </g>
+                );
+              })}
+              {conn && (() => { const s = handlePt(conn.from, conn.optId); return (
+                <path d={previewD(s, conn.pt)} fill="none" stroke="#0a6e9e" strokeWidth="2.2" strokeDasharray="5 4" />
+              ); })()}
+            </svg>
+            {Object.values(laid).map(n => {
+              const m = NODE_TYPES[n.type] || NODE_TYPES.task; const c = CAT_META[m.cat];
+              const isTgt = hoverTarget === n.id && conn;
+              return (
+                <div key={n.id} ref={el => nodeRefs.current[n.id] = el}
+                  className={'cv-node vt-card' + (selected === n.id ? ' is-sel' : '') + (isTgt ? ' is-tgt' : '')}
+                  style={{ left: n.x, top: n.y, width: VT_CARD_W, '--c': c.color, '--cs': c.soft, '--ci': c.ink, '--cg': c.grad }}
+                  onClick={(e) => { if (e.target.closest('[data-anchor]')) return; setSelected(n.id); }}>
+                  {m.cat !== 'start' && <span className="cv-anchor cv-in" data-anchor title="input" />}
+                  <div className="cv-node-head">
+                    <span className="cv-node-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={15} color={c.color} /></span>
+                    <span className="cv-node-cat">{c.name}{subLabel(n) ? <span className="cv-node-sub"> · {subLabel(n)}</span> : null}</span>
+                    <span className="cv-node-tools">
+                      <button className="cv-tool" title="Duplicate" onClick={(e) => { e.stopPropagation(); duplicateNode(n.id); }}><MiniIcon name="copy" size={13} /></button>
+                      <button className="cv-tool" title="Delete" onClick={(e) => { e.stopPropagation(); deleteNode(n.id); }}><MiniIcon name="trash" size={13} /></button>
+                    </span>
+                  </div>
+                  <div className="cv-node-title">{n.title || 'Untitled'}</div>
+                  {n.detail && <div className="cv-node-detail">{n.detail}</div>}
+                  {m.branching ? (
+                    <div className="cv-opts">
+                      {(n.options || []).map((o, i) => (
+                        <div className="cv-opt" data-opt={o.id} key={o.id}>
+                          <span className="cv-opt-l">{String.fromCharCode(65 + i)}</span>
+                          <span className="cv-opt-tx">{o.label}</span>
+                          <span className="cv-anchor cv-out" data-anchor title="drag to connect"
+                            onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: o.id, pt: w }); }} />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (!m.terminal && (
+                    <span className="cv-anchor cv-out cv-out-single" data-anchor data-out title="drag to connect"
+                      onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: null, pt: w }); }} />
+                  ))}
+                  {!m.terminal && <button className="vt-add" title="Add a step below" onClick={(e) => { e.stopPropagation(); addChild(n.id); }}><MiniIcon name="plus" size={15} /></button>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {ghost && (() => { const m = NODE_TYPES[ghost.type]; const c = CAT_META[m.cat]; return (
+          <div className="cv-ghost" style={{ left: ghost.cx, top: ghost.cy, '--c': c.color, '--cs': c.soft }}>
+            <span className="cv-node-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={14} color={c.color} /></span>
+            {m.label}
+          </div>
+        ); })()}
+      </div>
+
+      <div className="cv-toolbar vt-toolbar">
+        <button className="cv-tbtn" onClick={() => setScale(s => Math.max(0.4, s / 1.15))} title="Zoom out"><MiniIcon name="minus" size={16} /></button>
+        <button className="cv-tbtn cv-tbpct" onClick={() => setScale(0.95)} title="Reset zoom">{Math.round(scale * 100)}%</button>
+        <button className="cv-tbtn" onClick={() => setScale(s => Math.min(1.7, s * 1.15))} title="Zoom in"><MiniIcon name="plus" size={16} /></button>
+      </div>
+
+      <div className="cv-inspector vt-inspector open">
+        {selNode ? (
+          <NodeEditor node={selNode} nodes={nodes}
+            onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
+            onDelete={deleteNode} onDuplicate={duplicateNode} />
+        ) : (
+          <FlowDashboard nodes={nodes} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+window.VerticalTree = VerticalTree;
+
+</script>
+<script type="text/babel" data-from="js/wizard.jsx">
+/*__js/wizard.jsx__*/
+/* Guided builder — walk through steps one at a time, fill a friendly form, routing via dropdowns. */
+function WizardView({ nodes, onNodes, selected, setSelected }){
+  const edges = useMemo(() => deriveEdges(nodes), [nodes]);
+  const order = useMemo(() => {
+    const childrenOf = {}; edges.forEach(e => { (childrenOf[e.from] = childrenOf[e.from] || []).push(e.to); });
+    const start = Object.values(nodes).find(n => n.type === 'issue') || Object.values(nodes)[0];
+    const seen = new Set(); const out = []; const q = start ? [start.id] : [];
+    while (q.length) { const id = q.shift(); if (seen.has(id) || !nodes[id]) continue; seen.add(id); out.push(id); (childrenOf[id] || []).forEach(t => { if (!seen.has(t)) q.push(t); }); }
+    Object.keys(nodes).forEach(id => { if (!seen.has(id)) out.push(id); });
+    return out;
+  }, [nodes, edges]);
+
+  const curId = (selected && nodes[selected]) ? selected : order[0];
+  const curIdx = order.indexOf(curId);
+  const cur = nodes[curId];
+
+  const addStep = () => {
+    const nid = uid('task');
+    const last = nodes[curId];
+    const nn = { id: nid, type: 'task', taskType: 'diagnostic', title: 'New step', detail: '', options: [], next: null, x: (last ? last.x : 0) + 40, y: (last ? last.y : 0) + 130 };
+    const copy = Object.assign({}, nodes, { [nid]: nn });
+    if (last && !BRANCHING.has(last.type) && !NODE_TYPES[last.type].terminal) { nn.next = last.next; copy[curId] = Object.assign({}, last, { next: nid }); }
+    onNodes(copy); setSelected(nid);
+  };
+  const deleteNode = (id) => {
+    const copy = {};
+    Object.values(nodes).forEach(n => { if (n.id === id) return; const c = Object.assign({}, n);
+      if (c.next === id) c.next = null;
+      if (c.options) c.options = c.options.map(o => o.target === id ? Object.assign({}, o, { target: null }) : o);
+      copy[n.id] = c; });
+    onNodes(copy); setSelected(null);
+  };
+  const duplicateNode = (id) => {
+    const src = nodes[id]; const nid = uid(src.type);
+    onNodes(Object.assign({}, nodes, { [nid]: Object.assign({}, src, { id: nid, title: (src.title||'') + ' copy', options: (src.options||[]).map(o => ({ id: uid('o'), label: o.label, target: o.target })) }) }));
+    setSelected(nid);
+  };
+
+  return (
+    <div className="wz-root">
+      <div className="wz-rail">
+        <div className="wz-rail-h">Steps in this flow <span className="wz-railcount">{order.length}</span></div>
+        <div className="wz-list">
+          {order.map((id, i) => {
+            const n = nodes[id]; const m = NODE_TYPES[n.type] || NODE_TYPES.task; const c = CAT_META[m.cat];
+            const branchN = m.branching ? (n.options || []).length : 0;
+            return (
+              <button key={id} className={'wz-item' + (id === curId ? ' is-cur' : '')} onClick={() => setSelected(id)}>
+                <span className="wz-num">{i + 1}</span>
+                <span className="wz-item-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={13} color={c.color} /></span>
+                <span className="wz-item-tx">
+                  <span className="wz-item-title">{n.title || 'Untitled'}</span>
+                  <span className="wz-item-sub">{subLabel(n) || c.name}{branchN ? ' · ' + branchN + ' answers' : ''}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <button className="wz-add" onClick={addStep}><MiniIcon name="plus" size={14} /> Add a step</button>
+      </div>
+
+      <div className="wz-stage">
+        {cur ? (
+          <div className="wz-card">
+            <div className="wz-card-top">
+              <span className="wz-step-of">Step {curIdx + 1} of {order.length}</span>
+              <span className="wz-card-cat" style={{ color: CAT_META[catOf(cur.type)].color }}>{CAT_META[catOf(cur.type)].name}</span>
+            </div>
+            <div className="wz-editorwrap">
+              <NodeEditor node={cur} nodes={nodes}
+                onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
+                onDelete={deleteNode} onDuplicate={duplicateNode} />
+            </div>
+            <div className="wz-nav">
+              <button className="wz-navbtn" disabled={curIdx <= 0} onClick={() => setSelected(order[curIdx - 1])}>← Previous</button>
+              <span className="wz-dots">{order.map((id, i) => <span key={id} className={'wz-dot' + (i === curIdx ? ' on' : '')} />)}</span>
+              <button className="wz-navbtn primary" disabled={curIdx >= order.length - 1} onClick={() => setSelected(order[curIdx + 1])}>Next →</button>
+            </div>
+          </div>
+        ) : <div className="cv-insp-empty"><p>No steps yet — add one to begin.</p></div>}
+      </div>
+    </div>
+  );
+}
+
+window.WizardView = WizardView;
+
+</script>
+<script type="text/babel" data-from="js/app.jsx">
+/*__js/app.jsx__*/
+/* App shell — header, mode switcher, shared state + persistence. */
+function App(){
+  const initial = useMemo(() => loadState(), []);
+  const [nodes, setNodes] = useState(initial.nodes);
+  const [view, setView] = useState(initial.view || { x: 20, y: 10, k: 0.86 });
+  const [mode, setMode] = useState('tree');
+  const [collapsed, setCollapsed] = useState(initial.collapsed || {});
+  const [selected, setSelected] = useState(null);
+  const [savedAt, setSavedAt] = useState('saved');
+  const [tplOpen, setTplOpen] = useState(false);
+  const [tpls, setTpls] = useState(() => listTemplates());
+
+  // debounced persist
+  const tRef = useRef(null);
+  useEffect(() => {
+    setSavedAt('saving');
+    clearTimeout(tRef.current);
+    tRef.current = setTimeout(() => { saveState({ nodes, view, mode, collapsed }); setSavedAt('saved'); }, 500);
+  }, [nodes, view, mode, collapsed]);
+
+  const onNodes = (nn) => setNodes(nn);
+
+  const reset = () => {
+    if (!confirm('Reset to the seeded "Low DO in Aeration Tank" flow? Your changes will be lost.')) return;
+    resetState(); const s = loadState();
+    setNodes(s.nodes); setView(s.view); setCollapsed({}); setSelected(null);
+  };
+  const blank = () => {
+    if (!confirm('Start from a blank canvas with just the Issue trigger?')) return;
+    const id = 'issue';
+    setNodes({ issue: { id, type: 'issue', title: 'New issue', detail: 'Describe the alert that opens this flow.', options: [], next: null, x: 120, y: 200 } });
+    setSelected('issue'); setCollapsed({});
+  };
+
+  const saveTpl = () => {
+    const name = prompt('Name this template — e.g. “Low DO · standard tree”');
+    if (!name) return;
+    setTpls(saveTemplate(name.trim(), nodes));
+  };
+  const loadTpl = (t) => {
+    if (!confirm('Load template “' + t.name + '”? This replaces what’s on the canvas now.')) return;
+    setNodes(JSON.parse(JSON.stringify(t.nodes))); setSelected(null); setCollapsed({}); setTplOpen(false);
+  };
+  const delTpl = (e, id) => { e.stopPropagation(); setTpls(deleteTemplate(id)); };
+
+  const modes = [
+    { k: 'canvas', label: 'Flow canvas', sub: 'Free-form' },
+    { k: 'tree', label: 'Vertical tree', sub: 'Top-down' },
+    { k: 'wizard', label: 'Guided', sub: 'Step-by-step' },
+  ];
+
+  return (
+    <div className="app">
+      <header className="hdr">
+        <div className="hdr-left">
+          <span className="hdr-logo">DP</span>
+          <div className="hdr-titles">
+            <div className="hdr-title">Diagnostic Tree Builder</div>
+            <div className="hdr-crumb">Issue module · <strong>Low DO in Aeration Tank</strong> · DT-001 draft</div>
+          </div>
+        </div>
+
+        <div className="hdr-modes">
+          {modes.map(m => (
+            <button key={m.k} className={'modebtn' + (mode === m.k ? ' on' : '')} onClick={() => { setMode(m.k); }}>
+              <span className="modebtn-l">{m.label}</span>
+              <span className="modebtn-s">{m.sub}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="hdr-right">
+          <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving…' : '✓ Saved'}</span>
+          <button className="hdr-btn" onClick={blank}>Start blank</button>
+          <button className="hdr-btn" onClick={reset}>Reset seed</button>
+          <div className="hdr-menuwrap">
+            <button className="hdr-btn" onClick={() => setTplOpen(o => !o)}>Templates ▾</button>
+            {tplOpen && <div className="menu-backdrop" onClick={() => setTplOpen(false)} />}
+            {tplOpen && (
+              <div className="hdr-menu">
+                <button className="hdr-menu-save" onClick={saveTpl}><MiniIcon name="save" size={15} /> Save current flow as template</button>
+                <div className="hdr-menu-h">Saved templates <span>{tpls.length}</span></div>
+                <div className="hdr-menu-list">
+                  {tpls.length ? tpls.map(t => (
+                    <div key={t.id} className="hdr-tpl">
+                      <span className="hdr-tpl-ic"><Icon glyph="issue" size={15} color="#0a6e9e" /></span>
+                      <span className="hdr-tpl-tx" onClick={() => loadTpl(t)}>
+                        <span className="hdr-tpl-name">{t.name}</span>
+                        <span className="hdr-tpl-meta">{t.count} steps · {new Date(t.createdAt).toLocaleDateString()}</span>
+                      </span>
+                      <button className="hdr-tpl-del" title="Delete template" onClick={(e) => delTpl(e, t.id)}><MiniIcon name="trash" size={14} /></button>
+                    </div>
+                  )) : <div className="hdr-menu-empty">No saved templates yet. Build a flow, then “Save current flow as template” to reuse it.</div>}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <div className="hint-bar">
+        {mode === 'canvas' && 'Drag step chips onto the canvas. Drag the dot on a step\u2019s right edge to another step to connect them. Hover any connection and click the \u2715 to delete it. Scroll to pan, \u2318+scroll or the toolbar to zoom, Tidy to auto-arrange.'}
+        {mode === 'tree' && 'A vertical, top-to-bottom branching tree — the issue at the top, each answer branching downward into its own path. Click a card to edit it, hover a card and press + to add a step beneath it.'}
+        {mode === 'wizard' && 'The same flow as a guided walkthrough — pick a step on the left, fill the form, set where each answer routes. Lowest learning curve for non-technical authors.'}
+      </div>
+
+      <main className="stage">
+        {mode === 'canvas' && <FlowCanvas nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} view={view} setView={setView} />}
+        {mode === 'tree' && <VerticalTree nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />}
+        {mode === 'wizard' && <WizardView nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />}
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+
+</script>
+</body>
+</html>

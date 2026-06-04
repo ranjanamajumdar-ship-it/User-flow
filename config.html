@@ -886,6 +886,23 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .ict-c-line{width:2px;height:32px;background:linear-gradient(180deg,rgba(107,54,181,.6),rgba(0,41,118,.4));border-radius:1px}
 .ict-c-arrow{font-size:18px;color:var(--brand);font-weight:800;line-height:1;margin-top:-4px}
 
+/* ===== Vertical Tree embed card (Section 4) ===== */
+.vt-embed-card{
+  background:rgba(255,255,255,.55);
+  border:1px solid var(--line-soft);
+  border-radius:20px;
+  padding:0;overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 12px 36px -14px rgba(40,50,80,.12);
+  margin-bottom:24px;
+}
+.vt-embed-head{padding:18px 22px;border-bottom:1px solid var(--line-soft);background:rgba(252,252,255,.6)}
+.vt-embed-eyebrow{font:800 10.5px 'JetBrains Mono';letter-spacing:.6px;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.vt-embed-sub{font-size:12.5px;color:var(--ink-3);font-weight:500;line-height:1.55}
+.vt-embed-iframe{
+  display:block;width:100%;height:780px;border:0;background:#fafbfc;
+}
+@media (max-width:900px){.vt-embed-iframe{height:600px}}
+
 /* ===== Big Flow Canvas card (Section 4) ===== */
 .flow-canvas-card{
   background:rgba(255,255,255,.55);
@@ -2733,66 +2750,18 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
       </div>
     </div>
 
-    <!-- ===== ICT → Flow canvas connector ===== -->
+    <!-- ===== ICT → Vertical Tree connector ===== -->
     <div class="ict-connector"><div class="ict-c-line"></div><div class="ict-c-arrow">▾</div></div>
 
-    <!-- ===== Flow Canvas (FigJam-style for entire flow) ===== -->
-    <div class="flow-canvas-card">
-      <div class="fcc-head">
+    <!-- ===== Vertical Tree (top-down · embedded from Diagnostic Tree Builder) ===== -->
+    <div class="vt-embed-card">
+      <div class="vt-embed-head">
         <div>
-          <div class="fcc-eyebrow">Flow canvas</div>
-          <div class="fcc-sub">Drop steps onto the canvas, drag to arrange, drag anchors to connect them.</div>
-        </div>
-        <div class="fcc-meta">
-          <span><b id="fccNodeCount">0</b> nodes</span><span class="fcc-meta-sep">·</span>
-          <span><b id="fccEdgeCount">0</b> connections</span>
+          <div class="vt-embed-eyebrow">Vertical tree · top-down</div>
+          <div class="vt-embed-sub">The issue sits at the top — each answer branches downward into its own path. Click a card to edit it, hover to add a step beneath.</div>
         </div>
       </div>
-
-      <!-- Toolbar with all step-type chips + Add blank + Add destination dropdown -->
-      <div class="fcc-toolbar">
-        <button class="fcc-chip fcc-q" onclick="fccAddNode('question','New question')">❓ Question</button>
-        <button class="fcc-chip fcc-a" onclick="fccAddNode('answersingle','Single answer')">⭕ Single answer</button>
-        <button class="fcc-chip fcc-a" onclick="fccAddNode('answermulti','Multi-select')">☑ Multi-select</button>
-        <button class="fcc-chip fcc-a" onclick="fccAddNode('answernumeric','Numeric answer')">🔢 Numeric</button>
-        <button class="fcc-chip fcc-rc" onclick="fccAddNode('rcselectv2','Root cause selector')">🌳 Root cause</button>
-        <button class="fcc-chip fcc-ok" onclick="fccAddNode('successfail','Success / Failure')">✓ Success / Failure</button>
-        <button class="fcc-chip fcc-c" onclick="fccAddNode('closurecard','Closure card')">🏁 Closure</button>
-        <button class="fcc-chip fcc-w" onclick="fccAddNode('waitrecovery','Wait for recovery')">⏱ Waiting</button>
-        <button class="fcc-chip fcc-w" onclick="fccAddNode('skiptoend','Skip to end')">⏯ Skip to end</button>
-        <span class="fcc-divider"></span>
-        <button class="fcc-chip fcc-blank" onclick="fccAddNode('blank','New step')">＋ Add blank step</button>
-        <div class="fcc-dest-wrap" id="fccDestWrap">
-          <button class="fcc-chip fcc-dest" onclick="fccToggleDestMenu()">＋ Add destination <span class="fcc-chev">⌄</span></button>
-          <div class="fcc-dest-menu" id="fccDestMenu">
-            <button onclick="fccAddNode('destination','Close stage');fccCloseDestMenu()"><span class="vdm-ic">🏁</span>Close stage</button>
-            <button onclick="fccAddNode('destination','End diagnosis');fccCloseDestMenu()"><span class="vdm-ic">⏹</span>End diagnosis</button>
-            <button onclick="fccAddNode('destination','Confirmation card');fccCloseDestMenu()"><span class="vdm-ic">✓</span>Confirmation card</button>
-            <button onclick="fccAddNode('destination','Closure card');fccCloseDestMenu()"><span class="vdm-ic">🏁</span>Closure card</button>
-            <button onclick="fccAddNode('destination','Reassignment');fccCloseDestMenu()"><span class="vdm-ic">👥</span>Reassignment</button>
-            <button onclick="fccAddNode('destination','Specific step…');fccCloseDestMenu()"><span class="vdm-ic">▸</span>Specific step…</button>
-          </div>
-        </div>
-        <span class="fcc-toolbar-spacer"></span>
-        <button class="fcc-tool-btn" onclick="fccClear()" title="Clear canvas">🗑 Clear</button>
-      </div>
-
-      <!-- The big canvas -->
-      <div class="fcc-canvas" id="fccCanvas">
-        <!-- Inherited "Issue card" anchor node at the top (read-only, comes from ICT above) -->
-        <div class="fcc-anchor-node" id="fccAnchorNode">
-          <div class="fcan-kind">Inherited · Issue card</div>
-          <div class="fcan-ttl">Low DO · Aeration Tank 1</div>
-        </div>
-        <svg class="fcc-connections" id="fccConnections" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <marker id="fccArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="#6A7185"/>
-            </marker>
-          </defs>
-        </svg>
-        <div class="fcc-help" id="fccHelp">Click a step-type chip above to drop your first node onto the canvas. Drag to arrange. Drag anchor dots to connect.</div>
-      </div>
+      <iframe class="vt-embed-iframe" src="tree-builder.html" title="Diagnostic Tree Builder · Vertical Tree" loading="lazy"></iframe>
     </div>
 
     <!-- Hidden: old palette + canvas (kept in DOM so legacy JS still resolves; not rendered) -->

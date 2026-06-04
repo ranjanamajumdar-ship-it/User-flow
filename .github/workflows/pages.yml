@@ -66,6 +66,13 @@ jobs:
           path: flow-canvas
         continue-on-error: true
 
+      - name: Checkout vertical-tree
+        uses: actions/checkout@v4
+        with:
+          ref: vertical-tree
+          path: vertical-tree
+        continue-on-error: true
+
       - name: Checkout diagnostic-flow
         uses: actions/checkout@v4
         with:
@@ -116,6 +123,12 @@ jobs:
             mkdir -p dist/flow-canvas
             cp -R flow-canvas/. dist/flow-canvas/ 2>/dev/null || true
             rm -rf dist/flow-canvas/.git dist/flow-canvas/.github
+          fi
+          # /vertical-tree/ = vertical-tree branch contents
+          if [ -d vertical-tree ]; then
+            mkdir -p dist/vertical-tree
+            cp -R vertical-tree/. dist/vertical-tree/ 2>/dev/null || true
+            rm -rf dist/vertical-tree/.git dist/vertical-tree/.github
           fi
           # /diagnostic-flow/ = diagnostic-flow branch contents
           if [ -d diagnostic-flow ]; then
