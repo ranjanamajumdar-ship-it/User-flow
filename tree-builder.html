@@ -30,10 +30,51 @@ input,textarea,select{font-family:inherit;}
 .hdr{display:flex;align-items:center;gap:20px;padding:0 18px;height:58px;background:var(--panel);border-bottom:1px solid var(--line);flex:none;}
 .hdr-left{display:flex;align-items:center;gap:12px;min-width:230px;}
 .hdr-logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;font-size:13px;letter-spacing:.5px;}
-.hdr-titles{line-height:1.15;}
-.hdr-title{font-weight:700;font-size:14.5px;}
-.hdr-crumb{font-size:11.5px;color:var(--ink3);}
+.hdr-titles{line-height:1.2;display:flex;flex-direction:column;gap:1px}
+.hdr-title{font-weight:700;font-size:14.5px;letter-spacing:-.01em;margin:0;line-height:1.2}
+.hdr-crumb{font-size:11.5px;color:var(--ink3);margin:0;line-height:1.3}
 .hdr-crumb strong{color:var(--ink2);font-weight:600;}
+
+/* Builder / Templates toggle pill (top right) */
+.bt-toggle{display:inline-flex;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:8px}
+.bt-tab{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 16px;border-radius:999px;border:0;cursor:pointer;
+  font:600 12.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink2);
+  background:transparent;letter-spacing:.1px;transition:.15s;
+}
+.bt-tab:hover{color:var(--ink)}
+.bt-tab.on{background:var(--accent);color:#fff;box-shadow:0 1px 3px rgba(10,110,158,.25)}
+.bt-tab-n{
+  display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;
+  font:700 10.5px 'IBM Plex Mono',monospace;border-radius:999px;
+  background:rgba(255,255,255,.18);color:inherit;
+}
+.bt-tab:not(.on) .bt-tab-n{background:rgba(20,33,48,.08);color:var(--ink3)}
+
+/* Templates page */
+.tpl-view{padding:28px 40px 60px;max-width:1080px;margin:0 auto;width:100%;overflow:auto;height:100%}
+.tpl-view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:24px}
+.tpl-view-head h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.tpl-view-head p{margin:4px 0 0;font-size:13px;color:var(--ink3)}
+.tpl-view-count{font:700 11px 'IBM Plex Mono',monospace;color:var(--ink3);background:#eef2f6;padding:5px 10px;border-radius:999px;letter-spacing:.3px;text-transform:uppercase}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.tpl-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px;transition:.15s}
+.tpl-card:hover{border-color:var(--accent);box-shadow:0 8px 22px -10px rgba(10,110,158,.22)}
+.tpl-card-h{display:flex;align-items:center;gap:11px}
+.tpl-card-ic{width:38px;height:38px;border-radius:11px;background:linear-gradient(145deg,#ECDFFB,#D6BFF5);display:grid;place-items:center;font-size:18px;flex:none}
+.tpl-card-meta{min-width:0;flex:1}
+.tpl-card-name{font:700 13.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-.005em}
+.tpl-card-sub{font:600 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;color:var(--ink3);letter-spacing:.3px;margin-top:2px}
+.tpl-card-actions{display:flex;gap:6px;margin-top:auto}
+.tpl-card-load{flex:1;padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer;font:700 12px 'Plus Jakarta Sans';letter-spacing:.2px}
+.tpl-card-load:hover{filter:brightness(1.08)}
+.tpl-card-del{padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink3);cursor:pointer;font:600 12px 'Plus Jakarta Sans'}
+.tpl-card-del:hover{border-color:#c0473a;color:#c0473a}
+.tpl-empty{text-align:center;padding:60px 20px;color:var(--ink3)}
+.tpl-empty-ic{font-size:42px;margin-bottom:14px}
+.tpl-empty h3{margin:0 0 8px;font-size:17px;color:var(--ink)}
+.tpl-empty p{margin:0;font-size:13px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.5}
 .hdr-modes{display:flex;gap:6px;margin:0 auto;background:#eef2f6;padding:4px;border-radius:11px;}
 .modebtn{display:flex;flex-direction:column;align-items:flex-start;padding:6px 15px;border-radius:8px;line-height:1.2;transition:.15s;white-space:nowrap;}
 .modebtn-l{font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap;}
@@ -1753,6 +1794,7 @@ function App(){
   const [savedAt, setSavedAt] = useState('saved');
   const [tplOpen, setTplOpen] = useState(false);
   const [tpls, setTpls] = useState(() => listTemplates());
+  const [tab, setTab] = useState('builder'); // 'builder' | 'templates'
 
   // debounced persist
   const tRef = useRef(null);
@@ -1815,8 +1857,12 @@ function App(){
 
         <div className="hdr-right">
           <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving…' : '✓ Saved'}</span>
-          <button className="hdr-btn" onClick={blank}>Start blank</button>
-          <button className="hdr-btn" onClick={reset}>Reset seed</button>
+          <div className="bt-toggle">
+            <button className={'bt-tab' + (tab === 'builder' ? ' on' : '')} onClick={() => setTab('builder')}>Builder</button>
+            <button className={'bt-tab' + (tab === 'templates' ? ' on' : '')} onClick={() => { setTpls(listTemplates()); setTab('templates'); }}>
+              Templates <span className="bt-tab-n">{tpls.length}</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -1827,9 +1873,48 @@ function App(){
       </div>
 
       <main className="stage">
-        {mode === 'canvas' && <FlowCanvas nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} view={view} setView={setView} />}
-        {mode === 'tree' && <VerticalTree nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />}
-        {mode === 'wizard' && <WizardView nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />}
+        {tab === 'builder' ? (
+          <React.Fragment>
+            {mode === 'canvas' && <FlowCanvas nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} view={view} setView={setView} />}
+            {mode === 'tree' && <VerticalTree nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />}
+            {mode === 'wizard' && <WizardView nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />}
+          </React.Fragment>
+        ) : (
+          <div className="tpl-view">
+            <div className="tpl-view-head">
+              <div>
+                <h2>Templates</h2>
+                <p>Saved flows you can load into the Builder and tweak per plant.</p>
+              </div>
+              <div className="tpl-view-count">{tpls.length} saved</div>
+            </div>
+            {tpls.length === 0 ? (
+              <div className="tpl-empty">
+                <div className="tpl-empty-ic">📐</div>
+                <h3>No templates yet</h3>
+                <p>Build a flow, then use <b>Save as template</b> on the Build the flow screen to save it here.</p>
+              </div>
+            ) : (
+              <div className="tpl-grid">
+                {tpls.map(t => (
+                  <div key={t.id} className="tpl-card">
+                    <div className="tpl-card-h">
+                      <span className="tpl-card-ic">📐</span>
+                      <div className="tpl-card-meta">
+                        <div className="tpl-card-name">{t.name}</div>
+                        <div className="tpl-card-sub">{t.count} steps · saved {new Date(t.createdAt).toLocaleDateString()}</div>
+                      </div>
+                    </div>
+                    <div className="tpl-card-actions">
+                      <button className="tpl-card-load" onClick={() => { loadTpl(t); setTab('builder'); }}>Load into Builder</button>
+                      <button className="tpl-card-del" onClick={(e) => delTpl(e, t.id)} title="Delete template">Delete</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
