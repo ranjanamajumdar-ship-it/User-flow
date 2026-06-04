@@ -399,17 +399,21 @@ input,textarea,select{font-family:inherit;}
 }
 .cv-palette.is-collapsed .cv-chip-ic{width:32px;height:32px;flex:0 0 32px}
 
-/* Right inspector — always present (no collapse). */
+/* Right inspector — opens automatically when a node is selected; collapses when nothing is selected. */
 .cv-inspector{
   position:relative;
-  width:var(--inspectorW,344px)!important;
-  overflow:visible;
+  width:0!important;
+  overflow:hidden;
   flex:none;
   transition:width .22s cubic-bezier(.4,.0,.2,1);
+  border-left:1px solid var(--line);
+}
+.cv-inspector.open{
+  width:var(--inspectorW,344px)!important;
+  overflow:visible;
 }
 .cv-inspector.is-collapsed{
-  width:64px!important;
-  padding-left:8px!important;padding-right:8px!important;
+  width:0!important;
   overflow:hidden;
 }
 
@@ -1945,17 +1949,11 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
         <button className="cv-tbtn" onClick={() => setScale(s => Math.min(2.0, s * 1.15))} title="Zoom in (⌘/Ctrl + scroll)"><MiniIcon name="plus" size={14} /> Zoom in</button>
       </div>
 
-      <div className="cv-inspector vt-inspector open">
-        {selNode ? (
+      <div className={'cv-inspector vt-inspector' + (selNode ? ' open' : '')}>
+        {selNode && (
           <NodeEditor node={selNode} nodes={nodes}
             onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
             onDelete={deleteNode} onDuplicate={duplicateNode} />
-        ) : (
-          <div className="cv-insp-empty">
-            <div className="cv-insp-empty-ic"><MiniIcon name="grip" size={20} /></div>
-            <p><b>Click any node</b> to edit it here.</p>
-            <p className="muted">You can also type directly inside each node, or drag the cards around freely.</p>
-          </div>
         )}
       </div>
 
