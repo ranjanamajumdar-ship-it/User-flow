@@ -926,6 +926,9 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 /* Section 2 + 3 are merged into Section 1 — fully hidden */
 #p-2,#p-3{display:none !important}
 
+/* On the Review step (#p-5) hide the bottom footer entirely — only the two summary cards remain. */
+body:has(#p-5.on) .footer{display:none !important}
+
 /* ===== Padlock feature removed — hide every related UI artifact ===== */
 .lock-btn,
 .padlock-svg,
@@ -3050,13 +3053,13 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   <section class="panel" id="p-5">
 
     <div class="rv-cards">
-      <!-- ====== Card 1: Issue basics ====== -->
-      <div class="rv-card ok">
+      <!-- ====== Card 1: Issue summary (includes trigger condition) ====== -->
+      <div class="rv-card ok open">
         <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
           <div class="rv-ic">✓</div>
           <div class="rv-main">
-            <div class="rv-ttl">Issue basics</div>
-            <div class="rv-sub">Plant · equipment · severity · deadline · type — all set</div>
+            <div class="rv-ttl">Issue summary</div>
+            <div class="rv-sub">Plant · equipment · severity · trigger condition</div>
           </div>
           <span class="rv-chev">⌄</span>
           <button class="rv-edit" onclick="event.stopPropagation();goStep(1)">Edit</button>
@@ -3069,117 +3072,35 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
           <div class="kv-row"><span class="kv-k">Severity</span><span class="kv-v"><span class="rvp-sev">High</span></span></div>
           <div class="kv-row"><span class="kv-k">Deadline</span><span class="kv-v">2 hrs · within shift</span></div>
           <div class="kv-row"><span class="kv-k">Type</span><span class="kv-v">Process / Lab</span></div>
-        </div>
-      </div>
-
-      <!-- ====== Card 2: Assignment ====== -->
-      <div class="rv-card ok">
-        <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
-          <div class="rv-ic">👤</div>
-          <div class="rv-main">
-            <div class="rv-ttl">Assignment</div>
-            <div class="rv-sub">Sharma ji · Site Engineer · Mechanical · in group <b>Aeration team A</b></div>
-          </div>
-          <span class="rv-chev">⌄</span>
-          <button class="rv-edit" onclick="event.stopPropagation();goStep(1)">Edit</button>
-        </div>
-        <div class="rv-kv">
-          <div class="kv-row"><span class="kv-k">Role</span><span class="kv-v">Site Engineer</span></div>
-          <div class="kv-row"><span class="kv-k">Skill</span><span class="kv-v">Mechanical</span></div>
-          <div class="kv-row"><span class="kv-k">Assignee</span><span class="kv-v"><b>Sharma ji</b></span></div>
-          <div class="kv-row"><span class="kv-k">Group</span><span class="kv-v">Aeration team A · 4 members</span></div>
-          <div class="kv-row"><span class="kv-k">Auto-routing</span><span class="kv-v">On — falls back to same Role + Skill if unavailable</span></div>
-        </div>
-      </div>
-
-      <!-- ====== Card 3: Trigger condition ====== -->
-      <div class="rv-card ok">
-        <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
-          <div class="rv-ic trig">⚡</div>
-          <div class="rv-main">
-            <div class="rv-ttl">Trigger condition</div>
-            <div class="rv-sub">DO &lt; 2.0 mg/L sustained for 12 minutes</div>
-          </div>
-          <span class="rv-chev">⌄</span>
-          <button class="rv-edit" onclick="event.stopPropagation();goStep(2)">Edit</button>
-        </div>
-        <div class="rv-kv">
-          <div class="kv-row"><span class="kv-k">Sensor</span><span class="kv-v">DO-3 (Dissolved Oxygen · Aeration · Bay 3)</span></div>
-          <div class="kv-row"><span class="kv-k">Condition</span><span class="kv-v">Less than <b>2.0 mg/L</b></span></div>
-          <div class="kv-row"><span class="kv-k">Sustained for</span><span class="kv-v">0 hrs · 12 mins · 00 secs</span></div>
+          <div class="kv-row"><span class="kv-k">Assignee</span><span class="kv-v">General · anyone on shift</span></div>
+          <div class="kv-row"><span class="kv-k">Observation frequency</span><span class="kv-v">Every 60 mins</span></div>
+          <div class="kv-row"><span class="kv-k">Trigger condition</span><span class="kv-v"><b>DO &lt; 2.0 mg/L</b> sustained 12 mins</span></div>
           <div class="kv-row"><span class="kv-k">Auto-resolve</span><span class="kv-v">When DO ≥ 2.5 mg/L for 5 mins</span></div>
+          <div class="kv-row"><span class="kv-k">Communication</span><span class="kv-v">WhatsApp</span></div>
         </div>
       </div>
 
-      <!-- ====== Card 4: Communication ====== -->
-      <div class="rv-card ok">
+      <!-- ====== Card 2: Flow configuration summary ====== -->
+      <div class="rv-card ok open">
         <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
-          <div class="rv-ic comm">📡</div>
+          <div class="rv-ic">⌥</div>
           <div class="rv-main">
-            <div class="rv-ttl">Communication</div>
-            <div class="rv-sub">2 of 4 channels on · libraries enabled</div>
-          </div>
-          <span class="rv-chev">⌄</span>
-          <button class="rv-edit" onclick="event.stopPropagation();goStep(3)">Edit</button>
-        </div>
-        <div class="rv-kv">
-          <div class="kv-row"><span class="kv-k">In-app push</span><span class="kv-v"><span class="kv-on">On</span></span></div>
-          <div class="kv-row"><span class="kv-k">WhatsApp</span><span class="kv-v"><span class="kv-on">On</span> · deeplink to Issue card</span></div>
-          <div class="kv-row"><span class="kv-k">Phone call</span><span class="kv-v"><span class="kv-off">Off</span> · would only fire on Critical</span></div>
-          <div class="kv-row"><span class="kv-k">SMS fallback</span><span class="kv-v"><span class="kv-off">Off</span></span></div>
-          <div class="kv-row"><span class="kv-k">Graphic library</span><span class="kv-v"><span class="kv-on">On</span></span></div>
-          <div class="kv-row"><span class="kv-k">Language library</span><span class="kv-v"><span class="kv-on">On</span> · Hindi · Telugu · Tamil · Kannada</span></div>
-        </div>
-      </div>
-
-      <!-- ====== Card 5: Build the flow ====== -->
-      <div class="rv-card warn">
-        <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
-          <div class="rv-ic warn">!</div>
-          <div class="rv-main">
-            <div class="rv-ttl">5 steps + 1 card configured</div>
-            <div class="rv-sub">2 steps still need a verification card. <a class="rv-link" onclick="event.stopPropagation();goStep(4)">Fix flow</a></div>
+            <div class="rv-ttl">Flow configuration summary</div>
+            <div class="rv-sub">5 steps · 11 outcome paths · branching across 3 nodes</div>
           </div>
           <span class="rv-chev">⌄</span>
           <button class="rv-edit" onclick="event.stopPropagation();goStep(4)">Edit</button>
         </div>
         <div class="rv-kv">
-          <div class="kv-row"><span class="kv-k">Total</span><span class="kv-v">5 steps + 1 card</span></div>
+          <div class="kv-row"><span class="kv-k">Total steps</span><span class="kv-v">5 steps + 1 card</span></div>
           <div class="kv-row"><span class="kv-k">Branching</span><span class="kv-v">2 steps (multi-choice) · 1 step (multi-select)</span></div>
           <div class="kv-row"><span class="kv-k">Total routes</span><span class="kv-v">11 outcome paths</span></div>
           <div class="kv-row"><span class="kv-k">Photo hard-block</span><span class="kv-v">1 (step 3 — Photo to Supervisor)</span></div>
           <div class="kv-row"><span class="kv-k">SME approval</span><span class="kv-v">1 (step 6)</span></div>
-          <div class="kv-row warn"><span class="kv-k">⚠ Missing</span><span class="kv-v">2 steps don't have a verification card after them — operator can't confirm fix worked</span></div>
+          <div class="kv-row"><span class="kv-k">Terminal outcomes</span><span class="kv-v">2 (Done · DO normal — close issue · Escalate to SME)</span></div>
+          <div class="kv-row"><span class="kv-k">Longest path</span><span class="kv-v">5 steps deep</span></div>
         </div>
       </div>
-    </div>
-
-    <div class="rv-preview">
-      <div class="rvp-head">
-        <div class="rvp-ttl">What the operator will see</div>
-        <a class="rv-link" href="issue-card.html" target="_blank">↗ Open full preview</a>
-      </div>
-      <div class="rvp-body">
-        <div class="rvp-phone">
-          <div class="rvp-screen">
-            <div class="rvp-line a"></div>
-            <div class="rvp-line b"></div>
-            <div class="rvp-line c"></div>
-            <div class="rvp-btn"></div>
-          </div>
-        </div>
-        <div class="rvp-text">
-          Alert lands with <b>Aeration Tank · DO Low</b> · <span class="rvp-sev">High</span> badge. Operator taps <b>Start diagnosis</b> and is walked through the 5 steps + 1 card in the order you've built. The card morphs from Summary → Progress → Completion as work advances.
-        </div>
-      </div>
-    </div>
-
-    <div class="rv-publish">
-      <div class="rvpub-main">
-        <div class="rvpub-ttl">Ready to publish</div>
-        <div class="rvpub-sub"><b>v0.4</b> will replace <b>v0.3</b> for all <b>IREO Grand Arch</b> operators.</div>
-      </div>
-      <button class="rvpub-btn">Publish to operators →</button>
     </div>
   </section>
 
