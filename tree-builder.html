@@ -1585,10 +1585,28 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
     return () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
   });
 
-  // committed edges fan from the bottom (clean top-down)
-  const srcPt = (n, i, count) => ({ x: n.x + VT_CARD_W * ((i + 1) / (count + 1)), y: n.y + ((geom[n.id] && geom[n.id].h) || 150) });
+  // Committed edges originate from each option's right-side connector dot (matches the live drag preview).
+  // For non-branching nodes (single outbound), edges originate from the bottom-center "outY" handle.
+  const srcPt = (n, optId) => {
+    const g = geom[n.id] || {};
+    if (optId && g.opts && g.opts[optId] != null) {
+      return { x: n.x + VT_CARD_W, y: n.y + g.opts[optId] };
+    }
+    const y = (g.outY != null) ? g.outY : ((g.h || 150));
+    return { x: n.x + VT_CARD_W / 2, y: n.y + y };
+  };
   const tgtPt = (c) => ({ x: c.x + VT_CARD_W / 2, y: c.y });
-  const pathD = (s, t) => { const dy = Math.max(28, (t.y - s.y) * 0.5); return `M${s.x},${s.y} C${s.x},${s.y + dy} ${t.x},${t.y - dy} ${t.x},${t.y}`; };
+  // Smart routing: from a right-side anchor, sweep right then curve down into the target's top.
+  const pathD = (s, t, fromSide) => {
+    if (fromSide) {
+      // start: right of source card; end: top of target card.
+      const dx = Math.max(40, (t.x - s.x) * 0.45);
+      const dy = Math.max(40, (t.y - s.y) * 0.5);
+      return `M${s.x},${s.y} C${s.x + dx},${s.y} ${t.x},${t.y - dy} ${t.x},${t.y}`;
+    }
+    const dy = Math.max(28, (t.y - s.y) * 0.5);
+    return `M${s.x},${s.y} C${s.x},${s.y + dy} ${t.x},${t.y - dy} ${t.x},${t.y}`;
+  };
   // live drag preview starts at the option's right-side handle
   const handlePt = (id, optId) => { const n = laid[id]; const g = geom[id] || {};
     const y = optId ? (g.opts && g.opts[optId] != null ? g.opts[optId] : (g.h || 80) / 2) : (g.outY != null ? g.outY : (g.h || 80) / 2);
@@ -1627,15 +1645,14 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
               </defs>
               {edges.map(e => {
                 const from = laid[e.from], to = laid[e.to]; if (!from || !to) return null;
-                const opts = BRANCHING.has(from.type) ? (from.options || []) : [null];
-                let idx = e.kind === 'branch' ? opts.findIndex(o => o && o.id === e.optId) : 0;
-                if (idx < 0) idx = 0;
-                const s = srcPt(from, idx, opts.length); const t = tgtPt(to);
+                const isBranch = e.kind === 'branch' && e.optId;
+                const s = srcPt(from, isBranch ? e.optId : null);
+                const t = tgtPt(to);
                 const mid = { x: (s.x + t.x) / 2, y: (s.y + t.y) / 2 };
                 const col = colorOf(from.type);
                 return (
                   <g key={e.id}>
-                    <path d={pathD(s, t)} fill="none" stroke={col} strokeOpacity="0.42" strokeWidth="2" markerEnd="url(#vtarw)" />
+                    <path d={pathD(s, t, isBranch)} fill="none" stroke={col} strokeOpacity="0.55" strokeWidth="2" markerEnd="url(#vtarw)" />
                     {e.label && (
                       <foreignObject x={mid.x - 78} y={mid.y - 13} width="156" height="26" style={{ overflow: 'visible' }}>
                         <div className="cv-edgelabel">{e.label}</div>
