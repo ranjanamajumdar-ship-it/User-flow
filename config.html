@@ -338,24 +338,28 @@ header.app{
 
 /* === Save-as-template button (Build the flow page) === */
 .page-h-row{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 8px;flex-wrap:wrap}
+/* Save-as-template — simple blue button */
 .btn-template{
-  display:inline-flex;align-items:center;gap:12px;
-  padding:10px 16px 10px 12px;border-radius:14px;
-  background:rgba(255,255,255,.65);
-  border:1px solid rgba(255,255,255,.8);
-  box-shadow:0 8px 22px -10px rgba(40,50,80,.22),inset 0 1px 0 rgba(255,255,255,.85);
-  cursor:pointer;transition:.15s;font:inherit;letter-spacing:-.005em;
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 18px;border-radius:10px;
+  background:var(--brand);color:#fff;
+  border:0;cursor:pointer;
+  font:700 13px 'Plus Jakarta Sans',sans-serif;letter-spacing:.1px;
+  box-shadow:0 6px 18px -6px rgba(0,41,118,.45);
+  transition:.18s;
 }
-.btn-template:hover{transform:translateY(-1px);box-shadow:0 12px 26px -10px rgba(40,50,80,.26),inset 0 1px 0 rgba(255,255,255,.85)}
-.btn-template .bt-ic{
-  width:34px;height:34px;border-radius:10px;
-  background:linear-gradient(145deg,#ECDFFB,#D6BFF5);color:#6B36B5;
-  font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+.btn-template:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 10px 24px -6px rgba(0,41,118,.55)}
+.btn-template .bt-ic,.btn-template .bt-tx span{display:none}
+.btn-template .bt-tx{display:inline}
+.btn-template .bt-tx b{font:700 13px 'Plus Jakarta Sans',sans-serif;color:#fff;letter-spacing:.1px}
+.btn-template .bt-tx::before{content:'+ ';font-weight:800}
+
+/* Sticky positioning when used as the floating bottom-right Save-as-template (Build the flow only) */
+.footer-tpl-btn{
+  position:fixed!important;right:28px;bottom:28px;z-index:90;
+  display:none;
 }
-.btn-template .bt-tx{display:flex;flex-direction:column;gap:1px;text-align:left}
-.btn-template .bt-tx b{font-size:13px;font-weight:800;color:var(--ink);letter-spacing:-.005em}
-.btn-template .bt-tx span{font-size:11px;color:var(--ink-3);font-weight:500}
+body:has(#p-4.on) .footer-tpl-btn{display:inline-flex!important}
 
 /* === Fitts's Law — generous click targets === */
 .btn.primary.lg{padding:16px 28px!important;font-size:15px!important;letter-spacing:-.01em;border-radius:14px}
@@ -2335,13 +2339,7 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   </div>
 </header>
 
-<!-- ========== Mode switch ========== -->
-<div class="modes">
-  <div class="mode-switch">
-    <button class="mode-tab on" onclick="setMode('builder')">Builder</button>
-    <button class="mode-tab" onclick="setMode('tpls')">Templates <span class="cnt">6</span></button>
-  </div>
-</div>
+<!-- Mode switch removed — Builder/Templates toggle lives in the top header -->
 
 <!-- ========== Stepper ========== -->
 <div class="stepper">
@@ -3305,19 +3303,14 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   </div>
 </section>
 
-<!-- ========== Bottom-anchored CTAs ========== -->
-<div class="footer">
-  <div class="footer-inner">
-    <div class="meta">Section <b id="stepNow">1</b> of 5 · DT-001 · v3.2 draft</div>
-    <button class="btn outline lg" id="backBtn" onclick="prevStep()" style="display:none">‹ Back</button>
-    <button class="btn primary lg" id="nextBtn" onclick="nextStep()">Continue ›</button>
-    <!-- On Build the flow we replace Publish with the Save-as-template card-style button -->
-    <button class="btn-template footer-tpl-btn" id="footerTplBtn" onclick="saveAsTemplate()" style="display:none" title="Save current flow as a reusable template">
-      <span class="bt-ic">📐</span>
-      <span class="bt-tx"><b>Save as template</b><span>Reuse this flow on other plants</span></span>
-    </button>
-  </div>
-</div>
+<!-- Footer with step navigation removed. Floating Save-as-template stays for Build the flow only. -->
+<button class="btn-template footer-tpl-btn" id="footerTplBtn" onclick="saveAsTemplate()" title="Save current flow as a reusable template">
+  <span class="bt-tx"><b>Save as template</b></span>
+</button>
+<!-- Hidden no-op stand-ins for legacy JS references -->
+<button id="backBtn" style="display:none"></button>
+<button id="nextBtn" style="display:none"></button>
+<span id="stepNow" style="display:none"></span>
 
 <!-- ========== Drawer ========== -->
 <div class="scrim" id="scrim" onclick="closeDrawer()"></div>
