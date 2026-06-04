@@ -285,6 +285,67 @@ input,textarea,select{font-family:inherit;}
 .hdr-logo{width:26px;height:26px;font-size:11px}
 .hdr-title{font-size:13px}
 .hint-bar{padding:6px 14px;font-size:11.5px}
+
+/* ===== Resizable drawers (left palette + right inspector) ===== */
+/* Make the palette width controllable via CSS variable so user can resize */
+.cv-palette{
+  position:relative;
+  width:var(--paletteW,212px)!important;
+  transition:width .18s ease;
+}
+.cv-palette.is-collapsed{
+  width:46px!important;
+}
+.cv-palette.is-collapsed .cv-chip-tx,
+.cv-palette.is-collapsed .cv-palette-h,
+.cv-palette.is-collapsed .cv-palette-tip{display:none}
+.cv-palette.is-collapsed .cv-chip{justify-content:center;padding:8px}
+
+/* Right inspector — same treatment */
+.cv-inspector.open,.cv-inspector.vt-inspector{
+  position:relative;
+  width:var(--inspectorW,344px)!important;
+  transition:width .18s ease;
+}
+.cv-inspector.is-collapsed{
+  width:46px!important;
+}
+.cv-inspector.is-collapsed .editor,
+.cv-inspector.is-collapsed .dash,
+.cv-inspector.is-collapsed .cv-insp-empty{display:none}
+
+/* Resize handle along the inner edge of each drawer */
+.drawer-resize{
+  position:absolute;top:0;bottom:0;width:6px;cursor:col-resize;z-index:60;
+  background:transparent;transition:background .15s;
+}
+.drawer-resize:hover,.drawer-resize.is-dragging{background:rgba(10,110,158,.18)}
+.cv-palette > .drawer-resize{right:-3px}
+.cv-inspector > .drawer-resize{left:-3px}
+
+/* Collapse/expand toggle button (corner of each drawer) */
+.drawer-toggle{
+  position:absolute;top:6px;width:24px;height:24px;border-radius:6px;
+  background:#fff;border:1px solid var(--line);color:var(--ink3);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font:800 11px 'IBM Plex Mono';transition:.15s;z-index:61;
+  box-shadow:0 1px 3px rgba(20,33,48,.08);
+}
+.drawer-toggle:hover{color:var(--accent);border-color:var(--accent)}
+.cv-palette > .drawer-toggle{right:6px}
+.cv-inspector > .drawer-toggle{left:6px}
+.cv-palette.is-collapsed > .drawer-toggle,
+.cv-inspector.is-collapsed > .drawer-toggle{left:50%;right:auto;transform:translateX(-50%)}
+
+/* When collapsed, show a tiny vertical label */
+.collapsed-label{
+  position:absolute;top:38px;left:50%;transform:translate(-50%,0) rotate(-90deg);
+  transform-origin:center;font:700 10px 'IBM Plex Mono';
+  letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);
+  white-space:nowrap;pointer-events:none;display:none;
+}
+.cv-palette.is-collapsed .collapsed-label,
+.cv-inspector.is-collapsed .collapsed-label{display:block}
 </style>
 </head>
 <body>
@@ -1634,6 +1695,66 @@ function App(){
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+
+/* ===== Resizable / collapsible drawers ===== */
+(function(){
+  function ensureDrawerControls(){
+    document.querySelectorAll('.cv-palette, .cv-inspector').forEach(drawer => {
+      if (drawer.dataset.resizable) return;
+      drawer.dataset.resizable = '1';
+      const isLeft = drawer.classList.contains('cv-palette');
+
+      // Collapsed label
+      const lbl = document.createElement('div');
+      lbl.className = 'collapsed-label';
+      lbl.textContent = isLeft ? 'STEPS' : 'INSPECTOR';
+      drawer.appendChild(lbl);
+
+      // Toggle button
+      const toggle = document.createElement('button');
+      toggle.className = 'drawer-toggle';
+      toggle.type = 'button';
+      toggle.title = 'Collapse / expand';
+      toggle.textContent = isLeft ? '«' : '»';
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();e.stopPropagation();
+        const collapsed = drawer.classList.toggle('is-collapsed');
+        toggle.textContent = collapsed ? (isLeft ? '»' : '«') : (isLeft ? '«' : '»');
+      });
+      drawer.appendChild(toggle);
+
+      // Resize handle
+      const handle = document.createElement('div');
+      handle.className = 'drawer-resize';
+      handle.addEventListener('pointerdown', (e) => {
+        if (drawer.classList.contains('is-collapsed')) return;
+        e.preventDefault();
+        handle.classList.add('is-dragging');
+        const startX = e.clientX;
+        const startW = drawer.getBoundingClientRect().width;
+        const cssVar = isLeft ? '--paletteW' : '--inspectorW';
+        const onMove = (mv) => {
+          const dx = mv.clientX - startX;
+          let nw = startW + (isLeft ? dx : -dx);
+          nw = Math.max(140, Math.min(560, nw));
+          drawer.style.setProperty(cssVar, nw + 'px');
+        };
+        const onUp = () => {
+          handle.classList.remove('is-dragging');
+          window.removeEventListener('pointermove', onMove);
+          window.removeEventListener('pointerup', onUp);
+        };
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+      });
+      drawer.appendChild(handle);
+    });
+  }
+  // Run after React mounts; drawers may also re-render when state changes (mode/selected)
+  const obs = new MutationObserver(() => ensureDrawerControls());
+  obs.observe(document.body, { subtree: true, childList: true });
+  setTimeout(ensureDrawerControls, 100);
+})();
 
 </script>
 </body>

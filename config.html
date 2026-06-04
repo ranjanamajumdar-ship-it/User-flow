@@ -903,6 +903,21 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 }
 @media (max-width:900px){.vt-embed-iframe{height:600px}}
 
+/* Full-bleed: break out of the wrap-form column and stretch to viewport edges */
+.vt-embed-full{
+  position:relative;
+  /* Negative margins push against the wrap-form padding so the card stretches edge-to-edge */
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  border-radius:0;
+  border-left:none;border-right:none;
+  width:auto;
+}
+.vt-embed-full .vt-embed-iframe{
+  height:calc(100vh - 220px);
+  min-height:680px;
+}
+
 /* ===== Big Flow Canvas card (Section 4) ===== */
 .flow-canvas-card{
   background:rgba(255,255,255,.55);
@@ -2649,25 +2664,22 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     </div>
     <p class="page-sub">Drag step types in from the left, hover between cards to insert, tap a card to edit it.</p>
 
-    <div class="tip-row">
+    <div class="tip-row" style="display:none">
       <div class="tip-ico">✨</div>
       <div>Drop in <b>Steps</b> (operator does the work) — completion triggers a <b>Card</b> (passive summary with one CTA). Every card&rsquo;s CTA must route to a <i>different</i> step than the one that opened it.</div>
     </div>
 
-    <div class="branch-tip">
+    <div class="branch-tip" style="display:none">
       <div class="bicon">📋</div>
-      <div><b style="color:var(--ink)">Step taxonomy</b> — 3 step categories + 1 card category: <b style="color:var(--brand)">NORMAL</b> (just do the thing) · <b style="color:#A06F00">BRANCH</b> (choice or shortcut) · <b style="color:#B83A1F">EXCEPTION</b> (something went sideways) · <b style="color:#6B36B5">CARDS</b> (passive summary, shown after a step, one CTA). Steps are verbs; cards are receipts with one button.</div>
+      <div></div>
     </div>
 
-    <div class="cat-legend">
-      <span class="cl normal"><span class="d"></span>Normal · 3 steps</span>
-      <span class="cl branch"><span class="d"></span>Branch · 3 steps</span>
-      <span class="cl exception"><span class="d"></span>Exception · 3 steps</span>
-      <span class="cl card"><span class="d"></span>Cards · 3 types</span>
+    <div class="cat-legend" style="display:none">
+      <span class="cl normal"></span>
     </div>
 
-    <!-- ===== Issue card template · top of Build the flow ===== -->
-    <div class="card ict-card">
+    <!-- ===== Issue card template · top of Build the flow (HIDDEN per PM) ===== -->
+    <div class="card ict-card" style="display:none">
       <div class="ict-head">
         <div>
           <h3 style="margin:0">Issue card template</h3>
@@ -2750,11 +2762,8 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
       </div>
     </div>
 
-    <!-- ===== ICT → Vertical Tree connector ===== -->
-    <div class="ict-connector"><div class="ict-c-line"></div><div class="ict-c-arrow">▾</div></div>
-
-    <!-- ===== Vertical Tree (top-down · embedded from Diagnostic Tree Builder) ===== -->
-    <div class="vt-embed-card">
+    <!-- ===== Vertical Tree · full-width embedded from Diagnostic Tree Builder ===== -->
+    <div class="vt-embed-card vt-embed-full">
       <div class="vt-embed-head">
         <div>
           <div class="vt-embed-eyebrow">Vertical tree · top-down</div>
