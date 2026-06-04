@@ -131,7 +131,12 @@ input,textarea,select{font-family:inherit;}
 .cv-opt-tx{color:var(--ink2);font-weight:500;line-height:1.3;overflow:hidden;}
 
 .cv-anchor{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--c);cursor:crosshair;z-index:3;transition:transform .12s,background .12s,box-shadow .12s;}
-.cv-anchor.cv-in{left:-7px;top:22px;border-color:var(--ink3);}
+/* Input anchor — visible circle at the top-center of every card; connection lines terminate here */
+.cv-anchor.cv-in{
+  left:50%;top:-7px;transform:translateX(-50%);
+  border-color:var(--c);background:#fff;
+  box-shadow:0 0 0 3px #fff,0 1px 3px rgba(20,33,48,.22);
+}
 .cv-anchor.cv-out{right:-7px;}
 /* Option-level outbound anchor — pinned to the card's outer right edge so connection lines clearly emerge from each option's circle. */
 .cv-opt{padding-right:8px}
@@ -1610,7 +1615,8 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
     const y = (g.outY != null) ? g.outY : ((g.h || 150));
     return { x: n.x + VT_CARD_W / 2, y: n.y + y };
   };
-  const tgtPt = (c) => ({ x: c.x + VT_CARD_W / 2, y: c.y });
+  // Target lands on the input circle pinned at the top-center of the card (which sits ~7px above the card border)
+  const tgtPt = (c) => ({ x: c.x + VT_CARD_W / 2, y: c.y - 7 });
   // Smart routing: from a right-side anchor, sweep right then curve down into the target's top.
   const pathD = (s, t, fromSide) => {
     if (fromSide) {
