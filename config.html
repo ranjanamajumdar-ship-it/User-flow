@@ -906,6 +906,22 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 /* Section 2 + 3 are merged into Section 1 — fully hidden */
 #p-2,#p-3{display:none !important}
 
+/* ===== Padlock feature removed — hide every related UI artifact ===== */
+.lock-btn,
+.padlock-svg,
+.step-lock-btn,
+.ovr-reset,
+.ovr-meta,
+.auto-pad-wrap .lock-btn,
+.auto-pad-wrap .lock-btn.auto-lock,
+.mb-toggle,
+.mbc-num{display:none !important}
+/* Strip the override wrapper so the input fills the row again */
+.ovr-wrap{display:block !important}
+.ovr-wrap > *{flex:none}
+/* Re-enable any field that was disabled by the lock — locks no longer gate input */
+.ovr input,.ovr select,.ovr textarea{pointer-events:auto !important}
+
 /* Full-bleed: stretch the canvas edge-to-edge across the viewport so it fills the screen. */
 .vt-embed-full{
   position:relative;
@@ -4841,33 +4857,9 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
     if (typeof _toast === 'function') _toast('Saved as template: Low DO · Aeration');
   }
   // ===== Override system =====
-  function toggleLock(btn){
-    const fld = btn.closest('.ovr');
-    if (!fld) return;
-    const locked = fld.getAttribute('data-locked') === 'true';
-    if (locked) {
-      // Re-locking == revert to global
-      resetOverride(btn);
-      return;
-    }
-    fld.setAttribute('data-locked','true');
-    fld.querySelectorAll('select,input,textarea').forEach(el => el.disabled = false);
-    const meta = fld.querySelector('.ovr-meta');
-    if (meta) meta.textContent = 'Overridden for this site';
-    updateOverrideCount();
-    markSaved();
-  }
-  function resetOverride(btn){
-    const fld = btn.closest('.ovr');
-    if (!fld) return;
-    fld.setAttribute('data-locked','false');
-    fld.querySelectorAll('select,input,textarea').forEach(el => el.disabled = true);
-    const meta = fld.querySelector('.ovr-meta');
-    const globalVal = fld.getAttribute('data-global') || 'Global';
-    if (meta) meta.textContent = 'inherited from Global · ' + globalVal;
-    updateOverrideCount();
-    markSaved();
-  }
+  // Padlock feature removed — these are no-ops kept only because legacy markup still references them.
+  function toggleLock(){ return; }
+  function resetOverride(){ return; }
   function updateOverrideCount(){
     const n = document.querySelectorAll('.ovr[data-locked="true"]').length;
     document.querySelectorAll('.mbc-num').forEach(el => el.textContent = String(n));
@@ -6371,6 +6363,10 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
 
   // On load, default to blank so the user can configure a new flow
   window.addEventListener('DOMContentLoaded', () => { clearAll(); });
+  // Padlock feature removed — make sure no inputs are left disabled by legacy lock state.
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.ovr input[disabled], .ovr select[disabled], .ovr textarea[disabled]').forEach(el => el.removeAttribute('disabled'));
+  });
 </script>
 </body>
 </html>
