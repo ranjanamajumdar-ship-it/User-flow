@@ -301,11 +301,28 @@ input,textarea,select{font-family:inherit;}
 .cv-palette.is-collapsed .cv-palette-tip{display:none}
 .cv-palette.is-collapsed .cv-chip{justify-content:center;padding:8px}
 
-/* Right inspector — same treatment */
+/* Right inspector — hover-open by default. Collapsed = thin rail, expands to full width on hover. */
 .cv-inspector.open,.cv-inspector.vt-inspector{
   position:relative;
+  width:14px!important;
+  transition:width .22s cubic-bezier(.4,.0,.2,1);
+  overflow:hidden;
+}
+.cv-inspector.open:hover,.cv-inspector.vt-inspector:hover,
+.cv-inspector.is-pinned{
   width:var(--inspectorW,344px)!important;
-  transition:width .18s ease;
+  overflow:visible;
+}
+.cv-inspector.open:not(:hover):not(.is-pinned) .editor,
+.cv-inspector.vt-inspector:not(:hover):not(.is-pinned) .editor,
+.cv-inspector.open:not(:hover):not(.is-pinned) .dash,
+.cv-inspector.vt-inspector:not(:hover):not(.is-pinned) .dash,
+.cv-inspector.open:not(:hover):not(.is-pinned) .cv-insp-empty,
+.cv-inspector.vt-inspector:not(:hover):not(.is-pinned) .cv-insp-empty{display:none}
+.cv-inspector.open::before,.cv-inspector.vt-inspector::before{
+  content:'';position:absolute;top:0;bottom:0;left:0;width:3px;
+  background:linear-gradient(to bottom,transparent,rgba(10,110,158,.35),transparent);
+  pointer-events:none;
 }
 .cv-inspector.is-collapsed{
   width:46px!important;
