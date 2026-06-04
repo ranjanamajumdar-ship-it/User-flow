@@ -352,9 +352,12 @@ input,textarea,select{font-family:inherit;}
   width:var(--inspectorW,344px)!important;
   overflow:visible;
   flex:none;
+  transition:width .22s cubic-bezier(.4,.0,.2,1);
 }
 .cv-inspector.is-collapsed{
-  width:var(--inspectorW,344px)!important;
+  width:64px!important;
+  padding-left:8px!important;padding-right:8px!important;
+  overflow:hidden;
 }
 
 /* ===== Floating Save-as-template button — anchored to bottom-right of the canvas viewport ===== */
@@ -433,7 +436,7 @@ input,textarea,select{font-family:inherit;}
 }
 .drawer-resize:hover,.drawer-resize.is-dragging{background:rgba(10,110,158,.18)}
 .cv-palette > .drawer-resize{right:-3px}
-.cv-inspector > .drawer-resize{display:none}
+.cv-inspector > .drawer-resize{left:-3px}
 
 /* Collapse/expand toggle button (corner of each drawer) */
 .drawer-toggle{
@@ -445,7 +448,7 @@ input,textarea,select{font-family:inherit;}
 }
 .drawer-toggle:hover{color:var(--accent);border-color:var(--accent)}
 .cv-palette > .drawer-toggle{right:6px}
-.cv-inspector > .drawer-toggle{display:none!important}
+.cv-inspector > .drawer-toggle{left:6px}
 .cv-palette.is-collapsed > .drawer-toggle,
 .cv-inspector.is-collapsed > .drawer-toggle{left:50%;right:auto;transform:translateX(-50%)}
 
