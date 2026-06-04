@@ -795,7 +795,10 @@ function verticalLayout(nodes){
   const out = {};
   ids.forEach(id => {
     const n = nodes[id];
-    if (n.pinned && typeof n.x === 'number' && typeof n.y === 'number') {
+    // Always respect an existing x/y — only auto-place nodes that don't have coordinates yet.
+    // This stops nodes from jumping every time a connection is drawn, since the layout no
+    // longer overrides positions just because a new edge was added.
+    if (typeof n.x === 'number' && typeof n.y === 'number') {
       out[id] = Object.assign({}, n);
     } else {
       out[id] = Object.assign({}, n, pos[id]);
@@ -1551,7 +1554,15 @@ function VerticalTree({ nodes, onNodes, selected, setSelected }){
   };
   const addNode = (type) => {
     const id = uid(type);
-    const base = Object.assign({ id, type, title: NODE_TYPES[type].label, detail: '', options: [], next: null, x: 80, y: 80 }, defaultSub(type));
+    // Place new nodes below the current lowest node so they don't pile up at (80, 80)
+    let placeX = 600, placeY = 80;
+    const vals = Object.values(nodes);
+    if (vals.length) {
+      let maxY = -Infinity, maxYNode = null;
+      vals.forEach(nd => { if (typeof nd.y === 'number' && nd.y > maxY) { maxY = nd.y; maxYNode = nd; } });
+      if (maxYNode) { placeX = maxYNode.x || 80; placeY = maxY + 220; }
+    }
+    const base = Object.assign({ id, type, title: NODE_TYPES[type].label, detail: '', options: [], next: null, x: placeX, y: placeY }, defaultSub(type));
     if (BRANCHING.has(type)) base.options = [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }];
     onNodes(Object.assign({}, nodes, { [id]: base })); setSelected(id);
   };
