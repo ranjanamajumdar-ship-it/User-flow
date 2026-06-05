@@ -34,6 +34,23 @@ input,textarea,select{font-family:inherit;}
 .hdr-title{font-weight:700;font-size:14.5px;letter-spacing:-.01em;margin:0;line-height:1.2}
 .hdr-crumb{font-size:11.5px;color:var(--ink3);margin:0;line-height:1.3}
 .hdr-crumb strong{color:var(--ink2);font-weight:600;}
+/* Editable flow-name input + clear-canvas button in the header */
+.hdr-name-input{
+  flex:1;min-width:0;max-width:520px;
+  font:700 15px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.01em;color:var(--ink);
+  background:transparent;border:1.5px solid transparent;border-radius:8px;
+  padding:6px 10px;outline:none;transition:.15s;
+}
+.hdr-name-input:hover{background:var(--line2)}
+.hdr-name-input:focus{background:#fff;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,110,158,.15)}
+.hdr-name-input::placeholder{color:var(--ink3);font-weight:600}
+.hdr-clear{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);
+  background:#fff;color:var(--ink2);cursor:pointer;
+  font:600 12.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px;transition:.15s;
+}
+.hdr-clear:hover{border-color:#c0473a;color:#c0473a;background:#fdecea}
 
 /* Builder / Templates toggle pill (top right) */
 .bt-toggle{display:inline-flex;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:8px}
@@ -907,7 +924,7 @@ function migrateNodes(nodes){
 function loadState(){
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (raw) { const p = JSON.parse(raw); if (p && p.nodes) { p.nodes = migrateNodes(p.nodes); return Object.assign({ images: [] }, p); } }
+    if (raw) { const p = JSON.parse(raw); if (p && p.nodes) { p.nodes = migrateNodes(p.nodes); return Object.assign({ images: [], flowName: 'Low DO in Aeration Tank' }, p); } }
   } catch(e){}
   return { nodes: seedTree(), images: [], view: { x: 20, y: 10, k: 0.86 }, mode: 'canvas', collapsed: {} };
 }
@@ -1646,13 +1663,25 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
     return () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
   }, [marquee, scale, laid, geom]);
   // Pointer-move + up handlers for dragging cards around the canvas.
+  // If the dragged card is part of the current multi-selection, ALL selected cards move together
+  // by the same delta so the group stays intact.
   useEffect(() => {
     if (!drag) return;
+    const groupIds = drag.groupIds || [drag.id];
     const onMove = (e) => {
       const wr = worldRef.current ? worldRef.current.getBoundingClientRect() : { left: 0, top: 0 };
-      const nx = (e.clientX - wr.left) / scale - drag.ox;
-      const ny = (e.clientY - wr.top) / scale - drag.oy;
-      onNodes(Object.assign({}, nodes, { [drag.id]: Object.assign({}, nodes[drag.id], { x: Math.max(0, nx), y: Math.max(0, ny), pinned: true }) }));
+      const px = (e.clientX - wr.left) / scale;
+      const py = (e.clientY - wr.top) / scale;
+      const newAnchorX = Math.max(0, px - drag.ox);
+      const newAnchorY = Math.max(0, py - drag.oy);
+      const dx = newAnchorX - (nodes[drag.id]?.x || 0);
+      const dy = newAnchorY - (nodes[drag.id]?.y || 0);
+      const patch = {};
+      groupIds.forEach(id => {
+        const n = nodes[id]; if (!n) return;
+        patch[id] = Object.assign({}, n, { x: Math.max(0, (n.x || 0) + dx), y: Math.max(0, (n.y || 0) + dy), pinned: true });
+      });
+      onNodes(Object.assign({}, nodes, patch));
     };
     const onUp = () => setDrag(null);
     window.addEventListener('pointermove', onMove);
@@ -1996,8 +2025,10 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
                     const wr = worldRef.current ? worldRef.current.getBoundingClientRect() : { left: 0, top: 0 };
                     const wx = (e.clientX - wr.left) / scale;
                     const wy = (e.clientY - wr.top) / scale;
-                    setDrag({ id: n.id, ox: wx - n.x, oy: wy - n.y });
-                    setSelected(n.id);
+                    // If this node is part of the multi-selection, drag all of them together as a group
+                    const groupIds = multiSel.has(n.id) ? Array.from(multiSel) : [n.id];
+                    setDrag({ id: n.id, ox: wx - n.x, oy: wy - n.y, groupIds });
+                    if (!multiSel.has(n.id)) setSelected(n.id);
                     try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_){}
                   }}
                   onClick={(e) => { if (e.target.closest('[data-anchor]')) return; if (e.target.closest('.cv-tool')) return; if (e.target.closest('input, textarea, button, select')) return; setSelected(n.id); }}>
@@ -2011,7 +2042,7 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
                     <span className="cv-node-cat">{c.name}{subLabel(n) ? <span className="cv-node-sub"> · {subLabel(n)}</span> : null}</span>
                     <span className="cv-node-tools">
                       <button className="cv-tool" title="Duplicate" onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); duplicateNode(n.id); }}><MiniIcon name="copy" size={13} /></button>
-                      <button className="cv-tool" title="Delete" onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); deleteNode(n.id); }}><MiniIcon name="trash" size={13} /></button>
+                      <button className="cv-tool" title={multiSel.has(n.id) && multiSel.size > 1 ? ('Delete ' + multiSel.size + ' selected nodes') : 'Delete'} onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); if (multiSel.has(n.id) && multiSel.size > 1) deleteMany(Array.from(multiSel)); else deleteNode(n.id); }}><MiniIcon name="trash" size={13} /></button>
                     </span>
                   </div>
                   <input className="cv-node-title cv-node-title-input" value={n.title || ''} placeholder="Untitled — type a title"
@@ -2185,6 +2216,7 @@ function App(){
   const initial = useMemo(() => loadState(), []);
   const [nodes, setNodes] = useState(initial.nodes);
   const [images, setImages] = useState(initial.images || []);
+  const [flowName, setFlowName] = useState(initial.flowName || 'Low DO in Aeration Tank');
   const [view, setView] = useState(initial.view || { x: 20, y: 10, k: 0.86 });
   const [mode, setMode] = useState('tree');
   const [collapsed, setCollapsed] = useState(initial.collapsed || {});
@@ -2221,8 +2253,15 @@ function App(){
   useEffect(() => {
     setSavedAt('saving');
     clearTimeout(tRef.current);
-    tRef.current = setTimeout(() => { saveState({ nodes, images, view, mode, collapsed }); setSavedAt('saved'); }, 500);
-  }, [nodes, images, view, mode, collapsed]);
+    tRef.current = setTimeout(() => { saveState({ nodes, images, view, mode, collapsed, flowName }); setSavedAt('saved'); }, 500);
+  }, [nodes, images, view, mode, collapsed, flowName]);
+
+  const clearCanvas = () => {
+    if (!confirm('Clear the entire canvas? This removes every node and image. (You can re-seed by reloading after clearing localStorage.)')) return;
+    setNodes({});
+    setImages([]);
+    setSelected(null);
+  };
 
   const onNodes = (nn) => setNodes(nn);
 
@@ -2260,31 +2299,21 @@ function App(){
       <header className="hdr">
         <div className="hdr-left">
           <span className="hdr-logo">DP</span>
-          <div className="hdr-titles">
-            <div className="hdr-title">Diagnostic Tree Builder</div>
-            <div className="hdr-crumb">Issue module · <strong>Low DO in Aeration Tank</strong> · DT-001 draft</div>
-          </div>
+          <input className="hdr-name-input" value={flowName}
+            placeholder="Untitled flow"
+            title="A vertical, top-to-bottom branching tree — the issue at the top, each answer branching downward into its own path. Click a card to edit it. Drag connector dots between cards to wire them together."
+            onChange={(e) => { setFlowName(e.target.value); }}
+            onBlur={(e) => { if (!e.target.value.trim()) setFlowName('Untitled flow'); }} />
+          <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving' : 'Saved'}</span>
         </div>
-
-        <div className="hdr-modes">
-          {modes.map(m => (
-            <button key={m.k} className={'modebtn' + (mode === m.k ? ' on' : '')} onClick={() => { setMode(m.k); }}>
-              <span className="modebtn-l">{m.label}</span>
-              <span className="modebtn-s">{m.sub}</span>
-            </button>
-          ))}
-        </div>
-
         <div className="hdr-right">
-          <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving…' : '✓ Saved'}</span>
+          <button className="hdr-clear" onClick={clearCanvas} title="Remove every node and image from the canvas">
+            <MiniIcon name="trash" size={13} /> Clear canvas
+          </button>
         </div>
       </header>
 
-      <div className="hint-bar">
-        {mode === 'canvas' && 'Drag step chips onto the canvas. Drag the dot on a step\u2019s right edge to another step to connect them. Hover any connection and click the \u2715 to delete it. Scroll to pan, \u2318+scroll or the toolbar to zoom, Tidy to auto-arrange.'}
-        {mode === 'tree' && 'A vertical, top-to-bottom branching tree — the issue at the top, each answer branching downward into its own path. Click a card to edit it, hover a card and press + to add a step beneath it.'}
-        {mode === 'wizard' && 'The same flow as a guided walkthrough — pick a step on the left, fill the form, set where each answer routes. Lowest learning curve for non-technical authors.'}
-      </div>
+
 
       <main className="stage">
         {tab === 'builder' ? (
