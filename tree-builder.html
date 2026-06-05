@@ -621,6 +621,7 @@ input,textarea,select{font-family:inherit;}
 const NODE_TYPES = {
   issue:        { label: 'Issue / Trigger',     cat: 'start',     glyph: 'issue',        branching: false, terminal: false, hint: 'The alert that opens the diagnostic flow' },
   question:     { label: 'Question / Capture',  cat: 'question',  glyph: 'question',     branching: true,  terminal: false, subKey: 'qType',    hint: 'Ask the operator something or capture a reading — each choice routes onward' },
+  singleAnswer: { label: 'Single answer',       cat: 'answer',    glyph: 'answer',       branching: false, terminal: false, hint: 'A single free-text response captured from the operator' },
   waiting:      { label: 'Waiting',             cat: 'status',    glyph: 'wait',         branching: false, terminal: false, hint: 'Hold / wait for recovery or a process before continuing' },
   rootcause:    { label: 'Root cause selector', cat: 'cause',     glyph: 'root',         branching: true,  terminal: false, hint: 'Operator selects the confirmed cause — each routes to its remedy' },
   task:         { label: 'Action',              cat: 'task',      glyph: 'task',         branching: true,  terminal: false, subKey: 'taskType', hint: 'A diagnostic or remedial step — each choice routes onward' },
@@ -633,7 +634,7 @@ const NODE_TYPES = {
 
 // sub-type option lists (value, label)
 const SUBTYPES = {
-  qType:    [ ['single','Single answer'], ['yesno','Yes / No'], ['mcq','Multiple choice'], ['numeric','Numeric input'], ['sensor','Sensor reading'], ['range','Range slider'] ],
+  qType:    [ ['yesno','Yes / No'], ['mcq','Multiple choice'], ['numeric','Numeric input'], ['sensor','Sensor reading'], ['range','Range slider'] ],
   taskType: [ ['diagnostic','Diagnostic step'], ['remedial','Remedial step'] ],
   role:     [ ['operator','Operator'], ['supervisor','Supervisor'] ],
   escType:  [ ['call_supervisor','Call the supervisor'], ['call_expert','Call an expert'] ],
@@ -705,7 +706,7 @@ function seedTree(){
     next: 'step1', x: 700, y: 40 });
 
   // ===== Step 1 — aeration uniformity (single answer, 4 options) =====
-  add('step1', { type: 'question', qType: 'single',
+  add('step1', { type: 'question', qType: 'mcq',
     title: '1. Check if Aeration is equally happening across the tank.',
     detail: 'Look at the tank surface and assess the bubbling pattern.',
     x: 700, y: 220, options: [
@@ -716,7 +717,7 @@ function seedTree(){
     ]});
 
   // ----- "No bubbles" branch — pick an action -----
-  add('nobub', { type: 'question', qType: 'single',
+  add('nobub', { type: 'question', qType: 'mcq',
     title: 'No bubbles — pick an action',
     detail: 'Operator selects the appropriate next action.',
     x: 180, y: 420, options: [
@@ -927,7 +928,7 @@ function verticalLayout(nodes){
 }
 
 /* ---- Store (localStorage) ------------------------------- */
-const STORE_KEY = 'dp_flow_builder_v11_merged';
+const STORE_KEY = 'dp_flow_builder_v12_singleanswer';
 // Map deprecated aType values to the new merged qType values
 const A_TO_Q_TYPE = { single:'single', yesno:'yesno', mcq_single:'mcq', numeric:'numeric', sensor:'sensor', range:'range' };
 
@@ -952,6 +953,13 @@ function migrateNodes(nodes){
         options: [{ id: 'o_' + id + '_mig', label: 'Continue', target: n.next }],
         next: null,
       });
+    } else if (n && n.type === 'question' && n.qType === 'single') {
+      // Single answer is no longer a qType — promote to the dedicated singleAnswer node.
+      // Preserve any target on the first option (if any) as the new node's .next.
+      const firstTgt = (n.options && n.options[0] && n.options[0].target) || null;
+      const copy = Object.assign({}, n, { type: 'singleAnswer', next: firstTgt, options: [] });
+      delete copy.qType;
+      out[id] = copy;
     } else {
       out[id] = n;
     }
@@ -1145,12 +1153,7 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
               } else if (v === 'mcq') {
                 p.options = (node.options && node.options.length >= 2) ? node.options
                   : [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }, { id: uid('o'), label: 'Option C', target: null }];
-              } else if (v === 'single') {
-                // Single answer = exactly ONE response slot. Collapse to the first existing
-                // option (preserving its target) or create a fresh empty one.
-                const first = (node.options && node.options[0]) || { id: uid('o'), label: 'Answer', target: null };
-                p.options = [first];
-              }
+              /* 'single' qType removed — Single answer is now its own standalone node type. */
             }
             patch(p);
           }
