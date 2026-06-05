@@ -1747,7 +1747,22 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
 
   // Bulk-delete every node in the multi-selection and clean up incoming edges
   const deleteMany = (ids) => {
-    const toDel = new Set(ids);
+    // Never let bulk-delete wipe the entire flow:
+    //  - The root issue / trigger node is protected and stays put.
+    //  - If the user's selection covers everything, we ask for confirmation.
+    const allIds = new Set(ids);
+    const protectedIds = Object.values(nodes).filter(n => n.type === 'issue').map(n => n.id);
+    protectedIds.forEach(id => allIds.delete(id));
+    if (!allIds.size) {
+      alert('The root "Issue / Trigger" node can’t be deleted from the canvas. Use Clear canvas to reset everything.');
+      setMultiSel(new Set());
+      return;
+    }
+    const total = Object.keys(nodes).length;
+    if (allIds.size >= total - protectedIds.length && total > 2) {
+      if (!confirm('Delete ' + allIds.size + ' nodes? (The root Issue / Trigger node will be kept.)')) { setMultiSel(new Set()); return; }
+    }
+    const toDel = allIds;
     const copy = {};
     Object.values(nodes).forEach(n => {
       if (toDel.has(n.id)) return;
