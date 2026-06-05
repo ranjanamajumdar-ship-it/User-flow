@@ -342,6 +342,15 @@ input,textarea,select{font-family:inherit;}
 .ed-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .ed-input-sm{padding:6px 9px;font-size:12px;}
 .ed-area{resize:vertical;line-height:1.45;}
+
+/* Auto-grow text inputs in the inspector — single line by default, expand vertically while typing */
+.ed-grow{
+  font-family:inherit;line-height:1.4;
+  resize:none;overflow:hidden;
+  white-space:pre-wrap;word-wrap:break-word;
+  min-height:36px;
+}
+.ed-grow.ed-input-sm{min-height:30px}
 .ed-block{display:flex;flex-direction:column;gap:10px;padding:14px 0 0;border-top:1px solid var(--line2);}
 .ed-blockhead{display:flex;align-items:center;gap:8px;font:700 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#7a8497;margin-bottom:2px;}
 .ed-count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:rgba(14,20,40,.06);color:#5a6478;font:700 10.5px 'IBM Plex Mono',monospace;letter-spacing:.2px}
@@ -1153,8 +1162,15 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
       onPick: (t) => patch({ title: t.title, detail: t.detail }) }),
 
     React.createElement(Field, { label: 'Title' },
-      React.createElement('input', { className: 'ed-input', value: node.title || '', placeholder: node.type === 'issue' ? 'Type the issue name…' : 'Step title',
-        onChange: e => patch({ title: e.target.value }) })),
+      React.createElement('textarea', {
+        className: 'ed-input ed-grow',
+        rows: 1,
+        value: node.title || '',
+        placeholder: node.type === 'issue' ? 'Type the issue name…' : 'Step title',
+        ref: el => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } },
+        onChange: e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; patch({ title: e.target.value }); },
+        onFocus: e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }
+      })),
 
 
 
@@ -1167,8 +1183,15 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
         return React.createElement('div', { className: 'ed-optrow', key: o.id },
           React.createElement('span', { className: 'ed-optletter' }, isNumericQ ? (i + 1) : String.fromCharCode(65 + i)),
           React.createElement('div', { className: 'ed-optfields' },
-            React.createElement('input', { className: 'ed-input ed-input-sm', value: o.label, placeholder: isNumericQ ? 'e.g. < 2.0 mg/L' : 'Answer label',
-              onChange: e => setOpt(o.id, { label: e.target.value }) }),
+            React.createElement('textarea', {
+              className: 'ed-input ed-input-sm ed-grow',
+              rows: 1,
+              value: o.label,
+              placeholder: isNumericQ ? 'e.g. < 2.0 mg/L' : 'Answer label',
+              ref: el => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } },
+              onChange: e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; setOpt(o.id, { label: e.target.value }); },
+              onFocus: e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }
+            }),
             React.createElement('div', { className: 'ed-target-sub' },
               tLabel
                 ? React.createElement(React.Fragment, null,
