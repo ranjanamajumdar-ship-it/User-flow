@@ -1153,6 +1153,7 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
               } else if (v === 'mcq') {
                 p.options = (node.options && node.options.length >= 2) ? node.options
                   : [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }, { id: uid('o'), label: 'Option C', target: null }];
+              }
               /* 'single' qType removed — Single answer is now its own standalone node type. */
             }
             patch(p);
