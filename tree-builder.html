@@ -27,8 +27,8 @@ input,textarea,select{font-family:inherit;}
 .app{display:flex;flex-direction:column;height:100vh;}
 
 /* ---------- header ---------- */
-.hdr{display:flex;align-items:center;gap:20px;padding:0 18px;height:58px;background:var(--panel);border-bottom:1px solid var(--line);flex:none;}
-.hdr-left{display:flex;align-items:center;gap:12px;min-width:230px;}
+.hdr{display:flex;align-items:center;gap:16px;padding:0 16px;height:58px;background:var(--panel);border-bottom:1px solid var(--line);flex:none;}
+.hdr-left{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
 .hdr-logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;font-size:13px;letter-spacing:.5px;}
 .hdr-titles{line-height:1.2;display:flex;flex-direction:column;gap:1px}
 .hdr-title{font-weight:700;font-size:14.5px;letter-spacing:-.01em;margin:0;line-height:1.2}
@@ -99,7 +99,7 @@ input,textarea,select{font-family:inherit;}
 .modebtn.on{background:var(--panel);box-shadow:var(--shadow-sm);}
 .modebtn.on .modebtn-l{color:var(--accent);}
 .modebtn:hover:not(.on){background:rgba(255,255,255,.6);}
-.hdr-right{display:flex;align-items:center;gap:8px;min-width:230px;justify-content:flex-end;}
+.hdr-right{display:flex;align-items:center;gap:16px;justify-content:flex-end;flex:none;}
 .savechip{font-size:11.5px;color:var(--ink3);padding:4px 8px;border-radius:6px;}
 .savechip.saving{color:var(--accent);}
 .hdr-btn{font-size:12px;font-weight:600;color:var(--ink2);padding:6px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);transition:.15s;}
@@ -1725,10 +1725,13 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
   }, []);
+  // Hit-test for connection drops — expanded by 14px on every side so releasing on a connector
+  // dot (which sits 7px outside the card border) still resolves to its parent card.
+  const HIT_PAD = 14;
   const nodeAt = (wx, wy) => {
     const ids = Object.keys(laid);
     for (let i = ids.length - 1; i >= 0; i--) { const id = ids[i]; const n = laid[id]; const h = (geom[id] && geom[id].h) || 150;
-      if (wx >= n.x && wx <= n.x + VT_CARD_W && wy >= n.y && wy <= n.y + h) return id; }
+      if (wx >= n.x - HIT_PAD && wx <= n.x + VT_CARD_W + HIT_PAD && wy >= n.y - HIT_PAD && wy <= n.y + h + HIT_PAD) return id; }
     return null;
   };
 
@@ -2069,7 +2072,7 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
                       ))}
                     </div>
                   ) : null /* non-branching: universal 4-side connectors above already handle outgoing */ }
-                  {!m.terminal && <button className="vt-add" title="Add a step below" onClick={(e) => { e.stopPropagation(); addChild(n.id); }}><MiniIcon name="plus" size={15} /></button>}
+                  {/* vt-add removed — adding nodes is done via the palette only; connections are explicit dot-to-dot drags. */}
                 </div>
               );
             })}
