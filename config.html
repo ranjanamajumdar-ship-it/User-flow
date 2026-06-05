@@ -1019,6 +1019,11 @@ body:has(#p-4.on) .stepper{border-bottom:1px solid var(--line-soft)}
 }
 .sub-h{margin:0 0 4px;font:700 15px 'Plus Jakarta Sans',sans-serif;color:var(--ink);letter-spacing:-.01em}
 
+/* Editable kv-v values on the Review page — visual affordance */
+.rv-kv .kv-v[contenteditable="true"]{cursor:text;border-radius:6px;padding:2px 8px;margin:-2px -8px;transition:background .15s,box-shadow .15s}
+.rv-kv .kv-v[contenteditable="true"]:hover{background:rgba(0,41,118,.04)}
+.rv-kv .kv-v[contenteditable="true"]:focus{background:#fff;box-shadow:0 0 0 2px var(--brand);outline:none}
+
 /* Inline "Edit" button used in the simplified Review section */
 .rv-edit-inline{
   margin-top:14px;display:inline-flex;align-items:center;gap:6px;
@@ -3081,32 +3086,36 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
 
     <div class="card">
       <h3>Issue summary</h3>
-      <p class="helper" style="margin:0 0 18px">Everything operators will see when this issue opens.</p>
+      <p class="helper" style="margin:0 0 18px">Everything operators will see when this issue opens. Click any value to edit it inline.</p>
       <div class="rv-kv">
-        <div class="kv-row"><span class="kv-k">Plant</span><span class="kv-v">IREO Grand Arch</span></div>
-        <div class="kv-row"><span class="kv-k">Equipment</span><span class="kv-v">Aeration Tank · Bay 3</span></div>
-        <div class="kv-row"><span class="kv-k">Issue</span><span class="kv-v">Low DO</span></div>
-        <div class="kv-row"><span class="kv-k">Description</span><span class="kv-v">DO in aeration tank is below 2.0 mg/L. Walk the candidate causes — diffusers, sensor, blower, biology…</span></div>
-        <div class="kv-row"><span class="kv-k">Severity</span><span class="kv-v"><span class="rvp-sev">High</span></span></div>
-        <div class="kv-row"><span class="kv-k">Deadline</span><span class="kv-v">2 hrs · within shift</span></div>
-        <div class="kv-row"><span class="kv-k">Assignee</span><span class="kv-v">General · anyone on shift</span></div>
-        <div class="kv-row"><span class="kv-k">Observation frequency</span><span class="kv-v">Every 60 mins</span></div>
-        <div class="kv-row"><span class="kv-k">Trigger condition</span><span class="kv-v"><b>DO &lt; 2.0 mg/L</b> sustained 12 mins</span></div>
-        <div class="kv-row"><span class="kv-k">Communication</span><span class="kv-v">WhatsApp</span></div>
+        <div class="kv-row"><span class="kv-k">Plant</span><span class="kv-v" contenteditable="true" onblur="markSaved()">IREO Grand Arch</span></div>
+        <div class="kv-row"><span class="kv-k">Equipment</span><span class="kv-v" contenteditable="true" onblur="markSaved()">Aeration Tank · Bay 3</span></div>
+        <div class="kv-row"><span class="kv-k">Issue</span><span class="kv-v" contenteditable="true" onblur="markSaved()">Low DO</span></div>
+        <div class="kv-row"><span class="kv-k">Description</span><span class="kv-v" contenteditable="true" onblur="markSaved()">DO in aeration tank is below 2.0 mg/L. Walk the candidate causes — diffusers, sensor, blower, biology…</span></div>
+        <div class="kv-row"><span class="kv-k">Severity</span><span class="kv-v" contenteditable="true" onblur="markSaved()"><span class="rvp-sev">High</span></span></div>
+        <div class="kv-row"><span class="kv-k">Deadline</span><span class="kv-v" contenteditable="true" onblur="markSaved()">2 hrs · within shift</span></div>
+        <div class="kv-row"><span class="kv-k">Type</span><span class="kv-v" contenteditable="true" onblur="markSaved()">Process / Lab</span></div>
+        <div class="kv-row"><span class="kv-k">Assignee</span><span class="kv-v" contenteditable="true" onblur="markSaved()">General · anyone on shift</span></div>
+        <div class="kv-row"><span class="kv-k">Observation frequency</span><span class="kv-v" contenteditable="true" onblur="markSaved()">Every 60 mins</span></div>
+        <div class="kv-row"><span class="kv-k">Trigger condition</span><span class="kv-v" contenteditable="true" onblur="markSaved()"><b>DO &lt; 2.0 mg/L</b> sustained 12 mins</span></div>
+        <div class="kv-row"><span class="kv-k">Auto-resolve</span><span class="kv-v" contenteditable="true" onblur="markSaved()">When DO ≥ 2.5 mg/L for 5 mins</span></div>
+        <div class="kv-row"><span class="kv-k">Communication</span><span class="kv-v" contenteditable="true" onblur="markSaved()">WhatsApp</span></div>
       </div>
-      <button class="rv-edit-inline" onclick="goStep(1)">Edit issue setup</button>
+      <button class="rv-edit-inline" onclick="goStep(1)">Edit issue setup ›</button>
 
       <div class="block-divider">
         <h4 class="sub-h">Flow configuration summary</h4>
-        <p class="helper" style="margin:0 0 14px">Structure of the diagnostic tree.</p>
+        <p class="helper" style="margin:0 0 14px">Structure of the diagnostic tree. Click any value to edit it inline.</p>
         <div class="rv-kv">
-          <div class="kv-row"><span class="kv-k">Total steps</span><span class="kv-v">5 steps + 1 card</span></div>
-          <div class="kv-row"><span class="kv-k">Branching</span><span class="kv-v">2 steps (multi-choice) · 1 step (multi-select)</span></div>
-          <div class="kv-row"><span class="kv-k">Total routes</span><span class="kv-v">11 outcome paths</span></div>
-          <div class="kv-row"><span class="kv-k">Terminal outcomes</span><span class="kv-v">2 (Done · DO normal — close issue · Escalate to SME)</span></div>
-          <div class="kv-row"><span class="kv-k">Longest path</span><span class="kv-v">5 steps deep</span></div>
+          <div class="kv-row"><span class="kv-k">Total steps</span><span class="kv-v" contenteditable="true" onblur="markSaved()">5 steps + 1 card</span></div>
+          <div class="kv-row"><span class="kv-k">Branching</span><span class="kv-v" contenteditable="true" onblur="markSaved()">2 steps (multi-choice) · 1 step (multi-select)</span></div>
+          <div class="kv-row"><span class="kv-k">Total routes</span><span class="kv-v" contenteditable="true" onblur="markSaved()">11 outcome paths</span></div>
+          <div class="kv-row"><span class="kv-k">Photo hard-block</span><span class="kv-v" contenteditable="true" onblur="markSaved()">1 (step 3 — Photo to Supervisor)</span></div>
+          <div class="kv-row"><span class="kv-k">SME approval</span><span class="kv-v" contenteditable="true" onblur="markSaved()">1 (step 6)</span></div>
+          <div class="kv-row"><span class="kv-k">Terminal outcomes</span><span class="kv-v" contenteditable="true" onblur="markSaved()">2 (Done · DO normal — close issue · Escalate to SME)</span></div>
+          <div class="kv-row"><span class="kv-k">Longest path</span><span class="kv-v" contenteditable="true" onblur="markSaved()">5 steps deep</span></div>
         </div>
-        <button class="rv-edit-inline" onclick="goStep(4)">Edit flow</button>
+        <button class="rv-edit-inline" onclick="goStep(4)">Edit flow ›</button>
       </div>
     </div>
 
