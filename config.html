@@ -2472,16 +2472,6 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
         </div>
       </div>
 
-      <div class="ff" style="margin-top:14px">
-        <label>Type</label>
-        <select onchange="markFieldDone(1,'type',this.value);markSaved()">
-          <option>— Select type —</option>
-          <option>Mechanical</option>
-          <option>Electrical / Instrumentation</option>
-          <option>Process / Lab</option>
-          <option>Safety</option>
-        </select>
-      </div>
     </div>
 
     <!-- ===== Assignment card (unified) ===== -->
@@ -2491,9 +2481,13 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
       <div class="ff">
         <label>Assignee</label>
         <select id="assigneeRole" onchange="onAssigneeRoleChangeV2(this);markSaved()">
-          <option value="general" selected>General</option>
-          <option value="onshift">Anyone on shift</option>
+          <option value="general" selected>General (anyone on shift)</option>
           <option value="specific">Assign to a specific person</option>
+          <option value="mechanical">Mechanical</option>
+          <option value="electrical">Electrical</option>
+          <option value="process">Process</option>
+          <option value="lab">Lab</option>
+          <option value="safety">Safety</option>
         </select>
         <div class="help" id="assigneeHelp">Anyone with the right role on shift is eligible.</div>
       </div>
