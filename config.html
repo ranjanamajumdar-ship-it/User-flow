@@ -1020,10 +1020,51 @@ body:has(#p-4.on) .stepper{border-bottom:1px solid var(--line-soft)}
 }
 .sub-h{margin:0 0 4px;font:700 15px 'Plus Jakarta Sans',sans-serif;color:var(--ink);letter-spacing:-.01em}
 
-/* Editable kv-v values on the Review page — visual affordance */
-.rv-kv .kv-v[contenteditable="true"]{cursor:text;border-radius:6px;padding:2px 8px;margin:-2px -8px;transition:background .15s,box-shadow .15s}
-.rv-kv .kv-v[contenteditable="true"]:hover{background:rgba(0,41,118,.04)}
-.rv-kv .kv-v[contenteditable="true"]:focus{background:#fff;box-shadow:0 0 0 2px var(--brand);outline:none}
+/* ============================================================
+   REVIEW v2 — Aesthetic-Usability + Hick's + Fitts's laws
+   ============================================================ */
+.rv2-hero{
+  background:linear-gradient(135deg,#0E1428 0%,#102451 50%,#1B3F8A 100%);
+  color:#fff;border-radius:22px;padding:34px 38px 30px;margin-bottom:24px;
+  position:relative;overflow:hidden;
+  box-shadow:0 20px 56px -18px rgba(14,30,80,.45);
+}
+.rv2-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 92% 10%,rgba(140,180,255,.22),transparent 50%);pointer-events:none}
+.rv2-hero-eye{font:800 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.18em;color:rgba(255,255,255,.55);margin-bottom:10px;position:relative}
+.rv2-hero-h{font:800 32px 'DM Serif Display','Plus Jakarta Sans',sans-serif;letter-spacing:-.02em;line-height:1.1;margin:0 0 14px;position:relative;color:#fff}
+.rv2-hero-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;position:relative}
+.rv2-chip{display:inline-flex;align-items:center;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);font:600 12px 'Plus Jakarta Sans',sans-serif;color:rgba(255,255,255,.92);letter-spacing:.1px}
+.rv2-chip-sev{background:rgba(220,90,80,.22);border-color:rgba(255,160,150,.4);color:#FFD3CC}
+.rv2-hero-desc{font:500 14px 'Plus Jakarta Sans',sans-serif;color:rgba(255,255,255,.78);line-height:1.55;margin:0;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+.rv2-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:28px}
+.rv2-card{background:#fff;border:1px solid rgba(14,20,40,.08);border-radius:16px;padding:22px 24px;box-shadow:0 1px 2px rgba(14,20,40,.04),0 10px 28px -12px rgba(14,20,40,.12);transition:box-shadow .22s ease,border-color .22s ease}
+.rv2-card:hover{box-shadow:0 2px 6px rgba(14,20,40,.06),0 18px 40px -10px rgba(14,20,40,.18);border-color:rgba(14,20,40,.12)}
+.rv2-card-wide{grid-column:1 / -1}
+.rv2-card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;padding:0 0 14px;border-bottom:1px solid rgba(14,20,40,.06)}
+.rv2-card-h h3{margin:0;font:700 16px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.015em;color:var(--ink)}
+.rv2-edit{display:inline-flex;align-items:center;padding:8px 14px;border-radius:8px;border:1px solid rgba(14,20,40,.10);background:#fff;color:var(--brand);cursor:pointer;font:600 12.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.1px;transition:.15s;min-height:36px}
+.rv2-edit:hover{background:rgba(0,41,118,.05);border-color:rgba(0,41,118,.3)}
+
+.rv2-kv{display:flex;flex-direction:column}
+.rv2-row{display:grid;grid-template-columns:180px 1fr;gap:18px;padding:10px 0;border-bottom:1px dashed rgba(14,20,40,.06);align-items:baseline}
+.rv2-row:last-child{border-bottom:none}
+.rv2-k{font:600 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#7a8497}
+.rv2-v{font:500 13.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink);line-height:1.45;letter-spacing:-.005em}
+.rv2-v b{font-weight:700;color:var(--brand)}
+
+.rv2-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.rv2-stat{text-align:center;padding:18px 12px;border-radius:12px;background:linear-gradient(180deg,#f6f8fc,#eef2f7);border:1px solid rgba(14,20,40,.05)}
+.rv2-stat-n{font:800 26px 'Plus Jakarta Sans',sans-serif;color:var(--brand);letter-spacing:-.025em;line-height:1}
+.rv2-stat-l{font:600 11px 'Plus Jakarta Sans',sans-serif;color:#5a6478;margin-top:6px;letter-spacing:.2px}
+
+@media (max-width:880px){
+  .rv2-grid{grid-template-columns:1fr}
+  .rv2-card-wide{grid-column:auto}
+  .rv2-stats{grid-template-columns:repeat(2,1fr)}
+  .rv2-row{grid-template-columns:1fr}
+  .rv2-k{margin-bottom:2px}
+}
 
 /* Inline "Edit" button used in the simplified Review section */
 .rv-edit-inline{
@@ -2536,7 +2577,7 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
           <div class="ff">
             <h4 class="sub-h" style="margin:0 0 4px">Assignment</h4>
             <p class="helper" style="margin:0 0 10px">Who gets this issue when it fires.</p>
-            <label>Assignee</label>
+            <label>Assignment</label>
             <select id="assigneeRole" onchange="onAssigneeRoleChangeV2(this);markSaved()">
               <option value="general" selected>General (anyone on shift)</option>
               <option value="specific">Assign to a specific person</option>
@@ -3085,38 +3126,78 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   <!-- ============== STEP 4 · Review ============== -->
   <section class="panel" id="p-5">
 
-    <div class="card">
-      <h3>Issue summary</h3>
-      <p class="helper" style="margin:0 0 18px">Everything operators will see when this issue opens. Click any value to edit it inline.</p>
-      <div class="rv-kv">
-        <div class="kv-row"><span class="kv-k">Plant</span><span class="kv-v" contenteditable="true" onblur="markSaved()">IREO Grand Arch</span></div>
-        <div class="kv-row"><span class="kv-k">Equipment</span><span class="kv-v" contenteditable="true" onblur="markSaved()">Aeration Tank · Bay 3</span></div>
-        <div class="kv-row"><span class="kv-k">Issue</span><span class="kv-v" contenteditable="true" onblur="markSaved()">Low DO</span></div>
-        <div class="kv-row"><span class="kv-k">Description</span><span class="kv-v" contenteditable="true" onblur="markSaved()">DO in aeration tank is below 2.0 mg/L. Walk the candidate causes — diffusers, sensor, blower, biology…</span></div>
-        <div class="kv-row"><span class="kv-k">Severity</span><span class="kv-v" contenteditable="true" onblur="markSaved()"><span class="rvp-sev">High</span></span></div>
-        <div class="kv-row"><span class="kv-k">Deadline</span><span class="kv-v" contenteditable="true" onblur="markSaved()">2 hrs · within shift</span></div>
-        <div class="kv-row"><span class="kv-k">Type</span><span class="kv-v" contenteditable="true" onblur="markSaved()">Process / Lab</span></div>
-        <div class="kv-row"><span class="kv-k">Assignee</span><span class="kv-v" contenteditable="true" onblur="markSaved()">General · anyone on shift</span></div>
-        <div class="kv-row"><span class="kv-k">Observation frequency</span><span class="kv-v" contenteditable="true" onblur="markSaved()">Every 60 mins</span></div>
-        <div class="kv-row"><span class="kv-k">Trigger condition</span><span class="kv-v" contenteditable="true" onblur="markSaved()"><b>DO &lt; 2.0 mg/L</b> sustained 12 mins</span></div>
-        <div class="kv-row"><span class="kv-k">Auto-resolve</span><span class="kv-v" contenteditable="true" onblur="markSaved()">When DO ≥ 2.5 mg/L for 5 mins</span></div>
-        <div class="kv-row"><span class="kv-k">Communication</span><span class="kv-v" contenteditable="true" onblur="markSaved()">WhatsApp</span></div>
+    <!-- ===== Issue summary (grouped, read-only) ===== -->
+    <div class="rv2-hero">
+      <div class="rv2-hero-eye">REVIEW &amp; PUBLISH</div>
+      <h1 class="rv2-hero-h">Low DO in Aeration Tank</h1>
+      <div class="rv2-hero-chips">
+        <span class="rv2-chip rv2-chip-sev">High severity</span>
+        <span class="rv2-chip">IREO Grand Arch</span>
+        <span class="rv2-chip">Aeration Tank · Bay 3</span>
+        <span class="rv2-chip">v0.4 draft</span>
       </div>
-      <button class="rv-edit-inline" onclick="goStep(1)">Edit issue setup ›</button>
+      <p class="rv2-hero-desc">DO in aeration tank is below 2.0 mg/L. Walk the candidate causes — diffusers, sensor, blower, biology…</p>
+    </div>
 
-      <div class="block-divider">
-        <h4 class="sub-h">Flow configuration summary</h4>
-        <p class="helper" style="margin:0 0 14px">Structure of the diagnostic tree. Click any value to edit it inline.</p>
-        <div class="rv-kv">
-          <div class="kv-row"><span class="kv-k">Total steps</span><span class="kv-v" contenteditable="true" onblur="markSaved()">5 steps + 1 card</span></div>
-          <div class="kv-row"><span class="kv-k">Branching</span><span class="kv-v" contenteditable="true" onblur="markSaved()">2 steps (multi-choice) · 1 step (multi-select)</span></div>
-          <div class="kv-row"><span class="kv-k">Total routes</span><span class="kv-v" contenteditable="true" onblur="markSaved()">11 outcome paths</span></div>
-          <div class="kv-row"><span class="kv-k">Photo hard-block</span><span class="kv-v" contenteditable="true" onblur="markSaved()">1 (step 3 — Photo to Supervisor)</span></div>
-          <div class="kv-row"><span class="kv-k">SME approval</span><span class="kv-v" contenteditable="true" onblur="markSaved()">1 (step 6)</span></div>
-          <div class="kv-row"><span class="kv-k">Terminal outcomes</span><span class="kv-v" contenteditable="true" onblur="markSaved()">2 (Done · DO normal — close issue · Escalate to SME)</span></div>
-          <div class="kv-row"><span class="kv-k">Longest path</span><span class="kv-v" contenteditable="true" onblur="markSaved()">5 steps deep</span></div>
+    <div class="rv2-grid">
+      <!-- Where & what -->
+      <div class="rv2-card">
+        <div class="rv2-card-h">
+          <h3>Where &amp; what</h3>
+          <button class="rv2-edit" onclick="goStep(1)">Edit ›</button>
         </div>
-        <button class="rv-edit-inline" onclick="goStep(4)">Edit flow ›</button>
+        <div class="rv2-kv">
+          <div class="rv2-row"><span class="rv2-k">Plant</span><span class="rv2-v">IREO Grand Arch</span></div>
+          <div class="rv2-row"><span class="rv2-k">Equipment</span><span class="rv2-v">Aeration Tank · Bay 3</span></div>
+          <div class="rv2-row"><span class="rv2-k">Issue</span><span class="rv2-v">Low DO</span></div>
+          <div class="rv2-row"><span class="rv2-k">Severity</span><span class="rv2-v">High (within an hour)</span></div>
+          <div class="rv2-row"><span class="rv2-k">Deadline</span><span class="rv2-v">2 hrs · within shift</span></div>
+          <div class="rv2-row"><span class="rv2-k">Type</span><span class="rv2-v">Process / Lab</span></div>
+        </div>
+      </div>
+
+      <!-- When it triggers -->
+      <div class="rv2-card">
+        <div class="rv2-card-h">
+          <h3>When it triggers</h3>
+          <button class="rv2-edit" onclick="goStep(1)">Edit ›</button>
+        </div>
+        <div class="rv2-kv">
+          <div class="rv2-row"><span class="rv2-k">Observation frequency</span><span class="rv2-v">Every 60 mins</span></div>
+          <div class="rv2-row"><span class="rv2-k">Trigger condition</span><span class="rv2-v"><b>DO &lt; 2.0 mg/L</b> sustained 12 mins</span></div>
+          <div class="rv2-row"><span class="rv2-k">Auto-resolve</span><span class="rv2-v">DO ≥ 2.5 mg/L for 5 mins</span></div>
+        </div>
+      </div>
+
+      <!-- Who & how -->
+      <div class="rv2-card">
+        <div class="rv2-card-h">
+          <h3>Who &amp; how</h3>
+          <button class="rv2-edit" onclick="goStep(1)">Edit ›</button>
+        </div>
+        <div class="rv2-kv">
+          <div class="rv2-row"><span class="rv2-k">Assignment</span><span class="rv2-v">General · anyone on shift</span></div>
+          <div class="rv2-row"><span class="rv2-k">Communication</span><span class="rv2-v">WhatsApp</span></div>
+        </div>
+      </div>
+
+      <!-- Flow configuration -->
+      <div class="rv2-card rv2-card-wide">
+        <div class="rv2-card-h">
+          <h3>Flow configuration</h3>
+          <button class="rv2-edit" onclick="goStep(4)">Edit ›</button>
+        </div>
+        <div class="rv2-stats">
+          <div class="rv2-stat"><div class="rv2-stat-n">5</div><div class="rv2-stat-l">Total steps</div></div>
+          <div class="rv2-stat"><div class="rv2-stat-n">11</div><div class="rv2-stat-l">Outcome paths</div></div>
+          <div class="rv2-stat"><div class="rv2-stat-n">3</div><div class="rv2-stat-l">Branching</div></div>
+          <div class="rv2-stat"><div class="rv2-stat-n">2</div><div class="rv2-stat-l">Terminal</div></div>
+          <div class="rv2-stat"><div class="rv2-stat-n">5</div><div class="rv2-stat-l">Longest path</div></div>
+        </div>
+        <div class="rv2-kv" style="margin-top:18px">
+          <div class="rv2-row"><span class="rv2-k">Photo hard-block</span><span class="rv2-v">1 (step 3 — Photo to Supervisor)</span></div>
+          <div class="rv2-row"><span class="rv2-k">SME approval</span><span class="rv2-v">1 (step 6)</span></div>
+        </div>
       </div>
     </div>
 
