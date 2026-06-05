@@ -1165,15 +1165,8 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
       onPick: (t) => patch({ title: t.title, detail: t.detail }) }),
 
     React.createElement(Field, { label: 'Title' },
-      React.createElement('textarea', {
-        className: 'ed-input ed-grow',
-        rows: 1,
-        value: node.title || '',
-        placeholder: node.type === 'issue' ? 'Type the issue name…' : 'Step title',
-        ref: el => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } },
-        onChange: e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; patch({ title: e.target.value }); },
-        onFocus: e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }
-      })),
+      React.createElement('input', { className: 'ed-input', value: node.title || '', placeholder: node.type === 'issue' ? 'Type the issue name…' : 'Step title',
+        onChange: e => patch({ title: e.target.value }) })),
 
 
 
@@ -1186,15 +1179,8 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
         return React.createElement('div', { className: 'ed-optrow', key: o.id },
           React.createElement('span', { className: 'ed-optletter' }, isNumericQ ? (i + 1) : String.fromCharCode(65 + i)),
           React.createElement('div', { className: 'ed-optfields' },
-            React.createElement('textarea', {
-              className: 'ed-input ed-input-sm ed-grow',
-              rows: 1,
-              value: o.label,
-              placeholder: isNumericQ ? 'e.g. < 2.0 mg/L' : 'Answer label',
-              ref: el => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } },
-              onChange: e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; setOpt(o.id, { label: e.target.value }); },
-              onFocus: e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }
-            }),
+            React.createElement('input', { className: 'ed-input ed-input-sm', value: o.label, placeholder: isNumericQ ? 'e.g. < 2.0 mg/L' : 'Answer label',
+              onChange: e => setOpt(o.id, { label: e.target.value }) }),
             React.createElement('div', { className: 'ed-target-sub' },
               tLabel
                 ? React.createElement(React.Fragment, null,
