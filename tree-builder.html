@@ -9,8 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
 :root{
-  --bg:#eef2f7; --panel:#ffffff; --line:#d7dde6; --line2:#e8ecf1;
-  --ink:#0E1428; --ink2:#3a4358; --ink3:#6b7589;
+  --bg:#fafbfc; --panel:#ffffff; --line:#ebeef2; --line2:#f3f5f8;
+  --ink:#1f2733; --ink2:#5f6b7a; --ink3:#9aa6b4;
   --accent:#0a6e9e; --accent-soft:#e6f2f8; --accent-ink:#06465f;
   --radius:16px; --shadow:0 1px 2px rgba(20,33,48,.04),0 14px 36px rgba(20,33,48,.08);
   --shadow-sm:0 1px 2px rgba(20,33,48,.05);
@@ -26,15 +26,10 @@ input,textarea,select{font-family:inherit;}
 
 .app{display:flex;flex-direction:column;height:100vh;}
 
-/* ---------- header ---------- */
+/* ---------- header (clean v12) ---------- */
 .hdr{display:flex;align-items:center;gap:16px;padding:0 16px;height:58px;background:var(--panel);border-bottom:1px solid var(--line);flex:none;}
 .hdr-left{display:flex;align-items:center;gap:16px;flex:1;min-width:0;}
-.hdr-logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;font-size:13px;letter-spacing:.5px;}
-.hdr-titles{line-height:1.2;display:flex;flex-direction:column;gap:1px}
-.hdr-title{font-weight:700;font-size:14.5px;letter-spacing:-.01em;margin:0;line-height:1.2}
-.hdr-crumb{font-size:11.5px;color:var(--ink3);margin:0;line-height:1.3}
-.hdr-crumb strong{color:var(--ink2);font-weight:600;}
-/* Editable flow-name input + clear-canvas button in the header */
+.hdr-logo{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--accent);color:#fff;font-weight:700;font-size:13px;letter-spacing:.5px;flex:none;}
 .hdr-name-input{
   flex:1;min-width:0;max-width:520px;
   font:700 15px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.01em;color:var(--ink);
@@ -44,13 +39,7 @@ input,textarea,select{font-family:inherit;}
 .hdr-name-input:hover{background:var(--line2)}
 .hdr-name-input:focus{background:#fff;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,110,158,.15)}
 .hdr-name-input::placeholder{color:var(--ink3);font-weight:600}
-.hdr-clear{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);
-  background:#fff;color:var(--ink2);cursor:pointer;
-  font:600 12.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px;transition:.15s;
-}
-.hdr-clear:hover{border-color:#c0473a;color:#c0473a;background:#fdecea}
+.hdr-right{display:flex;align-items:center;gap:16px;justify-content:flex-end;flex:none;}
 .hdr-save-tpl{
   display:inline-flex;align-items:center;gap:7px;
   padding:8px 14px;border-radius:8px;border:0;
@@ -58,26 +47,18 @@ input,textarea,select{font-family:inherit;}
   font:700 12.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px;transition:.15s;
   box-shadow:0 2px 8px rgba(10,110,158,.25);
 }
-.hdr-save-tpl:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 4px 14px rgba(10,110,158,.35)}
-
-/* Builder / Templates toggle pill (top right) */
-.bt-toggle{display:inline-flex;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:8px}
-.bt-tab{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:6px 16px;border-radius:999px;border:0;cursor:pointer;
-  font:600 12.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink2);
-  background:transparent;letter-spacing:.1px;transition:.15s;
+.hdr-save-tpl:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.hdr-clear{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 14px;border-radius:8px;border:1.5px solid var(--line);
+  background:#fff;color:var(--ink2);cursor:pointer;
+  font:600 12.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px;transition:.15s;
 }
-.bt-tab:hover{color:var(--ink)}
-.bt-tab.on{background:var(--accent);color:#fff;box-shadow:0 1px 3px rgba(10,110,158,.25)}
-.bt-tab-n{
-  display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;
-  font:700 10.5px 'IBM Plex Mono',monospace;border-radius:999px;
-  background:rgba(255,255,255,.18);color:inherit;
-}
-.bt-tab:not(.on) .bt-tab-n{background:rgba(20,33,48,.08);color:var(--ink3)}
+.hdr-clear:hover{border-color:#c0473a;color:#c0473a;background:#fdecea}
+/* legacy elements still in CSS but no longer rendered — keep classes available */
+.hdr-titles,.hdr-title,.hdr-crumb,.hdr-modes,.modebtn,.hint-bar,.hdr-btn,.hdr-menuwrap,.hdr-menu,.menu-backdrop{}
 
-/* Templates page */
+/* Templates view inside iframe — triggered by parent's Builder/Templates toggle */
 .tpl-view{padding:28px 40px 60px;max-width:1080px;margin:0 auto;width:100%;overflow:auto;height:100%}
 .tpl-view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:24px}
 .tpl-view-head h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
@@ -100,7 +81,17 @@ input,textarea,select{font-family:inherit;}
 .tpl-empty-ic{font-size:42px;margin-bottom:14px}
 .tpl-empty h3{margin:0 0 8px;font-size:17px;color:var(--ink)}
 .tpl-empty p{margin:0;font-size:13px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.5}
-.hdr-right{display:flex;align-items:center;gap:16px;justify-content:flex-end;flex:none;}
+
+/* hide hint-bar since we removed it from JSX */
+.hint-bar{display:none}
+.hdr-modes{display:flex;gap:6px;margin:0 auto;background:#eef2f6;padding:4px;border-radius:11px;}
+.modebtn{display:flex;flex-direction:column;align-items:flex-start;padding:6px 15px;border-radius:8px;line-height:1.2;transition:.15s;white-space:nowrap;}
+.modebtn-l{font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap;}
+.modebtn-s{font-size:10.5px;color:var(--ink3);}
+.modebtn.on{background:var(--panel);box-shadow:var(--shadow-sm);}
+.modebtn.on .modebtn-l{color:var(--accent);}
+.modebtn:hover:not(.on){background:rgba(255,255,255,.6);}
+.hdr-right{display:flex;align-items:center;gap:8px;min-width:230px;justify-content:flex-end;}
 .savechip{font-size:11.5px;color:var(--ink3);padding:4px 8px;border-radius:6px;}
 .savechip.saving{color:var(--accent);}
 .hdr-btn{font-size:12px;font-weight:600;color:var(--ink2);padding:6px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);transition:.15s;}
@@ -110,6 +101,7 @@ input,textarea,select{font-family:inherit;}
 .stage{flex:1;min-height:0;position:relative;}
 
 /* ============ CANVAS ============ */
+.cv-root{display:flex;height:100%;}
 .cv-palette{width:212px;flex:none;background:var(--panel);border-right:1px solid var(--line);padding:14px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;}
 .cv-palette-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);padding:2px 4px 7px;}
 .cv-chip{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);text-align:left;transition:.13s;touch-action:none;}
@@ -118,14 +110,16 @@ input,textarea,select{font-family:inherit;}
 .cv-chip-tx{font-size:14px;font-weight:600;color:var(--ink);}
 .cv-palette-tip{margin-top:auto;font-size:11px;color:var(--ink3);padding:10px 4px 2px;line-height:1.5;}
 
+.cv-viewport{position:relative;flex:1;min-width:0;overflow:hidden;background:var(--bg);touch-action:none;}
 .cv-dots{position:absolute;inset:0;background-image:radial-gradient(circle,#e4e8ed 1px,transparent 1px);pointer-events:none;}
 .cv-world{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform;}
 .cv-edges{position:absolute;top:0;left:0;overflow:visible;pointer-events:none;}
 .cv-edgehit{stroke:transparent;stroke-width:18px;fill:none;pointer-events:stroke;cursor:pointer;}
+.cv-edgelabel{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:20px;font-size:10px;font-weight:600;color:var(--ink2);padding:3px 10px;white-space:nowrap;line-height:1.3;box-shadow:0 1px 3px rgba(20,33,48,.06);max-width:150px;overflow:hidden;text-overflow:ellipsis;text-align:center;}
 .cv-edgedel{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--ink3);box-shadow:var(--shadow);cursor:pointer;pointer-events:auto;transition:.12s;}
 .cv-edgedel:hover{background:#fdecea;border-color:#e7a59c;color:#c0473a;transform:scale(1.08);}
 
-.cv-node{position:absolute;background:#fff;border:1.5px solid #c9d2de;border-radius:18px;box-shadow:0 2px 4px rgba(14,20,40,.06),0 14px 32px rgba(14,20,40,.09);padding:16px 18px 18px;cursor:grab;user-select:none;transition:box-shadow .16s,transform .16s,border-color .16s;}
+.cv-node{position:absolute;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(20,33,48,.04),0 8px 22px rgba(20,33,48,.05);padding:15px 17px 16px;cursor:grab;user-select:none;transition:box-shadow .16s,transform .16s,border-color .16s;}
 .cv-node:hover{box-shadow:0 2px 6px rgba(20,33,48,.06),0 18px 44px rgba(20,33,48,.11);transform:translateY(-1px);}
 .cv-node.is-sel{border-color:var(--c);box-shadow:0 0 0 2px var(--c),0 18px 44px rgba(20,33,48,.12);}
 .cv-node.is-tgt{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
@@ -138,39 +132,18 @@ input,textarea,select{font-family:inherit;}
 .cv-tool{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;color:var(--ink3);}
 .cv-tool:hover{background:var(--line2);color:var(--ink);}
 .cv-node-title{font-size:15px;font-weight:600;line-height:1.34;color:var(--ink);letter-spacing:-.01em;}
-.cv-node-detail{display:none!important}
+.cv-node-detail{font-size:12.5px;color:var(--ink2);line-height:1.46;margin-top:5px;}
 .cv-opts{margin-top:12px;padding-top:9px;border-top:1px solid var(--line2);display:flex;flex-direction:column;gap:1px;}
-.cv-opt{position:relative;display:flex;align-items:flex-start;gap:10px;padding:7px 5px;font-size:12.5px;border-radius:9px;transition:background .12s;}
-.cv-opt-l{margin-top:2px}
+.cv-opt{position:relative;display:flex;align-items:center;gap:10px;padding:7px 5px;font-size:12.5px;border-radius:9px;transition:background .12s;}
 .cv-opt:hover{background:var(--cs);}
 .cv-opt-l{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--c);background:#fff;color:var(--c);font-weight:700;font-size:10px;flex:none;}
 .cv-opt-tx{color:var(--ink2);font-weight:500;line-height:1.3;overflow:hidden;}
 
-.cv-anchor{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--c);cursor:crosshair;z-index:3;transition:transform .12s,background .12s,box-shadow .12s;}
-/* Universal 4-side connector dots — same visual treatment, positioned mid-edge of each side */
-.cv-anchor.cv-side{
-  background:#fff;border-color:var(--c);
-  box-shadow:0 0 0 3px #fff,0 1px 3px rgba(20,33,48,.22);
-}
-.cv-anchor.cv-side-top   {left:50%; top:-7px;    transform:translateX(-50%)}
-.cv-anchor.cv-side-right {right:-7px; top:50%;   transform:translateY(-50%)}
-.cv-anchor.cv-side-bottom{left:50%; bottom:-7px; transform:translateX(-50%)}
-.cv-anchor.cv-side-left  {left:-7px; top:50%;    transform:translateY(-50%)}
-.vt-card:hover .cv-anchor.cv-side{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--cs)}
+.cv-anchor{position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;border:2px solid var(--c);cursor:crosshair;z-index:3;transition:transform .12s,background .12s;}
+.cv-anchor.cv-in{left:-7px;top:22px;border-color:var(--ink3);}
 .cv-anchor.cv-out{right:-7px;}
-/* Option-level outbound anchor — pinned to the card's outer right edge so connection lines clearly emerge from each option's circle. */
-.cv-opt{padding-right:8px}
-.cv-opt .cv-out{
-  top:50%;right:-24px;transform:translateY(-50%);
-  box-shadow:0 0 0 3px #fff,0 1px 3px rgba(20,33,48,.22);
-}
-.cv-opt:hover .cv-out{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--cs)}
-/* Non-branching cards: single output dot at the BOTTOM-center of the card (matches BPMN convention) */
-.cv-out-single{
-  left:50%;top:auto;bottom:-7px;right:auto;transform:translateX(-50%);
-  border-color:var(--c);background:#fff;
-  box-shadow:0 0 0 3px #fff,0 1px 3px rgba(20,33,48,.22);
-}
+.cv-opt .cv-out{top:50%;transform:translateY(-50%);}
+.cv-out-single{right:-7px;top:22px;}
 .cv-anchor:hover{background:var(--c);transform:scale(1.2);}
 .cv-opt .cv-out:hover{transform:translateY(-50%) scale(1.2);}
 
@@ -185,70 +158,14 @@ input,textarea,select{font-family:inherit;}
 .vt-card:hover .vt-add{opacity:1;}
 .vt-add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
 
+.cv-ghost{position:fixed;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--c);border-left:3px solid var(--c);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:600;box-shadow:var(--shadow);pointer-events:none;z-index:999;opacity:.95;}
 
-.cv-toolbar{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:4px;background:#0E1428;border:0;border-radius:999px;padding:6px;box-shadow:0 16px 36px -10px rgba(20,30,60,.45);z-index:60;}
-.vt-toolbar{position:fixed!important;bottom:28px;left:50%;}
-.cv-toolbar .cv-tbtn{padding:9px 12px;border-radius:999px;color:#fff;background:transparent;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font:700 12px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px;transition:.15s}
-.cv-toolbar .cv-tbtn:hover{background:rgba(255,255,255,.12)}
-.cv-toolbar .cv-tbpct{padding:9px 16px;font:700 12px 'IBM Plex Mono',monospace;color:#fff;letter-spacing:.4px;background:rgba(255,255,255,.08);border-radius:999px}
-
-/* Multi-select highlight via marquee */
-.vt-card.is-multi-sel{
-  border-color:var(--accent)!important;
-  box-shadow:0 0 0 2px var(--accent),0 14px 34px -10px rgba(10,110,158,.35)!important;
-}
-
-/* Right-click context menu */
-.ctx-menu{
-  position:fixed;z-index:120;min-width:200px;
-  background:#fff;border:1px solid var(--line);border-radius:10px;
-  padding:5px;display:flex;flex-direction:column;gap:1px;
-  box-shadow:0 14px 36px -10px rgba(14,20,40,.28),0 0 0 1px rgba(14,20,40,.04);
-  font:600 13px 'Plus Jakarta Sans',sans-serif;color:var(--ink);
-}
-.ctx-item{
-  display:flex;align-items:center;gap:9px;padding:9px 11px;border:0;background:transparent;
-  border-radius:7px;cursor:pointer;color:var(--ink);text-align:left;letter-spacing:-.005em;
-  font:600 13px 'Plus Jakarta Sans',sans-serif;
-}
-.ctx-item:hover{background:var(--accent-soft);color:var(--accent)}
-.ctx-danger{color:#c0473a}
-.ctx-danger:hover{background:#fdecea;color:#c0473a}
-
-/* Free-floating images dropped onto the canvas */
-.vt-image{
-  position:absolute;display:block;
-  border-radius:10px;overflow:visible;
-  box-shadow:0 2px 4px rgba(14,20,40,.08),0 10px 28px rgba(14,20,40,.12);
-  cursor:grab;user-select:none;z-index:5;
-  background:#fff;
-}
-.vt-image.is-dragging{cursor:grabbing;outline:2px solid var(--accent);outline-offset:2px}
-.vt-image:hover{outline:2px solid var(--accent);outline-offset:2px}
-.vt-image img{width:100%;height:100%;display:block;border-radius:10px;pointer-events:none;object-fit:cover}
-.vt-img-del{
-  position:absolute;top:-12px;right:-12px;width:24px;height:24px;border-radius:50%;
-  background:#fff;border:1.5px solid var(--line);color:var(--ink2);
-  display:none;align-items:center;justify-content:center;cursor:pointer;
-  font:700 14px 'Plus Jakarta Sans',sans-serif;line-height:1;z-index:2;
-  box-shadow:0 4px 10px rgba(14,20,40,.18);
-}
-.vt-image:hover .vt-img-del{display:flex}
-.vt-img-del:hover{background:#fdecea;color:#c0473a;border-color:#c0473a}
-.vt-img-handle{
-  position:absolute;width:14px;height:14px;border-radius:50%;
-  background:#fff;border:2px solid var(--accent);
-  display:none;z-index:2;
-  box-shadow:0 1px 3px rgba(14,20,40,.18);
-}
-.vt-image:hover .vt-img-handle,.vt-image.is-dragging .vt-img-handle{display:block}
-.vt-img-nw{top:-7px;left:-7px;cursor:nwse-resize}
-.vt-img-ne{top:-7px;right:-7px;cursor:nesw-resize}
-.vt-img-sw{bottom:-7px;left:-7px;cursor:nesw-resize}
-.vt-img-se{bottom:-7px;right:-7px;cursor:nwse-resize}
+.cv-toolbar{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:5px;box-shadow:var(--shadow);}
 .cv-tbtn{display:flex;align-items:center;gap:5px;padding:7px 9px;border-radius:7px;color:var(--ink2);font-size:12px;font-weight:600;}
 .cv-tbtn:hover{background:var(--line2);color:var(--ink);}
 .cv-tbpct{min-width:48px;justify-content:center;font-variant-numeric:tabular-nums;}
+.cv-tbsep{width:1px;height:20px;background:var(--line);margin:0 3px;}
+.cv-stats{position:absolute;bottom:18px;right:16px;font-size:11px;color:var(--ink3);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:4px 9px;font-variant-numeric:tabular-nums;}
 
 /* inspector */
 .cv-inspector{width:0;flex:none;background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;transition:width .18s;}
@@ -281,9 +198,8 @@ input,textarea,select{font-family:inherit;}
 .cv-insp-empty .muted{font-size:11.5px;line-height:1.5;}
 
 /* ---------- editor (shared) ---------- */
-/* Inspector — refined hierarchy for cognitive-load reduction */
-.editor{padding:20px 22px 22px;display:flex;flex-direction:column;gap:18px;}
-.ed-typehead{display:flex;align-items:center;gap:12px;padding:0 0 16px;border-bottom:1px solid var(--line2);}
+.editor{padding:16px;display:flex;flex-direction:column;gap:13px;}
+.ed-typehead{display:flex;align-items:center;gap:10px;padding-bottom:13px;border-bottom:1px solid var(--line2);}
 .ed-typeicon{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;flex:none;}
 .ed-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);}
 .ed-typeselect{font-size:13.5px;font-weight:600;color:var(--ink);border:none;background:none;padding:1px 0;cursor:pointer;max-width:230px;}
@@ -322,31 +238,14 @@ input,textarea,select{font-family:inherit;}
 .hdr-tpl:hover .hdr-tpl-del{opacity:1;}
 .hdr-tpl-del:hover{background:#fdecea;color:#c0473a;}
 .menu-backdrop{position:fixed;inset:0;z-index:55;}
-.ed-field{display:flex;flex-direction:column;gap:6px;}
-.ed-label{font:700 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#7a8497}
+.ed-field{display:flex;flex-direction:column;gap:5px;}
 .ed-label{font-size:11px;font-weight:600;color:var(--ink2);}
 .ed-input{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--ink);background:#fff;transition:.13s;}
 .ed-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .ed-input-sm{padding:6px 9px;font-size:12px;}
 .ed-area{resize:vertical;line-height:1.45;}
-
-/* Auto-grow text inputs in the inspector — single line by default, expand vertically while typing */
-.ed-grow{
-  font-family:inherit;line-height:1.4;
-  resize:none;overflow:hidden;
-  white-space:pre-wrap;word-wrap:break-word;
-  min-height:36px;
-}
-.ed-grow.ed-input-sm{min-height:30px}
-.ed-block{display:flex;flex-direction:column;gap:10px;padding:14px 0 0;border-top:1px solid var(--line2);}
-.ed-blockhead{display:flex;align-items:center;gap:8px;font:700 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#7a8497;margin-bottom:2px;}
-.ed-count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:rgba(14,20,40,.06);color:#5a6478;font:700 10.5px 'IBM Plex Mono',monospace;letter-spacing:.2px}
-
-/* "Routes to →" subtext under each choice (auto-populated by canvas connections) */
-.ed-target-sub{font:500 11.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink3);padding:4px 0 0 2px;display:flex;align-items:center;gap:6px;line-height:1.4}
-.ed-target-arrow{color:var(--accent);font-weight:700}
-.ed-target-name{color:var(--ink2);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
-.ed-target-empty{color:#a3acb8;font-style:italic;font-weight:500}
+.ed-block{display:flex;flex-direction:column;gap:8px;}
+.ed-blockhead{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);}
 .ed-count{display:grid;place-items:center;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--line2);color:var(--ink2);font-size:10px;}
 .ed-optrow{display:flex;gap:7px;align-items:flex-start;}
 .ed-optletter{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:10px;flex:none;margin-top:6px;}
@@ -391,160 +290,44 @@ input,textarea,select{font-family:inherit;}
 .ol-side.open{width:340px;}
 
 /* ============ WIZARD ============ */
+.wz-root{display:flex;height:100%;}
+.wz-rail{width:280px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;}
+.wz-rail-h{display:flex;align-items:center;gap:8px;padding:16px 18px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);}
+.wz-railcount{display:grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--line2);color:var(--ink2);font-size:10.5px;}
+.wz-list{flex:1;overflow-y:auto;padding:0 10px;display:flex;flex-direction:column;gap:3px;}
+.wz-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;text-align:left;transition:.12s;}
+.wz-item:hover{background:var(--line2);}
+.wz-item.is-cur{background:var(--accent-soft);}
+.wz-num{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--line2);color:var(--ink2);font-size:10.5px;font-weight:700;flex:none;}
+.wz-item.is-cur .wz-num{background:var(--accent);color:#fff;}
+.wz-item-ic{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;flex:none;}
+.wz-item-tx{display:flex;flex-direction:column;line-height:1.25;min-width:0;}
+.wz-item-title{font-size:12.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wz-item-sub{font-size:10.5px;color:var(--ink3);}
+.wz-add{display:flex;align-items:center;justify-content:center;gap:7px;margin:10px;padding:10px;border-radius:9px;border:1px dashed var(--line);color:var(--accent);font-size:12.5px;font-weight:600;}
+.wz-add:hover{background:var(--accent-soft);border-color:var(--accent);}
+.wz-stage{flex:1;min-width:0;overflow-y:auto;display:flex;justify-content:center;padding:34px 24px 60px;}
+.wz-card{width:100%;max-width:560px;background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;height:fit-content;}
+.wz-card-top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line2);background:#fbfcfd;}
+.wz-step-of{font-size:12px;font-weight:600;color:var(--ink2);}
+.wz-card-cat{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
+.wz-editorwrap .editor{padding:20px;gap:16px;}
+.wz-editorwrap .ed-input{padding:10px 12px;font-size:14px;}
+.wz-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--line2);background:#fbfcfd;}
+.wz-navbtn{font-size:12.5px;font-weight:600;color:var(--ink2);padding:8px 15px;border:1px solid var(--line);border-radius:9px;background:#fff;transition:.13s;}
+.wz-navbtn:hover:not(:disabled){border-color:var(--ink3);color:var(--ink);}
+.wz-navbtn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.wz-navbtn.primary:hover:not(:disabled){background:var(--accent-ink);}
+.wz-navbtn:disabled{opacity:.4;cursor:not-allowed;}
+.wz-dots{display:flex;gap:5px;}
+.wz-dot{width:6px;height:6px;border-radius:50%;background:var(--line);}
+.wz-dot.on{background:var(--accent);width:18px;border-radius:3px;}
 
 @media (max-width:900px){
   .hdr-left,.hdr-right{min-width:0;}
   .hdr-crumb{display:none;}
+  .modebtn-s{display:none;}
 }
-/* Embedded-mode overrides — locked to vertical tree */
-.hdr{height:46px;padding:0 14px}
-.hdr-left{min-width:0}
-.hdr-logo{width:26px;height:26px;font-size:11px}
-.hdr-title{font-size:13px}
-.hint-bar{padding:6px 14px;font-size:11.5px}
-
-/* ===== Resizable drawers (left palette + right inspector) ===== */
-/* Make the palette width controllable via CSS variable so user can resize */
-.cv-palette{
-  position:relative;
-  width:var(--paletteW,212px)!important;
-  transition:width .18s ease;
-}
-.cv-palette.is-collapsed{
-  width:64px!important;
-  padding-left:8px!important;padding-right:8px!important;
-}
-.cv-palette.is-collapsed .cv-chip-tx,
-.cv-palette.is-collapsed .cv-palette-h,
-.cv-palette.is-collapsed .cv-palette-tip{display:none}
-.cv-palette.is-collapsed .cv-chip{
-  justify-content:center;padding:6px;width:48px;height:48px;gap:0;margin:0 auto;
-}
-.cv-palette.is-collapsed .cv-chip-ic{width:32px;height:32px;flex:0 0 32px}
-
-/* Right inspector — opens automatically when a node is selected; collapses when nothing is selected. */
-.cv-inspector{
-  position:relative;
-  width:0!important;
-  overflow:hidden;
-  flex:none;
-  transition:width .22s cubic-bezier(.4,.0,.2,1);
-  border-left:1px solid var(--line);
-}
-.cv-inspector.open{
-  width:var(--inspectorW,344px)!important;
-  overflow:visible;
-}
-.cv-inspector.is-collapsed{
-  width:0!important;
-  overflow:hidden;
-}
-
-/* ===== Floating Save-as-template button — anchored to bottom-right of the canvas viewport ===== */
-.vt-tplbar{
-  position:absolute;right:24px;bottom:24px;
-  display:flex;align-items:center;gap:0;padding:0;
-  background:transparent;border:0;z-index:50;
-  pointer-events:none;
-}
-.vt-tplbar > *{pointer-events:auto}
-.vt-tplbar-left{display:flex;flex-direction:column;gap:1px;flex:none;min-width:160px}
-.vt-tplbar-h{font:700 12px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px;color:var(--ink)}
-.vt-tplbar-sub{font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink3)}
-.vt-tplbar-list{display:none}
-.vt-tplbar-list::-webkit-scrollbar{height:4px}
-.vt-tplbar-list::-webkit-scrollbar-thumb{background:rgba(140,150,180,.35);border-radius:4px}
-.vt-tpl-chip{
-  display:inline-flex;align-items:center;gap:6px;flex:none;
-  padding:6px 9px;border:1px solid var(--line);border-radius:999px;
-  background:#fff;font:600 11.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink);
-  cursor:pointer;transition:.15s;
-}
-.vt-tpl-chip:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
-.vt-tpl-chip-name{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.vt-tpl-chip-n{font:700 9.5px 'IBM Plex Mono',monospace;background:rgba(20,33,48,.06);padding:2px 6px;border-radius:8px;color:var(--ink3)}
-.vt-tpl-chip-x{width:14px;height:14px;display:grid;place-items:center;border-radius:50%;color:var(--ink3);font-weight:700}
-.vt-tpl-chip-x:hover{background:#fdecea;color:#c0473a}
-.vt-tplbar-save{
-  flex:none;display:inline-flex;align-items:center;gap:8px;
-  padding:11px 18px;border-radius:999px;border:0;cursor:pointer;
-  background:var(--accent);color:#fff;font:700 13px 'Plus Jakarta Sans',sans-serif;
-  letter-spacing:.2px;box-shadow:0 10px 28px -8px rgba(10,110,158,.45),0 0 0 1px rgba(255,255,255,.08) inset;
-  transition:.18s;
-}
-.vt-tplbar-save:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 14px 32px -8px rgba(10,110,158,.55)}
-
-/* No bottom-bar reservation now that the button is a floating pill */
-.vt-scroll{padding-bottom:24px!important}
-
-/* Drag cursor for vertical-tree cards — entire card grabbable except inputs/buttons */
-.vt-card{cursor:grab;user-select:none}
-.vt-card input,.vt-card textarea,.vt-card button{cursor:auto;user-select:text}
-.vt-card.is-dragging{cursor:grabbing;box-shadow:0 14px 36px -10px rgba(10,110,158,.4),0 0 0 2px var(--accent);z-index:80}
-
-/* Inline-editable node text — auto-grow textareas so the card expands as you type */
-.cv-node-title-input{
-  display:block;width:100%;border:0;background:transparent;
-  font:700 14.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink);
-  padding:6px 12px 4px;line-height:1.3;outline:none;letter-spacing:-.01em;
-  resize:none;overflow:hidden;white-space:pre-wrap;word-wrap:break-word;
-  font-family:inherit;min-height:24px;
-}
-.cv-node-title-input::placeholder{color:#a8b1bd;font-weight:600}
-.cv-node-title-input:focus{background:rgba(10,110,158,.06);border-radius:6px}
-.cv-node-detail-input{
-  display:block;width:100%;border:0;background:transparent;
-  font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--ink3);
-  padding:0 12px 8px;line-height:1.45;outline:none;resize:vertical;min-height:32px;
-  font-family:inherit;
-}
-.cv-node-detail-input::placeholder{color:#b8c0cc}
-.cv-node-detail-input:focus{background:rgba(10,110,158,.05);border-radius:6px}
-.cv-opt-tx-input{
-  flex:1;min-width:0;border:0;background:transparent;
-  font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--ink);
-  padding:4px 6px;outline:none;
-  resize:none;overflow:hidden;white-space:pre-wrap;word-wrap:break-word;
-  font-family:inherit;min-height:22px;line-height:1.4;
-}
-.cv-opt-tx-input:focus{background:rgba(10,110,158,.06);border-radius:5px}
-.cv-opt-tx-input::placeholder{color:#b8c0cc}
-.cv-inspector.is-collapsed .editor,
-.cv-inspector.is-collapsed .dash,
-.cv-inspector.is-collapsed .cv-insp-empty{display:none}
-
-/* Resize handle along the inner edge of each drawer */
-.drawer-resize{
-  position:absolute;top:0;bottom:0;width:6px;cursor:col-resize;z-index:60;
-  background:transparent;transition:background .15s;
-}
-.drawer-resize:hover,.drawer-resize.is-dragging{background:rgba(10,110,158,.18)}
-.cv-palette > .drawer-resize{right:-3px}
-.cv-inspector > .drawer-resize{left:-3px}
-
-/* Collapse/expand toggle button (corner of each drawer) */
-.drawer-toggle{
-  position:absolute;top:6px;width:24px;height:24px;border-radius:6px;
-  background:#fff;border:1px solid var(--line);color:var(--ink3);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font:800 11px 'IBM Plex Mono';transition:.15s;z-index:61;
-  box-shadow:0 1px 3px rgba(20,33,48,.08);
-}
-.drawer-toggle:hover{color:var(--accent);border-color:var(--accent)}
-.cv-palette > .drawer-toggle{right:6px}
-.cv-inspector > .drawer-toggle{left:6px}
-.cv-palette.is-collapsed > .drawer-toggle,
-.cv-inspector.is-collapsed > .drawer-toggle{left:50%;right:auto;transform:translateX(-50%)}
-
-/* When collapsed, show a tiny vertical label */
-.collapsed-label{
-  position:absolute;top:38px;left:50%;transform:translate(-50%,0) rotate(-90deg);
-  transform-origin:center;font:700 10px 'IBM Plex Mono';
-  letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);
-  white-space:nowrap;pointer-events:none;display:none;
-}
-.cv-palette.is-collapsed .collapsed-label,
-.cv-inspector.is-collapsed .collapsed-label{display:block}
 </style>
 </head>
 <body>
@@ -573,11 +356,11 @@ input,textarea,select{font-family:inherit;}
 // subKey:    field whose value picks a sub-type (rendered as a 2nd dropdown)
 const NODE_TYPES = {
   issue:        { label: 'Issue / Trigger',     cat: 'start',     glyph: 'issue',        branching: false, terminal: false, hint: 'The alert that opens the diagnostic flow' },
-  question:     { label: 'Question / Capture',  cat: 'question',  glyph: 'question',     branching: true,  terminal: false, subKey: 'qType',    hint: 'Ask the operator something or capture a reading — each choice routes onward' },
-  singleAnswer: { label: 'Single answer',       cat: 'answer',    glyph: 'answer',       branching: false, terminal: false, hint: 'A single free-text response captured from the operator' },
+  question:     { label: 'Question',            cat: 'question',  glyph: 'question',     branching: true,  terminal: false, subKey: 'qType',    hint: 'Ask the operator something — each answer routes onward' },
+  answer:       { label: 'Answer',              cat: 'answer',    glyph: 'answer',       branching: false, terminal: false, subKey: 'aType',    hint: 'A captured response that continues the flow' },
   waiting:      { label: 'Waiting',             cat: 'status',    glyph: 'wait',         branching: false, terminal: false, hint: 'Hold / wait for recovery or a process before continuing' },
   rootcause:    { label: 'Root cause selector', cat: 'cause',     glyph: 'root',         branching: true,  terminal: false, hint: 'Operator selects the confirmed cause — each routes to its remedy' },
-  task:         { label: 'Action',              cat: 'task',      glyph: 'task',         branching: true,  terminal: false, subKey: 'taskType', hint: 'A diagnostic or remedial step — each choice routes onward' },
+  task:         { label: 'Action',              cat: 'task',      glyph: 'task',         branching: false, terminal: false, subKey: 'taskType', hint: 'A diagnostic or remedial step to perform' },
   media:        { label: 'Media upload',        cat: 'capture',   glyph: 'media',        branching: false, terminal: false, hint: 'Capture a photo / video / file as evidence' },
   validation:   { label: 'Validation step',     cat: 'capture',   glyph: 'validation',   branching: false, terminal: false, hint: 'Confirm the fix worked before closing' },
   escalation:   { label: 'Escalation',          cat: 'exception', glyph: 'escalation',   branching: false, terminal: false, subKey: 'escType',  hint: 'Escalate the issue — call the supervisor or an expert' },
@@ -587,7 +370,8 @@ const NODE_TYPES = {
 
 // sub-type option lists (value, label)
 const SUBTYPES = {
-  qType:    [ ['yesno','Yes / No'], ['mcq','Multiple choice'], ['numeric','Numeric input'], ['sensor','Sensor reading'], ['range','Range slider'] ],
+  qType:    [ ['single','Single answer'], ['yesno','Yes / No'], ['mcq','Multiple choice'], ['numeric','Numeric input'] ],
+  aType:    [ ['single','Single'], ['yesno','Yes / No'], ['mcq_single','Single-select (in MCQ)'], ['numeric','Numerical input'], ['sensor','Sensor data / input'], ['range','Range slider'] ],
   taskType: [ ['diagnostic','Diagnostic step'], ['remedial','Remedial step'] ],
   role:     [ ['operator','Operator'], ['supervisor','Supervisor'] ],
   escType:  [ ['call_supervisor','Call the supervisor'], ['call_expert','Call an expert'] ],
@@ -653,107 +437,76 @@ function seedTree(){
   const n = {};
   const add = (id, o) => { n[id] = Object.assign({ id, options: [], next: null, detail: '' }, o); };
 
-  // ===== Root issue =====
-  add('issue', { type: 'issue', title: 'Low DO in Aeration tank',
-    detail: 'Dissolved oxygen has held below the target threshold in the aeration tank. Walk the candidate causes.',
-    next: 'step1', x: 700, y: 40 });
+  add('issue', { type: 'issue', title: 'Low DO in Aeration Tank', detail: 'DO has held below 2.0 mg/L. Walk the candidate causes.', next: 'doread', x: 40, y: 460 });
 
-  // ===== Step 1 — aeration uniformity (single answer, 4 options) =====
-  add('step1', { type: 'question', qType: 'mcq',
-    title: '1. Check if Aeration is equally happening across the tank.',
-    detail: 'Look at the tank surface and assess the bubbling pattern.',
-    x: 700, y: 220, options: [
-      opt('Yes, bubbles seem normal on the surface', 'step2'),
-      opt('Moderately, some bubbles are there on the surface', 'step2'),
-      opt('No, there are no bubbles on the tank', 'nobub'),
-      opt('Skip to the End', 'skipMedia'),
+  // numeric-input question that branches on threshold bands
+  add('doread', { type: 'question', qType: 'numeric', title: 'Enter current DO reading',
+    detail: 'Operator types the live DO value (mg/L).', x: 340, y: 460, options: [
+      opt('< 2.0 mg/L  (low)', 's1'),
+      opt('2.0 – 4.0 mg/L  (borderline)', 'waitstep'),
+      opt('≥ 4.0 mg/L  (normal)', 'normEnd'),
+    ]});
+  add('waitstep', { type: 'waiting', title: 'Wait 30 min, then re-check', detail: 'Hold and let readings settle before continuing.', next: 's1', x: 660, y: 640 });
+  add('normEnd', { type: 'done', title: 'DO normal — close issue', x: 660, y: 780 });
+
+  // single-answer question
+  add('s1', { type: 'question', qType: 'single', title: 'Check aeration across the tank',
+    detail: 'Is aeration happening equally across the whole tank?', x: 660, y: 420, options: [
+      opt('Yes, bubbles normal', 's2'),
+      opt('Moderate, some bubbles', 's2'),
+      opt('No bubbles on surface', 'nobub'),
+      opt('Jump to closure', 'skip1'),
     ]});
 
-  // ----- "No bubbles" branch — pick an action -----
-  add('nobub', { type: 'question', qType: 'mcq',
-    title: 'No bubbles — pick an action',
-    detail: 'Operator selects the appropriate next action.',
-    x: 180, y: 420, options: [
-      opt('Call Supervisor (could be done)', 'callUpload'),
-      opt('Diffusers are choked and need cleaning', 'diffUpload'),
+  add('nobub', { type: 'question', qType: 'single', title: 'No bubbles — pick outcome',
+    detail: 'No surface bubbling observed.', x: 980, y: 160, options: [
+      opt('Call supervisor', 'reassignSup'),
+      opt('Diffusers choked', 'media1'),
     ]});
-  add('callUpload', { type: 'media', title: 'Upload Image',
-    detail: 'Photo of the tank surface / diffusers.', next: 'callDone', x: 60, y: 620 });
-  add('callDone', { type: 'done', title: 'Done', x: 60, y: 820 });
-  add('diffUpload', { type: 'media', title: 'Upload Image',
-    detail: 'Photo as evidence of diffuser choking.', next: 'diffDone', x: 300, y: 620 });
-  add('diffDone', { type: 'done', title: 'Done', x: 300, y: 820 });
+  add('reassignSup', { type: 'escalation', escType: 'call_supervisor', title: 'Call the supervisor', detail: 'Escalate the call to the supervisor on duty.', next: 'ans1', x: 1300, y: 100 });
+  add('ans1', { type: 'answer', aType: 'single', title: 'Supervisor advice recorded', detail: 'Captured response from the call.', next: 'end1', x: 1620, y: 100 });
+  add('end1', { type: 'done', title: 'Done', x: 1940, y: 100 });
+  add('media1', { type: 'media', title: 'Upload image of diffusers', detail: 'Attach a photo as evidence.', next: 'rc1', x: 1300, y: 260 });
 
-  // ----- Parked waiting step (could be slotted into the no-bubbles branch) -----
-  add('waitStep', { type: 'waiting', title: 'Waiting Step',
-    detail: 'Hold and let readings settle before continuing.', next: null, x: 520, y: 620 });
+  add('skip1', { type: 'task', taskType: 'diagnostic', title: 'Jump to closure', detail: 'Operator opts to jump to closure.', next: 'media2', x: 980, y: 560 });
+  add('media2', { type: 'media', title: 'Upload image + RCA', detail: 'Capture media and note a root cause.', next: 'taskMsg', x: 1300, y: 560 });
+  add('taskMsg', { type: 'task', taskType: 'remedial', title: 'Send message to supervisor', detail: 'Notify supervisor of the closure.', next: 'end2', x: 1620, y: 560 });
+  add('end2', { type: 'done', title: 'Done', x: 1940, y: 560 });
 
-  // ----- "Skip to the End" branch from Step 1 -----
-  add('skipMedia', { type: 'media',
-    title: 'Upload Image + Root cause selector',
-    detail: 'Capture media and note a confirmed root cause.', next: 'sendMsg', x: 940, y: 420 });
-  add('sendMsg', { type: 'task', taskType: 'remedial',
-    title: 'Send Message to Supervisor', detail: 'Could be done.', next: 'endDone', x: 940, y: 620 });
-  add('endDone', { type: 'done', title: 'Done', x: 940, y: 820 });
-
-  // ===== Step 2 — dead-zone symptom check (multiple choice) =====
-  add('step2', { type: 'question', qType: 'mcq',
-    title: '2. Check if dead zones are created in the tank.',
-    detail: 'Tick the symptoms that apply, or escalate.',
-    x: 1380, y: 220, options: [
-      opt('Reduced treatment performance despite normal blower operation', 'sym1'),
-      opt('Dark or black-colored wastewater in localized area', 'sym2'),
-      opt('Sludge accumulation at the bottom of certain areas', 'sym3'),
-      opt('Uneven dissolved oxygen (DO) readings across the tank', 'sym4'),
-      opt('Skip to the End', 'mediaRca'),
-      opt('Fall Back Step', 'reassign'),
+  // multiple-choice question
+  add('s2', { type: 'question', qType: 'mcq', title: 'Check for dead zones in the tank',
+    detail: 'Which symptom is present?', x: 980, y: 380, options: [
+      opt('Reduced treatment performance', 'sym1'),
+      opt('Dark / black-coloured water', 'sym2'),
+      opt('Sludge accumulation at bottom', 'sym3'),
+      opt('Uneven DO readings', 'sym4'),
+      opt('Jump to closure', 'skip2'),
+      opt('Escalate', 'fb1'),
     ]});
 
-  // ----- Four parallel Yes/No symptom checks -----
-  add('sym1', { type: 'question', qType: 'yesno',
-    title: 'Reduced treatment performance despite normal blower operation',
-    x: 1140, y: 420, options: [ opt('Yes', 'nextStep'), opt('No', 'nextTree') ]});
-  add('sym2', { type: 'question', qType: 'yesno',
-    title: 'Dark or black-colored wastewater in localized area',
-    x: 1320, y: 420, options: [ opt('Yes', 'nextStep'), opt('No', 'nextTree') ]});
-  add('sym3', { type: 'question', qType: 'yesno',
-    title: 'Sludge accumulation at the bottom of certain areas',
-    x: 1500, y: 420, options: [ opt('Yes', 'nextStep'), opt('No', 'nextTree') ]});
-  add('sym4', { type: 'question', qType: 'yesno',
-    title: 'Uneven dissolved oxygen (DO) readings across the tank',
-    x: 1680, y: 420, options: [ opt('Yes', 'nextStep'), opt('No', 'nextTree') ]});
+  add('sym1', { type: 'question', qType: 'yesno', title: 'Reduced performance despite a normal blower?', x: 1320, y: 360, options: [ opt('Yes', 'rc1'), opt('No', 'nextstep') ]});
+  add('sym2', { type: 'question', qType: 'yesno', title: 'Dark / black water in a localized area?', x: 1320, y: 500, options: [ opt('Yes', 'nextstep'), opt('No', 'nextstep') ]});
+  add('sym3', { type: 'question', qType: 'yesno', title: 'Sludge accumulation in certain areas?', x: 1320, y: 640, options: [ opt('Yes', 'nextstep'), opt('No', 'nextstep') ]});
+  add('sym4', { type: 'question', qType: 'yesno', title: 'Uneven DO readings across the tank?', x: 1320, y: 780, options: [ opt('Yes', 'nextstep'), opt('No', 'nextstep') ]});
 
-  // ----- "Skip to the End" from Step 2 -----
-  add('mediaRca', { type: 'media',
-    title: 'Media Upload + RCA',
-    detail: 'Capture media and note a confirmed root cause.', next: 'nextTree', x: 1860, y: 420 });
+  // root-cause selector -> remedy -> validation -> close
+  add('rc1', { type: 'rootcause', title: 'Confirm the root cause', detail: 'Operator selects the confirmed cause.', x: 1660, y: 300, options: [
+      opt('Diffusers choked & need cleaning', 'cleanTask'),
+      opt('Blower under-performing', 'cleanTask'),
+    ]});
+  add('cleanTask', { type: 'task', taskType: 'remedial', title: 'Clean / unclog the diffusers', detail: 'Carry out the remedial action.', next: 'validate', x: 1980, y: 300 });
+  add('validate', { type: 'validation', title: 'Re-check DO is back above 2.0 mg/L', detail: 'Confirm the fix worked before closing.', next: 'closed', x: 2300, y: 300 });
+  add('closed', { type: 'done', title: 'Resolved', x: 2620, y: 300 });
 
-  // ----- "Fall Back Step" — reassign + media upload -----
-  add('reassign', { type: 'escalation', escType: 'reassign',
-    title: 'Reassignment', detail: 'Hand off to another operator / role.',
-    next: 'mediaUpload2', x: 2080, y: 420 });
-  add('mediaUpload2', { type: 'media', title: 'Media Upload',
-    detail: 'Attach evidence for the handoff.', next: 'nextTree', x: 2080, y: 620 });
+  add('nextstep', { type: 'task', taskType: 'diagnostic', title: 'Proceed to next diagnostic step', detail: 'Convergence point.', next: 'nexttree', x: 1660, y: 620 });
 
-  // ===== Convergence — "Yes" path: continue diagnosis =====
-  add('nextStep', { type: 'task', taskType: 'diagnostic',
-    title: 'Next Step in the Diagnosis Process',
-    detail: 'Yes-branch convergence — proceed to the diffuser action.',
-    next: 'diffChoked', x: 1380, y: 640 });
-  add('diffChoked', { type: 'task', taskType: 'remedial',
-    title: 'Diffusers are choked and need cleaning.',
-    detail: 'Carry out the cleaning action.', next: 'callPlan', x: 1380, y: 840 });
-  add('callPlan', { type: 'done',
-    title: 'Call supervisor to plan this action. (Stop here)',
-    x: 1380, y: 1040 });
+  add('skip2', { type: 'task', taskType: 'diagnostic', title: 'Jump to closure', next: 'media3', x: 1320, y: 920 });
+  add('media3', { type: 'media', title: 'Media upload + RCA', next: 'nexttree', x: 1660, y: 920 });
 
-  // ===== Convergence — "No" / Skip / Fall back path: continue to next tree =====
-  add('nextTree', { type: 'link', title: 'Next Diagnostic Tree',
-    detail: 'Cross over to the next diagnostic tree.', next: 'doSensor', x: 1960, y: 840 });
-  add('doSensor', { type: 'link',
-    title: 'DO Sensor Failure',
-    detail: 'Next Diagnostic Flow in the Diagnostic Tree for the issue — Low DO in Aeration Tank.',
-    next: null, x: 1960, y: 1040 });
+  add('fb1', { type: 'escalation', escType: 'call_expert', title: 'Escalate — call an expert', next: 'nexttree', x: 1320, y: 1060 });
+
+  add('nexttree', { type: 'link', title: 'Next diagnostic tree', next: 'dosensor', x: 2300, y: 620 });
+  add('dosensor', { type: 'link', title: 'DO Sensor Failure (next flow)', next: null, x: 2620, y: 620 });
 
   return n;
 }
@@ -822,7 +575,6 @@ function autoLayout(nodes){
   return out;
 }
 
-/* Pinned-aware wrapper applied to whichever layout returns positions below */
 /* ---- Vertical layout: layered top-to-bottom ------------- */
 function verticalLayout(nodes){
   const ids = Object.keys(nodes);
@@ -866,66 +618,21 @@ function verticalLayout(nodes){
     });
   }
   const out = {};
-  ids.forEach(id => {
-    const n = nodes[id];
-    // Always respect an existing x/y — only auto-place nodes that don't have coordinates yet.
-    // This stops nodes from jumping every time a connection is drawn, since the layout no
-    // longer overrides positions just because a new edge was added.
-    if (typeof n.x === 'number' && typeof n.y === 'number') {
-      out[id] = Object.assign({}, n);
-    } else {
-      out[id] = Object.assign({}, n, pos[id]);
-    }
-  });
+  ids.forEach(id => { out[id] = Object.assign({}, nodes[id], pos[id]); });
   return out;
 }
 
 /* ---- Store (localStorage) ------------------------------- */
-const STORE_KEY = 'dp_flow_builder_v12_singleanswer';
-// Map deprecated aType values to the new merged qType values
-const A_TO_Q_TYPE = { single:'single', yesno:'yesno', mcq_single:'mcq', numeric:'numeric', sensor:'sensor', range:'range' };
-
-function migrateNodes(nodes){
-  // The standalone Answer node type was merged into Question. Any saved node with
-  // type:'answer' is rewritten to type:'question' with the equivalent qType so
-  // existing flows continue to work.
-  // Also: Action / Task nodes now branch — convert any pre-existing .next on a task
-  // node into a single "Continue" option so the existing edge is preserved.
-  if (!nodes) return nodes;
-  const out = {};
-  Object.keys(nodes).forEach(id => {
-    const n = nodes[id];
-    if (n && n.type === 'answer') {
-      out[id] = Object.assign({}, n, {
-        type: 'question',
-        qType: A_TO_Q_TYPE[n.aType || 'single'] || 'single',
-      });
-      delete out[id].aType;
-    } else if (n && n.type === 'task' && (!n.options || n.options.length === 0) && n.next) {
-      out[id] = Object.assign({}, n, {
-        options: [{ id: 'o_' + id + '_mig', label: 'Continue', target: n.next }],
-        next: null,
-      });
-    } else if (n && n.type === 'question' && n.qType === 'single') {
-      // Single answer is no longer a qType — promote to the dedicated singleAnswer node.
-      // Preserve any target on the first option (if any) as the new node's .next.
-      const firstTgt = (n.options && n.options[0] && n.options[0].target) || null;
-      const copy = Object.assign({}, n, { type: 'singleAnswer', next: firstTgt, options: [] });
-      delete copy.qType;
-      out[id] = copy;
-    } else {
-      out[id] = n;
-    }
-  });
-  return out;
-}
-
+const STORE_KEY = 'dp_flow_builder_v12_clean';
 function loadState(){
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (raw) { const p = JSON.parse(raw); if (p && p.nodes) { p.nodes = migrateNodes(p.nodes); return Object.assign({ images: [], flowName: 'Low DO in Aeration Tank' }, p); } }
+    if (raw) {
+      const p = JSON.parse(raw);
+      if (p && p.nodes) return Object.assign({ flowName: 'Low DO in Aeration Tank' }, p);
+    }
   } catch(e){}
-  return { nodes: seedTree(), images: [], view: { x: 20, y: 10, k: 0.86 }, mode: 'canvas', collapsed: {} };
+  return { nodes: seedTree(), view: { x: 20, y: 10, k: 0.86 }, mode: 'tree', collapsed: {}, flowName: 'Low DO in Aeration Tank' };
 }
 function saveState(state){
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
@@ -1053,8 +760,7 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
   const meta = NODE_TYPES[node.type] || NODE_TYPES.question;
   const cat = CAT_META[meta.cat];
   const tgts = targetOptions(nodes, node.id);
-  const isNumericQ = node.type === 'question' && (node.qType === 'numeric' || node.qType === 'sensor' || node.qType === 'range');
-  const showOpts = meta.branching;
+  const isNumericQ = node.type === 'question' && node.qType === 'numeric';
 
   const patch = (p) => onChange(Object.assign({}, node, p));
   const setOpt = (oid, p) => patch({ options: node.options.map(o => o.id === oid ? Object.assign({}, o, p) : o) });
@@ -1084,32 +790,7 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
         }, Object.keys(NODE_TYPES).map(k => React.createElement('option', { key: k, value: k }, NODE_TYPES[k].label))),
         meta.subKey && React.createElement('select', {
           className: 'ed-subselect', value: node[meta.subKey] || SUBTYPES[meta.subKey][0][0],
-          onChange: e => {
-            const v = e.target.value;
-            const p = { [meta.subKey]: v };
-            // Reshape options when the qType changes so the node UI reflects the new answer style.
-            if (meta.subKey === 'qType') {
-              if (v === 'yesno') {
-                p.options = [
-                  { id: uid('o'), label: 'Yes', target: (node.options && node.options[0] && node.options[0].target) || null },
-                  { id: uid('o'), label: 'No',  target: (node.options && node.options[1] && node.options[1].target) || null }
-                ];
-              } else if (v === 'numeric' || v === 'sensor' || v === 'range') {
-                const labels = v === 'range'
-                  ? ['Low end',  'Middle',     'High end']
-                  : ['< threshold (low)', 'between (borderline)', '≥ threshold (normal)'];
-                p.options = [
-                  { id: uid('o'), label: labels[0], target: null },
-                  { id: uid('o'), label: labels[1], target: null },
-                  { id: uid('o'), label: labels[2], target: null }
-                ];
-              } else if (v === 'mcq') {
-                p.options = (node.options && node.options.length >= 2) ? node.options
-                  : [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }, { id: uid('o'), label: 'Option C', target: null }];
-              /* 'single' qType removed — Single answer is now its own standalone node type. */
-            }
-            patch(p);
-          }
+          onChange: e => patch({ [meta.subKey]: e.target.value })
         }, SUBTYPES[meta.subKey].map(s => React.createElement('option', { key: s[0], value: s[0] }, s[1])))
       )
     ),
@@ -1121,44 +802,38 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
       React.createElement('input', { className: 'ed-input', value: node.title || '', placeholder: node.type === 'issue' ? 'Type the issue name…' : 'Step title',
         onChange: e => patch({ title: e.target.value }) })),
 
+    React.createElement(Field, { label: 'Instruction to operator' },
+      React.createElement('textarea', { className: 'ed-input ed-area', value: node.detail || '', rows: compact ? 2 : 3,
+        placeholder: meta.hint, onChange: e => patch({ detail: e.target.value }) })),
 
-
-    showOpts && React.createElement('div', { className: 'ed-block' },
-      React.createElement('div', { className: 'ed-blockhead' }, isNumericQ ? 'Threshold bands & routing' : 'Choices & routing',
+    meta.branching && React.createElement('div', { className: 'ed-block' },
+      React.createElement('div', { className: 'ed-blockhead' }, isNumericQ ? 'Threshold bands & routing' : 'Answers & routing',
         React.createElement('span', { className: 'ed-count' }, (node.options || []).length)),
-      (node.options || []).map((o, i) => {
-        const t = o.target ? nodes[o.target] : null;
-        const tLabel = t ? (t.title || (NODE_TYPES[t.type] && NODE_TYPES[t.type].label) || 'Untitled') : null;
-        return React.createElement('div', { className: 'ed-optrow', key: o.id },
+      (node.options || []).map((o, i) =>
+        React.createElement('div', { className: 'ed-optrow', key: o.id },
           React.createElement('span', { className: 'ed-optletter' }, isNumericQ ? (i + 1) : String.fromCharCode(65 + i)),
           React.createElement('div', { className: 'ed-optfields' },
             React.createElement('input', { className: 'ed-input ed-input-sm', value: o.label, placeholder: isNumericQ ? 'e.g. < 2.0 mg/L' : 'Answer label',
               onChange: e => setOpt(o.id, { label: e.target.value }) }),
-            React.createElement('div', { className: 'ed-target-sub' },
-              tLabel
-                ? React.createElement(React.Fragment, null,
-                    React.createElement('span', { className: 'ed-target-arrow' }, '→'),
-                    React.createElement('span', { className: 'ed-target-name' }, tLabel))
-                : React.createElement('span', { className: 'ed-target-empty' }, 'Connect this choice on the canvas to set its next step'))),
+            React.createElement('div', { className: 'ed-route' },
+              React.createElement('span', { className: 'ed-arrow' }, '→'),
+              React.createElement('select', { className: 'ed-select', value: o.target || '',
+                onChange: e => setOpt(o.id, { target: e.target.value || null }) },
+                React.createElement('option', { value: '' }, '— pick next step —'),
+                tgts.map(t => React.createElement('option', { key: t.id, value: t.id }, t.label))))),
           React.createElement('button', { className: 'ed-x', title: 'Remove answer', onClick: () => delOpt(o.id) },
-            React.createElement(MiniIcon, { name: 'close', size: 13 })));
-      }),
+            React.createElement(MiniIcon, { name: 'close', size: 13 })))),
       React.createElement('button', { className: 'ed-addopt', onClick: addOpt },
-        React.createElement(MiniIcon, { name: 'plus', size: 13 }), isNumericQ ? ' Add band' : ' Add choice')
+        React.createElement(MiniIcon, { name: 'plus', size: 13 }), isNumericQ ? ' Add band' : ' Add answer')
     ),
 
-    (!showOpts && !meta.terminal) && (() => {
-      const t = node.next ? nodes[node.next] : null;
-      const tLabel = t ? (t.title || (NODE_TYPES[t.type] && NODE_TYPES[t.type].label) || 'Untitled') : null;
-      return React.createElement('div', { className: 'ed-block' },
-        React.createElement('div', { className: 'ed-blockhead' }, 'Next step'),
-        React.createElement('div', { className: 'ed-target-sub' },
-          tLabel
-            ? React.createElement(React.Fragment, null,
-                React.createElement('span', { className: 'ed-target-arrow' }, '→'),
-                React.createElement('span', { className: 'ed-target-name' }, tLabel))
-            : React.createElement('span', { className: 'ed-target-empty' }, 'Connect this card on the canvas to set its next step')));
-    })(),
+    (!meta.branching && !meta.terminal) && React.createElement(Field, { label: 'Routes to next step' },
+      React.createElement('div', { className: 'ed-route' },
+        React.createElement('span', { className: 'ed-arrow' }, '→'),
+        React.createElement('select', { className: 'ed-select', value: node.next || '',
+          onChange: e => patch({ next: e.target.value || null }) },
+          React.createElement('option', { value: '' }, '— pick next step —'),
+          tgts.map(t => React.createElement('option', { key: t.id, value: t.id }, t.label))))),
 
     meta.terminal && React.createElement('div', { className: 'ed-terminal' }, 'This step ends the diagnostic flow.'),
 
@@ -1224,29 +899,357 @@ const { useRef, useState, useEffect, useLayoutEffect, useMemo } = React;
 
 const NODE_W = 288;
 
-/* FlowCanvas removed — never used (mode locked to "tree") */
+function FlowCanvas({ nodes, onNodes, selected, setSelected, view, setView }){
+  const wrapRef = useRef(null);
+  const nodeRefs = useRef({});
+  const [geom, setGeom] = useState({});
+  const [drag, setDrag] = useState(null);        // node drag
+  const [pan, setPan] = useState(null);           // panning
+  const [conn, setConn] = useState(null);         // connection in progress
+  const [ghost, setGhost] = useState(null);       // palette drag ghost
+  const [hoverTarget, setHoverTarget] = useState(null);
+  const [hoverEdge, setHoverEdge] = useState(null);
+
+  const edges = useMemo(() => deriveEdges(nodes), [nodes]);
+
+  /* ---- measure node geometry ---- */
+  useLayoutEffect(() => {
+    const g = {};
+    Object.keys(nodes).forEach(id => {
+      const el = nodeRefs.current[id];
+      if (!el) return;
+      const opts = {};
+      el.querySelectorAll('[data-opt]').forEach(o => {
+        opts[o.getAttribute('data-opt')] = o.offsetTop + o.offsetHeight / 2;
+      });
+      const out = el.querySelector('[data-out]');
+      g[id] = { w: el.offsetWidth, h: el.offsetHeight, opts, outY: out ? out.offsetTop + out.offsetHeight / 2 : el.offsetHeight / 2 };
+    });
+    setGeom(prev => (JSON.stringify(prev) === JSON.stringify(g) ? prev : g));
+  });
+
+  /* ---- helpers ---- */
+  const toWorld = (cx, cy) => {
+    const r = wrapRef.current.getBoundingClientRect();
+    return { x: (cx - r.left - view.x) / view.k, y: (cy - r.top - view.y) / view.k };
+  };
+  const srcPoint = (id, optId) => {
+    const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 60 };
+    let y;
+    if (optId) y = n.y + (g.opts && g.opts[optId] != null ? g.opts[optId] : g.h / 2);
+    else y = n.y + (g.outY != null ? g.outY : g.h / 2);
+    return { x: n.x + (g.w || NODE_W), y };
+  };
+  const tgtPoint = (id) => {
+    const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 60 };
+    return { x: n.x, y: n.y + (g.h || 60) / 2 };
+  };
+  const pathD = (s, t) => {
+    const dx = Math.max(40, Math.abs(t.x - s.x) * 0.5);
+    return `M${s.x},${s.y} C${s.x + dx},${s.y} ${t.x - dx},${t.y} ${t.x},${t.y}`;
+  };
+  const nodeAt = (wx, wy) => {
+    const ids = Object.keys(nodes);
+    for (let i = ids.length - 1; i >= 0; i--) {
+      const id = ids[i]; const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 60 };
+      if (wx >= n.x && wx <= n.x + (g.w || NODE_W) && wy >= n.y && wy <= n.y + (g.h || 60)) return id;
+    }
+    return null;
+  };
+
+  /* ---- mutations ---- */
+  const setNode = (id, patch) => onNodes(Object.assign({}, nodes, { [id]: Object.assign({}, nodes[id], patch) }));
+  const addNode = (type, x, y) => {
+    const id = uid(type);
+    const base = Object.assign({ id, type, title: NODE_TYPES[type].label, detail: '', options: [], next: null, x, y }, defaultSub(type));
+    if (BRANCHING.has(type)) base.options = [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }];
+    onNodes(Object.assign({}, nodes, { [id]: base }));
+    setSelected(id);
+  };
+  const deleteNode = (id) => {
+    const copy = {};
+    Object.values(nodes).forEach(n => {
+      if (n.id === id) return;
+      const c = Object.assign({}, n);
+      if (c.next === id) c.next = null;
+      if (c.options) c.options = c.options.map(o => o.target === id ? Object.assign({}, o, { target: null }) : o);
+      copy[n.id] = c;
+    });
+    onNodes(copy);
+    if (selected === id) setSelected(null);
+  };
+  const duplicateNode = (id) => {
+    const src = nodes[id]; const nid = uid(src.type);
+    const clone = Object.assign({}, src, { id: nid, x: src.x + 36, y: src.y + 36,
+      title: (src.title || '') + ' copy',
+      options: (src.options || []).map(o => ({ id: uid('o'), label: o.label, target: o.target })) });
+    onNodes(Object.assign({}, nodes, { [nid]: clone }));
+    setSelected(nid);
+  };
+  const connect = (fromId, optId, toId) => {
+    if (fromId === toId || !toId) return;
+    const n = nodes[fromId];
+    if (BRANCHING.has(n.type)) {
+      if (optId) setNode(fromId, { options: n.options.map(o => o.id === optId ? Object.assign({}, o, { target: toId }) : o) });
+      else setNode(fromId, { options: (n.options || []).concat([{ id: uid('o'), label: 'New option', target: toId }]) });
+    } else {
+      setNode(fromId, { next: toId });
+    }
+  };
+  const deleteEdge = (e) => {
+    const n = nodes[e.from]; if (!n) return;
+    if (e.kind === 'branch') setNode(e.from, { options: (n.options || []).map(o => o.id === e.optId ? Object.assign({}, o, { target: null }) : o) });
+    else setNode(e.from, { next: null });
+    setHoverEdge(null);
+  };
+
+  /* ---- global pointer handlers ---- */
+  useEffect(() => {
+    const move = (e) => {
+      if (pan) {
+        setView(v => Object.assign({}, v, { x: pan.vx + (e.clientX - pan.sx), y: pan.vy + (e.clientY - pan.sy) }));
+      } else if (drag) {
+        const w = toWorld(e.clientX, e.clientY);
+        setNode(drag.id, { x: w.x - drag.ox, y: w.y - drag.oy });
+      } else if (conn) {
+        const w = toWorld(e.clientX, e.clientY);
+        setConn(c => Object.assign({}, c, { pt: w }));
+        setHoverTarget(nodeAt(w.x, w.y));
+      } else if (ghost) {
+        setGhost(g => Object.assign({}, g, { cx: e.clientX, cy: e.clientY }));
+      }
+    };
+    const up = (e) => {
+      if (conn) {
+        const w = toWorld(e.clientX, e.clientY);
+        const t = nodeAt(w.x, w.y);
+        if (t) connect(conn.from, conn.optId, t);
+        setConn(null); setHoverTarget(null);
+      }
+      if (ghost) {
+        const r = wrapRef.current.getBoundingClientRect();
+        if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+          const w = toWorld(e.clientX, e.clientY);
+          addNode(ghost.type, w.x - NODE_W / 2, w.y - 24);
+        }
+        setGhost(null);
+      }
+      setDrag(null); setPan(null);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    return () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+  });
+
+  /* ---- wheel zoom (non-passive) ---- */
+  useEffect(() => {
+    const el = wrapRef.current; if (!el) return;
+    const onWheel = (e) => {
+      e.preventDefault();
+      const r = el.getBoundingClientRect();
+      const sx = e.clientX - r.left, sy = e.clientY - r.top;
+      if (e.ctrlKey || e.metaKey || Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        const factor = Math.exp(-e.deltaY * 0.0015);
+        setView(v => {
+          const k = Math.min(2.2, Math.max(0.2, v.k * factor));
+          const wx = (sx - v.x) / v.k, wy = (sy - v.y) / v.k;
+          return { x: sx - wx * k, y: sy - wy * k, k };
+        });
+      } else {
+        setView(v => Object.assign({}, v, { x: v.x - e.deltaX, y: v.y - e.deltaY }));
+      }
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [view]);
+
+  const zoomBy = (f) => setView(v => {
+    const r = wrapRef.current.getBoundingClientRect();
+    const sx = r.width / 2, sy = r.height / 2;
+    const k = Math.min(2.2, Math.max(0.2, v.k * f));
+    const wx = (sx - v.x) / v.k, wy = (sy - v.y) / v.k;
+    return { x: sx - wx * k, y: sy - wy * k, k };
+  });
+  const fitView = () => {
+    const ids = Object.keys(nodes); if (!ids.length) return;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    ids.forEach(id => { const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 80 };
+      minX = Math.min(minX, n.x); minY = Math.min(minY, n.y);
+      maxX = Math.max(maxX, n.x + (g.w || NODE_W)); maxY = Math.max(maxY, n.y + (g.h || 80)); });
+    const r = wrapRef.current.getBoundingClientRect();
+    const pad = 80;
+    const k = Math.min(1.1, Math.max(0.2, Math.min((r.width - pad) / (maxX - minX), (r.height - pad) / (maxY - minY))));
+    setView({ x: (r.width - (maxX - minX) * k) / 2 - minX * k, y: (r.height - (maxY - minY) * k) / 2 - minY * k, k });
+  };
+  const tidy = () => { onNodes(autoLayout(nodes)); setTimeout(fitView, 30); };
+
+  /* ---- background pan start ---- */
+  const onBgDown = (e) => {
+    if (e.target.closest('[data-node]') || e.target.closest('[data-anchor]')) return;
+    setSelected(null);
+    setPan({ sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y });
+  };
+
+  /* ---- render ---- */
+  const selNode = selected ? nodes[selected] : null;
+
+  return (
+    <div className="cv-root">
+      {/* palette */}
+      <div className="cv-palette">
+        <div className="cv-palette-h">Add step</div>
+        {Object.keys(NODE_TYPES).map(k => {
+          const m = NODE_TYPES[k]; const c = CAT_META[m.cat];
+          return (
+            <button key={k} className="cv-chip" style={{ '--c': c.color, '--cs': c.soft }}
+              onPointerDown={(e) => { e.preventDefault(); setGhost({ type: k, cx: e.clientX, cy: e.clientY }); }}
+              onClick={() => { const r = wrapRef.current.getBoundingClientRect(); const w = toWorld(r.left + r.width / 2, r.top + r.height / 2); addNode(k, w.x - NODE_W / 2, w.y - 24); }}
+              title={m.hint}>
+              <span className="cv-chip-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={17} color={c.color} /></span>
+              <span className="cv-chip-tx">{m.label}</span>
+            </button>
+          );
+        })}
+        <div className="cv-palette-tip">Click to drop at center · drag onto canvas to place</div>
+      </div>
+
+      {/* viewport */}
+      <div className="cv-viewport" ref={wrapRef} onPointerDown={onBgDown}
+        style={{ cursor: pan ? 'grabbing' : 'default' }}>
+        <div className="cv-dots" style={{ backgroundPosition: `${view.x}px ${view.y}px`, backgroundSize: `${24 * view.k}px ${24 * view.k}px` }} />
+        <div className="cv-world" style={{ transform: `translate(${view.x}px,${view.y}px) scale(${view.k})` }}>
+          <svg className="cv-edges" width="6000" height="4000">
+            <defs>
+              <marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                <path d="M1,1 L7,4.5 L1,8" fill="none" stroke="#b8c0ca" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </marker>
+            </defs>
+            {edges.map(e => {
+              const s = srcPoint(e.from, e.kind === 'branch' ? e.optId : null);
+              const t = tgtPoint(e.to);
+              const mid = { x: (s.x + t.x) / 2, y: (s.y + t.y) / 2 };
+              const col = colorOf(nodes[e.from].type);
+              const hov = hoverEdge === e.id;
+              return (
+                <g key={e.id}
+                  onPointerOver={() => setHoverEdge(e.id)}
+                  onPointerOut={(ev) => { if (!ev.currentTarget.contains(ev.relatedTarget)) setHoverEdge(h => h === e.id ? null : h); }}>
+                  <path className="cv-edgehit" d={pathD(s, t)} />
+                  <path d={pathD(s, t)} fill="none" stroke={hov ? '#c0473a' : col} strokeOpacity={hov ? 0.9 : 0.42} strokeWidth={hov ? 2.6 : 2} markerEnd="url(#arw)" style={{ transition: 'stroke .12s' }} />
+                  {e.label && !hov && (
+                    <foreignObject x={mid.x - 75} y={mid.y - 13} width="150" height="26" style={{ overflow: 'visible' }}>
+                      <div className="cv-edgelabel">{e.label}</div>
+                    </foreignObject>
+                  )}
+                  {hov && (
+                    <foreignObject x={mid.x - 11} y={mid.y - 11} width="22" height="22" style={{ overflow: 'visible' }}>
+                      <div className="cv-edgedel" title="Delete this connection"
+                        onPointerDown={ev => { ev.stopPropagation(); }}
+                        onClick={ev => { ev.stopPropagation(); deleteEdge(e); }}>
+                        <MiniIcon name="close" size={12} />
+                      </div>
+                    </foreignObject>
+                  )}
+                </g>
+              );
+            })}
+            {conn && (() => { const s = srcPoint(conn.from, conn.optId); return (
+              <path d={pathD(s, conn.pt)} fill="none" stroke="#0a6e9e" strokeWidth="2.2" strokeDasharray="5 4" />
+            ); })()}
+          </svg>
+
+          {Object.values(nodes).map(n => {
+            const m = NODE_TYPES[n.type] || NODE_TYPES.task; const c = CAT_META[m.cat];
+            const isSel = selected === n.id; const isTgt = hoverTarget === n.id && conn;
+            return (
+              <div key={n.id} data-node ref={el => nodeRefs.current[n.id] = el}
+                className={'cv-node' + (isSel ? ' is-sel' : '') + (isTgt ? ' is-tgt' : '')}
+                style={{ left: n.x, top: n.y, width: NODE_W, '--c': c.color, '--cs': c.soft, '--ci': c.ink, '--cg': c.grad }}
+                onPointerDown={(e) => {
+                  if (e.target.closest('[data-anchor]')) return;
+                  e.stopPropagation(); setSelected(n.id);
+                  const w = toWorld(e.clientX, e.clientY);
+                  setDrag({ id: n.id, ox: w.x - n.x, oy: w.y - n.y });
+                }}>
+                {/* input anchor */}
+                {m.cat !== 'start' && <span className="cv-anchor cv-in" data-anchor title="input" />}
+                <div className="cv-node-head">
+                  <span className="cv-node-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={14} color={c.color} /></span>
+                  <span className="cv-node-cat">{c.name}{subLabel(n) ? <span className="cv-node-sub"> · {subLabel(n)}</span> : null}</span>
+                  <span className="cv-node-tools">
+                    <button className="cv-tool" title="Duplicate" onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); duplicateNode(n.id); }}><MiniIcon name="copy" size={12} /></button>
+                    <button className="cv-tool" title="Delete" onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); deleteNode(n.id); }}><MiniIcon name="trash" size={12} /></button>
+                  </span>
+                </div>
+                <div className="cv-node-title">{n.title || 'Untitled'}</div>
+                {n.detail && <div className="cv-node-detail">{n.detail}</div>}
+
+                {m.branching ? (
+                  <div className="cv-opts">
+                    {(n.options || []).map((o, i) => (
+                      <div className="cv-opt" data-opt={o.id} key={o.id}>
+                        <span className="cv-opt-l">{String.fromCharCode(65 + i)}</span>
+                        <span className="cv-opt-tx">{o.label}</span>
+                        <span className="cv-anchor cv-out" data-anchor title="drag to connect"
+                          onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: o.id, pt: w }); }} />
+                      </div>
+                    ))}
+                  </div>
+                ) : (!m.terminal && (
+                  <span className="cv-anchor cv-out cv-out-single" data-anchor data-out title="drag to connect"
+                    onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: null, pt: w }); }} />
+                ))}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ghost while dragging from palette */}
+        {ghost && (() => { const m = NODE_TYPES[ghost.type]; const c = CAT_META[m.cat]; return (
+          <div className="cv-ghost" style={{ left: ghost.cx, top: ghost.cy, '--c': c.color, '--cs': c.soft }}>
+            <span className="cv-node-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={14} color={c.color} /></span>
+            {m.label}
+          </div>
+        ); })()}
+
+        {/* toolbar */}
+        <div className="cv-toolbar">
+          <button className="cv-tbtn" onClick={tidy} title="Auto-layout"><MiniIcon name="tidy" size={16} /><span>Tidy</span></button>
+          <span className="cv-tbsep" />
+          <button className="cv-tbtn" onClick={() => zoomBy(1 / 1.2)} title="Zoom out"><MiniIcon name="minus" size={16} /></button>
+          <button className="cv-tbtn cv-tbpct" onClick={fitView} title="Fit to screen">{Math.round(view.k * 100)}%</button>
+          <button className="cv-tbtn" onClick={() => zoomBy(1.2)} title="Zoom in"><MiniIcon name="plus" size={16} /></button>
+          <button className="cv-tbtn" onClick={fitView} title="Fit"><MiniIcon name="fit" size={16} /></button>
+        </div>
+        <div className="cv-stats">{Object.keys(nodes).length} steps · {edges.length} connections</div>
+      </div>
+
+      {/* inspector */}
+      <div className={'cv-inspector' + (selNode ? ' open' : '')}>
+        {selNode ? (
+          <NodeEditor node={selNode} nodes={nodes}
+            onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
+            onDelete={deleteNode} onDuplicate={duplicateNode} />
+        ) : (
+          <div className="cv-insp-empty">
+            <div className="cv-insp-empty-ic"><MiniIcon name="grip" size={20} /></div>
+            <p>Select a step to edit it.</p>
+            <p className="muted">Drag a chip from the left onto the canvas to add a step. Drag the dot on a step's right edge to connect it to another step.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+window.FlowCanvas = FlowCanvas;
 
 </script>
 <script type="text/babel" data-from="js/outline.jsx">
 /*__js/outline.jsx__*/
 /* Vertical branching tree — auto top-to-bottom layout, click to edit. */
 const VT_CARD_W = 264;
-function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setImages = () => {} }){
-  // Image drag / resize state
-  const [imgDrag, setImgDrag] = useState(null);   // { id, mode: 'move' | 'resize', ox, oy }
-  // Listen for "save as template" requests from the parent window (config.html footer button)
-  useEffect(() => {
-    const onMsg = (e) => {
-      const d = e.data || {};
-      if (d.type === 'dp:save-template' && d.name) {
-        saveTemplate(d.name, nodes);
-        // Notify parent of the new count
-        try { window.parent.postMessage({ type: 'dp:tpl-count', count: listTemplates().length }, '*'); } catch(_){}
-      }
-    };
-    window.addEventListener('message', onMsg);
-    return () => window.removeEventListener('message', onMsg);
-  }, [nodes]);
+function VerticalTree({ nodes, onNodes, selected, setSelected }){
   const scrollRef = useRef(null);
   const worldRef = useRef(null);
   const nodeRefs = useRef({});
@@ -1255,96 +1258,7 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
   const [conn, setConn] = useState(null);
   const [hoverTarget, setHoverTarget] = useState(null);
   const [ghost, setGhost] = useState(null);
-  const [drag, setDrag] = useState(null);
-  const [multiSel, setMultiSel] = useState(() => new Set());
-  const [marquee, setMarquee] = useState(null); // { x0, y0, x1, y1 } in world coords
   const laid = useMemo(() => verticalLayout(nodes), [nodes]);
-
-  // Image move / resize pointer handlers
-  useEffect(() => {
-    if (!imgDrag) return;
-    const onMove = (e) => {
-      const wr = worldRef.current?.getBoundingClientRect();
-      if (!wr) return;
-      const wx = (e.clientX - wr.left) / scale;
-      const wy = (e.clientY - wr.top) / scale;
-      if (imgDrag.mode === 'move') {
-        setImages(prev => prev.map(img => img.id === imgDrag.id ? Object.assign({}, img, { x: wx - imgDrag.ox, y: wy - imgDrag.oy }) : img));
-      } else if (imgDrag.mode === 'resize') {
-        // Anchor the opposite corner; resize from the dragged corner toward the pointer.
-        const a = imgDrag.anchor; // { x, y } — the corner that stays put
-        const c = imgDrag.corner; // 'nw' | 'ne' | 'sw' | 'se'
-        const ratio = imgDrag.aspect;
-        let nx, ny, nw, nh;
-        if (c === 'se') { nw = Math.max(48, wx - a.x); nh = ratio ? nw / ratio : Math.max(48, wy - a.y); nx = a.x; ny = a.y; }
-        else if (c === 'sw') { nw = Math.max(48, a.x - wx); nh = ratio ? nw / ratio : Math.max(48, wy - a.y); nx = a.x - nw; ny = a.y; }
-        else if (c === 'ne') { nw = Math.max(48, wx - a.x); nh = ratio ? nw / ratio : Math.max(48, a.y - wy); nx = a.x; ny = a.y - nh; }
-        else /* nw */ { nw = Math.max(48, a.x - wx); nh = ratio ? nw / ratio : Math.max(48, a.y - wy); nx = a.x - nw; ny = a.y - nh; }
-        setImages(prev => prev.map(img => img.id === imgDrag.id ? Object.assign({}, img, { x: nx, y: ny, w: nw, h: nh }) : img));
-      }
-    };
-    const onUp = () => setImgDrag(null);
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    return () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
-  }, [imgDrag, scale, setImages]);
-
-  const deleteImage = (id) => setImages(prev => prev.filter(i => i.id !== id));
-
-  // Marquee drag: select all nodes whose bounding box intersects the rectangle.
-  useEffect(() => {
-    if (!marquee) return;
-    const onMove = (e) => {
-      const wr = worldRef.current ? worldRef.current.getBoundingClientRect() : { left: 0, top: 0 };
-      const wx = (e.clientX - wr.left) / scale;
-      const wy = (e.clientY - wr.top) / scale;
-      setMarquee(m => m ? Object.assign({}, m, { x1: wx, y1: wy }) : null);
-    };
-    const onUp = () => {
-      setMarquee(m => {
-        if (!m) return null;
-        const x = Math.min(m.x0, m.x1), y = Math.min(m.y0, m.y1);
-        const w = Math.abs(m.x1 - m.x0), h = Math.abs(m.y1 - m.y0);
-        if (w < 5 && h < 5) return null; // ignore tiny clicks
-        const next = new Set();
-        Object.values(laid).forEach(n => {
-          const nw = VT_CARD_W, nh = (geom[n.id] && geom[n.id].h) || 170;
-          if (n.x < x + w && n.x + nw > x && n.y < y + h && n.y + nh > y) next.add(n.id);
-        });
-        setMultiSel(next);
-        return null;
-      });
-    };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    return () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
-  }, [marquee, scale, laid, geom]);
-  // Pointer-move + up handlers for dragging cards around the canvas.
-  // If the dragged card is part of the current multi-selection, ALL selected cards move together
-  // by the same delta so the group stays intact.
-  useEffect(() => {
-    if (!drag) return;
-    const groupIds = drag.groupIds || [drag.id];
-    const onMove = (e) => {
-      const wr = worldRef.current ? worldRef.current.getBoundingClientRect() : { left: 0, top: 0 };
-      const px = (e.clientX - wr.left) / scale;
-      const py = (e.clientY - wr.top) / scale;
-      const newAnchorX = Math.max(0, px - drag.ox);
-      const newAnchorY = Math.max(0, py - drag.oy);
-      const dx = newAnchorX - (nodes[drag.id]?.x || 0);
-      const dy = newAnchorY - (nodes[drag.id]?.y || 0);
-      const patch = {};
-      groupIds.forEach(id => {
-        const n = nodes[id]; if (!n) return;
-        patch[id] = Object.assign({}, n, { x: Math.max(0, (n.x || 0) + dx), y: Math.max(0, (n.y || 0) + dy), pinned: true });
-      });
-      onNodes(Object.assign({}, nodes, patch));
-    };
-    const onUp = () => setDrag(null);
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    return () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
-  }, [drag, nodes, onNodes]);
   const edges = useMemo(() => deriveEdges(nodes), [nodes]);
 
   useLayoutEffect(() => {
@@ -1361,34 +1275,13 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
 
   let maxX = 0, maxY = 0;
   Object.values(laid).forEach(n => { maxX = Math.max(maxX, n.x + VT_CARD_W); maxY = Math.max(maxY, n.y + ((geom[n.id] && geom[n.id].h) || 170)); });
-  // Give the canvas a tall vertical runway so users can keep scrolling and adding/dragging nodes downward.
-  const contentW = Math.max(maxX + 160, 1600);
-  const contentH = Math.max(maxY + 1600, 4000);
+  const contentW = maxX + 160, contentH = maxY + 160;
 
   const toWorld = (cx, cy) => { const r = worldRef.current.getBoundingClientRect(); return { x: (cx - r.left) / scale, y: (cy - r.top) / scale }; };
-
-  // Ctrl / Cmd + wheel zoom (or pinch-zoom) inside the vertical-tree canvas
-  useEffect(() => {
-    const el = scrollRef.current; if (!el) return;
-    const onWheel = (e) => {
-      if (!(e.ctrlKey || e.metaKey)) return;
-      e.preventDefault();
-      const dir = e.deltaY < 0 ? 1 : -1;
-      setScale(s => {
-        const ns = dir > 0 ? Math.min(2.0, s * 1.12) : Math.max(0.35, s / 1.12);
-        return ns;
-      });
-    };
-    el.addEventListener('wheel', onWheel, { passive: false });
-    return () => el.removeEventListener('wheel', onWheel);
-  }, []);
-  // Hit-test for connection drops — expanded by 14px on every side so releasing on a connector
-  // dot (which sits 7px outside the card border) still resolves to its parent card.
-  const HIT_PAD = 14;
   const nodeAt = (wx, wy) => {
     const ids = Object.keys(laid);
     for (let i = ids.length - 1; i >= 0; i--) { const id = ids[i]; const n = laid[id]; const h = (geom[id] && geom[id].h) || 150;
-      if (wx >= n.x - HIT_PAD && wx <= n.x + VT_CARD_W + HIT_PAD && wy >= n.y - HIT_PAD && wy <= n.y + h + HIT_PAD) return id; }
+      if (wx >= n.x && wx <= n.x + VT_CARD_W && wy >= n.y && wy <= n.y + h) return id; }
     return null;
   };
 
@@ -1401,62 +1294,6 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
       copy[n.id] = c; });
     onNodes(copy); if (selected === id) setSelected(null);
   };
-
-  // Bulk-delete every node in the multi-selection and clean up incoming edges
-  const deleteMany = (ids) => {
-    // Never let bulk-delete wipe the entire flow:
-    //  - The root issue / trigger node is protected and stays put.
-    //  - If the user's selection covers everything, we ask for confirmation.
-    const allIds = new Set(ids);
-    const protectedIds = Object.values(nodes).filter(n => n.type === 'issue').map(n => n.id);
-    protectedIds.forEach(id => allIds.delete(id));
-    if (!allIds.size) {
-      alert('The root "Issue / Trigger" node can’t be deleted from the canvas. Use Clear canvas to reset everything.');
-      setMultiSel(new Set());
-      return;
-    }
-    const total = Object.keys(nodes).length;
-    if (allIds.size >= total - protectedIds.length && total > 2) {
-      if (!confirm('Delete ' + allIds.size + ' nodes? (The root Issue / Trigger node will be kept.)')) { setMultiSel(new Set()); return; }
-    }
-    const toDel = allIds;
-    const copy = {};
-    Object.values(nodes).forEach(n => {
-      if (toDel.has(n.id)) return;
-      const c = Object.assign({}, n);
-      if (c.next && toDel.has(c.next)) c.next = null;
-      if (c.options) c.options = c.options.map(o => toDel.has(o.target) ? Object.assign({}, o, { target: null }) : o);
-      copy[n.id] = c;
-    });
-    onNodes(copy);
-    if (selected && toDel.has(selected)) setSelected(null);
-    setMultiSel(new Set());
-  };
-
-  // Right-click context menu state — { x, y, ids: string[] } in screen coords
-  const [ctxMenu, setCtxMenu] = useState(null);
-
-  // Delete / Backspace key removes the current multi-selection (when not editing text)
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key !== 'Delete' && e.key !== 'Backspace') return;
-      // Don't hijack typing in inputs / textareas
-      const tag = (document.activeElement && document.activeElement.tagName) || '';
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (multiSel.size > 0) { e.preventDefault(); deleteMany(Array.from(multiSel)); }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [multiSel, nodes]);
-  useEffect(() => {
-    if (!ctxMenu) return;
-    const onAnyClick = () => setCtxMenu(null);
-    const onEsc = (e) => { if (e.key === 'Escape') setCtxMenu(null); };
-    window.addEventListener('click', onAnyClick);
-    window.addEventListener('keydown', onEsc);
-    return () => { window.removeEventListener('click', onAnyClick); window.removeEventListener('keydown', onEsc); };
-  }, [ctxMenu]);
-
   const duplicateNode = (id) => {
     const src = nodes[id]; const nid = uid(src.type);
     onNodes(Object.assign({}, nodes, { [nid]: Object.assign({}, src, { id: nid, x: (src.x||0)+30, y: (src.y||0)+30, title: (src.title||'') + ' copy', options: (src.options||[]).map(o => ({ id: uid('o'), label: o.label, target: o.target })) }) }));
@@ -1464,15 +1301,7 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
   };
   const addNode = (type) => {
     const id = uid(type);
-    // Place new nodes below the current lowest node so they don't pile up at (80, 80)
-    let placeX = 600, placeY = 80;
-    const vals = Object.values(nodes);
-    if (vals.length) {
-      let maxY = -Infinity, maxYNode = null;
-      vals.forEach(nd => { if (typeof nd.y === 'number' && nd.y > maxY) { maxY = nd.y; maxYNode = nd; } });
-      if (maxYNode) { placeX = maxYNode.x || 80; placeY = maxY + 220; }
-    }
-    const base = Object.assign({ id, type, title: NODE_TYPES[type].label, detail: '', options: [], next: null, x: placeX, y: placeY }, defaultSub(type));
+    const base = Object.assign({ id, type, title: NODE_TYPES[type].label, detail: '', options: [], next: null, x: 80, y: 80 }, defaultSub(type));
     if (BRANCHING.has(type)) base.options = [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }];
     onNodes(Object.assign({}, nodes, { [id]: base })); setSelected(id);
   };
@@ -1509,43 +1338,14 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
     return () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
   });
 
-  // Committed edges originate from each option's right-side connector dot (matches the live drag preview).
-  // For non-branching nodes (single outbound), edges originate from the bottom-center "outY" handle.
-  const srcPt = (n, optId) => {
-    const g = geom[n.id] || {};
-    if (optId && g.opts && g.opts[optId] != null) {
-      // Anchor sits at right:-24px relative to the row, i.e. ~7px past the card's outer right edge.
-      return { x: n.x + VT_CARD_W + 7, y: n.y + g.opts[optId] };
-    }
-    const y = (g.outY != null) ? g.outY : ((g.h || 150));
-    return { x: n.x + VT_CARD_W / 2, y: n.y + y };
-  };
-  // Target lands on the input circle pinned at the top-center of the card (which sits ~7px above the card border)
-  const tgtPt = (c) => ({ x: c.x + VT_CARD_W / 2, y: c.y - 7 });
-  // Smart routing: from a right-side anchor, sweep right then curve down into the target's top.
-  const pathD = (s, t, fromSide) => {
-    if (fromSide) {
-      // start: right of source card; end: top of target card.
-      const dx = Math.max(40, (t.x - s.x) * 0.45);
-      const dy = Math.max(40, (t.y - s.y) * 0.5);
-      return `M${s.x},${s.y} C${s.x + dx},${s.y} ${t.x},${t.y - dy} ${t.x},${t.y}`;
-    }
-    const dy = Math.max(28, (t.y - s.y) * 0.5);
-    return `M${s.x},${s.y} C${s.x},${s.y + dy} ${t.x},${t.y - dy} ${t.x},${t.y}`;
-  };
+  // committed edges fan from the bottom (clean top-down)
+  const srcPt = (n, i, count) => ({ x: n.x + VT_CARD_W * ((i + 1) / (count + 1)), y: n.y + ((geom[n.id] && geom[n.id].h) || 150) });
+  const tgtPt = (c) => ({ x: c.x + VT_CARD_W / 2, y: c.y });
+  const pathD = (s, t) => { const dy = Math.max(28, (t.y - s.y) * 0.5); return `M${s.x},${s.y} C${s.x},${s.y + dy} ${t.x},${t.y - dy} ${t.x},${t.y}`; };
   // live drag preview starts at the option's right-side handle
-  const handlePt = (id, optId, side) => {
-    const n = laid[id]; const g = geom[id] || {};
-    const h = (g.h || 150);
-    if (optId && g.opts && g.opts[optId] != null) {
-      return { x: n.x + VT_CARD_W + 7, y: n.y + g.opts[optId] };
-    }
-    // Universal 4-side dots — preview originates from the exact side the user grabbed
-    if (side === 'top')    return { x: n.x + VT_CARD_W / 2, y: n.y - 7 };
-    if (side === 'right')  return { x: n.x + VT_CARD_W + 7, y: n.y + h / 2 };
-    if (side === 'left')   return { x: n.x - 7,             y: n.y + h / 2 };
-    /* default: bottom */  return { x: n.x + VT_CARD_W / 2, y: n.y + h + 7 };
-  };
+  const handlePt = (id, optId) => { const n = laid[id]; const g = geom[id] || {};
+    const y = optId ? (g.opts && g.opts[optId] != null ? g.opts[optId] : (g.h || 80) / 2) : (g.outY != null ? g.outY : (g.h || 80) / 2);
+    return { x: n.x + VT_CARD_W, y: n.y + y }; };
   const previewD = (s, t) => { const dx = Math.max(30, Math.abs(t.x - s.x) * 0.4); return `M${s.x},${s.y} C${s.x + dx},${s.y} ${t.x},${t.y - 30} ${t.x},${t.y}`; };
 
   const selNode = selected ? nodes[selected] : null;
@@ -1569,50 +1369,9 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
         <div className="cv-palette-tip">Click to add · or drag the dot on a step’s right edge onto another step to connect them.</div>
       </div>
 
-      <div className="vt-scroll" ref={scrollRef}
-        onDragOver={(e) => { e.preventDefault(); }}
-        onDrop={(e) => {
-          e.preventDefault();
-          const files = Array.from(e.dataTransfer?.files || []).filter(f => f.type.startsWith('image/'));
-          if (!files.length) return;
-          const wr = worldRef.current?.getBoundingClientRect();
-          if (!wr) return;
-          const baseX = (e.clientX - wr.left) / scale;
-          const baseY = (e.clientY - wr.top) / scale;
-          files.forEach((file, i) => {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-              const src = ev.target.result;
-              const img = new Image();
-              img.onload = () => {
-                const maxW = 360;
-                const ratio = img.width / img.height;
-                const w = Math.min(maxW, img.width);
-                const h = w / ratio;
-                setImages(prev => prev.concat([{
-                  id: 'img_' + (prev.length + 1) + '_' + Math.floor(performance.now()),
-                  src, x: baseX + i * 20, y: baseY + i * 20, w, h
-                }]));
-              };
-              img.src = src;
-            };
-            reader.readAsDataURL(file);
-          });
-        }}>
+      <div className="vt-scroll" ref={scrollRef}>
         <div className="vt-sizer" style={{ width: contentW * scale, height: contentH * scale }}>
-          <div className="vt-world" ref={worldRef}
-            style={{ width: contentW, height: contentH, transform: `scale(${scale})` }}
-            onPointerDown={(e) => {
-              // Only start a marquee when the pointer is on the empty world background,
-              // not on a node, edge, anchor or any interactive element.
-              if (e.target !== e.currentTarget && !e.target.classList.contains('vt-edges')) return;
-              const wr = worldRef.current ? worldRef.current.getBoundingClientRect() : { left: 0, top: 0 };
-              const wx = (e.clientX - wr.left) / scale;
-              const wy = (e.clientY - wr.top) / scale;
-              setMarquee({ x0: wx, y0: wy, x1: wx, y1: wy });
-              setMultiSel(new Set());
-              setSelected(null);
-            }}>
+          <div className="vt-world" ref={worldRef} style={{ width: contentW, height: contentH, transform: `scale(${scale})` }}>
             <svg className="vt-edges" width={contentW} height={contentH}>
               <defs>
                 <marker id="vtarw" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
@@ -1621,14 +1380,15 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
               </defs>
               {edges.map(e => {
                 const from = laid[e.from], to = laid[e.to]; if (!from || !to) return null;
-                const isBranch = e.kind === 'branch' && e.optId;
-                const s = srcPt(from, isBranch ? e.optId : null);
-                const t = tgtPt(to);
+                const opts = BRANCHING.has(from.type) ? (from.options || []) : [null];
+                let idx = e.kind === 'branch' ? opts.findIndex(o => o && o.id === e.optId) : 0;
+                if (idx < 0) idx = 0;
+                const s = srcPt(from, idx, opts.length); const t = tgtPt(to);
                 const mid = { x: (s.x + t.x) / 2, y: (s.y + t.y) / 2 };
                 const col = colorOf(from.type);
                 return (
                   <g key={e.id}>
-                    <path d={pathD(s, t, isBranch)} fill="none" stroke={col} strokeOpacity="0.85" strokeWidth="2.5" markerEnd="url(#vtarw)" />
+                    <path d={pathD(s, t)} fill="none" stroke={col} strokeOpacity="0.42" strokeWidth="2" markerEnd="url(#vtarw)" />
                     {e.label && (
                       <foreignObject x={mid.x - 78} y={mid.y - 13} width="156" height="26" style={{ overflow: 'visible' }}>
                         <div className="cv-edgelabel">{e.label}</div>
@@ -1637,114 +1397,45 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
                   </g>
                 );
               })}
-              {conn && (() => { const s = handlePt(conn.from, conn.optId, conn.side); return (
+              {conn && (() => { const s = handlePt(conn.from, conn.optId); return (
                 <path d={previewD(s, conn.pt)} fill="none" stroke="#0a6e9e" strokeWidth="2.2" strokeDasharray="5 4" />
               ); })()}
-              {marquee && (() => {
-                const x = Math.min(marquee.x0, marquee.x1), y = Math.min(marquee.y0, marquee.y1);
-                const w = Math.abs(marquee.x1 - marquee.x0), h = Math.abs(marquee.y1 - marquee.y0);
-                return <rect x={x} y={y} width={w} height={h} fill="rgba(10,110,158,.08)" stroke="#0a6e9e" strokeWidth="1.5" strokeDasharray="6 4" rx="6" />;
-              })()}
             </svg>
-            {/* Free-floating images (drag-drop onto canvas) */}
-            {images.map(img => (
-              <div key={img.id} className={'vt-image' + (imgDrag && imgDrag.id === img.id ? ' is-dragging' : '')}
-                style={{ left: img.x, top: img.y, width: img.w, height: img.h }}
-                onPointerDown={(e) => {
-                  if (e.target.closest('.vt-img-handle') || e.target.closest('.vt-img-del')) return;
-                  e.stopPropagation();
-                  const wr = worldRef.current?.getBoundingClientRect();
-                  if (!wr) return;
-                  const wx = (e.clientX - wr.left) / scale;
-                  const wy = (e.clientY - wr.top) / scale;
-                  setImgDrag({ id: img.id, mode: 'move', ox: wx - img.x, oy: wy - img.y });
-                  try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_){}
-                }}>
-                <img src={img.src} alt="" draggable={false} />
-                <button className="vt-img-del" title="Delete image" onPointerDown={e => e.stopPropagation()} onClick={() => deleteImage(img.id)}>×</button>
-                {['nw','ne','sw','se'].map(corner => (
-                  <span key={corner} className={'vt-img-handle vt-img-' + corner}
-                    onPointerDown={(e) => {
-                      e.stopPropagation();
-                      const anchors = {
-                        nw: { x: img.x + img.w, y: img.y + img.h }, // opposite: SE
-                        ne: { x: img.x,         y: img.y + img.h }, // opposite: SW
-                        sw: { x: img.x + img.w, y: img.y },         // opposite: NE
-                        se: { x: img.x,         y: img.y }          // opposite: NW
-                      };
-                      setImgDrag({ id: img.id, mode: 'resize', aspect: img.w / img.h, corner, anchor: anchors[corner] });
-                      try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_){}
-                    }} />
-                ))}
-              </div>
-            ))}
             {Object.values(laid).map(n => {
               const m = NODE_TYPES[n.type] || NODE_TYPES.task; const c = CAT_META[m.cat];
               const isTgt = hoverTarget === n.id && conn;
               return (
                 <div key={n.id} ref={el => nodeRefs.current[n.id] = el}
-                  className={'cv-node vt-card' + (selected === n.id ? ' is-sel' : '') + (multiSel.has(n.id) ? ' is-multi-sel' : '') + (isTgt ? ' is-tgt' : '') + (drag && drag.id === n.id ? ' is-dragging' : '')}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    // If this node isn't in the current multi-selection, treat the right-click as a single-node action
-                    const ids = multiSel.has(n.id) ? Array.from(multiSel) : [n.id];
-                    setCtxMenu({ x: e.clientX, y: e.clientY, ids });
-                  }}
+                  className={'cv-node vt-card' + (selected === n.id ? ' is-sel' : '') + (isTgt ? ' is-tgt' : '')}
                   style={{ left: n.x, top: n.y, width: VT_CARD_W, '--c': c.color, '--cs': c.soft, '--ci': c.ink, '--cg': c.grad }}
-                  onPointerDown={(e) => {
-                    // Don't start a drag from interactive bits (inputs, buttons, anchors, textareas).
-                    if (e.target.closest('[data-anchor]')) return;
-                    if (e.target.closest('.cv-tool')) return;
-                    if (e.target.closest('input, textarea, button, select, [contenteditable="true"]')) return;
-                    e.preventDefault();
-                    const wr = worldRef.current ? worldRef.current.getBoundingClientRect() : { left: 0, top: 0 };
-                    const wx = (e.clientX - wr.left) / scale;
-                    const wy = (e.clientY - wr.top) / scale;
-                    // If this node is part of the multi-selection, drag all of them together as a group
-                    const groupIds = multiSel.has(n.id) ? Array.from(multiSel) : [n.id];
-                    setDrag({ id: n.id, ox: wx - n.x, oy: wy - n.y, groupIds });
-                    if (!multiSel.has(n.id)) setSelected(n.id);
-                    try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_){}
-                  }}
-                  onClick={(e) => { if (e.target.closest('[data-anchor]')) return; if (e.target.closest('.cv-tool')) return; if (e.target.closest('input, textarea, button, select')) return; setSelected(n.id); }}>
-                  {/* Universal connector dots — top, right, bottom, left. Branching cards replace the right one with per-option dots below. Terminal (Done) cards have no dots. */}
-                  {!m.terminal && <span className="cv-anchor cv-side cv-side-top" data-anchor data-side="top" title="Connector — drag to another card to link" onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: null, side: 'top', pt: w }); }} />}
-                  {!m.terminal && !m.branching && <span className="cv-anchor cv-side cv-side-right" data-anchor data-side="right" title="Connector — drag to another card to link" onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: null, side: 'right', pt: w }); }} />}
-                  {!m.terminal && <span className="cv-anchor cv-side cv-side-bottom" data-anchor data-side="bottom" title="Connector — drag to another card to link" onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: null, side: 'bottom', pt: w }); }} />}
-                  {!m.terminal && <span className="cv-anchor cv-side cv-side-left" data-anchor data-side="left" title="Connector — drag to another card to link" onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: null, side: 'left', pt: w }); }} />}
+                  onClick={(e) => { if (e.target.closest('[data-anchor]')) return; setSelected(n.id); }}>
+                  {m.cat !== 'start' && <span className="cv-anchor cv-in" data-anchor title="input" />}
                   <div className="cv-node-head">
                     <span className="cv-node-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={15} color={c.color} /></span>
                     <span className="cv-node-cat">{c.name}{subLabel(n) ? <span className="cv-node-sub"> · {subLabel(n)}</span> : null}</span>
                     <span className="cv-node-tools">
-                      <button className="cv-tool" title="Duplicate" onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); duplicateNode(n.id); }}><MiniIcon name="copy" size={13} /></button>
-                      <button className="cv-tool" title={multiSel.has(n.id) && multiSel.size > 1 ? ('Delete ' + multiSel.size + ' selected nodes') : 'Delete'} onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); if (multiSel.has(n.id) && multiSel.size > 1) deleteMany(Array.from(multiSel)); else deleteNode(n.id); }}><MiniIcon name="trash" size={13} /></button>
+                      <button className="cv-tool" title="Duplicate" onClick={(e) => { e.stopPropagation(); duplicateNode(n.id); }}><MiniIcon name="copy" size={13} /></button>
+                      <button className="cv-tool" title="Delete" onClick={(e) => { e.stopPropagation(); deleteNode(n.id); }}><MiniIcon name="trash" size={13} /></button>
                     </span>
                   </div>
-                  <textarea className="cv-node-title cv-node-title-input" rows={1} value={n.title || ''} placeholder="Untitled — type a title"
-                    ref={el => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } }}
-                    onChange={e => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; onNodes(Object.assign({}, nodes, { [n.id]: Object.assign({}, nodes[n.id], { title: e.target.value }) })); }}
-                    onPointerDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} />
-                  {(m.branching || (n.options && n.options.length > 0)) ? (
+                  <div className="cv-node-title">{n.title || 'Untitled'}</div>
+                  {n.detail && <div className="cv-node-detail">{n.detail}</div>}
+                  {m.branching ? (
                     <div className="cv-opts">
                       {(n.options || []).map((o, i) => (
                         <div className="cv-opt" data-opt={o.id} key={o.id}>
                           <span className="cv-opt-l">{String.fromCharCode(65 + i)}</span>
-                          <textarea className="cv-opt-tx cv-opt-tx-input" rows={1} value={o.label || ''} placeholder="Answer"
-                            ref={el => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } }}
-                            onChange={e => {
-                              e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px';
-                              const newLabel = e.target.value;
-                              const newOpts = (n.options || []).map(x => x.id === o.id ? Object.assign({}, x, { label: newLabel }) : x);
-                              onNodes(Object.assign({}, nodes, { [n.id]: Object.assign({}, nodes[n.id], { options: newOpts }) }));
-                            }}
-                            onPointerDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} />
+                          <span className="cv-opt-tx">{o.label}</span>
                           <span className="cv-anchor cv-out" data-anchor title="drag to connect"
                             onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: o.id, pt: w }); }} />
                         </div>
                       ))}
                     </div>
-                  ) : null /* non-branching: universal 4-side connectors above already handle outgoing */ }
-                  {/* vt-add removed — adding nodes is done via the palette only; connections are explicit dot-to-dot drags. */}
+                  ) : (!m.terminal && (
+                    <span className="cv-anchor cv-out cv-out-single" data-anchor data-out title="drag to connect"
+                      onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: null, pt: w }); }} />
+                  ))}
+                  {!m.terminal && <button className="vt-add" title="Add a step below" onClick={(e) => { e.stopPropagation(); addChild(n.id); }}><MiniIcon name="plus" size={15} /></button>}
                 </div>
               );
             })}
@@ -1757,36 +1448,23 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
             {m.label}
           </div>
         ); })()}
-
-        {/* Right-click context menu for multi-selected (or single right-clicked) nodes */}
-        {ctxMenu && (
-          <div className="ctx-menu" style={{ left: ctxMenu.x, top: ctxMenu.y }} onClick={e => e.stopPropagation()}>
-            <button className="ctx-item ctx-danger" onClick={() => { deleteMany(ctxMenu.ids); setCtxMenu(null); }}>
-              <MiniIcon name="trash" size={13} />
-              <span>Delete {ctxMenu.ids.length > 1 ? (ctxMenu.ids.length + ' nodes') : 'node'}</span>
-            </button>
-            <button className="ctx-item" onClick={() => { ctxMenu.ids.forEach(id => duplicateNode(id)); setCtxMenu(null); }}>
-              <MiniIcon name="copy" size={13} />
-              <span>Duplicate {ctxMenu.ids.length > 1 ? (ctxMenu.ids.length + ' nodes') : 'node'}</span>
-            </button>
-          </div>
-        )}
       </div>
 
       <div className="cv-toolbar vt-toolbar">
-        <button className="cv-tbtn" onClick={() => setScale(s => Math.max(0.35, s / 1.15))} title="Zoom out (⌘/Ctrl + scroll)"><MiniIcon name="minus" size={14} /> Zoom out</button>
-        <button className="cv-tbtn cv-tbpct" onClick={() => setScale(0.95)} title="Reset to 95%">{Math.round(scale * 100)}%</button>
-        <button className="cv-tbtn" onClick={() => setScale(s => Math.min(2.0, s * 1.15))} title="Zoom in (⌘/Ctrl + scroll)"><MiniIcon name="plus" size={14} /> Zoom in</button>
+        <button className="cv-tbtn" onClick={() => setScale(s => Math.max(0.4, s / 1.15))} title="Zoom out"><MiniIcon name="minus" size={16} /></button>
+        <button className="cv-tbtn cv-tbpct" onClick={() => setScale(0.95)} title="Reset zoom">{Math.round(scale * 100)}%</button>
+        <button className="cv-tbtn" onClick={() => setScale(s => Math.min(1.7, s * 1.15))} title="Zoom in"><MiniIcon name="plus" size={16} /></button>
       </div>
 
-      <div className={'cv-inspector vt-inspector' + (selNode ? ' open' : '')}>
-        {selNode && (
+      <div className="cv-inspector vt-inspector open">
+        {selNode ? (
           <NodeEditor node={selNode} nodes={nodes}
             onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
             onDelete={deleteNode} onDuplicate={duplicateNode} />
+        ) : (
+          <FlowDashboard nodes={nodes} />
         )}
       </div>
-
     </div>
   );
 }
@@ -1797,7 +1475,91 @@ window.VerticalTree = VerticalTree;
 <script type="text/babel" data-from="js/wizard.jsx">
 /*__js/wizard.jsx__*/
 /* Guided builder — walk through steps one at a time, fill a friendly form, routing via dropdowns. */
-/* WizardView removed — never used */
+function WizardView({ nodes, onNodes, selected, setSelected }){
+  const edges = useMemo(() => deriveEdges(nodes), [nodes]);
+  const order = useMemo(() => {
+    const childrenOf = {}; edges.forEach(e => { (childrenOf[e.from] = childrenOf[e.from] || []).push(e.to); });
+    const start = Object.values(nodes).find(n => n.type === 'issue') || Object.values(nodes)[0];
+    const seen = new Set(); const out = []; const q = start ? [start.id] : [];
+    while (q.length) { const id = q.shift(); if (seen.has(id) || !nodes[id]) continue; seen.add(id); out.push(id); (childrenOf[id] || []).forEach(t => { if (!seen.has(t)) q.push(t); }); }
+    Object.keys(nodes).forEach(id => { if (!seen.has(id)) out.push(id); });
+    return out;
+  }, [nodes, edges]);
+
+  const curId = (selected && nodes[selected]) ? selected : order[0];
+  const curIdx = order.indexOf(curId);
+  const cur = nodes[curId];
+
+  const addStep = () => {
+    const nid = uid('task');
+    const last = nodes[curId];
+    const nn = { id: nid, type: 'task', taskType: 'diagnostic', title: 'New step', detail: '', options: [], next: null, x: (last ? last.x : 0) + 40, y: (last ? last.y : 0) + 130 };
+    const copy = Object.assign({}, nodes, { [nid]: nn });
+    if (last && !BRANCHING.has(last.type) && !NODE_TYPES[last.type].terminal) { nn.next = last.next; copy[curId] = Object.assign({}, last, { next: nid }); }
+    onNodes(copy); setSelected(nid);
+  };
+  const deleteNode = (id) => {
+    const copy = {};
+    Object.values(nodes).forEach(n => { if (n.id === id) return; const c = Object.assign({}, n);
+      if (c.next === id) c.next = null;
+      if (c.options) c.options = c.options.map(o => o.target === id ? Object.assign({}, o, { target: null }) : o);
+      copy[n.id] = c; });
+    onNodes(copy); setSelected(null);
+  };
+  const duplicateNode = (id) => {
+    const src = nodes[id]; const nid = uid(src.type);
+    onNodes(Object.assign({}, nodes, { [nid]: Object.assign({}, src, { id: nid, title: (src.title||'') + ' copy', options: (src.options||[]).map(o => ({ id: uid('o'), label: o.label, target: o.target })) }) }));
+    setSelected(nid);
+  };
+
+  return (
+    <div className="wz-root">
+      <div className="wz-rail">
+        <div className="wz-rail-h">Steps in this flow <span className="wz-railcount">{order.length}</span></div>
+        <div className="wz-list">
+          {order.map((id, i) => {
+            const n = nodes[id]; const m = NODE_TYPES[n.type] || NODE_TYPES.task; const c = CAT_META[m.cat];
+            const branchN = m.branching ? (n.options || []).length : 0;
+            return (
+              <button key={id} className={'wz-item' + (id === curId ? ' is-cur' : '')} onClick={() => setSelected(id)}>
+                <span className="wz-num">{i + 1}</span>
+                <span className="wz-item-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={13} color={c.color} /></span>
+                <span className="wz-item-tx">
+                  <span className="wz-item-title">{n.title || 'Untitled'}</span>
+                  <span className="wz-item-sub">{subLabel(n) || c.name}{branchN ? ' · ' + branchN + ' answers' : ''}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <button className="wz-add" onClick={addStep}><MiniIcon name="plus" size={14} /> Add a step</button>
+      </div>
+
+      <div className="wz-stage">
+        {cur ? (
+          <div className="wz-card">
+            <div className="wz-card-top">
+              <span className="wz-step-of">Step {curIdx + 1} of {order.length}</span>
+              <span className="wz-card-cat" style={{ color: CAT_META[catOf(cur.type)].color }}>{CAT_META[catOf(cur.type)].name}</span>
+            </div>
+            <div className="wz-editorwrap">
+              <NodeEditor node={cur} nodes={nodes}
+                onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
+                onDelete={deleteNode} onDuplicate={duplicateNode} />
+            </div>
+            <div className="wz-nav">
+              <button className="wz-navbtn" disabled={curIdx <= 0} onClick={() => setSelected(order[curIdx - 1])}>← Previous</button>
+              <span className="wz-dots">{order.map((id, i) => <span key={id} className={'wz-dot' + (i === curIdx ? ' on' : '')} />)}</span>
+              <button className="wz-navbtn primary" disabled={curIdx >= order.length - 1} onClick={() => setSelected(order[curIdx + 1])}>Next →</button>
+            </div>
+          </div>
+        ) : <div className="cv-insp-empty"><p>No steps yet — add one to begin.</p></div>}
+      </div>
+    </div>
+  );
+}
+
+window.WizardView = WizardView;
 
 </script>
 <script type="text/babel" data-from="js/app.jsx">
@@ -1806,18 +1568,22 @@ window.VerticalTree = VerticalTree;
 function App(){
   const initial = useMemo(() => loadState(), []);
   const [nodes, setNodes] = useState(initial.nodes);
-  const [images, setImages] = useState(initial.images || []);
-  const [flowName, setFlowName] = useState(initial.flowName || 'Low DO in Aeration Tank');
   const [view, setView] = useState(initial.view || { x: 20, y: 10, k: 0.86 });
-  const [mode, setMode] = useState('tree');
   const [collapsed, setCollapsed] = useState(initial.collapsed || {});
   const [selected, setSelected] = useState(null);
   const [savedAt, setSavedAt] = useState('saved');
-  const [tplOpen, setTplOpen] = useState(false);
   const [tpls, setTpls] = useState(() => listTemplates());
-  const [tab, setTab] = useState('builder'); // 'builder' | 'templates'
+  const [tab, setTab] = useState('builder');
+  const [flowName, setFlowName] = useState(initial.flowName || 'Low DO in Aeration Tank');
 
-  // Bridge with the parent (config.html top-bar Builder/Templates toggle)
+  const tRef = useRef(null);
+  useEffect(() => {
+    setSavedAt('saving');
+    clearTimeout(tRef.current);
+    tRef.current = setTimeout(() => { saveState({ nodes, view, mode: 'tree', collapsed, flowName }); setSavedAt('saved'); }, 500);
+  }, [nodes, view, collapsed, flowName]);
+
+  // postMessage bridge with parent (config.html top toggle + footer Save-as-template)
   useEffect(() => {
     const onMsg = (e) => {
       const d = e.data || {};
@@ -1825,13 +1591,14 @@ function App(){
         if (d.tab === 'templates') setTpls(listTemplates());
         setTab(d.tab);
       }
+      if (d.type === 'dp:save-template' && d.name) {
+        setTpls(saveTemplate(d.name, nodes));
+      }
     };
     window.addEventListener('message', onMsg);
-    // Tell the parent how many templates we have on boot
     try { window.parent.postMessage({ type: 'dp:tpl-count', count: listTemplates().length }, '*'); } catch(_){}
     return () => window.removeEventListener('message', onMsg);
-  }, []);
-  // Keep parent in sync whenever templates list or tab changes
+  }, [nodes]);
   useEffect(() => {
     try { window.parent.postMessage({ type: 'dp:tpl-count', count: tpls.length }, '*'); } catch(_){}
   }, [tpls]);
@@ -1839,47 +1606,22 @@ function App(){
     try { window.parent.postMessage({ type: 'dp:tab', tab }, '*'); } catch(_){}
   }, [tab]);
 
-  // debounced persist
-  const tRef = useRef(null);
-  useEffect(() => {
-    setSavedAt('saving');
-    clearTimeout(tRef.current);
-    tRef.current = setTimeout(() => { saveState({ nodes, images, view, mode, collapsed, flowName }); setSavedAt('saved'); }, 500);
-  }, [nodes, images, view, mode, collapsed, flowName]);
-
-  const clearCanvas = () => {
-    if (!confirm('Clear the entire canvas? This removes every node and image. (You can re-seed by reloading after clearing localStorage.)')) return;
-    setNodes({});
-    setImages([]);
-    setSelected(null);
-  };
-
   const onNodes = (nn) => setNodes(nn);
-
-  const reset = () => {
-    if (!confirm('Reset to the seeded "Low DO in Aeration Tank" flow? Your changes will be lost.')) return;
-    resetState(); const s = loadState();
-    setNodes(s.nodes); setView(s.view); setCollapsed({}); setSelected(null);
-  };
-  const blank = () => {
-    if (!confirm('Start from a blank canvas with just the Issue trigger?')) return;
-    const id = 'issue';
-    setNodes({ issue: { id, type: 'issue', title: 'New issue', detail: 'Describe the alert that opens this flow.', options: [], next: null, x: 120, y: 200 } });
-    setSelected('issue'); setCollapsed({});
-  };
-
-  const saveTpl = () => {
-    const name = prompt('Name this template — e.g. “Low DO · standard tree”');
-    if (!name) return;
-    setTpls(saveTemplate(name.trim(), nodes));
-  };
   const loadTpl = (t) => {
-    if (!confirm('Load template “' + t.name + '”? This replaces what’s on the canvas now.')) return;
-    setNodes(JSON.parse(JSON.stringify(t.nodes))); setSelected(null); setCollapsed({}); setTplOpen(false);
+    if (!confirm('Load template "' + t.name + '"? This replaces the current flow.')) return;
+    setNodes(JSON.parse(JSON.stringify(t.nodes))); setSelected(null); setCollapsed({}); setTab('builder');
   };
   const delTpl = (e, id) => { e.stopPropagation(); setTpls(deleteTemplate(id)); };
 
-/* mode switcher removed — locked to vertical tree */
+  const saveAsTemplate = () => {
+    const n = prompt('Template name', flowName || 'Low DO · Aeration');
+    if (!n) return;
+    setTpls(saveTemplate(n.trim(), nodes));
+  };
+  const clearCanvas = () => {
+    if (!confirm('Clear the canvas? This removes every node.')) return;
+    setNodes({}); setSelected(null);
+  };
 
   return (
     <div className="app">
@@ -1888,32 +1630,30 @@ function App(){
           <span className="hdr-logo">DP</span>
           <input className="hdr-name-input" value={flowName}
             placeholder="Untitled flow"
-            title="A vertical, top-to-bottom branching tree — the issue at the top, each answer branching downward into its own path. Click a card to edit it. Drag connector dots between cards to wire them together."
-            onChange={(e) => { setFlowName(e.target.value); }}
+            title="Vertical, top-to-bottom branching tree. Click a card to edit. Drag connector dots between cards to wire them up."
+            onChange={(e) => setFlowName(e.target.value)}
             onBlur={(e) => { if (!e.target.value.trim()) setFlowName('Untitled flow'); }} />
         </div>
         <div className="hdr-right">
           <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving' : 'Saved'}</span>
-          <button className="hdr-save-tpl" onClick={() => { const n = prompt('Template name', flowName || 'Low DO · Aeration'); if (!n) return; setTpls(saveTemplate(n.trim(), nodes)); }} title="Save current flow as a reusable template">
+          <button className="hdr-save-tpl" onClick={saveAsTemplate} title="Save current flow as a reusable template">
             <MiniIcon name="save" size={13} /> Save as template
           </button>
-          <button className="hdr-clear" onClick={clearCanvas} title="Remove every node and image from the canvas">
+          <button className="hdr-clear" onClick={clearCanvas} title="Remove every node from the canvas">
             <MiniIcon name="trash" size={13} /> Clear canvas
           </button>
         </div>
       </header>
 
-
-
       <main className="stage">
         {tab === 'builder' ? (
-          <VerticalTree nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} images={images} setImages={setImages} />
+          <VerticalTree nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />
         ) : (
           <div className="tpl-view">
             <div className="tpl-view-head">
               <div>
                 <h2>Templates</h2>
-                <p>Saved flows you can load into the Builder and tweak per plant.</p>
+                <p>Saved flows you can load into the Builder and tweak.</p>
               </div>
               <div className="tpl-view-count">{tpls.length} saved</div>
             </div>
@@ -1921,7 +1661,7 @@ function App(){
               <div className="tpl-empty">
                 <div className="tpl-empty-ic">📐</div>
                 <h3>No templates yet</h3>
-                <p>Build a flow, then use <b>Save as template</b> on the Build the flow screen to save it here.</p>
+                <p>Click <b>Save as template</b> to add one.</p>
               </div>
             ) : (
               <div className="tpl-grid">
@@ -1931,12 +1671,12 @@ function App(){
                       <span className="tpl-card-ic">📐</span>
                       <div className="tpl-card-meta">
                         <div className="tpl-card-name">{t.name}</div>
-                        <div className="tpl-card-sub">{t.count} steps · saved {new Date(t.createdAt).toLocaleDateString()}</div>
+                        <div className="tpl-card-sub">{t.count} steps · {new Date(t.createdAt).toLocaleDateString()}</div>
                       </div>
                     </div>
                     <div className="tpl-card-actions">
-                      <button className="tpl-card-load" onClick={() => { loadTpl(t); setTab('builder'); }}>Load into Builder</button>
-                      <button className="tpl-card-del" onClick={(e) => delTpl(e, t.id)} title="Delete template">Delete</button>
+                      <button className="tpl-card-load" onClick={() => loadTpl(t)}>Load into Builder</button>
+                      <button className="tpl-card-del" onClick={(e) => delTpl(e, t.id)}>Delete</button>
                     </div>
                   </div>
                 ))}
@@ -1950,66 +1690,6 @@ function App(){
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
-
-/* ===== Resizable / collapsible drawers ===== */
-(function(){
-  function ensureDrawerControls(){
-    document.querySelectorAll('.cv-palette, .cv-inspector').forEach(drawer => {
-      if (drawer.dataset.resizable) return;
-      drawer.dataset.resizable = '1';
-      const isLeft = drawer.classList.contains('cv-palette');
-
-      // Collapsed label
-      const lbl = document.createElement('div');
-      lbl.className = 'collapsed-label';
-      lbl.textContent = isLeft ? 'STEPS' : 'INSPECTOR';
-      drawer.appendChild(lbl);
-
-      // Toggle button
-      const toggle = document.createElement('button');
-      toggle.className = 'drawer-toggle';
-      toggle.type = 'button';
-      toggle.title = 'Collapse / expand';
-      toggle.textContent = isLeft ? '«' : '»';
-      toggle.addEventListener('click', (e) => {
-        e.preventDefault();e.stopPropagation();
-        const collapsed = drawer.classList.toggle('is-collapsed');
-        toggle.textContent = collapsed ? (isLeft ? '»' : '«') : (isLeft ? '«' : '»');
-      });
-      drawer.appendChild(toggle);
-
-      // Resize handle
-      const handle = document.createElement('div');
-      handle.className = 'drawer-resize';
-      handle.addEventListener('pointerdown', (e) => {
-        if (drawer.classList.contains('is-collapsed')) return;
-        e.preventDefault();
-        handle.classList.add('is-dragging');
-        const startX = e.clientX;
-        const startW = drawer.getBoundingClientRect().width;
-        const cssVar = isLeft ? '--paletteW' : '--inspectorW';
-        const onMove = (mv) => {
-          const dx = mv.clientX - startX;
-          let nw = startW + (isLeft ? dx : -dx);
-          nw = Math.max(140, Math.min(560, nw));
-          drawer.style.setProperty(cssVar, nw + 'px');
-        };
-        const onUp = () => {
-          handle.classList.remove('is-dragging');
-          window.removeEventListener('pointermove', onMove);
-          window.removeEventListener('pointerup', onUp);
-        };
-        window.addEventListener('pointermove', onMove);
-        window.addEventListener('pointerup', onUp);
-      });
-      drawer.appendChild(handle);
-    });
-  }
-  // Run after React mounts; drawers may also re-render when state changes (mode/selected)
-  const obs = new MutationObserver(() => ensureDrawerControls());
-  obs.observe(document.body, { subtree: true, childList: true });
-  setTimeout(ensureDrawerControls, 100);
-})();
 
 </script>
 </body>
