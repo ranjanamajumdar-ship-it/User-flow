@@ -159,6 +159,37 @@ input,textarea,select{font-family:inherit;}
 .cv-anchor.cv-side-bottom{left:50%; bottom:-7px; transform:translateX(-50%)}
 .cv-anchor.cv-side-left  {left:-7px; top:50%;    transform:translateY(-50%)}
 .vt-card:hover .cv-anchor.cv-side{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--cs)}
+
+/* ================================================================== */
+/*  UX-LAWS LAYER · Aesthetic-Usability + Fitts's Law + Hick's Law    */
+/* ================================================================== */
+/* Aesthetic-Usability: refined card depth, gentle gradient on canvas */
+.vt-scroll{background:linear-gradient(180deg,#f3f6fb,#eaf0f7)!important;background-image:radial-gradient(circle,#d3dae5 1px,transparent 1px)!important;background-size:28px 28px!important}
+.cv-node{
+  border-radius:20px!important;
+  box-shadow:0 2px 4px rgba(14,20,40,.06),0 18px 40px rgba(14,20,40,.10)!important;
+  padding:18px 20px 20px!important;
+}
+.cv-node:hover{box-shadow:0 4px 8px rgba(14,20,40,.08),0 28px 56px rgba(14,20,40,.16)!important}
+.cv-node-cat{font-size:11px!important;padding:5px 13px!important;letter-spacing:.06em!important}
+
+/* Fitts's: bigger connectors (easier to hit), larger palette chips, larger zoom toolbar */
+.cv-anchor{width:16px!important;height:16px!important}
+.cv-chip{padding:13px 14px!important;min-height:48px!important;font-size:14px!important}
+.cv-chip-ic{width:36px!important;height:36px!important}
+.cv-tbtn{padding:10px 14px!important;font-size:13px!important}
+.cv-tbpct{padding:10px 16px!important}
+.hdr-name-input{font-size:16px!important;padding:8px 12px!important}
+.hdr-clear{padding:10px 16px!important;min-height:42px!important}
+
+/* Hick's: reduce visible complexity — softer category coloring, hide help text from non-hovered chips */
+.cv-palette-tip{display:none!important}
+.cv-palette-h{font-size:10.5px!important;letter-spacing:.08em!important;margin-bottom:10px!important;color:#7a8497!important}
+.cv-node-title-input{font-size:15.5px!important;padding:8px 12px 6px!important}
+.cv-opt{padding:9px 6px!important}
+.cv-opt-l{width:24px!important;height:24px!important;font-size:11px!important}
+.cv-opt-tx-input{font-size:13px!important;padding:6px 8px!important}
+
 .cv-anchor.cv-out{right:-7px;}
 /* Option-level outbound anchor — pinned to the card's outer right edge so connection lines clearly emerge from each option's circle. */
 .cv-opt{padding-right:8px}

@@ -2355,6 +2355,69 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   .step-label{display:none}
   .step-line{max-width:30px}
 }
+
+/* ================================================================== */
+/*  UX-LAWS LAYER · Aesthetic-Usability + Fitts's Law + Hick's Law    */
+/*  Loaded only on the /ux-laws/ branch as a refinement pass.         */
+/* ================================================================== */
+
+/* === Aesthetic-Usability Effect ===
+   More breathing room, refined typography, subtle gradients and depth
+   so the prototype feels considered — users perceive it as easier to use. */
+:root{
+  --ux-radius:14px;
+  --ux-shadow:0 1px 2px rgba(14,20,40,.06),0 12px 32px -10px rgba(14,20,40,.16);
+  --ux-shadow-hover:0 2px 6px rgba(14,20,40,.08),0 22px 44px -10px rgba(14,20,40,.22);
+}
+body{background:linear-gradient(180deg,#f6f8fc 0%,#eef2f7 100%) fixed!important}
+.card{
+  background:#fff!important;border-radius:var(--ux-radius)!important;
+  border:1px solid rgba(20,33,48,.06)!important;
+  box-shadow:var(--ux-shadow)!important;padding:28px 32px!important;
+  transition:box-shadow .25s ease;
+}
+.card:hover{box-shadow:var(--ux-shadow-hover)!important}
+.card h3{font-size:18px!important;letter-spacing:-.02em!important;margin-bottom:6px!important}
+.card .helper{font-size:13.5px!important;line-height:1.6!important;color:#5a6478!important}
+
+/* Tighter, deliberate vertical rhythm */
+.wrap{padding-top:56px!important}
+.card + .card{margin-top:24px!important}
+
+/* === Fitts's Law ===
+   Hit-targets are larger and primary actions occupy easy-to-reach corners.
+   Distance to important actions is minimized; padding is generous. */
+.btn,.btn-template,.publish-btn,.hdr-clear,.rv-edit-inline{min-height:44px!important}
+.stepper .step-node{padding:10px 14px!important;border-radius:10px!important;cursor:pointer}
+.stepper .step-circle{width:34px!important;height:34px!important;font-size:14px!important}
+.stepper .step-node:hover{background:rgba(0,41,118,.04)}
+.bt-tab{min-height:38px;padding:8px 18px!important}
+.publish-btn{padding:16px 28px!important;font-size:15px!important;border-radius:14px!important}
+.publish-btn:hover{transform:translateY(-2px)}
+/* Inputs and selects — finger-friendly */
+.ff select,.ff input[type=text],.ff textarea{
+  min-height:44px!important;padding:12px 14px!important;font-size:14px!important;border-radius:10px!important;
+}
+.ff textarea{min-height:88px!important}
+.ff label{font-size:11.5px!important;font-weight:700!important;letter-spacing:.4px!important;text-transform:uppercase;color:#5a6478!important;margin-bottom:6px!important}
+
+/* === Hick's Law ===
+   Reduce simultaneous choices visible at once. Tighten the stepper to
+   present only the three high-level destinations. Progressive disclosure
+   reveals advanced options only when relevant. */
+.stepper-inner{max-width:760px!important;gap:14px!important}
+.step-line{max-width:80px!important}
+/* Soften and group secondary actions */
+.kv-row{padding:11px 0!important;border-bottom:1px solid rgba(20,33,48,.05)!important}
+.kv-k{font-size:11.5px!important;font-weight:600!important;letter-spacing:.3px!important;text-transform:uppercase;color:#7a8497!important}
+.kv-v{font-size:13.5px!important;color:#0E1428!important}
+
+/* Page title sizes settle into a clear hierarchy */
+.page-h{font-size:30px!important;letter-spacing:-.025em!important;line-height:1.15!important;margin-bottom:8px!important}
+.page-sub{font-size:15px!important;line-height:1.55!important;color:#5a6478!important}
+
+/* Hover affordances on all interactive items (Aesthetic-Usability) */
+.btn:hover,.btn-template:hover,.rv-edit-inline:hover,.bt-tab:hover{transform:translateY(-1px)}
 </style>
 </head>
 <body>

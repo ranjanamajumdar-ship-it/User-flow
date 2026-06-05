@@ -80,6 +80,13 @@ jobs:
           path: diagnostic-flow
         continue-on-error: true
 
+      - name: Checkout ux-laws
+        uses: actions/checkout@v4
+        with:
+          ref: ux-laws
+          path: ux-laws
+        continue-on-error: true
+
       - name: Assemble site
         run: |
           mkdir -p dist
@@ -135,6 +142,12 @@ jobs:
             mkdir -p dist/diagnostic-flow
             cp -R diagnostic-flow/. dist/diagnostic-flow/ 2>/dev/null || true
             rm -rf dist/diagnostic-flow/.git dist/diagnostic-flow/.github
+          fi
+          # /ux-laws/ = ux-laws branch contents
+          if [ -d ux-laws ]; then
+            mkdir -p dist/ux-laws
+            cp -R ux-laws/. dist/ux-laws/ 2>/dev/null || true
+            rm -rf dist/ux-laws/.git dist/ux-laws/.github
           fi
           # Simple landing index for the previews dir
           cat > dist/previews.html <<'EOF'
