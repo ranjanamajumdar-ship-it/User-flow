@@ -950,8 +950,9 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 .publish-btn-arrow{font-size:18px;font-weight:800;transition:transform .2s}
 .publish-btn:hover .publish-btn-arrow{transform:translateX(3px)}
 
-/* On Build the flow, tighten the gap between the stepper and the canvas */
-body:has(#p-4.on) .wrap{margin-top:8px!important;margin-bottom:0!important;padding:0!important;max-width:none!important}
+/* On Build the flow, fully collapse the gap between the stepper and the canvas */
+body:has(#p-4.on) .wrap{margin-top:0!important;margin-bottom:0!important;padding:0!important;max-width:none!important}
+body:has(#p-4.on) .stepper{border-bottom:1px solid var(--line-soft)}
 
 /* ===== Padlock feature removed — hide every related UI artifact ===== */
 .lock-btn,
@@ -1010,6 +1011,22 @@ body:has(#p-4.on) .wrap{margin-top:8px!important;margin-bottom:0!important;paddi
   padding-top:20px;
 }
 .mini-h{margin:0 0 4px;font-size:14.5px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+
+/* In-card divider for sub-sections (Triggers, Assignment, Communication merged into Issue card) */
+.block-divider{
+  border-top:1px solid var(--line-soft);
+  margin-top:24px;padding-top:22px;
+}
+.sub-h{margin:0 0 4px;font:700 15px 'Plus Jakarta Sans',sans-serif;color:var(--ink);letter-spacing:-.01em}
+
+/* Inline "Edit" button used in the simplified Review section */
+.rv-edit-inline{
+  margin-top:14px;display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:8px;border:1.5px solid var(--line-soft);
+  background:#fff;color:var(--brand);cursor:pointer;
+  font:600 12.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.1px;transition:.15s;
+}
+.rv-edit-inline:hover{border-color:var(--brand);background:rgba(0,41,118,.05)}
 .freq-input{position:relative;display:flex;align-items:center}
 .freq-input input{flex:1;padding-right:54px}
 .freq-input .freq-u{position:absolute;right:12px;font:600 11px 'JetBrains Mono',monospace;color:var(--ink-3);letter-spacing:.3px;text-transform:uppercase}
@@ -2472,76 +2489,74 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
         </div>
       </div>
 
-    </div>
-
-    <!-- ===== Assignment card (unified) ===== -->
-    <div class="card">
-      <h3>Assignment</h3>
-      <p class="helper" style="margin:0 0 14px">Who gets this issue when it fires.</p>
-      <div class="ff">
-        <label>Assignee</label>
-        <select id="assigneeRole" onchange="onAssigneeRoleChangeV2(this);markSaved()">
-          <option value="general" selected>General (anyone on shift)</option>
-          <option value="specific">Assign to a specific person</option>
-          <option value="mechanical">Mechanical</option>
-          <option value="electrical">Electrical</option>
-          <option value="process">Process</option>
-          <option value="lab">Lab</option>
-          <option value="safety">Safety</option>
-        </select>
-        <div class="help" id="assigneeHelp">Anyone with the right role on shift is eligible.</div>
-      </div>
-    </div>
-
-    <!-- ===== Triggers card ===== -->
-    <div class="card">
-      <h3>Triggers</h3>
-      <p class="helper" style="margin:0 0 14px">Define when this issue auto-opens. Closing logic lives on the Analytical Engine.</p>
-      <div class="form-grid">
-        <div class="ff">
-          <label>Observation frequency</label>
-          <div class="freq-input">
-            <input type="text" value="60" oninput="markSaved()"/>
-            <span class="freq-u">mins</span>
-          </div>
-        </div>
-        <div class="ff">
-          <label>Observation condition</label>
-          <div class="cond-input cond-split">
-            <div class="cond-half">
-              <button type="button" class="cond-create" id="condCreateBtn" onclick="enterCreateCondition()">＋ Create</button>
-              <input type="text" class="cond-create-input" id="condCreateInput" placeholder="Type formula · e.g. DO &lt; 2.0 sustained 12m" oninput="markSaved()"/>
-              <button type="button" class="cond-save" id="condSaveBtn" onclick="saveCreatedCondition()">Save</button>
+      <!-- ===== Triggers (within the same card) ===== -->
+      <div class="block-divider">
+        <h4 class="sub-h">Triggers</h4>
+        <p class="helper" style="margin:0 0 14px">When this issue auto-opens. Closing logic lives on the Analytical Engine.</p>
+        <div class="form-grid">
+          <div class="ff">
+            <label>Observation frequency</label>
+            <div class="freq-input">
+              <input type="text" value="60" oninput="markSaved()"/>
+              <span class="freq-u">mins</span>
             </div>
-            <div class="cond-half">
-              <select class="cond-select" onchange="markSaved()">
-                <option>— Select condition —</option>
-                <option>DO &lt; 2.0 mg/L sustained 12 min</option>
-                <option>MLSS &gt; 4.0 g/L sustained 30 min</option>
-                <option>Flow drop &gt; 20%</option>
-                <option>pH out of 6.5–8.5 sustained 15 min</option>
-                <option>Blower OFF / TRIP</option>
-              </select>
+          </div>
+          <div class="ff">
+            <label>Observation condition</label>
+            <div class="cond-input cond-split">
+              <div class="cond-half">
+                <button type="button" class="cond-create" id="condCreateBtn" onclick="enterCreateCondition()">＋ Create</button>
+                <input type="text" class="cond-create-input" id="condCreateInput" placeholder="Type formula · e.g. DO &lt; 2.0 sustained 12m" oninput="markSaved()"/>
+                <button type="button" class="cond-save" id="condSaveBtn" onclick="saveCreatedCondition()">Save</button>
+              </div>
+              <div class="cond-half">
+                <select class="cond-select" onchange="markSaved()">
+                  <option>— Select condition —</option>
+                  <option>DO &lt; 2.0 mg/L sustained 12 min</option>
+                  <option>MLSS &gt; 4.0 g/L sustained 30 min</option>
+                  <option>Flow drop &gt; 20%</option>
+                  <option>pH out of 6.5–8.5 sustained 15 min</option>
+                  <option>Blower OFF / TRIP</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ===== Communication card (single dropdown · 4 channels) ===== -->
-    <div class="card">
-      <h3>Communication</h3>
-      <p class="helper" style="margin:0 0 14px">Choose the channel for sending out alerts.</p>
-      <div class="ff">
-        <label>Channel</label>
-        <select onchange="markSaved()">
-          <option>— Select channel —</option>
-          <option>SMS</option>
-          <option>WhatsApp</option>
-          <option>Call</option>
-          <option>Message</option>
-        </select>
+      <!-- ===== Assignment + Communication in the same row ===== -->
+      <div class="block-divider">
+        <div class="form-grid">
+          <div class="ff">
+            <h4 class="sub-h" style="margin:0 0 4px">Assignment</h4>
+            <p class="helper" style="margin:0 0 10px">Who gets this issue when it fires.</p>
+            <label>Assignee</label>
+            <select id="assigneeRole" onchange="onAssigneeRoleChangeV2(this);markSaved()">
+              <option value="general" selected>General (anyone on shift)</option>
+              <option value="specific">Assign to a specific person</option>
+              <option value="mechanical">Mechanical</option>
+              <option value="electrical">Electrical</option>
+              <option value="process">Process</option>
+              <option value="lab">Lab</option>
+              <option value="safety">Safety</option>
+            </select>
+            <div class="help" id="assigneeHelp">Anyone with the right role on shift is eligible.</div>
+          </div>
+          <div class="ff">
+            <h4 class="sub-h" style="margin:0 0 4px">Communication</h4>
+            <p class="helper" style="margin:0 0 10px">Channel for sending out alerts.</p>
+            <label>Channel</label>
+            <select onchange="markSaved()">
+              <option>— Select channel —</option>
+              <option>SMS</option>
+              <option>WhatsApp</option>
+              <option>Call</option>
+              <option>Message</option>
+            </select>
+          </div>
+        </div>
       </div>
+
     </div>
 
   </section>
@@ -3064,54 +3079,34 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   <!-- ============== STEP 4 · Review ============== -->
   <section class="panel" id="p-5">
 
-    <div class="rv-cards">
-      <!-- ====== Card 1: Issue summary (includes trigger condition) ====== -->
-      <div class="rv-card ok open">
-        <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
-          <div class="rv-ic">✓</div>
-          <div class="rv-main">
-            <div class="rv-ttl">Issue summary</div>
-            <div class="rv-sub">Plant · equipment · severity · trigger condition</div>
-          </div>
-          <span class="rv-chev">⌄</span>
-          <button class="rv-edit" onclick="event.stopPropagation();goStep(1)">Edit</button>
-        </div>
-        <div class="rv-kv">
-          <div class="kv-row"><span class="kv-k">Plant</span><span class="kv-v">IREO Grand Arch</span></div>
-          <div class="kv-row"><span class="kv-k">Equipment</span><span class="kv-v">Aeration Tank · Bay 3</span></div>
-          <div class="kv-row"><span class="kv-k">Issue</span><span class="kv-v">Low DO</span></div>
-          <div class="kv-row"><span class="kv-k">Description</span><span class="kv-v">DO in aeration tank is below 2.0 mg/L. Walk the candidate causes — diffusers, sensor, blower, biology…</span></div>
-          <div class="kv-row"><span class="kv-k">Severity</span><span class="kv-v"><span class="rvp-sev">High</span></span></div>
-          <div class="kv-row"><span class="kv-k">Deadline</span><span class="kv-v">2 hrs · within shift</span></div>
-          <div class="kv-row"><span class="kv-k">Type</span><span class="kv-v">Process / Lab</span></div>
-          <div class="kv-row"><span class="kv-k">Assignee</span><span class="kv-v">General · anyone on shift</span></div>
-          <div class="kv-row"><span class="kv-k">Observation frequency</span><span class="kv-v">Every 60 mins</span></div>
-          <div class="kv-row"><span class="kv-k">Trigger condition</span><span class="kv-v"><b>DO &lt; 2.0 mg/L</b> sustained 12 mins</span></div>
-          <div class="kv-row"><span class="kv-k">Auto-resolve</span><span class="kv-v">When DO ≥ 2.5 mg/L for 5 mins</span></div>
-          <div class="kv-row"><span class="kv-k">Communication</span><span class="kv-v">WhatsApp</span></div>
-        </div>
+    <div class="card">
+      <h3>Issue summary</h3>
+      <p class="helper" style="margin:0 0 18px">Everything operators will see when this issue opens.</p>
+      <div class="rv-kv">
+        <div class="kv-row"><span class="kv-k">Plant</span><span class="kv-v">IREO Grand Arch</span></div>
+        <div class="kv-row"><span class="kv-k">Equipment</span><span class="kv-v">Aeration Tank · Bay 3</span></div>
+        <div class="kv-row"><span class="kv-k">Issue</span><span class="kv-v">Low DO</span></div>
+        <div class="kv-row"><span class="kv-k">Description</span><span class="kv-v">DO in aeration tank is below 2.0 mg/L. Walk the candidate causes — diffusers, sensor, blower, biology…</span></div>
+        <div class="kv-row"><span class="kv-k">Severity</span><span class="kv-v"><span class="rvp-sev">High</span></span></div>
+        <div class="kv-row"><span class="kv-k">Deadline</span><span class="kv-v">2 hrs · within shift</span></div>
+        <div class="kv-row"><span class="kv-k">Assignee</span><span class="kv-v">General · anyone on shift</span></div>
+        <div class="kv-row"><span class="kv-k">Observation frequency</span><span class="kv-v">Every 60 mins</span></div>
+        <div class="kv-row"><span class="kv-k">Trigger condition</span><span class="kv-v"><b>DO &lt; 2.0 mg/L</b> sustained 12 mins</span></div>
+        <div class="kv-row"><span class="kv-k">Communication</span><span class="kv-v">WhatsApp</span></div>
       </div>
+      <button class="rv-edit-inline" onclick="goStep(1)">Edit issue setup</button>
 
-      <!-- ====== Card 2: Flow configuration summary ====== -->
-      <div class="rv-card ok open">
-        <div class="rv-hd" onclick="this.parentElement.classList.toggle('open')">
-          <div class="rv-ic">⌥</div>
-          <div class="rv-main">
-            <div class="rv-ttl">Flow configuration summary</div>
-            <div class="rv-sub">5 steps · 11 outcome paths · branching across 3 nodes</div>
-          </div>
-          <span class="rv-chev">⌄</span>
-          <button class="rv-edit" onclick="event.stopPropagation();goStep(4)">Edit</button>
-        </div>
+      <div class="block-divider">
+        <h4 class="sub-h">Flow configuration summary</h4>
+        <p class="helper" style="margin:0 0 14px">Structure of the diagnostic tree.</p>
         <div class="rv-kv">
           <div class="kv-row"><span class="kv-k">Total steps</span><span class="kv-v">5 steps + 1 card</span></div>
           <div class="kv-row"><span class="kv-k">Branching</span><span class="kv-v">2 steps (multi-choice) · 1 step (multi-select)</span></div>
           <div class="kv-row"><span class="kv-k">Total routes</span><span class="kv-v">11 outcome paths</span></div>
-          <div class="kv-row"><span class="kv-k">Photo hard-block</span><span class="kv-v">1 (step 3 — Photo to Supervisor)</span></div>
-          <div class="kv-row"><span class="kv-k">SME approval</span><span class="kv-v">1 (step 6)</span></div>
           <div class="kv-row"><span class="kv-k">Terminal outcomes</span><span class="kv-v">2 (Done · DO normal — close issue · Escalate to SME)</span></div>
           <div class="kv-row"><span class="kv-k">Longest path</span><span class="kv-v">5 steps deep</span></div>
         </div>
+        <button class="rv-edit-inline" onclick="goStep(4)">Edit flow</button>
       </div>
     </div>
 
