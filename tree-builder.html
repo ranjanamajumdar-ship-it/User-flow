@@ -174,6 +174,23 @@ input,textarea,select{font-family:inherit;}
   box-shadow:0 0 0 2px var(--accent),0 14px 34px -10px rgba(10,110,158,.35)!important;
 }
 
+/* Right-click context menu */
+.ctx-menu{
+  position:fixed;z-index:120;min-width:200px;
+  background:#fff;border:1px solid var(--line);border-radius:10px;
+  padding:5px;display:flex;flex-direction:column;gap:1px;
+  box-shadow:0 14px 36px -10px rgba(14,20,40,.28),0 0 0 1px rgba(14,20,40,.04);
+  font:600 13px 'Plus Jakarta Sans',sans-serif;color:var(--ink);
+}
+.ctx-item{
+  display:flex;align-items:center;gap:9px;padding:9px 11px;border:0;background:transparent;
+  border-radius:7px;cursor:pointer;color:var(--ink);text-align:left;letter-spacing:-.005em;
+  font:600 13px 'Plus Jakarta Sans',sans-serif;
+}
+.ctx-item:hover{background:var(--accent-soft);color:var(--accent)}
+.ctx-danger{color:#c0473a}
+.ctx-danger:hover{background:#fdecea;color:#c0473a}
+
 /* Free-floating images dropped onto the canvas */
 .vt-image{
   position:absolute;display:block;
@@ -1686,6 +1703,47 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
       copy[n.id] = c; });
     onNodes(copy); if (selected === id) setSelected(null);
   };
+
+  // Bulk-delete every node in the multi-selection and clean up incoming edges
+  const deleteMany = (ids) => {
+    const toDel = new Set(ids);
+    const copy = {};
+    Object.values(nodes).forEach(n => {
+      if (toDel.has(n.id)) return;
+      const c = Object.assign({}, n);
+      if (c.next && toDel.has(c.next)) c.next = null;
+      if (c.options) c.options = c.options.map(o => toDel.has(o.target) ? Object.assign({}, o, { target: null }) : o);
+      copy[n.id] = c;
+    });
+    onNodes(copy);
+    if (selected && toDel.has(selected)) setSelected(null);
+    setMultiSel(new Set());
+  };
+
+  // Right-click context menu state — { x, y, ids: string[] } in screen coords
+  const [ctxMenu, setCtxMenu] = useState(null);
+
+  // Delete / Backspace key removes the current multi-selection (when not editing text)
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+      // Don't hijack typing in inputs / textareas
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (multiSel.size > 0) { e.preventDefault(); deleteMany(Array.from(multiSel)); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [multiSel, nodes]);
+  useEffect(() => {
+    if (!ctxMenu) return;
+    const onAnyClick = () => setCtxMenu(null);
+    const onEsc = (e) => { if (e.key === 'Escape') setCtxMenu(null); };
+    window.addEventListener('click', onAnyClick);
+    window.addEventListener('keydown', onEsc);
+    return () => { window.removeEventListener('click', onAnyClick); window.removeEventListener('keydown', onEsc); };
+  }, [ctxMenu]);
+
   const duplicateNode = (id) => {
     const src = nodes[id]; const nid = uid(src.type);
     onNodes(Object.assign({}, nodes, { [nid]: Object.assign({}, src, { id: nid, x: (src.x||0)+30, y: (src.y||0)+30, title: (src.title||'') + ' copy', options: (src.options||[]).map(o => ({ id: uid('o'), label: o.label, target: o.target })) }) }));
@@ -1905,6 +1963,12 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
               return (
                 <div key={n.id} ref={el => nodeRefs.current[n.id] = el}
                   className={'cv-node vt-card' + (selected === n.id ? ' is-sel' : '') + (multiSel.has(n.id) ? ' is-multi-sel' : '') + (isTgt ? ' is-tgt' : '') + (drag && drag.id === n.id ? ' is-dragging' : '')}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    // If this node isn't in the current multi-selection, treat the right-click as a single-node action
+                    const ids = multiSel.has(n.id) ? Array.from(multiSel) : [n.id];
+                    setCtxMenu({ x: e.clientX, y: e.clientY, ids });
+                  }}
                   style={{ left: n.x, top: n.y, width: VT_CARD_W, '--c': c.color, '--cs': c.soft, '--ci': c.ink, '--cg': c.grad }}
                   onPointerDown={(e) => {
                     // Don't start a drag from interactive bits (inputs, buttons, anchors, textareas).
@@ -1969,6 +2033,20 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
             {m.label}
           </div>
         ); })()}
+
+        {/* Right-click context menu for multi-selected (or single right-clicked) nodes */}
+        {ctxMenu && (
+          <div className="ctx-menu" style={{ left: ctxMenu.x, top: ctxMenu.y }} onClick={e => e.stopPropagation()}>
+            <button className="ctx-item ctx-danger" onClick={() => { deleteMany(ctxMenu.ids); setCtxMenu(null); }}>
+              <MiniIcon name="trash" size={13} />
+              <span>Delete {ctxMenu.ids.length > 1 ? (ctxMenu.ids.length + ' nodes') : 'node'}</span>
+            </button>
+            <button className="ctx-item" onClick={() => { ctxMenu.ids.forEach(id => duplicateNode(id)); setCtxMenu(null); }}>
+              <MiniIcon name="copy" size={13} />
+              <span>Duplicate {ctxMenu.ids.length > 1 ? (ctxMenu.ids.length + ' nodes') : 'node'}</span>
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="cv-toolbar vt-toolbar">
