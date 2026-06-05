@@ -140,7 +140,7 @@ input,textarea,select{font-family:inherit;}
 .cv-tool{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;color:var(--ink3);}
 .cv-tool:hover{background:var(--line2);color:var(--ink);}
 .cv-node-title{font-size:15px;font-weight:600;line-height:1.34;color:var(--ink);letter-spacing:-.01em;}
-.cv-node-detail{font-size:12.5px;color:var(--ink2);line-height:1.46;margin-top:5px;}
+.cv-node-detail{display:none!important}
 .cv-opts{margin-top:12px;padding-top:9px;border-top:1px solid var(--line2);display:flex;flex-direction:column;gap:1px;}
 .cv-opt{position:relative;display:flex;align-items:center;gap:10px;padding:7px 5px;font-size:12.5px;border-radius:9px;transition:background .12s;}
 .cv-opt:hover{background:var(--cs);}
@@ -1505,7 +1505,7 @@ function FlowCanvas({ nodes, onNodes, selected, setSelected, view, setView }){
                   </span>
                 </div>
                 <div className="cv-node-title">{n.title || 'Untitled'}</div>
-                {n.detail && <div className="cv-node-detail">{n.detail}</div>}
+                {/* description display removed — node detail no longer rendered */}
 
                 {m.branching ? (
                   <div className="cv-opts">
