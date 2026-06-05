@@ -546,8 +546,7 @@ input,textarea,select{font-family:inherit;}
 // subKey:    field whose value picks a sub-type (rendered as a 2nd dropdown)
 const NODE_TYPES = {
   issue:        { label: 'Issue / Trigger',     cat: 'start',     glyph: 'issue',        branching: false, terminal: false, hint: 'The alert that opens the diagnostic flow' },
-  question:     { label: 'Question',            cat: 'question',  glyph: 'question',     branching: true,  terminal: false, subKey: 'qType',    hint: 'Ask the operator something — each answer routes onward' },
-  answer:       { label: 'Answer',              cat: 'answer',    glyph: 'answer',       branching: false, terminal: false, subKey: 'aType',    hint: 'A captured response that continues the flow' },
+  question:     { label: 'Question / Capture',  cat: 'question',  glyph: 'question',     branching: true,  terminal: false, subKey: 'qType',    hint: 'Ask the operator something or capture a reading — each choice routes onward' },
   waiting:      { label: 'Waiting',             cat: 'status',    glyph: 'wait',         branching: false, terminal: false, hint: 'Hold / wait for recovery or a process before continuing' },
   rootcause:    { label: 'Root cause selector', cat: 'cause',     glyph: 'root',         branching: true,  terminal: false, hint: 'Operator selects the confirmed cause — each routes to its remedy' },
   task:         { label: 'Action',              cat: 'task',      glyph: 'task',         branching: false, terminal: false, subKey: 'taskType', hint: 'A diagnostic or remedial step to perform' },
@@ -560,8 +559,7 @@ const NODE_TYPES = {
 
 // sub-type option lists (value, label)
 const SUBTYPES = {
-  qType:    [ ['single','Single answer'], ['yesno','Yes / No'], ['mcq','Multiple choice'], ['numeric','Numeric input'] ],
-  aType:    [ ['single','Single'], ['yesno','Yes / No'], ['mcq_single','Single-select (in MCQ)'], ['numeric','Numerical input'], ['sensor','Sensor data / input'], ['range','Range slider'] ],
+  qType:    [ ['single','Single answer'], ['yesno','Yes / No'], ['mcq','Multiple choice'], ['numeric','Numeric input'], ['sensor','Sensor reading'], ['range','Range slider'] ],
   taskType: [ ['diagnostic','Diagnostic step'], ['remedial','Remedial step'] ],
   role:     [ ['operator','Operator'], ['supervisor','Supervisor'] ],
   escType:  [ ['call_supervisor','Call the supervisor'], ['call_expert','Call an expert'] ],
@@ -855,11 +853,35 @@ function verticalLayout(nodes){
 }
 
 /* ---- Store (localStorage) ------------------------------- */
-const STORE_KEY = 'dp_flow_builder_v10_diagram';
+const STORE_KEY = 'dp_flow_builder_v11_merged';
+// Map deprecated aType values to the new merged qType values
+const A_TO_Q_TYPE = { single:'single', yesno:'yesno', mcq_single:'mcq', numeric:'numeric', sensor:'sensor', range:'range' };
+
+function migrateNodes(nodes){
+  // The standalone Answer node type was merged into Question. Any saved node with
+  // type:'answer' is rewritten to type:'question' with the equivalent qType so
+  // existing flows continue to work.
+  if (!nodes) return nodes;
+  const out = {};
+  Object.keys(nodes).forEach(id => {
+    const n = nodes[id];
+    if (n && n.type === 'answer') {
+      out[id] = Object.assign({}, n, {
+        type: 'question',
+        qType: A_TO_Q_TYPE[n.aType || 'single'] || 'single',
+      });
+      delete out[id].aType;
+    } else {
+      out[id] = n;
+    }
+  });
+  return out;
+}
+
 function loadState(){
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (raw) { const p = JSON.parse(raw); if (p && p.nodes) return Object.assign({ images: [] }, p); }
+    if (raw) { const p = JSON.parse(raw); if (p && p.nodes) { p.nodes = migrateNodes(p.nodes); return Object.assign({ images: [] }, p); } }
   } catch(e){}
   return { nodes: seedTree(), images: [], view: { x: 20, y: 10, k: 0.86 }, mode: 'canvas', collapsed: {} };
 }
@@ -989,12 +1011,8 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
   const meta = NODE_TYPES[node.type] || NODE_TYPES.question;
   const cat = CAT_META[meta.cat];
   const tgts = targetOptions(nodes, node.id);
-  const isNumericQ = node.type === 'question' && node.qType === 'numeric';
-  // Answer nodes with multi/single/yes-no/MCQ subtypes should expose an editable options list,
-  // just like Questions do — so the user can add / remove answer choices.
-  const ANSWER_MULTI = new Set(['single','yesno','mcq_single','range']);
-  const isMultiAnswer = node.type === 'answer' && ANSWER_MULTI.has(node.aType || 'single');
-  const showOpts = meta.branching || isMultiAnswer;
+  const isNumericQ = node.type === 'question' && (node.qType === 'numeric' || node.qType === 'sensor' || node.qType === 'range');
+  const showOpts = meta.branching;
 
   const patch = (p) => onChange(Object.assign({}, node, p));
   const setOpt = (oid, p) => patch({ options: node.options.map(o => o.id === oid ? Object.assign({}, o, p) : o) });
@@ -1034,11 +1052,14 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
                   { id: uid('o'), label: 'Yes', target: (node.options && node.options[0] && node.options[0].target) || null },
                   { id: uid('o'), label: 'No',  target: (node.options && node.options[1] && node.options[1].target) || null }
                 ];
-              } else if (v === 'numeric') {
+              } else if (v === 'numeric' || v === 'sensor' || v === 'range') {
+                const labels = v === 'range'
+                  ? ['Low end',  'Middle',     'High end']
+                  : ['< threshold (low)', 'between (borderline)', '≥ threshold (normal)'];
                 p.options = [
-                  { id: uid('o'), label: '< threshold (low)',    target: null },
-                  { id: uid('o'), label: 'between (borderline)', target: null },
-                  { id: uid('o'), label: '≥ threshold (normal)', target: null }
+                  { id: uid('o'), label: labels[0], target: null },
+                  { id: uid('o'), label: labels[1], target: null },
+                  { id: uid('o'), label: labels[2], target: null }
                 ];
               } else if (v === 'mcq') {
                 p.options = (node.options && node.options.length >= 2) ? node.options
@@ -1068,7 +1089,7 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
         placeholder: meta.hint, onChange: e => patch({ detail: e.target.value }) })),
 
     showOpts && React.createElement('div', { className: 'ed-block' },
-      React.createElement('div', { className: 'ed-blockhead' }, isNumericQ ? 'Threshold bands & routing' : (isMultiAnswer ? 'Answer choices & routing' : 'Answers & routing'),
+      React.createElement('div', { className: 'ed-blockhead' }, isNumericQ ? 'Threshold bands & routing' : 'Choices & routing',
         React.createElement('span', { className: 'ed-count' }, (node.options || []).length)),
       (node.options || []).map((o, i) =>
         React.createElement('div', { className: 'ed-optrow', key: o.id },
@@ -1085,7 +1106,7 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
           React.createElement('button', { className: 'ed-x', title: 'Remove answer', onClick: () => delOpt(o.id) },
             React.createElement(MiniIcon, { name: 'close', size: 13 })))),
       React.createElement('button', { className: 'ed-addopt', onClick: addOpt },
-        React.createElement(MiniIcon, { name: 'plus', size: 13 }), isNumericQ ? ' Add band' : (isMultiAnswer ? ' Add choice' : ' Add answer'))
+        React.createElement(MiniIcon, { name: 'plus', size: 13 }), isNumericQ ? ' Add band' : ' Add choice')
     ),
 
     (!showOpts && !meta.terminal) && React.createElement(Field, { label: 'Routes to next step' },
