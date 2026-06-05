@@ -2323,8 +2323,9 @@ function App(){
   }, [nodes, images, view, mode, collapsed, flowName]);
 
   const clearCanvas = () => {
-    if (!confirm('Clear the entire canvas? This removes every node and image. (You can re-seed by reloading after clearing localStorage.)')) return;
-    setNodes({});
+    if (!confirm('Clear your edits and reset the canvas to the default flow? Your saved templates and the palette stay intact.')) return;
+    // Re-seed to the original flow so the canvas is never left in an unusable empty state.
+    setNodes(seedTree());
     setImages([]);
     setSelected(null);
   };
