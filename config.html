@@ -1021,7 +1021,84 @@ body:has(#p-4.on) .stepper{border-bottom:1px solid var(--line-soft)}
 .sub-h{margin:0 0 4px;font:700 15px 'Plus Jakarta Sans',sans-serif;color:var(--ink);letter-spacing:-.01em}
 
 /* ============================================================
-   REVIEW v2 — Aesthetic-Usability + Hick's + Fitts's laws
+   REVIEW v3 — single card, Issue summary + scrollable Flow timeline
+   ============================================================ */
+.rv3-card{
+  background:#fff;border:1px solid rgba(14,20,40,.08);border-radius:18px;
+  box-shadow:0 2px 4px rgba(14,20,40,.05),0 22px 50px -16px rgba(14,20,40,.15);
+  padding:0;overflow:hidden;margin-bottom:24px;
+}
+.rv3-head{
+  padding:26px 32px 22px;
+  background:linear-gradient(135deg,#0E1428 0%,#102451 60%,#1B3F8A 100%);color:#fff;
+  position:relative;overflow:hidden;
+}
+.rv3-head::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 92% 0%,rgba(140,180,255,.20),transparent 55%);pointer-events:none}
+.rv3-eye{font:800 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.18em;color:rgba(255,255,255,.55);margin-bottom:8px;position:relative}
+.rv3-h{font:800 26px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.022em;line-height:1.15;margin:0 0 12px;position:relative;color:#fff}
+.rv3-chips{display:flex;gap:7px;flex-wrap:wrap;position:relative}
+.rv3-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);font:600 11px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.04em;color:rgba(255,255,255,.92)}
+.rv3-chip-sev{background:rgba(220,90,80,.22);border-color:rgba(255,160,150,.4);color:#FFD3CC}
+
+.rv3-section{padding:26px 32px;border-top:1px solid rgba(14,20,40,.06)}
+.rv3-section-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 16px}
+.rv3-section-h h2{margin:0;font:700 17px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.015em;color:var(--ink)}
+.rv3-edit{display:inline-flex;align-items:center;padding:7px 13px;border-radius:8px;border:1px solid rgba(14,20,40,.10);background:#fff;color:var(--brand);cursor:pointer;font:600 12px 'Plus Jakarta Sans',sans-serif;letter-spacing:.1px;transition:.15s}
+.rv3-edit:hover{background:rgba(0,41,118,.05);border-color:rgba(0,41,118,.3)}
+
+.rv3-kv{display:grid;grid-template-columns:repeat(2,1fr);gap:0 28px}
+.rv3-row{display:grid;grid-template-columns:170px 1fr;gap:14px;padding:9px 0;border-bottom:1px dashed rgba(14,20,40,.06);align-items:baseline}
+.rv3-row:last-child{border-bottom:none}
+.rv3-k{font:700 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#7a8497}
+.rv3-v{font:500 13px 'Plus Jakarta Sans',sans-serif;color:var(--ink);line-height:1.45;letter-spacing:-.005em}
+.rv3-v b{font-weight:700;color:var(--brand)}
+.rv3-v-line{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+
+/* Quick stat ribbon above the timeline */
+.rv3-stats{
+  display:flex;flex-wrap:wrap;align-items:center;gap:14px;
+  padding:12px 16px;margin:0 0 16px;border-radius:10px;
+  background:linear-gradient(180deg,#f6f8fc,#eef2f7);
+  border:1px solid rgba(14,20,40,.06);
+  font:500 12.5px 'Plus Jakarta Sans',sans-serif;color:#5a6478;letter-spacing:-.005em;
+}
+.rv3-stats b{color:var(--brand);font-weight:800;font:800 14px 'Plus Jakarta Sans',sans-serif;margin-right:2px}
+.rv3-stat-sep{width:1px;height:14px;background:rgba(14,20,40,.12)}
+
+/* Scrollable timeline */
+.rv3-timeline{
+  position:relative;max-height:480px;overflow-y:auto;
+  padding:8px 4px 8px 8px;border:1px solid rgba(14,20,40,.06);border-radius:12px;
+  background:linear-gradient(180deg,#fbfcfe,#f4f7fb);
+}
+.rv3-timeline::-webkit-scrollbar{width:8px}
+.rv3-timeline::-webkit-scrollbar-thumb{background:rgba(14,20,40,.18);border-radius:4px}
+.rv3-tl-rail{position:absolute;left:24px;top:14px;bottom:14px;width:2px;background:linear-gradient(180deg,rgba(14,20,40,.10),rgba(14,20,40,.06));border-radius:1px}
+.rv3-tl-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;position:relative}
+.rv3-tl-node{position:relative;padding-left:48px;padding-right:14px;min-height:38px}
+.rv3-tl-dot{position:absolute;left:18px;top:11px;width:14px;height:14px;border-radius:50%;background:#fff;border:2.5px solid var(--ink3);box-shadow:0 0 0 3px #fbfcfe}
+.rv3-tl-node.t-issue   .rv3-tl-dot{border-color:#0E1428;background:#0E1428}
+.rv3-tl-node.t-question .rv3-tl-dot{border-color:#C2851F;background:#FFF7E5}
+.rv3-tl-node.t-task    .rv3-tl-dot{border-color:#0a6e9e;background:#E2F0F7}
+.rv3-tl-node.t-done    .rv3-tl-dot{border-color:#1F9D55;background:#1F9D55}
+.rv3-tl-node.t-link    .rv3-tl-dot{border-color:#6B36B5;background:#ECDFFB}
+.rv3-tl-body{display:flex;flex-direction:column;gap:3px;padding:6px 14px;background:#fff;border:1px solid rgba(14,20,40,.07);border-radius:10px;box-shadow:0 1px 0 rgba(14,20,40,.02)}
+.rv3-tl-type{font:800 9.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#7a8497}
+.rv3-tl-title{font:600 13px 'Plus Jakarta Sans',sans-serif;color:var(--ink);letter-spacing:-.005em;line-height:1.35}
+.rv3-tl-branches{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:3px;border-left:1.5px dashed rgba(14,20,40,.12);padding-left:12px}
+.rv3-tl-branches li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font:500 11.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink2);line-height:1.3}
+.rv3-tl-blabel{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv3-tl-bgo{flex:none;font:600 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;color:#7a8497;letter-spacing:.04em}
+
+@media (max-width:880px){
+  .rv3-kv{grid-template-columns:1fr;gap:0}
+  .rv3-row{grid-template-columns:1fr}
+  .rv3-k{margin-bottom:2px}
+  .rv3-stats{font-size:11.5px}
+}
+
+/* ============================================================
+   REVIEW v2 (legacy — kept for any stale refs)
    ============================================================ */
 .rv2-hero{
   background:linear-gradient(135deg,#0E1428 0%,#102451 50%,#1B3F8A 100%);
@@ -3126,79 +3203,124 @@ body[data-step-mode="multi"] #vfTree{display:block!important}
   <!-- ============== STEP 4 · Review ============== -->
   <section class="panel" id="p-5">
 
-    <!-- ===== Issue summary (grouped, read-only) ===== -->
-    <div class="rv2-hero">
-      <div class="rv2-hero-eye">REVIEW &amp; PUBLISH</div>
-      <h1 class="rv2-hero-h">Low DO in Aeration Tank</h1>
-      <div class="rv2-hero-chips">
-        <span class="rv2-chip rv2-chip-sev">High severity</span>
-        <span class="rv2-chip">IREO Grand Arch</span>
-        <span class="rv2-chip">Aeration Tank · Bay 3</span>
-        <span class="rv2-chip">v0.4 draft</span>
-      </div>
-      <p class="rv2-hero-desc">DO in aeration tank is below 2.0 mg/L. Walk the candidate causes — diffusers, sensor, blower, biology…</p>
-    </div>
-
-    <div class="rv2-grid">
-      <!-- Where & what -->
-      <div class="rv2-card">
-        <div class="rv2-card-h">
-          <h3>Where &amp; what</h3>
-          <button class="rv2-edit" onclick="goStep(1)">Edit ›</button>
-        </div>
-        <div class="rv2-kv">
-          <div class="rv2-row"><span class="rv2-k">Plant</span><span class="rv2-v">IREO Grand Arch</span></div>
-          <div class="rv2-row"><span class="rv2-k">Equipment</span><span class="rv2-v">Aeration Tank · Bay 3</span></div>
-          <div class="rv2-row"><span class="rv2-k">Issue</span><span class="rv2-v">Low DO</span></div>
-          <div class="rv2-row"><span class="rv2-k">Severity</span><span class="rv2-v">High (within an hour)</span></div>
-          <div class="rv2-row"><span class="rv2-k">Deadline</span><span class="rv2-v">2 hrs · within shift</span></div>
-          <div class="rv2-row"><span class="rv2-k">Type</span><span class="rv2-v">Process / Lab</span></div>
+    <!-- ===== Review — single card with Issue summary + Flow summary timeline ===== -->
+    <div class="rv3-card">
+      <!-- HEADER -->
+      <div class="rv3-head">
+        <div class="rv3-eye">REVIEW · PUBLISH</div>
+        <h1 class="rv3-h">Low DO in Aeration Tank</h1>
+        <div class="rv3-chips">
+          <span class="rv3-chip rv3-chip-sev">High</span>
+          <span class="rv3-chip">DT-001</span>
+          <span class="rv3-chip">v0.4 draft</span>
         </div>
       </div>
 
-      <!-- When it triggers -->
-      <div class="rv2-card">
-        <div class="rv2-card-h">
-          <h3>When it triggers</h3>
-          <button class="rv2-edit" onclick="goStep(1)">Edit ›</button>
+      <!-- ISSUE SUMMARY -->
+      <section class="rv3-section">
+        <div class="rv3-section-h">
+          <h2>Issue summary</h2>
+          <button class="rv3-edit" onclick="goStep(1)">Edit ›</button>
         </div>
-        <div class="rv2-kv">
-          <div class="rv2-row"><span class="rv2-k">Observation frequency</span><span class="rv2-v">Every 60 mins</span></div>
-          <div class="rv2-row"><span class="rv2-k">Trigger condition</span><span class="rv2-v"><b>DO &lt; 2.0 mg/L</b> sustained 12 mins</span></div>
-          <div class="rv2-row"><span class="rv2-k">Auto-resolve</span><span class="rv2-v">DO ≥ 2.5 mg/L for 5 mins</span></div>
+        <div class="rv3-kv">
+          <div class="rv3-row"><span class="rv3-k">Plant</span><span class="rv3-v">IREO Grand Arch</span></div>
+          <div class="rv3-row"><span class="rv3-k">Equipment</span><span class="rv3-v">Aeration Tank · Bay 3</span></div>
+          <div class="rv3-row"><span class="rv3-k">Issue</span><span class="rv3-v">Low DO</span></div>
+          <div class="rv3-row"><span class="rv3-k">Description</span><span class="rv3-v rv3-v-line">DO in aeration tank is below 2.0 mg/L. Walk the candidate causes — diffusers, sensor, blower, biology.</span></div>
+          <div class="rv3-row"><span class="rv3-k">Severity</span><span class="rv3-v">High (within an hour)</span></div>
+          <div class="rv3-row"><span class="rv3-k">Deadline</span><span class="rv3-v">2 hrs · within shift</span></div>
+          <div class="rv3-row"><span class="rv3-k">Assignment</span><span class="rv3-v">General · anyone on shift</span></div>
+          <div class="rv3-row"><span class="rv3-k">Observation frequency</span><span class="rv3-v">Every 60 mins</span></div>
+          <div class="rv3-row"><span class="rv3-k">Trigger condition</span><span class="rv3-v"><b>DO &lt; 2.0 mg/L</b> sustained 12 mins</span></div>
+          <div class="rv3-row"><span class="rv3-k">Auto-resolve</span><span class="rv3-v">DO ≥ 2.5 mg/L for 5 mins</span></div>
+          <div class="rv3-row"><span class="rv3-k">Communication</span><span class="rv3-v">WhatsApp</span></div>
         </div>
-      </div>
+      </section>
 
-      <!-- Who & how -->
-      <div class="rv2-card">
-        <div class="rv2-card-h">
-          <h3>Who &amp; how</h3>
-          <button class="rv2-edit" onclick="goStep(1)">Edit ›</button>
+      <!-- FLOW SUMMARY -->
+      <section class="rv3-section">
+        <div class="rv3-section-h">
+          <h2>Flow summary</h2>
+          <button class="rv3-edit" onclick="goStep(4)">Edit ›</button>
         </div>
-        <div class="rv2-kv">
-          <div class="rv2-row"><span class="rv2-k">Assignment</span><span class="rv2-v">General · anyone on shift</span></div>
-          <div class="rv2-row"><span class="rv2-k">Communication</span><span class="rv2-v">WhatsApp</span></div>
+        <div class="rv3-stats">
+          <span><b>5</b> steps</span>
+          <span class="rv3-stat-sep"></span>
+          <span><b>11</b> outcome paths</span>
+          <span class="rv3-stat-sep"></span>
+          <span><b>3</b> branching steps</span>
+          <span class="rv3-stat-sep"></span>
+          <span><b>2</b> terminal outcomes</span>
         </div>
-      </div>
-
-      <!-- Flow configuration -->
-      <div class="rv2-card rv2-card-wide">
-        <div class="rv2-card-h">
-          <h3>Flow configuration</h3>
-          <button class="rv2-edit" onclick="goStep(4)">Edit ›</button>
+        <div class="rv3-timeline" tabindex="0">
+          <div class="rv3-tl-rail"></div>
+          <ul class="rv3-tl-list">
+            <li class="rv3-tl-node t-issue">
+              <span class="rv3-tl-dot"></span>
+              <div class="rv3-tl-body">
+                <span class="rv3-tl-type">ISSUE</span>
+                <span class="rv3-tl-title">Low DO in Aeration Tank</span>
+              </div>
+            </li>
+            <li class="rv3-tl-node t-question rv3-tl-branch">
+              <span class="rv3-tl-dot"></span>
+              <div class="rv3-tl-body">
+                <span class="rv3-tl-type">QUESTION · SINGLE</span>
+                <span class="rv3-tl-title">1. Check if aeration is equally happening across the tank</span>
+                <ul class="rv3-tl-branches">
+                  <li><span class="rv3-tl-blabel">Yes, bubbles seem normal</span><span class="rv3-tl-bgo">→ Step 2</span></li>
+                  <li><span class="rv3-tl-blabel">Moderately, some bubbles</span><span class="rv3-tl-bgo">→ Step 2</span></li>
+                  <li><span class="rv3-tl-blabel">No bubbles on the tank</span><span class="rv3-tl-bgo">→ No-bubbles action</span></li>
+                  <li><span class="rv3-tl-blabel">Skip to the End</span><span class="rv3-tl-bgo">→ Upload + Send</span></li>
+                </ul>
+              </div>
+            </li>
+            <li class="rv3-tl-node t-question rv3-tl-branch">
+              <span class="rv3-tl-dot"></span>
+              <div class="rv3-tl-body">
+                <span class="rv3-tl-type">QUESTION · MCQ</span>
+                <span class="rv3-tl-title">2. Check if dead zones are created in the tank</span>
+                <ul class="rv3-tl-branches">
+                  <li><span class="rv3-tl-blabel">Reduced treatment performance</span><span class="rv3-tl-bgo">→ Yes/No · sym1</span></li>
+                  <li><span class="rv3-tl-blabel">Dark / black-coloured water</span><span class="rv3-tl-bgo">→ Yes/No · sym2</span></li>
+                  <li><span class="rv3-tl-blabel">Sludge accumulation</span><span class="rv3-tl-bgo">→ Yes/No · sym3</span></li>
+                  <li><span class="rv3-tl-blabel">Uneven DO readings</span><span class="rv3-tl-bgo">→ Yes/No · sym4</span></li>
+                  <li><span class="rv3-tl-blabel">Skip to the End</span><span class="rv3-tl-bgo">→ Media + RCA</span></li>
+                  <li><span class="rv3-tl-blabel">Fall back step</span><span class="rv3-tl-bgo">→ Reassignment</span></li>
+                </ul>
+              </div>
+            </li>
+            <li class="rv3-tl-node t-task">
+              <span class="rv3-tl-dot"></span>
+              <div class="rv3-tl-body">
+                <span class="rv3-tl-type">ACTION</span>
+                <span class="rv3-tl-title">Next step in the diagnosis process</span>
+              </div>
+            </li>
+            <li class="rv3-tl-node t-task">
+              <span class="rv3-tl-dot"></span>
+              <div class="rv3-tl-body">
+                <span class="rv3-tl-type">ACTION · REMEDIAL</span>
+                <span class="rv3-tl-title">Diffusers are choked and need cleaning</span>
+              </div>
+            </li>
+            <li class="rv3-tl-node t-done">
+              <span class="rv3-tl-dot"></span>
+              <div class="rv3-tl-body">
+                <span class="rv3-tl-type">DONE</span>
+                <span class="rv3-tl-title">Call supervisor to plan this action — stop here</span>
+              </div>
+            </li>
+            <li class="rv3-tl-node t-link">
+              <span class="rv3-tl-dot"></span>
+              <div class="rv3-tl-body">
+                <span class="rv3-tl-type">LINK</span>
+                <span class="rv3-tl-title">Next diagnostic tree → DO Sensor Failure</span>
+              </div>
+            </li>
+          </ul>
         </div>
-        <div class="rv2-stats">
-          <div class="rv2-stat"><div class="rv2-stat-n">5</div><div class="rv2-stat-l">Total steps</div></div>
-          <div class="rv2-stat"><div class="rv2-stat-n">11</div><div class="rv2-stat-l">Outcome paths</div></div>
-          <div class="rv2-stat"><div class="rv2-stat-n">3</div><div class="rv2-stat-l">Branching</div></div>
-          <div class="rv2-stat"><div class="rv2-stat-n">2</div><div class="rv2-stat-l">Terminal</div></div>
-          <div class="rv2-stat"><div class="rv2-stat-n">5</div><div class="rv2-stat-l">Longest path</div></div>
-        </div>
-        <div class="rv2-kv" style="margin-top:18px">
-          <div class="rv2-row"><span class="rv2-k">Photo hard-block</span><span class="rv2-v">1 (step 3 — Photo to Supervisor)</span></div>
-          <div class="rv2-row"><span class="rv2-k">SME approval</span><span class="rv2-v">1 (step 6)</span></div>
-        </div>
-      </div>
+      </section>
     </div>
 
     <!-- Publish CTA -->
