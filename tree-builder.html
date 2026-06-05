@@ -286,8 +286,9 @@ input,textarea,select{font-family:inherit;}
 .cv-insp-empty .muted{font-size:11.5px;line-height:1.5;}
 
 /* ---------- editor (shared) ---------- */
-.editor{padding:16px;display:flex;flex-direction:column;gap:13px;}
-.ed-typehead{display:flex;align-items:center;gap:10px;padding-bottom:13px;border-bottom:1px solid var(--line2);}
+/* Inspector — refined hierarchy for cognitive-load reduction */
+.editor{padding:20px 22px 22px;display:flex;flex-direction:column;gap:18px;}
+.ed-typehead{display:flex;align-items:center;gap:12px;padding:0 0 16px;border-bottom:1px solid var(--line2);}
 .ed-typeicon{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;flex:none;}
 .ed-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);}
 .ed-typeselect{font-size:13.5px;font-weight:600;color:var(--ink);border:none;background:none;padding:1px 0;cursor:pointer;max-width:230px;}
@@ -326,14 +327,22 @@ input,textarea,select{font-family:inherit;}
 .hdr-tpl:hover .hdr-tpl-del{opacity:1;}
 .hdr-tpl-del:hover{background:#fdecea;color:#c0473a;}
 .menu-backdrop{position:fixed;inset:0;z-index:55;}
-.ed-field{display:flex;flex-direction:column;gap:5px;}
+.ed-field{display:flex;flex-direction:column;gap:6px;}
+.ed-label{font:700 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#7a8497}
 .ed-label{font-size:11px;font-weight:600;color:var(--ink2);}
 .ed-input{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--ink);background:#fff;transition:.13s;}
 .ed-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 .ed-input-sm{padding:6px 9px;font-size:12px;}
 .ed-area{resize:vertical;line-height:1.45;}
-.ed-block{display:flex;flex-direction:column;gap:8px;}
-.ed-blockhead{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);}
+.ed-block{display:flex;flex-direction:column;gap:10px;padding:14px 0 0;border-top:1px solid var(--line2);}
+.ed-blockhead{display:flex;align-items:center;gap:8px;font:700 10.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#7a8497;margin-bottom:2px;}
+.ed-count{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:rgba(14,20,40,.06);color:#5a6478;font:700 10.5px 'IBM Plex Mono',monospace;letter-spacing:.2px}
+
+/* "Routes to →" subtext under each choice (auto-populated by canvas connections) */
+.ed-target-sub{font:500 11.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink3);padding:4px 0 0 2px;display:flex;align-items:center;gap:6px;line-height:1.4}
+.ed-target-arrow{color:var(--accent);font-weight:700}
+.ed-target-name{color:var(--ink2);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+.ed-target-empty{color:#a3acb8;font-style:italic;font-weight:500}
 .ed-count{display:grid;place-items:center;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--line2);color:var(--ink2);font-size:10px;}
 .ed-optrow{display:flex;gap:7px;align-items:flex-start;}
 .ed-optletter{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:10px;flex:none;margin-top:6px;}
@@ -1137,31 +1146,39 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
     showOpts && React.createElement('div', { className: 'ed-block' },
       React.createElement('div', { className: 'ed-blockhead' }, isNumericQ ? 'Threshold bands & routing' : 'Choices & routing',
         React.createElement('span', { className: 'ed-count' }, (node.options || []).length)),
-      (node.options || []).map((o, i) =>
-        React.createElement('div', { className: 'ed-optrow', key: o.id },
+      (node.options || []).map((o, i) => {
+        const t = o.target ? nodes[o.target] : null;
+        const tLabel = t ? (t.title || (NODE_TYPES[t.type] && NODE_TYPES[t.type].label) || 'Untitled') : null;
+        return React.createElement('div', { className: 'ed-optrow', key: o.id },
           React.createElement('span', { className: 'ed-optletter' }, isNumericQ ? (i + 1) : String.fromCharCode(65 + i)),
           React.createElement('div', { className: 'ed-optfields' },
             React.createElement('input', { className: 'ed-input ed-input-sm', value: o.label, placeholder: isNumericQ ? 'e.g. < 2.0 mg/L' : 'Answer label',
               onChange: e => setOpt(o.id, { label: e.target.value }) }),
-            React.createElement('div', { className: 'ed-route' },
-              React.createElement('span', { className: 'ed-arrow' }, '→'),
-              React.createElement('select', { className: 'ed-select', value: o.target || '',
-                onChange: e => setOpt(o.id, { target: e.target.value || null }) },
-                React.createElement('option', { value: '' }, '— pick next step —'),
-                tgts.map(t => React.createElement('option', { key: t.id, value: t.id }, t.label))))),
+            React.createElement('div', { className: 'ed-target-sub' },
+              tLabel
+                ? React.createElement(React.Fragment, null,
+                    React.createElement('span', { className: 'ed-target-arrow' }, '→'),
+                    React.createElement('span', { className: 'ed-target-name' }, tLabel))
+                : React.createElement('span', { className: 'ed-target-empty' }, 'Connect this choice on the canvas to set its next step'))),
           React.createElement('button', { className: 'ed-x', title: 'Remove answer', onClick: () => delOpt(o.id) },
-            React.createElement(MiniIcon, { name: 'close', size: 13 })))),
+            React.createElement(MiniIcon, { name: 'close', size: 13 })));
+      }),
       React.createElement('button', { className: 'ed-addopt', onClick: addOpt },
         React.createElement(MiniIcon, { name: 'plus', size: 13 }), isNumericQ ? ' Add band' : ' Add choice')
     ),
 
-    (!showOpts && !meta.terminal) && React.createElement(Field, { label: 'Routes to next step' },
-      React.createElement('div', { className: 'ed-route' },
-        React.createElement('span', { className: 'ed-arrow' }, '→'),
-        React.createElement('select', { className: 'ed-select', value: node.next || '',
-          onChange: e => patch({ next: e.target.value || null }) },
-          React.createElement('option', { value: '' }, '— pick next step —'),
-          tgts.map(t => React.createElement('option', { key: t.id, value: t.id }, t.label))))),
+    (!showOpts && !meta.terminal) && (() => {
+      const t = node.next ? nodes[node.next] : null;
+      const tLabel = t ? (t.title || (NODE_TYPES[t.type] && NODE_TYPES[t.type].label) || 'Untitled') : null;
+      return React.createElement('div', { className: 'ed-block' },
+        React.createElement('div', { className: 'ed-blockhead' }, 'Next step'),
+        React.createElement('div', { className: 'ed-target-sub' },
+          tLabel
+            ? React.createElement(React.Fragment, null,
+                React.createElement('span', { className: 'ed-target-arrow' }, '→'),
+                React.createElement('span', { className: 'ed-target-name' }, tLabel))
+            : React.createElement('span', { className: 'ed-target-empty' }, 'Connect this card on the canvas to set its next step')));
+    })(),
 
     meta.terminal && React.createElement('div', { className: 'ed-terminal' }, 'This step ends the diagnostic flow.'),
 
