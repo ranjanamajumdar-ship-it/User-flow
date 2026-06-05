@@ -2322,9 +2322,9 @@ function App(){
             title="A vertical, top-to-bottom branching tree — the issue at the top, each answer branching downward into its own path. Click a card to edit it. Drag connector dots between cards to wire them together."
             onChange={(e) => { setFlowName(e.target.value); }}
             onBlur={(e) => { if (!e.target.value.trim()) setFlowName('Untitled flow'); }} />
-          <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving' : 'Saved'}</span>
         </div>
         <div className="hdr-right">
+          <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving' : 'Saved'}</span>
           <button className="hdr-clear" onClick={clearCanvas} title="Remove every node and image from the canvas">
             <MiniIcon name="trash" size={13} /> Clear canvas
           </button>
