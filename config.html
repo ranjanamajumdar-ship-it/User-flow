@@ -910,8 +910,9 @@ textarea{min-height:54px;resize:vertical;line-height:1.6;font-size:15px;font-wei
 /* Save-as-template card-style button when used inside the footer */
 .footer-tpl-btn{margin-left:auto}
 
-/* Builder / Templates toggle in the top app bar */
-.bt-toggle{display:inline-flex;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:10px}
+/* Builder / Templates toggle in the top app bar — only on Build the flow */
+.bt-toggle{display:none;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:10px}
+body:has(#p-4.on) #btToggle{display:inline-flex}
 .bt-tab{
   display:inline-flex;align-items:center;gap:6px;
   padding:6px 16px;border-radius:999px;border:0;cursor:pointer;
