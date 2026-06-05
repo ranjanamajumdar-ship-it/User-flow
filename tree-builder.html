@@ -1127,9 +1127,7 @@ function NodeEditor({ node, nodes, onChange, onDelete, onDuplicate, compact }){
       React.createElement('input', { className: 'ed-input', value: node.title || '', placeholder: node.type === 'issue' ? 'Type the issue name…' : 'Step title',
         onChange: e => patch({ title: e.target.value }) })),
 
-    React.createElement(Field, { label: 'Instruction to operator' },
-      React.createElement('textarea', { className: 'ed-input ed-area', value: node.detail || '', rows: compact ? 2 : 3,
-        placeholder: meta.hint, onChange: e => patch({ detail: e.target.value }) })),
+
 
     showOpts && React.createElement('div', { className: 'ed-block' },
       React.createElement('div', { className: 'ed-blockhead' }, isNumericQ ? 'Threshold bands & routing' : 'Choices & routing',
@@ -2065,9 +2063,6 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
                   </div>
                   <input className="cv-node-title cv-node-title-input" value={n.title || ''} placeholder="Untitled — type a title"
                     onChange={e => onNodes(Object.assign({}, nodes, { [n.id]: Object.assign({}, nodes[n.id], { title: e.target.value }) }))}
-                    onPointerDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} />
-                  <textarea className="cv-node-detail cv-node-detail-input" value={n.detail || ''} placeholder="Add a description or instruction…" rows={2}
-                    onChange={e => onNodes(Object.assign({}, nodes, { [n.id]: Object.assign({}, nodes[n.id], { detail: e.target.value }) }))}
                     onPointerDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} />
                   {(m.branching || (n.options && n.options.length > 0)) ? (
                     <div className="cv-opts">
