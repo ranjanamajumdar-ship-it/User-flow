@@ -100,13 +100,6 @@ input,textarea,select{font-family:inherit;}
 .tpl-empty-ic{font-size:42px;margin-bottom:14px}
 .tpl-empty h3{margin:0 0 8px;font-size:17px;color:var(--ink)}
 .tpl-empty p{margin:0;font-size:13px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.5}
-.hdr-modes{display:flex;gap:6px;margin:0 auto;background:#eef2f6;padding:4px;border-radius:11px;}
-.modebtn{display:flex;flex-direction:column;align-items:flex-start;padding:6px 15px;border-radius:8px;line-height:1.2;transition:.15s;white-space:nowrap;}
-.modebtn-l{font-size:13px;font-weight:600;color:var(--ink2);white-space:nowrap;}
-.modebtn-s{font-size:10.5px;color:var(--ink3);}
-.modebtn.on{background:var(--panel);box-shadow:var(--shadow-sm);}
-.modebtn.on .modebtn-l{color:var(--accent);}
-.modebtn:hover:not(.on){background:rgba(255,255,255,.6);}
 .hdr-right{display:flex;align-items:center;gap:16px;justify-content:flex-end;flex:none;}
 .savechip{font-size:11.5px;color:var(--ink3);padding:4px 8px;border-radius:6px;}
 .savechip.saving{color:var(--accent);}
@@ -117,7 +110,6 @@ input,textarea,select{font-family:inherit;}
 .stage{flex:1;min-height:0;position:relative;}
 
 /* ============ CANVAS ============ */
-.cv-root{display:flex;height:100%;}
 .cv-palette{width:212px;flex:none;background:var(--panel);border-right:1px solid var(--line);padding:14px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;}
 .cv-palette-h{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink3);padding:2px 4px 7px;}
 .cv-chip{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);text-align:left;transition:.13s;touch-action:none;}
@@ -126,12 +118,10 @@ input,textarea,select{font-family:inherit;}
 .cv-chip-tx{font-size:14px;font-weight:600;color:var(--ink);}
 .cv-palette-tip{margin-top:auto;font-size:11px;color:var(--ink3);padding:10px 4px 2px;line-height:1.5;}
 
-.cv-viewport{position:relative;flex:1;min-width:0;overflow:hidden;background:var(--bg);touch-action:none;}
 .cv-dots{position:absolute;inset:0;background-image:radial-gradient(circle,#e4e8ed 1px,transparent 1px);pointer-events:none;}
 .cv-world{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform;}
 .cv-edges{position:absolute;top:0;left:0;overflow:visible;pointer-events:none;}
 .cv-edgehit{stroke:transparent;stroke-width:18px;fill:none;pointer-events:stroke;cursor:pointer;}
-.cv-edgelabel{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:20px;font-size:10px;font-weight:600;color:var(--ink2);padding:3px 10px;white-space:nowrap;line-height:1.3;box-shadow:0 1px 3px rgba(20,33,48,.06);max-width:150px;overflow:hidden;text-overflow:ellipsis;text-align:center;}
 .cv-edgedel{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid var(--line);color:var(--ink3);box-shadow:var(--shadow);cursor:pointer;pointer-events:auto;transition:.12s;}
 .cv-edgedel:hover{background:#fdecea;border-color:#e7a59c;color:#c0473a;transform:scale(1.08);}
 
@@ -195,7 +185,6 @@ input,textarea,select{font-family:inherit;}
 .vt-card:hover .vt-add{opacity:1;}
 .vt-add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
 
-.cv-ghost{position:fixed;transform:translate(-50%,-50%);display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--c);border-left:3px solid var(--c);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:600;box-shadow:var(--shadow);pointer-events:none;z-index:999;opacity:.95;}
 
 .cv-toolbar{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:4px;background:#0E1428;border:0;border-radius:999px;padding:6px;box-shadow:0 16px 36px -10px rgba(20,30,60,.45);z-index:60;}
 .vt-toolbar{position:fixed!important;bottom:28px;left:50%;}
@@ -260,8 +249,6 @@ input,textarea,select{font-family:inherit;}
 .cv-tbtn{display:flex;align-items:center;gap:5px;padding:7px 9px;border-radius:7px;color:var(--ink2);font-size:12px;font-weight:600;}
 .cv-tbtn:hover{background:var(--line2);color:var(--ink);}
 .cv-tbpct{min-width:48px;justify-content:center;font-variant-numeric:tabular-nums;}
-.cv-tbsep{width:1px;height:20px;background:var(--line);margin:0 3px;}
-.cv-stats{position:absolute;bottom:18px;right:16px;font-size:11px;color:var(--ink3);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:4px 9px;font-variant-numeric:tabular-nums;}
 
 /* inspector */
 .cv-inspector{width:0;flex:none;background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;transition:width .18s;}
@@ -404,46 +391,12 @@ input,textarea,select{font-family:inherit;}
 .ol-side.open{width:340px;}
 
 /* ============ WIZARD ============ */
-.wz-root{display:flex;height:100%;}
-.wz-rail{width:280px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;}
-.wz-rail-h{display:flex;align-items:center;gap:8px;padding:16px 18px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);}
-.wz-railcount{display:grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--line2);color:var(--ink2);font-size:10.5px;}
-.wz-list{flex:1;overflow-y:auto;padding:0 10px;display:flex;flex-direction:column;gap:3px;}
-.wz-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;text-align:left;transition:.12s;}
-.wz-item:hover{background:var(--line2);}
-.wz-item.is-cur{background:var(--accent-soft);}
-.wz-num{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--line2);color:var(--ink2);font-size:10.5px;font-weight:700;flex:none;}
-.wz-item.is-cur .wz-num{background:var(--accent);color:#fff;}
-.wz-item-ic{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;flex:none;}
-.wz-item-tx{display:flex;flex-direction:column;line-height:1.25;min-width:0;}
-.wz-item-title{font-size:12.5px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.wz-item-sub{font-size:10.5px;color:var(--ink3);}
-.wz-add{display:flex;align-items:center;justify-content:center;gap:7px;margin:10px;padding:10px;border-radius:9px;border:1px dashed var(--line);color:var(--accent);font-size:12.5px;font-weight:600;}
-.wz-add:hover{background:var(--accent-soft);border-color:var(--accent);}
-.wz-stage{flex:1;min-width:0;overflow-y:auto;display:flex;justify-content:center;padding:34px 24px 60px;}
-.wz-card{width:100%;max-width:560px;background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;height:fit-content;}
-.wz-card-top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line2);background:#fbfcfd;}
-.wz-step-of{font-size:12px;font-weight:600;color:var(--ink2);}
-.wz-card-cat{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
-.wz-editorwrap .editor{padding:20px;gap:16px;}
-.wz-editorwrap .ed-input{padding:10px 12px;font-size:14px;}
-.wz-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--line2);background:#fbfcfd;}
-.wz-navbtn{font-size:12.5px;font-weight:600;color:var(--ink2);padding:8px 15px;border:1px solid var(--line);border-radius:9px;background:#fff;transition:.13s;}
-.wz-navbtn:hover:not(:disabled){border-color:var(--ink3);color:var(--ink);}
-.wz-navbtn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-.wz-navbtn.primary:hover:not(:disabled){background:var(--accent-ink);}
-.wz-navbtn:disabled{opacity:.4;cursor:not-allowed;}
-.wz-dots{display:flex;gap:5px;}
-.wz-dot{width:6px;height:6px;border-radius:50%;background:var(--line);}
-.wz-dot.on{background:var(--accent);width:18px;border-radius:3px;}
 
 @media (max-width:900px){
   .hdr-left,.hdr-right{min-width:0;}
   .hdr-crumb{display:none;}
-  .modebtn-s{display:none;}
 }
 /* Embedded-mode overrides — locked to vertical tree */
-.hdr-modes{display:none!important}
 .hdr{height:46px;padding:0 14px}
 .hdr-left{min-width:0}
 .hdr-logo{width:26px;height:26px;font-size:11px}
@@ -1271,350 +1224,7 @@ const { useRef, useState, useEffect, useLayoutEffect, useMemo } = React;
 
 const NODE_W = 288;
 
-function FlowCanvas({ nodes, onNodes, selected, setSelected, view, setView }){
-  const wrapRef = useRef(null);
-  const nodeRefs = useRef({});
-  const [geom, setGeom] = useState({});
-  const [drag, setDrag] = useState(null);        // node drag
-  const [pan, setPan] = useState(null);           // panning
-  const [conn, setConn] = useState(null);         // connection in progress
-  const [ghost, setGhost] = useState(null);       // palette drag ghost
-  const [hoverTarget, setHoverTarget] = useState(null);
-  const [hoverEdge, setHoverEdge] = useState(null);
-
-  const edges = useMemo(() => deriveEdges(nodes), [nodes]);
-
-  /* ---- measure node geometry ---- */
-  useLayoutEffect(() => {
-    const g = {};
-    Object.keys(nodes).forEach(id => {
-      const el = nodeRefs.current[id];
-      if (!el) return;
-      const opts = {};
-      el.querySelectorAll('[data-opt]').forEach(o => {
-        opts[o.getAttribute('data-opt')] = o.offsetTop + o.offsetHeight / 2;
-      });
-      const out = el.querySelector('[data-out]');
-      g[id] = { w: el.offsetWidth, h: el.offsetHeight, opts, outY: out ? out.offsetTop + out.offsetHeight / 2 : el.offsetHeight / 2 };
-    });
-    setGeom(prev => (JSON.stringify(prev) === JSON.stringify(g) ? prev : g));
-  });
-
-  /* ---- helpers ---- */
-  const toWorld = (cx, cy) => {
-    const r = wrapRef.current.getBoundingClientRect();
-    return { x: (cx - r.left - view.x) / view.k, y: (cy - r.top - view.y) / view.k };
-  };
-  const srcPoint = (id, optId) => {
-    const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 60 };
-    let y;
-    if (optId) y = n.y + (g.opts && g.opts[optId] != null ? g.opts[optId] : g.h / 2);
-    else y = n.y + (g.outY != null ? g.outY : g.h / 2);
-    return { x: n.x + (g.w || NODE_W), y };
-  };
-  const tgtPoint = (id) => {
-    const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 60 };
-    return { x: n.x, y: n.y + (g.h || 60) / 2 };
-  };
-  const pathD = (s, t) => {
-    const dx = Math.max(40, Math.abs(t.x - s.x) * 0.5);
-    return `M${s.x},${s.y} C${s.x + dx},${s.y} ${t.x - dx},${t.y} ${t.x},${t.y}`;
-  };
-  const nodeAt = (wx, wy) => {
-    const ids = Object.keys(nodes);
-    for (let i = ids.length - 1; i >= 0; i--) {
-      const id = ids[i]; const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 60 };
-      if (wx >= n.x && wx <= n.x + (g.w || NODE_W) && wy >= n.y && wy <= n.y + (g.h || 60)) return id;
-    }
-    return null;
-  };
-
-  /* ---- mutations ---- */
-  const setNode = (id, patch) => onNodes(Object.assign({}, nodes, { [id]: Object.assign({}, nodes[id], patch) }));
-  const addNode = (type, x, y) => {
-    const id = uid(type);
-    const base = Object.assign({ id, type, title: NODE_TYPES[type].label, detail: '', options: [], next: null, x, y }, defaultSub(type));
-    if (BRANCHING.has(type)) base.options = [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }];
-    onNodes(Object.assign({}, nodes, { [id]: base }));
-    setSelected(id);
-  };
-  const deleteNode = (id) => {
-    const copy = {};
-    Object.values(nodes).forEach(n => {
-      if (n.id === id) return;
-      const c = Object.assign({}, n);
-      if (c.next === id) c.next = null;
-      if (c.options) c.options = c.options.map(o => o.target === id ? Object.assign({}, o, { target: null }) : o);
-      copy[n.id] = c;
-    });
-    onNodes(copy);
-    if (selected === id) setSelected(null);
-  };
-  const duplicateNode = (id) => {
-    const src = nodes[id]; const nid = uid(src.type);
-    const clone = Object.assign({}, src, { id: nid, x: src.x + 36, y: src.y + 36,
-      title: (src.title || '') + ' copy',
-      options: (src.options || []).map(o => ({ id: uid('o'), label: o.label, target: o.target })) });
-    onNodes(Object.assign({}, nodes, { [nid]: clone }));
-    setSelected(nid);
-  };
-  const connect = (fromId, optId, toId) => {
-    if (fromId === toId || !toId) return;
-    const n = nodes[fromId];
-    if (BRANCHING.has(n.type)) {
-      if (optId) setNode(fromId, { options: n.options.map(o => o.id === optId ? Object.assign({}, o, { target: toId }) : o) });
-      else setNode(fromId, { options: (n.options || []).concat([{ id: uid('o'), label: 'New option', target: toId }]) });
-    } else {
-      setNode(fromId, { next: toId });
-    }
-  };
-  const deleteEdge = (e) => {
-    const n = nodes[e.from]; if (!n) return;
-    if (e.kind === 'branch') setNode(e.from, { options: (n.options || []).map(o => o.id === e.optId ? Object.assign({}, o, { target: null }) : o) });
-    else setNode(e.from, { next: null });
-    setHoverEdge(null);
-  };
-
-  /* ---- global pointer handlers ---- */
-  useEffect(() => {
-    const move = (e) => {
-      if (pan) {
-        setView(v => Object.assign({}, v, { x: pan.vx + (e.clientX - pan.sx), y: pan.vy + (e.clientY - pan.sy) }));
-      } else if (drag) {
-        const w = toWorld(e.clientX, e.clientY);
-        setNode(drag.id, { x: w.x - drag.ox, y: w.y - drag.oy });
-      } else if (conn) {
-        const w = toWorld(e.clientX, e.clientY);
-        setConn(c => Object.assign({}, c, { pt: w }));
-        setHoverTarget(nodeAt(w.x, w.y));
-      } else if (ghost) {
-        setGhost(g => Object.assign({}, g, { cx: e.clientX, cy: e.clientY }));
-      }
-    };
-    const up = (e) => {
-      if (conn) {
-        const w = toWorld(e.clientX, e.clientY);
-        const t = nodeAt(w.x, w.y);
-        if (t) connect(conn.from, conn.optId, t);
-        setConn(null); setHoverTarget(null);
-      }
-      if (ghost) {
-        const r = wrapRef.current.getBoundingClientRect();
-        if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
-          const w = toWorld(e.clientX, e.clientY);
-          addNode(ghost.type, w.x - NODE_W / 2, w.y - 24);
-        }
-        setGhost(null);
-      }
-      setDrag(null); setPan(null);
-    };
-    window.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', up);
-    return () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
-  });
-
-  /* ---- wheel zoom (non-passive) ---- */
-  useEffect(() => {
-    const el = wrapRef.current; if (!el) return;
-    const onWheel = (e) => {
-      e.preventDefault();
-      const r = el.getBoundingClientRect();
-      const sx = e.clientX - r.left, sy = e.clientY - r.top;
-      if (e.ctrlKey || e.metaKey || Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        const factor = Math.exp(-e.deltaY * 0.0015);
-        setView(v => {
-          const k = Math.min(2.2, Math.max(0.2, v.k * factor));
-          const wx = (sx - v.x) / v.k, wy = (sy - v.y) / v.k;
-          return { x: sx - wx * k, y: sy - wy * k, k };
-        });
-      } else {
-        setView(v => Object.assign({}, v, { x: v.x - e.deltaX, y: v.y - e.deltaY }));
-      }
-    };
-    el.addEventListener('wheel', onWheel, { passive: false });
-    return () => el.removeEventListener('wheel', onWheel);
-  }, [view]);
-
-  const zoomBy = (f) => setView(v => {
-    const r = wrapRef.current.getBoundingClientRect();
-    const sx = r.width / 2, sy = r.height / 2;
-    const k = Math.min(2.2, Math.max(0.2, v.k * f));
-    const wx = (sx - v.x) / v.k, wy = (sy - v.y) / v.k;
-    return { x: sx - wx * k, y: sy - wy * k, k };
-  });
-  const fitView = () => {
-    const ids = Object.keys(nodes); if (!ids.length) return;
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    ids.forEach(id => { const n = nodes[id]; const g = geom[id] || { w: NODE_W, h: 80 };
-      minX = Math.min(minX, n.x); minY = Math.min(minY, n.y);
-      maxX = Math.max(maxX, n.x + (g.w || NODE_W)); maxY = Math.max(maxY, n.y + (g.h || 80)); });
-    const r = wrapRef.current.getBoundingClientRect();
-    const pad = 80;
-    const k = Math.min(1.1, Math.max(0.2, Math.min((r.width - pad) / (maxX - minX), (r.height - pad) / (maxY - minY))));
-    setView({ x: (r.width - (maxX - minX) * k) / 2 - minX * k, y: (r.height - (maxY - minY) * k) / 2 - minY * k, k });
-  };
-  const tidy = () => { onNodes(autoLayout(nodes)); setTimeout(fitView, 30); };
-
-  /* ---- background pan start ---- */
-  const onBgDown = (e) => {
-    if (e.target.closest('[data-node]') || e.target.closest('[data-anchor]')) return;
-    setSelected(null);
-    setPan({ sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y });
-  };
-
-  /* ---- render ---- */
-  const selNode = selected ? nodes[selected] : null;
-
-  return (
-    <div className="cv-root">
-      {/* palette */}
-      <div className="cv-palette">
-        <div className="cv-palette-h">Add step</div>
-        {Object.keys(NODE_TYPES).map(k => {
-          const m = NODE_TYPES[k]; const c = CAT_META[m.cat];
-          return (
-            <button key={k} className="cv-chip" style={{ '--c': c.color, '--cs': c.soft }}
-              onPointerDown={(e) => { e.preventDefault(); setGhost({ type: k, cx: e.clientX, cy: e.clientY }); }}
-              onClick={() => { const r = wrapRef.current.getBoundingClientRect(); const w = toWorld(r.left + r.width / 2, r.top + r.height / 2); addNode(k, w.x - NODE_W / 2, w.y - 24); }}
-              title={m.hint}>
-              <span className="cv-chip-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={17} color={c.color} /></span>
-              <span className="cv-chip-tx">{m.label}</span>
-            </button>
-          );
-        })}
-        <div className="cv-palette-tip">Click to drop at center · drag onto canvas to place</div>
-      </div>
-
-      {/* viewport */}
-      <div className="cv-viewport" ref={wrapRef} onPointerDown={onBgDown}
-        style={{ cursor: pan ? 'grabbing' : 'default' }}>
-        <div className="cv-dots" style={{ backgroundPosition: `${view.x}px ${view.y}px`, backgroundSize: `${24 * view.k}px ${24 * view.k}px` }} />
-        <div className="cv-world" style={{ transform: `translate(${view.x}px,${view.y}px) scale(${view.k})` }}>
-          <svg className="cv-edges" width="6000" height="4000">
-            <defs>
-              <marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
-                <path d="M1,1 L7,4.5 L1,8" fill="none" stroke="#b8c0ca" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </marker>
-            </defs>
-            {edges.map(e => {
-              const s = srcPoint(e.from, e.kind === 'branch' ? e.optId : null);
-              const t = tgtPoint(e.to);
-              const mid = { x: (s.x + t.x) / 2, y: (s.y + t.y) / 2 };
-              const col = colorOf(nodes[e.from].type);
-              const hov = hoverEdge === e.id;
-              return (
-                <g key={e.id}
-                  onPointerOver={() => setHoverEdge(e.id)}
-                  onPointerOut={(ev) => { if (!ev.currentTarget.contains(ev.relatedTarget)) setHoverEdge(h => h === e.id ? null : h); }}>
-                  <path className="cv-edgehit" d={pathD(s, t)} />
-                  <path d={pathD(s, t)} fill="none" stroke={hov ? '#c0473a' : col} strokeOpacity={hov ? 0.9 : 0.42} strokeWidth={hov ? 2.6 : 2} markerEnd="url(#arw)" style={{ transition: 'stroke .12s' }} />
-                  {e.label && !hov && (
-                    <foreignObject x={mid.x - 75} y={mid.y - 13} width="150" height="26" style={{ overflow: 'visible' }}>
-                      <div className="cv-edgelabel">{e.label}</div>
-                    </foreignObject>
-                  )}
-                  {hov && (
-                    <foreignObject x={mid.x - 11} y={mid.y - 11} width="22" height="22" style={{ overflow: 'visible' }}>
-                      <div className="cv-edgedel" title="Delete this connection"
-                        onPointerDown={ev => { ev.stopPropagation(); }}
-                        onClick={ev => { ev.stopPropagation(); deleteEdge(e); }}>
-                        <MiniIcon name="close" size={12} />
-                      </div>
-                    </foreignObject>
-                  )}
-                </g>
-              );
-            })}
-            {conn && (() => { const s = srcPoint(conn.from, conn.optId); return (
-              <path d={pathD(s, conn.pt)} fill="none" stroke="#0a6e9e" strokeWidth="2.2" strokeDasharray="5 4" />
-            ); })()}
-          </svg>
-
-          {Object.values(nodes).map(n => {
-            const m = NODE_TYPES[n.type] || NODE_TYPES.task; const c = CAT_META[m.cat];
-            const isSel = selected === n.id; const isTgt = hoverTarget === n.id && conn;
-            return (
-              <div key={n.id} data-node ref={el => nodeRefs.current[n.id] = el}
-                className={'cv-node' + (isSel ? ' is-sel' : '') + (isTgt ? ' is-tgt' : '')}
-                style={{ left: n.x, top: n.y, width: NODE_W, '--c': c.color, '--cs': c.soft, '--ci': c.ink, '--cg': c.grad }}
-                onPointerDown={(e) => {
-                  if (e.target.closest('[data-anchor]')) return;
-                  e.stopPropagation(); setSelected(n.id);
-                  const w = toWorld(e.clientX, e.clientY);
-                  setDrag({ id: n.id, ox: w.x - n.x, oy: w.y - n.y });
-                }}>
-                {/* input anchor */}
-                {m.cat !== 'start' && <span className="cv-anchor cv-in" data-anchor title="input" />}
-                <div className="cv-node-head">
-                  <span className="cv-node-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={14} color={c.color} /></span>
-                  <span className="cv-node-cat">{c.name}{subLabel(n) ? <span className="cv-node-sub"> · {subLabel(n)}</span> : null}</span>
-                  <span className="cv-node-tools">
-                    <button className="cv-tool" title="Duplicate" onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); duplicateNode(n.id); }}><MiniIcon name="copy" size={12} /></button>
-                    <button className="cv-tool" title="Delete" onPointerDown={e => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); deleteNode(n.id); }}><MiniIcon name="trash" size={12} /></button>
-                  </span>
-                </div>
-                <div className="cv-node-title">{n.title || 'Untitled'}</div>
-                {/* description display removed — node detail no longer rendered */}
-
-                {m.branching ? (
-                  <div className="cv-opts">
-                    {(n.options || []).map((o, i) => (
-                      <div className="cv-opt" data-opt={o.id} key={o.id}>
-                        <span className="cv-opt-l">{String.fromCharCode(65 + i)}</span>
-                        <span className="cv-opt-tx">{o.label}</span>
-                        <span className="cv-anchor cv-out" data-anchor title="drag to connect"
-                          onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: o.id, pt: w }); }} />
-                      </div>
-                    ))}
-                  </div>
-                ) : (!m.terminal && (
-                  <span className="cv-anchor cv-out cv-out-single" data-anchor data-out title="drag to connect"
-                    onPointerDown={(e) => { e.stopPropagation(); const w = toWorld(e.clientX, e.clientY); setConn({ from: n.id, optId: null, pt: w }); }} />
-                ))}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* ghost while dragging from palette */}
-        {ghost && (() => { const m = NODE_TYPES[ghost.type]; const c = CAT_META[m.cat]; return (
-          <div className="cv-ghost" style={{ left: ghost.cx, top: ghost.cy, '--c': c.color, '--cs': c.soft }}>
-            <span className="cv-node-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={14} color={c.color} /></span>
-            {m.label}
-          </div>
-        ); })()}
-
-        {/* toolbar */}
-        <div className="cv-toolbar">
-          <button className="cv-tbtn" onClick={tidy} title="Auto-layout"><MiniIcon name="tidy" size={16} /><span>Tidy</span></button>
-          <span className="cv-tbsep" />
-          <button className="cv-tbtn" onClick={() => zoomBy(1 / 1.2)} title="Zoom out"><MiniIcon name="minus" size={16} /></button>
-          <button className="cv-tbtn cv-tbpct" onClick={fitView} title="Fit to screen">{Math.round(view.k * 100)}%</button>
-          <button className="cv-tbtn" onClick={() => zoomBy(1.2)} title="Zoom in"><MiniIcon name="plus" size={16} /></button>
-          <button className="cv-tbtn" onClick={fitView} title="Fit"><MiniIcon name="fit" size={16} /></button>
-        </div>
-        <div className="cv-stats">{Object.keys(nodes).length} steps · {edges.length} connections</div>
-      </div>
-
-      {/* inspector */}
-      <div className={'cv-inspector' + (selNode ? ' open' : '')}>
-        {selNode ? (
-          <NodeEditor node={selNode} nodes={nodes}
-            onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
-            onDelete={deleteNode} onDuplicate={duplicateNode} />
-        ) : (
-          <div className="cv-insp-empty">
-            <div className="cv-insp-empty-ic"><MiniIcon name="grip" size={20} /></div>
-            <p>Select a step to edit it.</p>
-            <p className="muted">Drag a chip from the left onto the canvas to add a step. Drag the dot on a step's right edge to connect it to another step.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-window.FlowCanvas = FlowCanvas;
+/* FlowCanvas removed — never used (mode locked to "tree") */
 
 </script>
 <script type="text/babel" data-from="js/outline.jsx">
@@ -2187,91 +1797,7 @@ window.VerticalTree = VerticalTree;
 <script type="text/babel" data-from="js/wizard.jsx">
 /*__js/wizard.jsx__*/
 /* Guided builder — walk through steps one at a time, fill a friendly form, routing via dropdowns. */
-function WizardView({ nodes, onNodes, selected, setSelected }){
-  const edges = useMemo(() => deriveEdges(nodes), [nodes]);
-  const order = useMemo(() => {
-    const childrenOf = {}; edges.forEach(e => { (childrenOf[e.from] = childrenOf[e.from] || []).push(e.to); });
-    const start = Object.values(nodes).find(n => n.type === 'issue') || Object.values(nodes)[0];
-    const seen = new Set(); const out = []; const q = start ? [start.id] : [];
-    while (q.length) { const id = q.shift(); if (seen.has(id) || !nodes[id]) continue; seen.add(id); out.push(id); (childrenOf[id] || []).forEach(t => { if (!seen.has(t)) q.push(t); }); }
-    Object.keys(nodes).forEach(id => { if (!seen.has(id)) out.push(id); });
-    return out;
-  }, [nodes, edges]);
-
-  const curId = (selected && nodes[selected]) ? selected : order[0];
-  const curIdx = order.indexOf(curId);
-  const cur = nodes[curId];
-
-  const addStep = () => {
-    const nid = uid('task');
-    const last = nodes[curId];
-    const nn = { id: nid, type: 'task', taskType: 'diagnostic', title: 'New step', detail: '', options: [], next: null, x: (last ? last.x : 0) + 40, y: (last ? last.y : 0) + 130 };
-    const copy = Object.assign({}, nodes, { [nid]: nn });
-    if (last && !BRANCHING.has(last.type) && !NODE_TYPES[last.type].terminal) { nn.next = last.next; copy[curId] = Object.assign({}, last, { next: nid }); }
-    onNodes(copy); setSelected(nid);
-  };
-  const deleteNode = (id) => {
-    const copy = {};
-    Object.values(nodes).forEach(n => { if (n.id === id) return; const c = Object.assign({}, n);
-      if (c.next === id) c.next = null;
-      if (c.options) c.options = c.options.map(o => o.target === id ? Object.assign({}, o, { target: null }) : o);
-      copy[n.id] = c; });
-    onNodes(copy); setSelected(null);
-  };
-  const duplicateNode = (id) => {
-    const src = nodes[id]; const nid = uid(src.type);
-    onNodes(Object.assign({}, nodes, { [nid]: Object.assign({}, src, { id: nid, title: (src.title||'') + ' copy', options: (src.options||[]).map(o => ({ id: uid('o'), label: o.label, target: o.target })) }) }));
-    setSelected(nid);
-  };
-
-  return (
-    <div className="wz-root">
-      <div className="wz-rail">
-        <div className="wz-rail-h">Steps in this flow <span className="wz-railcount">{order.length}</span></div>
-        <div className="wz-list">
-          {order.map((id, i) => {
-            const n = nodes[id]; const m = NODE_TYPES[n.type] || NODE_TYPES.task; const c = CAT_META[m.cat];
-            const branchN = m.branching ? (n.options || []).length : 0;
-            return (
-              <button key={id} className={'wz-item' + (id === curId ? ' is-cur' : '')} onClick={() => setSelected(id)}>
-                <span className="wz-num">{i + 1}</span>
-                <span className="wz-item-ic" style={{ background: c.soft, color: c.color }}><Icon glyph={m.glyph} size={13} color={c.color} /></span>
-                <span className="wz-item-tx">
-                  <span className="wz-item-title">{n.title || 'Untitled'}</span>
-                  <span className="wz-item-sub">{subLabel(n) || c.name}{branchN ? ' · ' + branchN + ' answers' : ''}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-        <button className="wz-add" onClick={addStep}><MiniIcon name="plus" size={14} /> Add a step</button>
-      </div>
-
-      <div className="wz-stage">
-        {cur ? (
-          <div className="wz-card">
-            <div className="wz-card-top">
-              <span className="wz-step-of">Step {curIdx + 1} of {order.length}</span>
-              <span className="wz-card-cat" style={{ color: CAT_META[catOf(cur.type)].color }}>{CAT_META[catOf(cur.type)].name}</span>
-            </div>
-            <div className="wz-editorwrap">
-              <NodeEditor node={cur} nodes={nodes}
-                onChange={(nn) => onNodes(Object.assign({}, nodes, { [nn.id]: nn }))}
-                onDelete={deleteNode} onDuplicate={duplicateNode} />
-            </div>
-            <div className="wz-nav">
-              <button className="wz-navbtn" disabled={curIdx <= 0} onClick={() => setSelected(order[curIdx - 1])}>← Previous</button>
-              <span className="wz-dots">{order.map((id, i) => <span key={id} className={'wz-dot' + (i === curIdx ? ' on' : '')} />)}</span>
-              <button className="wz-navbtn primary" disabled={curIdx >= order.length - 1} onClick={() => setSelected(order[curIdx + 1])}>Next →</button>
-            </div>
-          </div>
-        ) : <div className="cv-insp-empty"><p>No steps yet — add one to begin.</p></div>}
-      </div>
-    </div>
-  );
-}
-
-window.WizardView = WizardView;
+/* WizardView removed — never used */
 
 </script>
 <script type="text/babel" data-from="js/app.jsx">
@@ -2353,11 +1879,7 @@ function App(){
   };
   const delTpl = (e, id) => { e.stopPropagation(); setTpls(deleteTemplate(id)); };
 
-  const modes = [
-    { k: 'canvas', label: 'Flow canvas', sub: 'Free-form' },
-    { k: 'tree', label: 'Vertical tree', sub: 'Top-down' },
-    { k: 'wizard', label: 'Guided', sub: 'Step-by-step' },
-  ];
+/* mode switcher removed — locked to vertical tree */
 
   return (
     <div className="app">
@@ -2385,11 +1907,7 @@ function App(){
 
       <main className="stage">
         {tab === 'builder' ? (
-          <React.Fragment>
-            {mode === 'canvas' && <FlowCanvas nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} view={view} setView={setView} />}
-            {mode === 'tree' && <VerticalTree nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} images={images} setImages={setImages} />}
-            {mode === 'wizard' && <WizardView nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />}
-          </React.Fragment>
+          <VerticalTree nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} images={images} setImages={setImages} />
         ) : (
           <div className="tpl-view">
             <div className="tpl-view-head">
