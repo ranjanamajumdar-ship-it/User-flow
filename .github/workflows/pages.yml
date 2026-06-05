@@ -80,6 +80,13 @@ jobs:
           path: diagnostic-flow
         continue-on-error: true
 
+      - name: Checkout build-flow-clean
+        uses: actions/checkout@v4
+        with:
+          ref: build-flow-clean
+          path: build-flow-clean
+        continue-on-error: true
+
       - name: Assemble site
         run: |
           mkdir -p dist
@@ -135,6 +142,12 @@ jobs:
             mkdir -p dist/diagnostic-flow
             cp -R diagnostic-flow/. dist/diagnostic-flow/ 2>/dev/null || true
             rm -rf dist/diagnostic-flow/.git dist/diagnostic-flow/.github
+          fi
+          # /build-flow-clean/ = build-flow-clean branch contents
+          if [ -d build-flow-clean ]; then
+            mkdir -p dist/build-flow-clean
+            cp -R build-flow-clean/. dist/build-flow-clean/ 2>/dev/null || true
+            rm -rf dist/build-flow-clean/.git dist/build-flow-clean/.github
           fi
           # Simple landing index for the previews dir
           cat > dist/previews.html <<'EOF'
