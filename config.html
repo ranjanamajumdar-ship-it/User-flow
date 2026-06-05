@@ -953,7 +953,7 @@ body:has(#p-4.on) #btToggle{display:inline-flex}
 
 /* On Build the flow, fully collapse the gap between the stepper and the canvas */
 body:has(#p-4.on) .wrap{margin-top:0!important;margin-bottom:0!important;padding:0!important;max-width:none!important}
-body:has(#p-4.on) .stepper{border-bottom:1px solid var(--line-soft)}
+body:has(#p-4.on){overflow:hidden!important}
 
 /* ===== Padlock feature removed — hide every related UI artifact ===== */
 .lock-btn,
@@ -987,8 +987,9 @@ body:has(#p-4.on) .stepper{border-bottom:1px solid var(--line-soft)}
 .vt-embed-full .vt-embed-iframe{
   display:block;
   width:100vw;
-  /* Lock the iframe to the viewport so ONLY the inner canvas scrolls, not the outer page */
-  height:calc(100vh - 64px);
+  /* Lock the iframe so the bottom edge sits flush with the viewport bottom —
+     account for the app header (~58px) + the stepper (~84px) above it. */
+  height:calc(100vh - 144px);
   min-height:560px;
   border:0;
   border-radius:0;
