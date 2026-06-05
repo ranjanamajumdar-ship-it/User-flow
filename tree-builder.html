@@ -51,6 +51,14 @@ input,textarea,select{font-family:inherit;}
   font:600 12.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px;transition:.15s;
 }
 .hdr-clear:hover{border-color:#c0473a;color:#c0473a;background:#fdecea}
+.hdr-save-tpl{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 14px;border-radius:8px;border:0;
+  background:var(--accent);color:#fff;cursor:pointer;
+  font:700 12.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px;transition:.15s;
+  box-shadow:0 2px 8px rgba(10,110,158,.25);
+}
+.hdr-save-tpl:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 4px 14px rgba(10,110,158,.35)}
 
 /* Builder / Templates toggle pill (top right) */
 .bt-toggle{display:inline-flex;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:8px}
@@ -2352,6 +2360,9 @@ function App(){
         </div>
         <div className="hdr-right">
           <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving' : 'Saved'}</span>
+          <button className="hdr-save-tpl" onClick={() => { const n = prompt('Template name', flowName || 'Low DO · Aeration'); if (!n) return; setTpls(saveTemplate(n.trim(), nodes)); }} title="Save current flow as a reusable template">
+            <MiniIcon name="save" size={13} /> Save as template
+          </button>
           <button className="hdr-clear" onClick={clearCanvas} title="Remove every node and image from the canvas">
             <MiniIcon name="trash" size={13} /> Clear canvas
           </button>
