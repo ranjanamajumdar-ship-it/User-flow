@@ -145,13 +145,94 @@ input,textarea,select{font-family:inherit;}
 .fv-add-done:hover{color:#1F9D55;border-color:#1F9D55;background:rgba(31,157,85,.06)}
 
 /* ============================================================
-   DELTA VIEW — typed cards, lane layout, branch fan-out
+   DELTA VIEW — drawer (left) + canvas (right) · typed cards · auto-layout
    ============================================================ */
-.dv-root{height:100%;background:linear-gradient(180deg,#f3f6fb,#eaf0f7);overflow:hidden;position:relative}
-.dv-scroll{height:100%;overflow:auto;padding:0}
+.dv-root{height:100%;background:#fff;overflow:hidden;position:relative;display:flex}
+.dv-root.dv-with-drawer{flex-direction:row}
+.dv-canvas{flex:1;min-width:0;height:100%;background:linear-gradient(180deg,#f3f6fb,#eaf0f7);position:relative;display:flex;flex-direction:column}
+.dv-scroll{flex:1;min-height:0;overflow:auto;padding:0}
 .dv-stage{margin:0}
 .dv-edges{position:absolute;top:0;left:0;pointer-events:none;z-index:1}
 .dv-grid{position:relative;z-index:2}
+
+/* ---------- Left drawer ---------- */
+.dv-drawer{
+  flex:none;width:240px;display:flex;flex-direction:column;
+  background:#fff;border-right:1px solid var(--line);
+  height:100%;min-height:0;
+}
+.dv-drawer-h{
+  flex:none;padding:14px 16px 4px;
+  font:800 11px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);
+}
+.dv-drawer-tip{
+  flex:none;padding:0 16px 12px;
+  font:500 11.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink3);line-height:1.45;
+  border-bottom:1px solid var(--line2);
+}
+.dv-drawer-list{
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:8px 10px 24px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.dv-drawer-list::-webkit-scrollbar{width:8px}
+.dv-drawer-list::-webkit-scrollbar-thumb{background:rgba(140,150,180,.35);border-radius:4px}
+.dv-drawer-list::-webkit-scrollbar-thumb:hover{background:rgba(140,150,180,.55)}
+.dv-drawer-group{display:flex;flex-direction:column;gap:3px;padding:6px 0}
+.dv-drawer-grouph{
+  padding:4px 6px 2px;
+  font:800 9.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);
+}
+.dv-chip{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;
+  cursor:grab;transition:.12s;text-align:left;font:600 12.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink);
+  user-select:none;
+}
+.dv-chip:hover{border-color:var(--c);background:var(--cs);transform:translateX(2px)}
+.dv-chip:active{cursor:grabbing}
+.dv-chip.is-disabled{opacity:.4;cursor:not-allowed}
+.dv-chip.is-disabled:hover{border-color:var(--line);background:#fff;transform:none}
+.dv-chip-ic{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;flex:none}
+.dv-chip-l{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* While dragging — make connector dots glow as drop targets */
+.dv-root.is-dragging .dv-conn{
+  background:#fff;border-color:var(--c);
+  box-shadow:0 0 0 4px var(--cs),0 0 0 6px rgba(10,110,158,.20);
+}
+.dv-root.is-dragging .dv-conn:not(.is-linked){animation:dv-pulse 1.4s ease-in-out infinite}
+@keyframes dv-pulse{
+  0%,100%{box-shadow:0 0 0 4px var(--cs),0 0 0 6px rgba(10,110,158,.18)}
+  50%{box-shadow:0 0 0 7px var(--cs),0 0 0 9px rgba(10,110,158,.32)}
+}
+
+/* ---------- Connector dots ---------- */
+.dv-conn-wrap{
+  position:absolute;left:50%;bottom:-22px;transform:translateX(-50%);
+  display:grid;place-items:center;width:24px;height:24px;pointer-events:none;
+}
+.dv-conn-wrap .dv-conn{pointer-events:auto}
+.dv-conn{
+  display:inline-block;width:14px;height:14px;border-radius:50%;
+  background:#fff;border:2px solid var(--ink3);
+  box-shadow:0 0 0 3px #fff;
+  transition:transform .15s ease,box-shadow .15s ease,background .15s ease,border-color .15s ease;
+  cursor:pointer;
+}
+.dv-conn.dv-conn-path{flex:none;margin-right:2px}
+.dv-conn.is-linked{background:var(--c);border-color:var(--c)}
+.dv-conn.is-hover{
+  background:var(--c);border-color:var(--c);transform:scale(1.4);
+  box-shadow:0 0 0 4px var(--cs),0 0 0 7px rgba(10,110,158,.32);
+}
+
+/* Empty state */
+.dv-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center}
+.dv-empty-eye{font:800 11px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.18em;color:var(--accent);margin-bottom:12px}
+.dv-empty h2{margin:0 0 10px;font:800 28px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.022em;color:var(--ink)}
+.dv-empty p{margin:0 0 24px;max-width:480px;font:500 14px 'Plus Jakarta Sans',sans-serif;color:#5a6478;line-height:1.55}
+.dv-empty-btn{padding:12px 22px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer;font:700 13.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px;box-shadow:0 8px 20px -6px rgba(10,110,158,.42);transition:.18s}
+.dv-empty-btn:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 14px 28px -6px rgba(10,110,158,.55)}
 
 /* Empty state */
 .dv-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center}
@@ -185,7 +266,7 @@ input,textarea,select{font-family:inherit;}
 
 /* Branch / paths block on a branching card */
 .dv-paths{display:flex;flex-direction:column;gap:4px;margin-top:2px;border-top:1px dashed rgba(14,20,40,.10);padding-top:8px}
-.dv-path{display:grid;grid-template-columns:18px 1fr 8px 24px 22px;gap:6px;align-items:center}
+.dv-path{display:grid;grid-template-columns:18px 1fr 18px 22px;gap:7px;align-items:center}
 .dv-path-l{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1.2px solid var(--c);color:var(--c);font:700 9.5px 'Plus Jakarta Sans',sans-serif;background:#fff}
 .dv-path-tx{border:1px solid rgba(14,20,40,.10);border-radius:6px;padding:4px 8px;font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--ink);background:#fff;outline:none;transition:.15s;min-width:0}
 .dv-path-tx:focus{border-color:var(--c);box-shadow:0 0 0 2px var(--cs)}
@@ -198,10 +279,8 @@ input,textarea,select{font-family:inherit;}
 .dv-path-newopt{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border:1px dashed rgba(14,20,40,.18);background:#fff;color:var(--c);border-radius:999px;font:600 11px 'Plus Jakarta Sans',sans-serif;cursor:pointer;margin-top:2px;transition:.15s}
 .dv-path-newopt:hover{border-color:var(--c);background:var(--cs)}
 
-/* "+ Add next step" row for non-branching cards */
-.dv-next-row{margin-top:auto;padding-top:8px}
-.dv-next-btn{width:100%;padding:6px 10px;border:1px dashed rgba(14,20,40,.18);background:#fff;color:var(--c);border-radius:8px;font:700 11.5px 'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:.15s}
-.dv-next-btn:hover{border-color:var(--c);background:var(--cs)}
+/* (Old "+ Add next step" inline button removed — connector dots at bottom handle this now) */
+.dv-card{position:relative} /* anchor for absolute bottom connector */
 
 .dv-terminal-row{margin-top:auto;padding:6px 10px;border-radius:8px;background:rgba(31,138,91,.08);border:1px solid rgba(31,138,91,.20);color:#145c3c;font:700 11.5px 'Plus Jakarta Sans',sans-serif;text-align:center}
 
@@ -2751,25 +2830,42 @@ function StepPopover({ anchorRect, onPick, onClose }){
 }
 
 /* ===== Single typed card ===== */
-function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption, onDelOption, onAddNext, onDelete, onContextMenu, incomingCount }){
+function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption, onDelOption, onDelete, onContextMenu, incomingCount, dropHover, onDropOnPath, onDropOnBottom }){
   const meta = NODE_TYPES[n.type] || NODE_TYPES.question;
   const cat = CAT_META[meta.cat];
   const branching = meta.branching;
-  // Show a variant chip whenever the type has a subKey (Question → Y/N, Action → Diagnostic, Media → With root cause, etc.)
-  const variantLabel = subLabel(n);
   const style = { gridRow: pos.row + 1, gridColumn: pos.lane + 1, '--c': cat.color, '--cs': cat.soft };
 
-  // Variant dropdown for cards whose type has a sub-key
+  // Variant dropdown for cards whose type has a sub-key (Question → Y/N, Action → Diagnostic, etc.)
   const variantSelector = meta.subKey ? React.createElement('select', {
     className: 'dv-card-variant', value: n[meta.subKey] || (SUBTYPES[meta.subKey] && SUBTYPES[meta.subKey][0][0]),
     onChange: (e) => onPatch({ [meta.subKey]: e.target.value }),
     onClick: (e) => e.stopPropagation()
   }, (SUBTYPES[meta.subKey] || []).map(s => React.createElement('option', { key: s[0], value: s[0] }, s[1]))) : null;
 
-  // Some types render a custom body (Merge: shows incoming count; Skip/Done: terminal banner)
   const terminalCopy = n.type === 'skipend' ? '↩ Skip — closes the flow here'
                     : n.type === 'done'    ? '✓ Issue resolved — flow closes'
                     : meta.terminal ? '✓ Flow closes here' : null;
+
+  // ----- Connectors (drop targets) -----
+  // For branching cards: one connector per option row (right side of the row)
+  // For non-branching, non-terminal cards: a single connector at the bottom-center
+  const pathDot = (o) => React.createElement('span', {
+      className: 'dv-conn dv-conn-path' + (o.target ? ' is-linked' : '') + (dropHover && dropHover.id === n.id && dropHover.optId === o.id ? ' is-hover' : ''),
+      title: o.target ? 'Linked — drop another step to replace' : 'Drop a step here to wire this answer',
+      onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); onDropOnPath(n.id, o.id, true); },
+      onDragLeave: () => onDropOnPath(null, null, false),
+      onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const t = e.dataTransfer.getData('text/plain'); if (t) onDropOnPath(n.id, o.id, false, t); }
+    });
+
+  const bottomDot = !meta.terminal && !branching ? React.createElement('div', { className: 'dv-conn-wrap' },
+    React.createElement('span', {
+      className: 'dv-conn dv-conn-bottom' + (n.next ? ' is-linked' : '') + (dropHover && dropHover.id === n.id && !dropHover.optId ? ' is-hover' : ''),
+      title: n.next ? 'Linked — drop another step to replace' : 'Drop a step here to wire the next step',
+      onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); onDropOnBottom(n.id, true); },
+      onDragLeave: () => onDropOnBottom(null, false),
+      onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const t = e.dataTransfer.getData('text/plain'); if (t) onDropOnBottom(n.id, false, t); }
+    })) : null;
 
   return React.createElement('div', {
       className: 'dv-card dv-card-' + n.type + (isSel ? ' is-sel' : ''),
@@ -2811,10 +2907,7 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
           React.createElement('input', { className: 'dv-path-tx', value: o.label || '', placeholder: 'Answer label',
             onChange: (e) => onSetOption(o.id, { label: e.target.value }),
             onClick: (e) => e.stopPropagation() }),
-          React.createElement('span', { className: 'dv-path-dot' + (o.target ? ' is-linked' : ''), title: o.target ? 'Linked to next step' : 'No next step yet' }),
-          React.createElement('button', { className: 'dv-path-add' + (o.target ? ' is-linked' : ''), title: o.target ? 'Replace the next step from this answer' : 'Add the next step from this answer',
-            onClick: (e) => { e.stopPropagation(); onAddNext(o.id, e.currentTarget.getBoundingClientRect()); } },
-            o.target ? '✓' : '+'),
+          pathDot(o),
           React.createElement('button', { className: 'dv-path-x', title: 'Remove answer',
             onClick: (e) => { e.stopPropagation(); onDelOption(o.id); } },
             React.createElement(MiniIcon, { name: 'close', size: 11 })))),
@@ -2822,12 +2915,9 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
         onClick: (e) => { e.stopPropagation(); onAddOption(); } },
         React.createElement(MiniIcon, { name: 'plus', size: 11 }), ' Add answer')),
 
-    !branching && !meta.terminal && React.createElement('div', { className: 'dv-next-row' },
-      React.createElement('button', { className: 'dv-next-btn' + (n.next ? ' is-linked' : ''),
-        onClick: (e) => { e.stopPropagation(); onAddNext(null, e.currentTarget.getBoundingClientRect()); } },
-        n.next ? '✓ Linked — change next step' : '+ Add next step')),
+    terminalCopy && React.createElement('div', { className: 'dv-terminal-row dv-terminal-' + n.type }, terminalCopy),
 
-    terminalCopy && React.createElement('div', { className: 'dv-terminal-row dv-terminal-' + n.type }, terminalCopy));
+    bottomDot);
 }
 
 /* ===== Empty state when there are no nodes ===== */
@@ -2835,18 +2925,74 @@ function DeltaEmpty({ onAddTrigger }){
   return React.createElement('div', { className: 'dv-empty' },
     React.createElement('div', { className: 'dv-empty-eye' }, 'DELTA VIEW'),
     React.createElement('h2', null, 'Start your flow'),
-    React.createElement('p', null, 'Every diagnostic flow starts with a trigger. Add one to begin laying out the steps top-to-bottom, with branches fanning horizontally.'),
+    React.createElement('p', null, 'Drag a step from the left drawer onto the canvas, or click the Trigger button below to begin. Every diagnostic flow starts with a Trigger.'),
     React.createElement('button', { className: 'dv-empty-btn', onClick: onAddTrigger }, '+ Add Trigger card'));
+}
+
+/* ===== Left drawer · all step types as draggable chips ===== */
+const DELTA_DRAWER_GROUPS = [
+  { title: 'Root',             items: [{ type: 'issue', label: 'Issue / Trigger' }] },
+  { title: 'Operator acts',    items: [
+    { type: 'observation',  label: 'Observation' },
+    { type: 'question',     label: 'Question' },
+    { type: 'singleAnswer', label: 'Answer (free text)' },
+    { type: 'task',         label: 'Action step' },
+  ]},
+  { title: 'Capture & wait',   items: [
+    { type: 'media',        label: 'Media upload' },
+    { type: 'waiting',      label: 'Waiting step' },
+    { type: 'validation',   label: 'Validation step' },
+    { type: 'rootcause',    label: 'Root-cause picker' },
+  ]},
+  { title: 'Flow control',     items: [
+    { type: 'merge',        label: 'Merge branches' },
+    { type: 'reassignment', label: 'Reassignment' },
+    { type: 'escalation',   label: 'Escalation' },
+  ]},
+  { title: 'Terminal',         items: [
+    { type: 'link',         label: 'Link to next tree' },
+    { type: 'skipend',      label: 'Skip to the end' },
+    { type: 'done',         label: 'Done' },
+  ]},
+];
+
+function DeltaDrawer({ onChipDragStart, onChipDragEnd, onChipClick, hasTrigger }){
+  return React.createElement('aside', { className: 'dv-drawer' },
+    React.createElement('div', { className: 'dv-drawer-h' }, 'Step types'),
+    React.createElement('div', { className: 'dv-drawer-tip' }, 'Drag any step onto the connector at the bottom of a card — or onto an answer row connector.'),
+    React.createElement('div', { className: 'dv-drawer-list' },
+      DELTA_DRAWER_GROUPS.map((g, gi) => React.createElement('div', { className: 'dv-drawer-group', key: gi },
+        React.createElement('div', { className: 'dv-drawer-grouph' }, g.title),
+        g.items.map(s => {
+          const meta = NODE_TYPES[s.type] || {};
+          const cat = CAT_META[meta.cat] || CAT_META.task;
+          const disabled = s.type === 'issue' && hasTrigger;
+          return React.createElement('div', {
+            key: s.type,
+            className: 'dv-chip' + (disabled ? ' is-disabled' : ''),
+            draggable: !disabled,
+            style: { '--c': cat.color, '--cs': cat.soft },
+            title: disabled ? 'A Trigger already exists' : (meta.hint || s.label),
+            onDragStart: (e) => { if (disabled) { e.preventDefault(); return; } e.dataTransfer.setData('text/plain', s.type); e.dataTransfer.effectAllowed = 'copy'; onChipDragStart(s.type); },
+            onDragEnd: () => onChipDragEnd(),
+            onClick: () => { if (!disabled) onChipClick(s.type); }
+          },
+            React.createElement('span', { className: 'dv-chip-ic', style: { background: cat.soft, color: cat.color } },
+              React.createElement(Icon, { glyph: meta.glyph || 'step', size: 14, color: cat.color })),
+            React.createElement('span', { className: 'dv-chip-l' }, s.label));
+        })))));
 }
 
 /* ===== Main view ===== */
 function DeltaView({ nodes, onNodes, selected, setSelected }){
-  const [popover, setPopover] = React.useState(null); // { anchorRect, afterId, fromOptId } | null
   const [ctxMenu, setCtxMenu] = React.useState(null); // { x, y, id } | null
+  const [dragType, setDragType] = React.useState(null);   // type string currently being dragged
+  const [dropHover, setDropHover] = React.useState(null); // { id, optId } | null
   const wrapRef = React.useRef(null);
   const layout = React.useMemo(() => deltaLayout(nodes), [nodes]);
   const { positions, maxRow, maxLane } = layout;
   const placedIds = Object.keys(positions);
+  const hasTrigger = Object.values(nodes).some(n => n.type === 'issue');
 
   // Count how many other nodes point at each id — used to label Merge cards
   const incomingCount = React.useMemo(() => {
@@ -2930,14 +3076,54 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
     setSelected(nid);
   };
 
-  /* ----- popover trigger ----- */
-  const openPopover = (afterId, fromOptId, anchorRect) => setPopover({ afterId, fromOptId, anchorRect });
-  const pickType = (type) => { addStep(popover.afterId, popover.fromOptId, type); setPopover(null); };
+  /* ----- drag from drawer · drop on connector ----- */
+  const onDropOnBottom = (id, isOver, type) => {
+    if (type) { addStep(id, null, type); setDropHover(null); return; }
+    setDropHover(isOver ? { id, optId: null } : null);
+  };
+  const onDropOnPath = (id, optId, isOver, type) => {
+    if (type) { addStep(id, optId, type); setDropHover(null); return; }
+    setDropHover(isOver ? { id, optId } : null);
+  };
 
-  /* ----- empty state ----- */
+  /* ----- click-to-add fallback for accessibility / no-touch ----- */
+  const onChipClick = (type) => {
+    if (type === 'issue') {
+      if (!hasTrigger) addTrigger();
+      return;
+    }
+    // No card on canvas yet → user has to add Trigger first
+    if (placedIds.length === 0) { alert('Add a Trigger card first — drag it from the left drawer.'); return; }
+    // Find the last unlinked connector (bottom of a non-branching card, or first unfilled option)
+    for (const id of placedIds) {
+      const node = nodes[id];
+      const meta = NODE_TYPES[node.type] || {};
+      if (BRANCHING.has(node.type)) {
+        const opt = (node.options || []).find(o => !o.target);
+        if (opt) { addStep(id, opt.id, type); return; }
+      } else if (!meta.terminal && !node.next) {
+        addStep(id, null, type); return;
+      }
+    }
+    // Fallback: attach to the last-placed node's bottom
+    const lastId = placedIds[placedIds.length - 1];
+    addStep(lastId, null, type);
+  };
+
+  /* ----- empty state (drawer still shown so user can drag from it) ----- */
   if (placedIds.length === 0) {
-    return React.createElement('div', { className: 'dv-root' },
-      React.createElement(DeltaEmpty, { onAddTrigger: addTrigger }));
+    return React.createElement('div', { className: 'dv-root dv-with-drawer' + (dragType ? ' is-dragging' : '') },
+      React.createElement(DeltaDrawer, {
+        hasTrigger,
+        onChipDragStart: setDragType,
+        onChipDragEnd: () => { setDragType(null); setDropHover(null); },
+        onChipClick: onChipClick
+      }),
+      React.createElement('div', { className: 'dv-canvas',
+        onDragOver: (e) => { e.preventDefault(); },
+        onDrop: (e) => { e.preventDefault(); const t = e.dataTransfer.getData('text/plain'); if (t === 'issue') addTrigger(); }
+      },
+        React.createElement(DeltaEmpty, { onAddTrigger: addTrigger })));
   }
 
   /* ----- compute connection lines (SVG) ----- */
@@ -2964,9 +3150,16 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
 
   const stageStyle = { position: 'relative', width: stageW, height: stageH, minHeight: '100%' };
 
-  return React.createElement('div', { className: 'dv-root', ref: wrapRef },
-    React.createElement('div', { className: 'dv-scroll' },
-      React.createElement('div', { className: 'dv-stage', style: stageStyle },
+  return React.createElement('div', { className: 'dv-root dv-with-drawer' + (dragType ? ' is-dragging' : ''), ref: wrapRef },
+    React.createElement(DeltaDrawer, {
+      hasTrigger,
+      onChipDragStart: setDragType,
+      onChipDragEnd: () => { setDragType(null); setDropHover(null); },
+      onChipClick: onChipClick
+    }),
+    React.createElement('div', { className: 'dv-canvas' },
+      React.createElement('div', { className: 'dv-scroll' },
+        React.createElement('div', { className: 'dv-stage', style: stageStyle },
         React.createElement('svg', { className: 'dv-edges', width: stageW, height: stageH },
           React.createElement('defs', null,
             React.createElement('marker', { id: 'dv-arr', markerWidth: 9, markerHeight: 9, refX: 7, refY: 4.5, orient: 'auto' },
@@ -2993,15 +3186,16 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
           placedIds.map(id => React.createElement(DeltaCard, { key: id, n: nodes[id], pos: positions[id],
             isSel: selected === id,
             incomingCount: incomingCount[id] || 0,
+            dropHover,
             onSelect: () => setSelected(id),
             onPatch: (p) => patch(id, p),
             onSetOption: (oid, p) => setOption(id, oid, p),
             onAddOption: () => addOption(id),
             onDelOption: (oid) => delOption(id, oid),
-            onAddNext: (optId, rect) => openPopover(id, optId, rect),
             onDelete: () => delStep(id),
-            onContextMenu: (x, y) => setCtxMenu({ x, y, id }) }))))),
-    popover && React.createElement(StepPopover, { anchorRect: popover.anchorRect, onPick: pickType, onClose: () => setPopover(null) }),
+            onContextMenu: (x, y) => setCtxMenu({ x, y, id }),
+            onDropOnBottom: onDropOnBottom,
+            onDropOnPath: onDropOnPath }))))),
     ctxMenu && React.createElement('div', { className: 'dv-ctx', style: { left: ctxMenu.x, top: ctxMenu.y } },
       React.createElement('button', { className: 'dv-ctx-item', onClick: () => { dupStep(ctxMenu.id); setCtxMenu(null); } },
         React.createElement(MiniIcon, { name: 'copy', size: 13 }), ' Duplicate step'),
