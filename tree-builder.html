@@ -214,11 +214,56 @@ input,textarea,select{font-family:inherit;}
   box-shadow:0 14px 36px -10px rgba(14,20,40,.30),0 0 0 1px rgba(14,20,40,.04);padding:6px;
   display:flex;flex-direction:column;gap:1px;
 }
-.dv-popover-h{padding:8px 10px 6px;font:800 10px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#7a8497}
-.dv-popover-item{display:flex;flex-direction:column;gap:1px;padding:8px 10px;border-radius:7px;border:0;background:transparent;text-align:left;cursor:pointer;transition:.12s}
+.dv-popover-h{padding:10px 12px 4px;font:800 11px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.005em;color:var(--ink)}
+.dv-popover-group{padding:8px 12px 4px;font:800 9.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#7a8497;border-top:1px solid rgba(14,20,40,.05);margin-top:4px}
+.dv-popover-group:first-of-type{border-top:0;margin-top:0}
+.dv-popover-item{display:flex;flex-direction:column;gap:1px;padding:7px 10px;border-radius:7px;border:0;background:transparent;text-align:left;cursor:pointer;transition:.12s}
 .dv-popover-item:hover{background:var(--accent-soft)}
-.dv-popover-label{font:700 13px 'Plus Jakarta Sans',sans-serif;color:var(--ink);letter-spacing:-.005em}
-.dv-popover-hint{font:500 11px 'Plus Jakarta Sans',sans-serif;color:#7a8497}
+.dv-popover-label{font:700 12.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink);letter-spacing:-.005em}
+.dv-popover-hint{font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#7a8497;line-height:1.35}
+
+/* Variant chip + merge body + terminal variants */
+.dv-card-variantrow{display:flex;align-items:center;gap:6px;margin-top:-2px}
+.dv-card-variant{
+  padding:3px 8px;border:1px solid var(--c);border-radius:999px;
+  background:var(--cs);color:var(--c);
+  font:700 10.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.02em;cursor:pointer;outline:none;
+}
+.dv-card-variant:focus{box-shadow:0 0 0 2px var(--cs)}
+
+/* Paths block header */
+.dv-paths-h{font:800 9.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#7a8497;margin-bottom:2px}
+.dv-path-add.is-linked{border-color:var(--c);background:var(--cs);color:var(--c)}
+
+/* Merge card variant */
+.dv-card-merge{border-top-color:#7a8497}
+.dv-merge-info{display:flex;flex-direction:column;gap:6px;padding:8px 10px;border-radius:10px;background:linear-gradient(180deg,#f4f6fa,#eef1f6);border:1px dashed rgba(14,20,40,.16)}
+.dv-merge-count{font:600 12.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink2)}
+.dv-merge-count b{color:var(--ink);font-weight:800}
+
+/* Waiting / observation cards get a softer hint */
+.dv-card-waiting,.dv-card-observation{background:#fff}
+.dv-card-waiting .dv-card-title::placeholder{font-style:italic}
+
+/* Terminal variants */
+.dv-terminal-row{margin-top:auto;padding:7px 10px;border-radius:8px;font:700 11.5px 'Plus Jakarta Sans',sans-serif;text-align:center}
+.dv-terminal-done{background:rgba(31,138,91,.10);border:1px solid rgba(31,138,91,.22);color:#0e6b40}
+.dv-terminal-skipend{background:rgba(122,132,151,.12);border:1px solid rgba(122,132,151,.28);color:#3a4358}
+
+/* Next-step linked state */
+.dv-next-btn.is-linked{border-style:solid;background:var(--cs);color:var(--c)}
+
+/* Right-click context menu */
+.dv-ctx{
+  position:fixed;z-index:300;min-width:200px;
+  background:#fff;border:1px solid rgba(14,20,40,.10);border-radius:10px;padding:5px;
+  display:flex;flex-direction:column;gap:1px;
+  box-shadow:0 14px 36px -10px rgba(14,20,40,.30),0 0 0 1px rgba(14,20,40,.04);
+}
+.dv-ctx-item{display:flex;align-items:center;gap:8px;padding:8px 11px;border:0;background:transparent;border-radius:7px;cursor:pointer;font:600 12.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink);text-align:left;transition:.12s}
+.dv-ctx-item:hover{background:var(--accent-soft);color:var(--accent)}
+.dv-ctx-danger{color:#c0473a}
+.dv-ctx-danger:hover{background:#fdecea;color:#c0473a}
 
 /* Builder / Templates toggle pill (top right) */
 .bt-toggle{display:inline-flex;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:8px}
@@ -785,10 +830,14 @@ const NODE_TYPES = {
   waiting:      { label: 'Waiting',             cat: 'status',    glyph: 'wait',         branching: false, terminal: false, hint: 'Hold / wait for recovery or a process before continuing' },
   rootcause:    { label: 'Root cause selector', cat: 'cause',     glyph: 'root',         branching: true,  terminal: false, hint: 'Operator selects the confirmed cause — each routes to its remedy' },
   task:         { label: 'Action',              cat: 'task',      glyph: 'task',         branching: true,  terminal: false, subKey: 'taskType', hint: 'A diagnostic or remedial step — each choice routes onward' },
-  media:        { label: 'Media upload',        cat: 'capture',   glyph: 'media',        branching: false, terminal: false, hint: 'Capture a photo / video / file as evidence' },
+  observation:  { label: 'Observation',         cat: 'capture',   glyph: 'step',         branching: false, terminal: false, hint: 'A check or reading the operator performs' },
+  media:        { label: 'Media upload',        cat: 'capture',   glyph: 'media',        branching: false, terminal: false, subKey: 'mediaType', hint: 'Capture a photo / video / file as evidence' },
   validation:   { label: 'Validation step',     cat: 'capture',   glyph: 'validation',   branching: false, terminal: false, hint: 'Confirm the fix worked before closing' },
-  escalation:   { label: 'Escalation',          cat: 'exception', glyph: 'escalation',   branching: false, terminal: false, subKey: 'escType',  hint: 'Escalate the issue — call the supervisor or an expert' },
+  reassignment: { label: 'Reassignment',        cat: 'people',    glyph: 'reassignment', branching: false, terminal: false, hint: 'Hand off to another role or operator' },
+  escalation:   { label: 'Escalation',          cat: 'exception', glyph: 'escalation',   branching: false, terminal: false, subKey: 'escType',   hint: 'Escalate the issue — call the supervisor or an expert' },
+  merge:        { label: 'Merge branches',      cat: 'control',   glyph: 'step',         branching: false, terminal: false, hint: 'Converge multiple paths back into one' },
   link:         { label: 'Link to next tree',   cat: 'link',      glyph: 'link',         branching: false, terminal: false, hint: 'Hand off to another diagnostic tree' },
+  skipend:      { label: 'Skip to the end',     cat: 'terminal',  glyph: 'skip',         branching: false, terminal: true,  hint: 'Short-circuit straight to the end of the flow' },
   done:         { label: 'Done',                cat: 'terminal',  glyph: 'done',         branching: false, terminal: true,  hint: 'Closes the flow — issue resolved' },
 };
 
@@ -798,6 +847,7 @@ const SUBTYPES = {
   taskType: [ ['diagnostic','Diagnostic step'], ['remedial','Remedial step'] ],
   role:     [ ['operator','Operator'], ['supervisor','Supervisor'] ],
   escType:  [ ['call_supervisor','Call the supervisor'], ['call_expert','Call an expert'] ],
+  mediaType:[ ['without_rc','Without root cause'], ['with_rc','With root cause'] ],
 };
 function subLabel(node){
   const meta = NODE_TYPES[node.type]; if (!meta || !meta.subKey) return '';
@@ -2651,18 +2701,30 @@ function deltaLayout(nodes){
   };
 }
 
-/* ===== "+ Add step" popover — pick the card type to insert ===== */
-const DELTA_STEP_OPTIONS = [
-  { type: 'question',     label: 'Question',          hint: 'Branching Y/N or multi-choice' },
-  { type: 'task',         label: 'Action',            hint: 'A diagnostic or remedial step' },
-  { type: 'media',        label: 'Media upload',      hint: 'Capture a photo / file' },
-  { type: 'validation',   label: 'Validation',        hint: 'Confirm the fix worked' },
-  { type: 'waiting',      label: 'Waiting',           hint: 'Hold for a process / time' },
-  { type: 'escalation',   label: 'Escalation',        hint: 'Call supervisor / expert' },
-  { type: 'rootcause',    label: 'Root-cause picker', hint: 'Operator confirms cause' },
-  { type: 'link',         label: 'Link to next tree', hint: 'Hand off to another flow' },
-  { type: 'singleAnswer', label: 'Single answer',     hint: 'Free-text capture' },
-  { type: 'done',         label: 'Done',              hint: 'Closes the flow' },
+/* ===== "+ Add step" popover — categorized by purpose (Hick's law) ===== */
+const DELTA_STEP_GROUPS = [
+  { title: 'Operator acts',    items: [
+    { type: 'observation',  label: 'Observation',       hint: 'A check or reading the operator performs' },
+    { type: 'question',     label: 'Question',          hint: 'Y/N · multi-choice · numeric — branches' },
+    { type: 'singleAnswer', label: 'Answer (free text)',hint: 'Free-text response capture' },
+    { type: 'task',         label: 'Action step',       hint: 'Diagnostic or remedial action' },
+  ]},
+  { title: 'Capture & wait',   items: [
+    { type: 'media',        label: 'Media upload',      hint: 'Photo / file — with or without root cause' },
+    { type: 'waiting',      label: 'Waiting step',      hint: 'Hold for a process / time before continuing' },
+    { type: 'validation',   label: 'Validation step',   hint: 'Confirm the fix worked' },
+    { type: 'rootcause',    label: 'Root-cause picker', hint: 'Operator confirms the cause' },
+  ]},
+  { title: 'Flow control',     items: [
+    { type: 'merge',        label: 'Merge branches',    hint: 'Converge multiple paths back into one' },
+    { type: 'reassignment', label: 'Reassignment',      hint: 'Hand off to another role or operator' },
+    { type: 'escalation',   label: 'Escalation',        hint: 'Call supervisor or expert' },
+  ]},
+  { title: 'Terminal',         items: [
+    { type: 'link',         label: 'Link to next tree', hint: 'Hand off to another diagnostic flow' },
+    { type: 'skipend',      label: 'Skip to the end',   hint: 'Short-circuit to the end' },
+    { type: 'done',         label: 'Done',              hint: 'Issue resolved — closes the flow' },
+  ]},
 ];
 
 function StepPopover({ anchorRect, onPick, onClose }){
@@ -2674,38 +2736,75 @@ function StepPopover({ anchorRect, onPick, onClose }){
     return () => { window.removeEventListener('mousedown', onAny); window.removeEventListener('keydown', onEsc); };
   }, []);
   if (!anchorRect) return null;
-  const style = { position: 'fixed', left: Math.max(10, anchorRect.left), top: anchorRect.bottom + 6, zIndex: 200 };
+  // Clamp so popover never falls off the right edge
+  const POP_W = 280;
+  const left = Math.max(10, Math.min(anchorRect.left, window.innerWidth - POP_W - 10));
+  const style = { position: 'fixed', left, top: anchorRect.bottom + 6, zIndex: 200, width: POP_W };
   return React.createElement('div', { className: 'dv-popover', style },
     React.createElement('div', { className: 'dv-popover-h' }, 'Add a step'),
-    DELTA_STEP_OPTIONS.map(s => React.createElement('button', { key: s.type, className: 'dv-popover-item',
-      onClick: () => { onPick(s.type); onClose(); } },
-      React.createElement('div', { className: 'dv-popover-label' }, s.label),
-      React.createElement('div', { className: 'dv-popover-hint' }, s.hint))));
+    DELTA_STEP_GROUPS.map((g, gi) => React.createElement(React.Fragment, { key: gi },
+      React.createElement('div', { className: 'dv-popover-group' }, g.title),
+      g.items.map(s => React.createElement('button', { key: s.type, className: 'dv-popover-item',
+        onClick: () => { onPick(s.type); onClose(); } },
+        React.createElement('div', { className: 'dv-popover-label' }, s.label),
+        React.createElement('div', { className: 'dv-popover-hint' }, s.hint))))));
 }
 
 /* ===== Single typed card ===== */
-function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption, onDelOption, onAddNext, onDelete }){
+function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption, onDelOption, onAddNext, onDelete, onContextMenu, incomingCount }){
   const meta = NODE_TYPES[n.type] || NODE_TYPES.question;
   const cat = CAT_META[meta.cat];
   const branching = meta.branching;
-  const subtitle = subLabel(n);
+  // Show a variant chip whenever the type has a subKey (Question → Y/N, Action → Diagnostic, Media → With root cause, etc.)
+  const variantLabel = subLabel(n);
   const style = { gridRow: pos.row + 1, gridColumn: pos.lane + 1, '--c': cat.color, '--cs': cat.soft };
 
-  return React.createElement('div', { className: 'dv-card' + (isSel ? ' is-sel' : ''), style, onClick: onSelect },
+  // Variant dropdown for cards whose type has a sub-key
+  const variantSelector = meta.subKey ? React.createElement('select', {
+    className: 'dv-card-variant', value: n[meta.subKey] || (SUBTYPES[meta.subKey] && SUBTYPES[meta.subKey][0][0]),
+    onChange: (e) => onPatch({ [meta.subKey]: e.target.value }),
+    onClick: (e) => e.stopPropagation()
+  }, (SUBTYPES[meta.subKey] || []).map(s => React.createElement('option', { key: s[0], value: s[0] }, s[1]))) : null;
+
+  // Some types render a custom body (Merge: shows incoming count; Skip/Done: terminal banner)
+  const terminalCopy = n.type === 'skipend' ? '↩ Skip — closes the flow here'
+                    : n.type === 'done'    ? '✓ Issue resolved — flow closes'
+                    : meta.terminal ? '✓ Flow closes here' : null;
+
+  return React.createElement('div', {
+      className: 'dv-card dv-card-' + n.type + (isSel ? ' is-sel' : ''),
+      style, onClick: onSelect,
+      onContextMenu: (e) => { e.preventDefault(); onContextMenu(e.clientX, e.clientY); }
+    },
     React.createElement('div', { className: 'dv-card-head' },
       React.createElement('span', { className: 'dv-card-ic', style: { background: cat.soft, color: cat.color } },
         React.createElement(Icon, { glyph: meta.glyph, size: 13, color: cat.color })),
-      React.createElement('span', { className: 'dv-card-cat' }, cat.name, subtitle ? React.createElement('span', { className: 'dv-card-sub' }, ' · ', subtitle) : null),
-      !meta.terminal && React.createElement('button', { className: 'dv-card-x', title: 'Delete step',
+      React.createElement('span', { className: 'dv-card-cat' }, cat.name),
+      n.type !== 'issue' && React.createElement('button', { className: 'dv-card-x', title: 'Delete step',
         onClick: (e) => { e.stopPropagation(); onDelete(); } },
         React.createElement(MiniIcon, { name: 'trash', size: 12 }))),
 
-    React.createElement('input', { className: 'dv-card-title', value: n.title || '',
-      placeholder: n.type === 'issue' ? 'Name the issue / trigger' : 'Step title',
-      onChange: (e) => onPatch({ title: e.target.value }),
-      onClick: (e) => e.stopPropagation() }),
+    variantSelector && React.createElement('div', { className: 'dv-card-variantrow' }, variantSelector),
+
+    n.type === 'merge'
+      ? React.createElement('div', { className: 'dv-merge-info' },
+          React.createElement('div', { className: 'dv-merge-count' },
+            React.createElement('b', null, incomingCount || 0),
+            ' incoming ' + ((incomingCount === 1) ? 'branch' : 'branches')),
+          React.createElement('input', { className: 'dv-card-title', value: n.title || '',
+            placeholder: 'Merge label (e.g. "Continue diagnosis")',
+            onChange: (e) => onPatch({ title: e.target.value }),
+            onClick: (e) => e.stopPropagation() }))
+      : React.createElement('input', { className: 'dv-card-title', value: n.title || '',
+          placeholder: n.type === 'issue' ? 'Name the issue / trigger'
+                     : n.type === 'observation' ? 'What does the operator check?'
+                     : n.type === 'waiting'     ? 'What are we waiting for?'
+                     : 'Step title',
+          onChange: (e) => onPatch({ title: e.target.value }),
+          onClick: (e) => e.stopPropagation() }),
 
     branching && React.createElement('div', { className: 'dv-paths' },
+      React.createElement('div', { className: 'dv-paths-h' }, n.type === 'rootcause' ? 'Possible causes' : 'Answers'),
       (n.options || []).map((o, i) =>
         React.createElement('div', { className: 'dv-path', key: o.id },
           React.createElement('span', { className: 'dv-path-l' }, String.fromCharCode(65 + i)),
@@ -2713,7 +2812,7 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
             onChange: (e) => onSetOption(o.id, { label: e.target.value }),
             onClick: (e) => e.stopPropagation() }),
           React.createElement('span', { className: 'dv-path-dot' + (o.target ? ' is-linked' : ''), title: o.target ? 'Linked to next step' : 'No next step yet' }),
-          React.createElement('button', { className: 'dv-path-add', title: 'Add the next step from this answer',
+          React.createElement('button', { className: 'dv-path-add' + (o.target ? ' is-linked' : ''), title: o.target ? 'Replace the next step from this answer' : 'Add the next step from this answer',
             onClick: (e) => { e.stopPropagation(); onAddNext(o.id, e.currentTarget.getBoundingClientRect()); } },
             o.target ? '✓' : '+'),
           React.createElement('button', { className: 'dv-path-x', title: 'Remove answer',
@@ -2724,11 +2823,11 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
         React.createElement(MiniIcon, { name: 'plus', size: 11 }), ' Add answer')),
 
     !branching && !meta.terminal && React.createElement('div', { className: 'dv-next-row' },
-      React.createElement('button', { className: 'dv-next-btn',
+      React.createElement('button', { className: 'dv-next-btn' + (n.next ? ' is-linked' : ''),
         onClick: (e) => { e.stopPropagation(); onAddNext(null, e.currentTarget.getBoundingClientRect()); } },
         n.next ? '✓ Linked — change next step' : '+ Add next step')),
 
-    meta.terminal && React.createElement('div', { className: 'dv-terminal-row' }, '✓ Flow closes here'));
+    terminalCopy && React.createElement('div', { className: 'dv-terminal-row dv-terminal-' + n.type }, terminalCopy));
 }
 
 /* ===== Empty state when there are no nodes ===== */
@@ -2743,10 +2842,34 @@ function DeltaEmpty({ onAddTrigger }){
 /* ===== Main view ===== */
 function DeltaView({ nodes, onNodes, selected, setSelected }){
   const [popover, setPopover] = React.useState(null); // { anchorRect, afterId, fromOptId } | null
+  const [ctxMenu, setCtxMenu] = React.useState(null); // { x, y, id } | null
   const wrapRef = React.useRef(null);
   const layout = React.useMemo(() => deltaLayout(nodes), [nodes]);
   const { positions, maxRow, maxLane } = layout;
   const placedIds = Object.keys(positions);
+
+  // Count how many other nodes point at each id — used to label Merge cards
+  const incomingCount = React.useMemo(() => {
+    const counts = {};
+    Object.values(nodes).forEach(n => {
+      if (BRANCHING.has(n.type)) {
+        (n.options || []).forEach(o => { if (o.target) counts[o.target] = (counts[o.target] || 0) + 1; });
+      } else if (n.next) {
+        counts[n.next] = (counts[n.next] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [nodes]);
+
+  // Dismiss context menu on any outside click / Esc
+  React.useEffect(() => {
+    if (!ctxMenu) return;
+    const close = () => setCtxMenu(null);
+    const onKey = (e) => { if (e.key === 'Escape') close(); };
+    setTimeout(() => window.addEventListener('mousedown', close), 0);
+    window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('mousedown', close); window.removeEventListener('keydown', onKey); };
+  }, [ctxMenu]);
 
   /* ----- mutations ----- */
   const patch = (id, p) => onNodes(Object.assign({}, nodes, { [id]: Object.assign({}, nodes[id], p) }));
@@ -2792,6 +2915,19 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
     });
     onNodes(copy);
     if (selected === id) setSelected(null);
+  };
+
+  const dupStep = (id) => {
+    const src = nodes[id]; if (!src) return;
+    const nid = uid(src.type);
+    const clone = Object.assign({}, src, {
+      id: nid,
+      title: (src.title || '') + ' copy',
+      options: (src.options || []).map(o => ({ id: uid('o'), label: o.label, target: null })),
+      next: null,
+    });
+    onNodes(Object.assign({}, nodes, { [nid]: clone }));
+    setSelected(nid);
   };
 
   /* ----- popover trigger ----- */
@@ -2856,14 +2992,21 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
           rowGap: GAP_Y, columnGap: GAP_X, padding: PAD, width: 'max-content' } },
           placedIds.map(id => React.createElement(DeltaCard, { key: id, n: nodes[id], pos: positions[id],
             isSel: selected === id,
+            incomingCount: incomingCount[id] || 0,
             onSelect: () => setSelected(id),
             onPatch: (p) => patch(id, p),
             onSetOption: (oid, p) => setOption(id, oid, p),
             onAddOption: () => addOption(id),
             onDelOption: (oid) => delOption(id, oid),
             onAddNext: (optId, rect) => openPopover(id, optId, rect),
-            onDelete: () => delStep(id) }))))),
-    popover && React.createElement(StepPopover, { anchorRect: popover.anchorRect, onPick: pickType, onClose: () => setPopover(null) }));
+            onDelete: () => delStep(id),
+            onContextMenu: (x, y) => setCtxMenu({ x, y, id }) }))))),
+    popover && React.createElement(StepPopover, { anchorRect: popover.anchorRect, onPick: pickType, onClose: () => setPopover(null) }),
+    ctxMenu && React.createElement('div', { className: 'dv-ctx', style: { left: ctxMenu.x, top: ctxMenu.y } },
+      React.createElement('button', { className: 'dv-ctx-item', onClick: () => { dupStep(ctxMenu.id); setCtxMenu(null); } },
+        React.createElement(MiniIcon, { name: 'copy', size: 13 }), ' Duplicate step'),
+      React.createElement('button', { className: 'dv-ctx-item dv-ctx-danger', onClick: () => { delStep(ctxMenu.id); setCtxMenu(null); } },
+        React.createElement(MiniIcon, { name: 'trash', size: 13 }), ' Delete step')));
 }
 
 window.DeltaView = DeltaView;
