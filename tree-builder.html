@@ -2621,7 +2621,6 @@ function App(){
           <button className={'vm-tab' + (viewMode === 'delta' ? ' on' : '')} onClick={() => setViewMode('delta')}>Delta</button>
         </div>
         <div className="hdr-right">
-          <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving' : 'Saved'}</span>
           <button className="hdr-save-tpl" onClick={() => { const n = prompt('Template name', flowName || 'Low DO · Aeration'); if (!n) return; setTpls(saveTemplate(n.trim(), nodes)); }} title="Save current flow as a reusable template">
             <MiniIcon name="save" size={13} /> Save as template
           </button>
