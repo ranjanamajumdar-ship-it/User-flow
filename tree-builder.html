@@ -60,8 +60,17 @@ input,textarea,select{font-family:inherit;}
 }
 .hdr-save-tpl:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 4px 14px rgba(10,110,158,.35)}
 
-/* Canvas / Form view toggle in the header */
+/* Canvas / Form / Delta view toggle in the header */
 .vm-toggle{display:inline-flex;align-items:center;background:#eef2f6;padding:3px;border-radius:999px}
+/* Center the toggle in the header relative to the viewport, not the available flex space */
+.hdr{position:relative}
+.vm-toggle-center{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  z-index:5;
+}
+/* Keep flex side groups compact so they don't fight the absolute-positioned center */
+.hdr-left{flex:none !important}
+.hdr-right{flex:none}
 .vm-tab{
   padding:6px 14px;border-radius:999px;border:0;background:transparent;cursor:pointer;
   font:600 12.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink2);letter-spacing:.1px;transition:.15s;
@@ -133,6 +142,13 @@ input,textarea,select{font-family:inherit;}
 .fv-add-pill:hover{border-color:var(--accent);color:var(--accent);background:rgba(10,110,158,.05);border-style:solid}
 .fv-add-done{color:#1F9D55;border-color:rgba(31,157,85,.35)}
 .fv-add-done:hover{color:#1F9D55;border-color:#1F9D55;background:rgba(31,157,85,.06)}
+
+/* ===== Delta view placeholder (to be built) ===== */
+.delta-empty{height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#f3f6fb,#eaf0f7);padding:40px}
+.delta-empty-inner{max-width:520px;text-align:center;padding:48px 40px;background:#fff;border:1px dashed rgba(14,20,40,.18);border-radius:18px;box-shadow:0 1px 2px rgba(14,20,40,.04),0 18px 44px -16px rgba(14,20,40,.18)}
+.delta-empty-eye{font:800 11px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.18em;color:var(--accent);margin-bottom:10px}
+.delta-empty h2{margin:0 0 8px;font:800 26px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em;color:var(--ink)}
+.delta-empty p{margin:0;font:500 13.5px 'Plus Jakarta Sans',sans-serif;color:#5a6478;line-height:1.55}
 
 /* Builder / Templates toggle pill (top right) */
 .bt-toggle{display:inline-flex;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:8px}
@@ -2599,11 +2615,12 @@ function App(){
             onChange={(e) => { setFlowName(e.target.value); }}
             onBlur={(e) => { if (!e.target.value.trim()) setFlowName('Untitled flow'); }} />
         </div>
+        <div className="vm-toggle vm-toggle-center" role="tablist" title="Switch between Canvas, Form, and Delta views">
+          <button className={'vm-tab' + (viewMode === 'canvas' ? ' on' : '')} onClick={() => setViewMode('canvas')}>Canvas</button>
+          <button className={'vm-tab' + (viewMode === 'form' ? ' on' : '')} onClick={() => setViewMode('form')}>Form</button>
+          <button className={'vm-tab' + (viewMode === 'delta' ? ' on' : '')} onClick={() => setViewMode('delta')}>Delta</button>
+        </div>
         <div className="hdr-right">
-          <div className="vm-toggle" role="tablist" title="Switch between the free-form canvas and the linear form view">
-            <button className={'vm-tab' + (viewMode === 'canvas' ? ' on' : '')} onClick={() => setViewMode('canvas')}>Canvas</button>
-            <button className={'vm-tab' + (viewMode === 'form' ? ' on' : '')} onClick={() => setViewMode('form')}>Form</button>
-          </div>
           <span className={'savechip ' + savedAt}>{savedAt === 'saving' ? 'Saving' : 'Saved'}</span>
           <button className="hdr-save-tpl" onClick={() => { const n = prompt('Template name', flowName || 'Low DO · Aeration'); if (!n) return; setTpls(saveTemplate(n.trim(), nodes)); }} title="Save current flow as a reusable template">
             <MiniIcon name="save" size={13} /> Save as template
@@ -2620,6 +2637,14 @@ function App(){
         {tab === 'builder' ? (
           viewMode === 'form' ? (
             <FormView nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />
+          ) : viewMode === 'delta' ? (
+            <div className="delta-empty">
+              <div className="delta-empty-inner">
+                <div className="delta-empty-eye">DELTA · COMING SOON</div>
+                <h2>Delta view</h2>
+                <p>A merged vertical + horizontal model. We'll build this together — say the word when you're ready.</p>
+              </div>
+            </div>
           ) : (
             <React.Fragment>
               {mode === 'canvas' && <FlowCanvas nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} view={view} setView={setView} />}
