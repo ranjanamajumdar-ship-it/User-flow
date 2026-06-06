@@ -180,9 +180,12 @@ input,textarea,select{font-family:inherit;}
 .dv-drawer-list::-webkit-scrollbar-thumb:hover{background:rgba(140,150,180,.55)}
 .dv-drawer-group{display:flex;flex-direction:column;gap:3px;padding:6px 0}
 .dv-drawer-grouph{
-  padding:4px 6px 2px;
-  font:800 9.5px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);
+  padding:10px 6px 4px;
+  font:700 12px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.005em;color:var(--ink);
+  display:flex;align-items:baseline;gap:5px;
 }
+.dv-drawer-groupc{font:600 11px 'Plus Jakarta Sans',sans-serif;color:var(--ink3)}
+.dv-chip-sub{margin-left:10px}
 .dv-chip{
   display:flex;align-items:center;gap:9px;
   padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;
@@ -319,6 +322,12 @@ input,textarea,select{font-family:inherit;}
 .dv-popover-item:hover{background:var(--accent-soft)}
 .dv-popover-label{font:700 12.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink);letter-spacing:-.005em}
 .dv-popover-hint{font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:#7a8497;line-height:1.35}
+
+/* Branch card — N-path selector */
+.dv-branch-row{display:flex;align-items:center;gap:6px;padding:6px 10px;background:linear-gradient(180deg,#f4f6fa,#eef1f6);border:1px solid rgba(14,20,40,.08);border-radius:10px;margin-top:2px}
+.dv-branch-l,.dv-branch-r{font:600 11.5px 'Plus Jakarta Sans',sans-serif;color:var(--ink2)}
+.dv-branch-n{font:800 13px 'Plus Jakarta Sans',sans-serif;color:var(--c);background:#fff;border:1.5px solid var(--c);border-radius:6px;padding:2px 6px;cursor:pointer;outline:none}
+.dv-branch-n:focus{box-shadow:0 0 0 3px var(--cs)}
 
 /* Variant chip + merge body + terminal variants */
 .dv-card-variantrow{display:flex;align-items:center;gap:6px;margin-top:-2px}
@@ -924,7 +933,7 @@ input,textarea,select{font-family:inherit;}
 const NODE_TYPES = {
   issue:        { label: 'Issue / Trigger',     cat: 'start',     glyph: 'issue',        branching: false, terminal: false, hint: 'The alert that opens the diagnostic flow' },
   question:     { label: 'Question / Capture',  cat: 'question',  glyph: 'question',     branching: true,  terminal: false, subKey: 'qType',    hint: 'Ask the operator something or capture a reading — each choice routes onward' },
-  singleAnswer: { label: 'Single answer',       cat: 'answer',    glyph: 'answer',       branching: false, terminal: false, hint: 'A single free-text response captured from the operator' },
+  singleAnswer: { label: 'Answer',              cat: 'answer',    glyph: 'answer',       branching: false, terminal: false, subKey: 'aType',     hint: 'A captured response — Y/N or Numeric' },
   waiting:      { label: 'Waiting',             cat: 'status',    glyph: 'wait',         branching: false, terminal: false, hint: 'Hold / wait for recovery or a process before continuing' },
   rootcause:    { label: 'Root cause selector', cat: 'cause',     glyph: 'root',         branching: true,  terminal: false, hint: 'Operator selects the confirmed cause — each routes to its remedy' },
   task:         { label: 'Action',              cat: 'task',      glyph: 'task',         branching: true,  terminal: false, subKey: 'taskType', hint: 'A diagnostic or remedial step — each choice routes onward' },
@@ -933,6 +942,7 @@ const NODE_TYPES = {
   validation:   { label: 'Validation step',     cat: 'capture',   glyph: 'validation',   branching: false, terminal: false, hint: 'Confirm the fix worked before closing' },
   reassignment: { label: 'Reassignment',        cat: 'people',    glyph: 'reassignment', branching: false, terminal: false, hint: 'Hand off to another role or operator' },
   escalation:   { label: 'Escalation',          cat: 'exception', glyph: 'escalation',   branching: false, terminal: false, subKey: 'escType',   hint: 'Escalate the issue — call the supervisor or an expert' },
+  branch:       { label: 'Branch',              cat: 'control',   glyph: 'decision',     branching: true,  terminal: false, hint: 'Split the flow into N parallel paths' },
   merge:        { label: 'Merge branches',      cat: 'control',   glyph: 'step',         branching: false, terminal: false, hint: 'Converge multiple paths back into one' },
   link:         { label: 'Link to next tree',   cat: 'link',      glyph: 'link',         branching: false, terminal: false, hint: 'Hand off to another diagnostic tree' },
   skipend:      { label: 'Skip to the end',     cat: 'terminal',  glyph: 'skip',         branching: false, terminal: true,  hint: 'Short-circuit straight to the end of the flow' },
@@ -946,6 +956,7 @@ const SUBTYPES = {
   role:     [ ['operator','Operator'], ['supervisor','Supervisor'] ],
   escType:  [ ['call_supervisor','Call the supervisor'], ['call_expert','Call an expert'] ],
   mediaType:[ ['without_rc','Without root cause'], ['with_rc','With root cause'] ],
+  aType:    [ ['yesno','Y / N'], ['numeric','Numeric'] ],
 };
 function subLabel(node){
   const meta = NODE_TYPES[node.type]; if (!meta || !meta.subKey) return '';
@@ -2869,21 +2880,31 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
   // ----- Connectors (drop targets) -----
   // For branching cards: one connector per option row (right side of the row)
   // For non-branching, non-terminal cards: a single connector at the bottom-center
+  // Read both type+variant from the chip payload (preferred) or fall back to plain type
+  const readChip = (e) => {
+    try {
+      const raw = e.dataTransfer.getData('application/dp-chip');
+      if (raw) return JSON.parse(raw);
+    } catch(_){}
+    const t = e.dataTransfer.getData('text/plain');
+    return t ? { type: t, variant: null } : null;
+  };
+
   const pathDot = (o) => React.createElement('span', {
       className: 'dv-conn dv-conn-path' + (o.target ? ' is-linked' : '') + (dropHover && dropHover.id === n.id && dropHover.optId === o.id ? ' is-hover' : ''),
       title: o.target ? 'Linked — drop another step to replace' : 'Drop a step here to wire this answer',
-      onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); onDropOnPath(n.id, o.id, true); },
+      onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; onDropOnPath(n.id, o.id, true); },
       onDragLeave: () => onDropOnPath(null, null, false),
-      onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const t = e.dataTransfer.getData('text/plain'); if (t) onDropOnPath(n.id, o.id, false, t); }
+      onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const p = readChip(e); if (p) onDropOnPath(n.id, o.id, false, p); }
     });
 
   const bottomDot = !meta.terminal && !branching ? React.createElement('div', { className: 'dv-conn-wrap' },
     React.createElement('span', {
       className: 'dv-conn dv-conn-bottom' + (n.next ? ' is-linked' : '') + (dropHover && dropHover.id === n.id && !dropHover.optId ? ' is-hover' : ''),
       title: n.next ? 'Linked — drop another step to replace' : 'Drop a step here to wire the next step',
-      onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); onDropOnBottom(n.id, true); },
+      onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; onDropOnBottom(n.id, true); },
       onDragLeave: () => onDropOnBottom(null, false),
-      onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const t = e.dataTransfer.getData('text/plain'); if (t) onDropOnBottom(n.id, false, t); }
+      onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const p = readChip(e); if (p) onDropOnBottom(n.id, false, p); }
     })) : null;
 
   return React.createElement('div', {
@@ -2900,6 +2921,24 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
         React.createElement(MiniIcon, { name: 'trash', size: 12 }))),
 
     variantSelector && React.createElement('div', { className: 'dv-card-variantrow' }, variantSelector),
+
+    // Branch card: count selector that adjusts the number of paths
+    n.type === 'branch' && React.createElement('div', { className: 'dv-branch-row' },
+      React.createElement('span', { className: 'dv-branch-l' }, 'Split into'),
+      React.createElement('select', { className: 'dv-branch-n', value: (n.options || []).length,
+        onChange: (e) => {
+          const target = parseInt(e.target.value, 10);
+          const current = (n.options || []).slice();
+          if (target > current.length) {
+            for (let i = current.length; i < target; i++) current.push({ id: uid('o'), label: 'Path ' + (i + 1), target: null });
+          } else if (target < current.length) {
+            current.length = target;
+          }
+          onPatch({ options: current });
+        },
+        onClick: (e) => e.stopPropagation()
+      }, [2,3,4,5,6,7,8].map(n => React.createElement('option', { key: n, value: n }, n))),
+      React.createElement('span', { className: 'dv-branch-r' }, 'parallel paths')),
 
     n.type === 'merge'
       ? React.createElement('div', { className: 'dv-merge-info' },
@@ -2949,57 +2988,68 @@ function DeltaEmpty({ onAddTrigger }){
 }
 
 /* ===== Left drawer · all step types as draggable chips ===== */
-const DELTA_DRAWER_GROUPS = [
-  { title: 'Root',             items: [{ type: 'issue', label: 'Issue / Trigger' }] },
-  { title: 'Operator acts',    items: [
-    { type: 'observation',  label: 'Observation' },
-    { type: 'question',     label: 'Question' },
-    { type: 'singleAnswer', label: 'Answer (free text)' },
-    { type: 'task',         label: 'Action step' },
-  ]},
-  { title: 'Capture & wait',   items: [
-    { type: 'media',        label: 'Media upload' },
-    { type: 'waiting',      label: 'Waiting step' },
-    { type: 'validation',   label: 'Validation step' },
-    { type: 'rootcause',    label: 'Root-cause picker' },
-  ]},
-  { title: 'Flow control',     items: [
-    { type: 'merge',        label: 'Merge branches' },
-    { type: 'reassignment', label: 'Reassignment' },
-    { type: 'escalation',   label: 'Escalation' },
-  ]},
-  { title: 'Terminal',         items: [
-    { type: 'link',         label: 'Link to next tree' },
-    { type: 'skipend',      label: 'Skip to the end' },
-    { type: 'done',         label: 'Done' },
-  ]},
+/* DRAWER ENTRIES — flat list matching the Figma "STEPS" column. Each chip is one
+   draggable atom. Where a card has variants, each variant is its own chip so the
+   user picks the exact card by drag, no extra UI step. */
+const DELTA_DRAWER_ENTRIES = [
+  { type: 'issue',                                  label: 'Trigger / Issue' },
+  { type: 'branch',                                 label: 'Branch',                group: 'Path' },
+  { type: 'merge',                                  label: 'Merge',                 group: 'Path' },
+  { type: 'observation',                            label: 'Observation' },
+  { type: 'question',                               label: 'Question' },
+  { type: 'singleAnswer', variant: ['aType','yesno'],   label: 'Answer · Y/N',     group: 'Answer' },
+  { type: 'singleAnswer', variant: ['aType','numeric'], label: 'Answer · Numeric', group: 'Answer' },
+  { type: 'task', variant: ['taskType','diagnostic'],   label: 'Diagnostic step' },
+  { type: 'task', variant: ['taskType','remedial'],     label: 'Remedial step' },
+  { type: 'media', variant: ['mediaType','with_rc'],    label: 'Media · With root cause',    group: 'Media' },
+  { type: 'media', variant: ['mediaType','without_rc'], label: 'Media · Without root cause', group: 'Media' },
+  { type: 'reassignment',                           label: 'Reassignment' },
+  { type: 'escalation',                             label: 'Escalation' },
+  { type: 'skipend',                                label: 'Skip to the end' },
+  { type: 'waiting',                                label: 'Wait' },
 ];
 
 function DeltaDrawer({ onChipDragStart, onChipDragEnd, onChipClick, hasTrigger }){
+  // Group entries by their `group` field (if any) so we can render "Path (2)", "Answer (2)", "Media (2)" headers
+  const groupCounts = {};
+  DELTA_DRAWER_ENTRIES.forEach(e => { if (e.group) groupCounts[e.group] = (groupCounts[e.group] || 0) + 1; });
+  let lastGroup = null;
   return React.createElement('aside', { className: 'dv-drawer' },
-    React.createElement('div', { className: 'dv-drawer-h' }, 'Step types'),
-    React.createElement('div', { className: 'dv-drawer-tip' }, 'Drag any step onto the connector at the bottom of a card — or onto an answer row connector.'),
+    React.createElement('div', { className: 'dv-drawer-h' }, 'STEPS'),
     React.createElement('div', { className: 'dv-drawer-list' },
-      DELTA_DRAWER_GROUPS.map((g, gi) => React.createElement('div', { className: 'dv-drawer-group', key: gi },
-        React.createElement('div', { className: 'dv-drawer-grouph' }, g.title),
-        g.items.map(s => {
-          const meta = NODE_TYPES[s.type] || {};
-          const cat = CAT_META[meta.cat] || CAT_META.task;
-          const disabled = s.type === 'issue' && hasTrigger;
-          return React.createElement('div', {
-            key: s.type,
-            className: 'dv-chip' + (disabled ? ' is-disabled' : ''),
-            draggable: !disabled,
-            style: { '--c': cat.color, '--cs': cat.soft },
-            title: disabled ? 'A Trigger already exists' : (meta.hint || s.label),
-            onDragStart: (e) => { if (disabled) { e.preventDefault(); return; } e.dataTransfer.setData('text/plain', s.type); e.dataTransfer.effectAllowed = 'copy'; onChipDragStart(s.type); },
-            onDragEnd: () => onChipDragEnd(),
-            onClick: () => { if (!disabled) onChipClick(s.type); }
+      DELTA_DRAWER_ENTRIES.map((s, i) => {
+        const meta = NODE_TYPES[s.type] || {};
+        const cat = CAT_META[meta.cat] || CAT_META.task;
+        const disabled = s.type === 'issue' && hasTrigger;
+        const showGroupH = s.group && s.group !== lastGroup;
+        if (s.group) lastGroup = s.group; else lastGroup = null;
+        // Encode type + variant in the drag payload (JSON)
+        const payload = JSON.stringify({ type: s.type, variant: s.variant || null });
+        const chip = React.createElement('div', {
+          key: i,
+          className: 'dv-chip' + (disabled ? ' is-disabled' : '') + (s.group ? ' dv-chip-sub' : ''),
+          draggable: !disabled,
+          style: { '--c': cat.color, '--cs': cat.soft },
+          title: disabled ? 'A Trigger already exists' : (meta.hint || s.label),
+          onDragStart: (e) => {
+            if (disabled) { e.preventDefault(); return; }
+            e.dataTransfer.setData('application/dp-chip', payload);
+            e.dataTransfer.setData('text/plain', s.type);
+            e.dataTransfer.effectAllowed = 'copy';
+            onChipDragStart(s.type);
           },
-            React.createElement('span', { className: 'dv-chip-ic', style: { background: cat.soft, color: cat.color } },
-              React.createElement(Icon, { glyph: meta.glyph || 'step', size: 14, color: cat.color })),
-            React.createElement('span', { className: 'dv-chip-l' }, s.label));
-        })))));
+          onDragEnd: () => onChipDragEnd(),
+          onClick: () => { if (!disabled) onChipClick(s.type, s.variant); }
+        },
+          React.createElement('span', { className: 'dv-chip-ic', style: { background: cat.soft, color: cat.color } },
+            React.createElement(Icon, { glyph: meta.glyph || 'step', size: 14, color: cat.color })),
+          React.createElement('span', { className: 'dv-chip-l' }, s.label));
+        return showGroupH
+          ? React.createElement(React.Fragment, { key: i },
+              React.createElement('div', { className: 'dv-drawer-grouph' }, s.group, ' ', React.createElement('span', { className: 'dv-drawer-groupc' }, '(', groupCounts[s.group], ')')),
+              chip)
+          : chip;
+      })));
 }
 
 /* ===== Main view ===== */
@@ -3048,13 +3098,25 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
     setSelected(nid);
   };
 
-  const addStep = (afterId, fromOptId, type) => {
+  const addStep = (afterId, fromOptId, type, variant) => {
     const nid = uid(type);
-    const base = Object.assign({ id: nid, type, title: NODE_TYPES[type].label, detail: '', options: [], next: null, x: 0, y: 0 }, defaultSub(type));
-    if (BRANCHING.has(type)) base.options = [
-      { id: uid('o'), label: 'Option A', target: null },
-      { id: uid('o'), label: 'Option B', target: null }
-    ];
+    const base = Object.assign({ id: nid, type, title: '', detail: '', options: [], next: null, x: 0, y: 0 }, defaultSub(type));
+    // Apply the variant chosen in the drawer chip (e.g. ['aType','yesno'], ['taskType','diagnostic'])
+    if (variant && variant.length === 2) base[variant[0]] = variant[1];
+    if (BRANCHING.has(type)) {
+      if (type === 'branch') {
+        // Branch starts with 2 paths labeled "Path 1" / "Path 2" — count is adjustable on the card
+        base.options = [
+          { id: uid('o'), label: 'Path 1', target: null },
+          { id: uid('o'), label: 'Path 2', target: null }
+        ];
+      } else {
+        base.options = [
+          { id: uid('o'), label: 'Option A', target: null },
+          { id: uid('o'), label: 'Option B', target: null }
+        ];
+      }
+    }
     const copy = Object.assign({}, nodes, { [nid]: base });
     if (afterId && nodes[afterId]) {
       const prev = nodes[afterId];
@@ -3096,17 +3158,25 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
   };
 
   /* ----- drag from drawer · drop on connector ----- */
-  const onDropOnBottom = (id, isOver, type) => {
-    if (type) { addStep(id, null, type); setDropHover(null); return; }
+  const parseChipPayload = (e) => {
+    try {
+      const raw = e.dataTransfer.getData('application/dp-chip');
+      if (raw) return JSON.parse(raw);
+    } catch(_){}
+    const t = e.dataTransfer.getData('text/plain');
+    return t ? { type: t, variant: null } : null;
+  };
+  const onDropOnBottom = (id, isOver, payload) => {
+    if (payload) { addStep(id, null, payload.type, payload.variant); setDropHover(null); setDragType(null); return; }
     setDropHover(isOver ? { id, optId: null } : null);
   };
-  const onDropOnPath = (id, optId, isOver, type) => {
-    if (type) { addStep(id, optId, type); setDropHover(null); return; }
+  const onDropOnPath = (id, optId, isOver, payload) => {
+    if (payload) { addStep(id, optId, payload.type, payload.variant); setDropHover(null); setDragType(null); return; }
     setDropHover(isOver ? { id, optId } : null);
   };
 
   /* ----- click-to-add fallback for accessibility / no-touch ----- */
-  const onChipClick = (type) => {
+  const onChipClick = (type, variant) => {
     if (type === 'issue') {
       if (!hasTrigger) addTrigger();
       return;
@@ -3119,14 +3189,14 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
       const meta = NODE_TYPES[node.type] || {};
       if (BRANCHING.has(node.type)) {
         const opt = (node.options || []).find(o => !o.target);
-        if (opt) { addStep(id, opt.id, type); return; }
+        if (opt) { addStep(id, opt.id, type, variant); return; }
       } else if (!meta.terminal && !node.next) {
-        addStep(id, null, type); return;
+        addStep(id, null, type, variant); return;
       }
     }
     // Fallback: attach to the last-placed node's bottom
     const lastId = placedIds[placedIds.length - 1];
-    addStep(lastId, null, type);
+    addStep(lastId, null, type, variant);
   };
 
   /* ----- empty state (drawer still shown so user can drag from it) ----- */
