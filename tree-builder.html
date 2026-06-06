@@ -144,12 +144,81 @@ input,textarea,select{font-family:inherit;}
 .fv-add-done{color:#1F9D55;border-color:rgba(31,157,85,.35)}
 .fv-add-done:hover{color:#1F9D55;border-color:#1F9D55;background:rgba(31,157,85,.06)}
 
-/* ===== Delta view placeholder (to be built) ===== */
-.delta-empty{height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#f3f6fb,#eaf0f7);padding:40px}
-.delta-empty-inner{max-width:520px;text-align:center;padding:48px 40px;background:#fff;border:1px dashed rgba(14,20,40,.18);border-radius:18px;box-shadow:0 1px 2px rgba(14,20,40,.04),0 18px 44px -16px rgba(14,20,40,.18)}
-.delta-empty-eye{font:800 11px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.18em;color:var(--accent);margin-bottom:10px}
-.delta-empty h2{margin:0 0 8px;font:800 26px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em;color:var(--ink)}
-.delta-empty p{margin:0;font:500 13.5px 'Plus Jakarta Sans',sans-serif;color:#5a6478;line-height:1.55}
+/* ============================================================
+   DELTA VIEW — typed cards, lane layout, branch fan-out
+   ============================================================ */
+.dv-root{height:100%;background:linear-gradient(180deg,#f3f6fb,#eaf0f7);overflow:hidden;position:relative}
+.dv-scroll{height:100%;overflow:auto;padding:0}
+.dv-stage{margin:0}
+.dv-edges{position:absolute;top:0;left:0;pointer-events:none;z-index:1}
+.dv-grid{position:relative;z-index:2}
+
+/* Empty state */
+.dv-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center}
+.dv-empty-eye{font:800 11px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.18em;color:var(--accent);margin-bottom:12px}
+.dv-empty h2{margin:0 0 10px;font:800 28px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.022em;color:var(--ink)}
+.dv-empty p{margin:0 0 24px;max-width:480px;font:500 14px 'Plus Jakarta Sans',sans-serif;color:#5a6478;line-height:1.55}
+.dv-empty-btn{padding:12px 22px;border-radius:10px;border:0;background:var(--accent);color:#fff;cursor:pointer;font:700 13.5px 'Plus Jakarta Sans',sans-serif;letter-spacing:.2px;box-shadow:0 8px 20px -6px rgba(10,110,158,.42);transition:.18s}
+.dv-empty-btn:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 14px 28px -6px rgba(10,110,158,.55)}
+
+/* Card */
+.dv-card{
+  background:#fff;border:1.5px solid rgba(14,20,40,.10);border-radius:14px;
+  padding:14px 16px 12px;display:flex;flex-direction:column;gap:8px;
+  box-shadow:0 1px 2px rgba(14,20,40,.04),0 10px 28px -12px rgba(14,20,40,.12);
+  cursor:pointer;transition:box-shadow .18s ease,border-color .18s ease,transform .15s ease;
+  position:relative;
+  border-top:4px solid var(--c);
+  align-self:start;
+}
+.dv-card:hover{border-color:var(--c);box-shadow:0 2px 6px rgba(14,20,40,.06),0 18px 40px -10px rgba(14,20,40,.18)}
+.dv-card.is-sel{border-color:var(--c);box-shadow:0 0 0 2px var(--c),0 18px 40px -10px rgba(14,20,40,.20)}
+.dv-card-head{display:flex;align-items:center;gap:8px}
+.dv-card-ic{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;flex:none}
+.dv-card-cat{font:800 10px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--c);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dv-card-sub{color:#7a8497;font-weight:600}
+.dv-card-x{display:grid;place-items:center;width:24px;height:24px;border-radius:6px;border:0;background:transparent;color:var(--ink3);cursor:pointer;transition:.15s}
+.dv-card-x:hover{background:#fdecea;color:#c0473a}
+.dv-card-title{width:100%;font:700 14px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.012em;color:var(--ink);border:0;background:transparent;padding:2px 0 4px;outline:none;border-bottom:1.5px solid transparent;transition:.15s}
+.dv-card-title:focus{border-bottom-color:var(--c)}
+.dv-card-title::placeholder{color:#a3acb8;font-weight:600}
+
+/* Branch / paths block on a branching card */
+.dv-paths{display:flex;flex-direction:column;gap:4px;margin-top:2px;border-top:1px dashed rgba(14,20,40,.10);padding-top:8px}
+.dv-path{display:grid;grid-template-columns:18px 1fr 8px 24px 22px;gap:6px;align-items:center}
+.dv-path-l{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1.2px solid var(--c);color:var(--c);font:700 9.5px 'Plus Jakarta Sans',sans-serif;background:#fff}
+.dv-path-tx{border:1px solid rgba(14,20,40,.10);border-radius:6px;padding:4px 8px;font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--ink);background:#fff;outline:none;transition:.15s;min-width:0}
+.dv-path-tx:focus{border-color:var(--c);box-shadow:0 0 0 2px var(--cs)}
+.dv-path-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#dbdfe6}
+.dv-path-dot.is-linked{background:var(--c)}
+.dv-path-add{width:24px;height:24px;border-radius:6px;border:1px dashed rgba(14,20,40,.18);background:#fff;color:var(--c);cursor:pointer;font:700 12px 'Plus Jakarta Sans',sans-serif;transition:.15s;display:grid;place-items:center}
+.dv-path-add:hover{border-color:var(--c);background:var(--cs)}
+.dv-path-x{width:22px;height:22px;border-radius:6px;border:0;background:transparent;color:var(--ink3);cursor:pointer;display:grid;place-items:center;transition:.15s}
+.dv-path-x:hover{background:#fdecea;color:#c0473a}
+.dv-path-newopt{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border:1px dashed rgba(14,20,40,.18);background:#fff;color:var(--c);border-radius:999px;font:600 11px 'Plus Jakarta Sans',sans-serif;cursor:pointer;margin-top:2px;transition:.15s}
+.dv-path-newopt:hover{border-color:var(--c);background:var(--cs)}
+
+/* "+ Add next step" row for non-branching cards */
+.dv-next-row{margin-top:auto;padding-top:8px}
+.dv-next-btn{width:100%;padding:6px 10px;border:1px dashed rgba(14,20,40,.18);background:#fff;color:var(--c);border-radius:8px;font:700 11.5px 'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:.15s}
+.dv-next-btn:hover{border-color:var(--c);background:var(--cs)}
+
+.dv-terminal-row{margin-top:auto;padding:6px 10px;border-radius:8px;background:rgba(31,138,91,.08);border:1px solid rgba(31,138,91,.20);color:#145c3c;font:700 11.5px 'Plus Jakarta Sans',sans-serif;text-align:center}
+
+/* Connection-edge labels */
+.dv-edgelabel{display:inline-block;background:#fff;border:1px solid rgba(14,20,40,.10);border-radius:999px;font:600 10px 'Plus Jakarta Sans',sans-serif;color:var(--ink2);padding:3px 9px;white-space:nowrap;line-height:1.3;box-shadow:0 1px 3px rgba(20,33,48,.06);max-width:150px;overflow:hidden;text-overflow:ellipsis;text-align:center}
+
+/* "+ Add step" popover */
+.dv-popover{
+  min-width:260px;max-width:300px;background:#fff;border:1px solid rgba(14,20,40,.10);border-radius:10px;
+  box-shadow:0 14px 36px -10px rgba(14,20,40,.30),0 0 0 1px rgba(14,20,40,.04);padding:6px;
+  display:flex;flex-direction:column;gap:1px;
+}
+.dv-popover-h{padding:8px 10px 6px;font:800 10px 'JetBrains Mono','IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:#7a8497}
+.dv-popover-item{display:flex;flex-direction:column;gap:1px;padding:8px 10px;border-radius:7px;border:0;background:transparent;text-align:left;cursor:pointer;transition:.12s}
+.dv-popover-item:hover{background:var(--accent-soft)}
+.dv-popover-label{font:700 13px 'Plus Jakarta Sans',sans-serif;color:var(--ink);letter-spacing:-.005em}
+.dv-popover-hint{font:500 11px 'Plus Jakarta Sans',sans-serif;color:#7a8497}
 
 /* Builder / Templates toggle pill (top right) */
 .bt-toggle{display:inline-flex;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:8px}
@@ -2518,6 +2587,287 @@ function FormView({ nodes, onNodes, selected, setSelected }){
 
 window.FormView = FormView;
 </script>
+<script type="text/babel" data-from="js/deltaview.jsx">
+/*__js/deltaview.jsx__*/
+/* DELTA VIEW · v1
+   ─────────────────────────────────────────────────────────────────────────
+   A typed-card flowchart laid out vertically with horizontal fan-out at
+   branch points. Auto-laid out — no manual positioning.
+   - Vertical = sequence
+   - Horizontal = parallel branches off a branching card
+   - Cards are TYPED (Trigger, Question, Action, Done, etc.) with a fixed
+     header band + a body slot + a paths slot (for branching cards).
+   - Connections are drawn as SVG lines; the layout engine assigns each
+     node a (row, lane) coordinate so the lines are deterministic.
+   - Adding a step happens through "+ Add step" buttons, never raw drag.
+*/
+
+/* ===== Lane layout: deterministic (row, lane) for every node ===== */
+function deltaLayout(nodes){
+  const positions = {};
+  if (!nodes || !Object.keys(nodes).length) return { positions, maxRow: 0, maxLane: 0 };
+  const issue = Object.values(nodes).find(n => n.type === 'issue') || Object.values(nodes)[0];
+  if (!issue) return { positions, maxRow: 0, maxLane: 0 };
+  const visited = new Set();
+  let nextFreeLane = 0;
+  const place = (id, row, lane) => {
+    if (!nodes[id] || visited.has(id)) return;
+    visited.add(id);
+    positions[id] = { row, lane };
+    nextFreeLane = Math.max(nextFreeLane, lane);
+    const node = nodes[id];
+    // Collect outgoing children in order
+    const children = [];
+    if (BRANCHING.has(node.type)) {
+      (node.options || []).forEach(o => { if (o.target && nodes[o.target] && !visited.has(o.target)) children.push(o.target); });
+    } else if (node.next && nodes[node.next] && !visited.has(node.next)) {
+      children.push(node.next);
+    }
+    if (children.length === 0) return;
+    if (children.length === 1) {
+      place(children[0], row + 1, lane);
+    } else {
+      // First child keeps the parent's lane; subsequent children spawn new lanes to the right
+      place(children[0], row + 1, lane);
+      for (let i = 1; i < children.length; i++) {
+        nextFreeLane += 1;
+        place(children[i], row + 1, nextFreeLane);
+      }
+    }
+  };
+  place(issue.id, 0, 0);
+  // Place any orphans (nodes not reachable from the trigger) below the main flow
+  Object.keys(nodes).forEach(id => {
+    if (visited.has(id)) return;
+    nextFreeLane += 1;
+    place(id, 0, nextFreeLane);
+  });
+  const rows = Object.values(positions).map(p => p.row);
+  const lanes = Object.values(positions).map(p => p.lane);
+  return {
+    positions,
+    maxRow: rows.length ? Math.max(...rows) : 0,
+    maxLane: lanes.length ? Math.max(...lanes) : 0,
+  };
+}
+
+/* ===== "+ Add step" popover — pick the card type to insert ===== */
+const DELTA_STEP_OPTIONS = [
+  { type: 'question',     label: 'Question',          hint: 'Branching Y/N or multi-choice' },
+  { type: 'task',         label: 'Action',            hint: 'A diagnostic or remedial step' },
+  { type: 'media',        label: 'Media upload',      hint: 'Capture a photo / file' },
+  { type: 'validation',   label: 'Validation',        hint: 'Confirm the fix worked' },
+  { type: 'waiting',      label: 'Waiting',           hint: 'Hold for a process / time' },
+  { type: 'escalation',   label: 'Escalation',        hint: 'Call supervisor / expert' },
+  { type: 'rootcause',    label: 'Root-cause picker', hint: 'Operator confirms cause' },
+  { type: 'link',         label: 'Link to next tree', hint: 'Hand off to another flow' },
+  { type: 'singleAnswer', label: 'Single answer',     hint: 'Free-text capture' },
+  { type: 'done',         label: 'Done',              hint: 'Closes the flow' },
+];
+
+function StepPopover({ anchorRect, onPick, onClose }){
+  React.useEffect(() => {
+    const onAny = (e) => { if (!e.target.closest('.dv-popover')) onClose(); };
+    const onEsc = (e) => { if (e.key === 'Escape') onClose(); };
+    setTimeout(() => window.addEventListener('mousedown', onAny), 0);
+    window.addEventListener('keydown', onEsc);
+    return () => { window.removeEventListener('mousedown', onAny); window.removeEventListener('keydown', onEsc); };
+  }, []);
+  if (!anchorRect) return null;
+  const style = { position: 'fixed', left: Math.max(10, anchorRect.left), top: anchorRect.bottom + 6, zIndex: 200 };
+  return React.createElement('div', { className: 'dv-popover', style },
+    React.createElement('div', { className: 'dv-popover-h' }, 'Add a step'),
+    DELTA_STEP_OPTIONS.map(s => React.createElement('button', { key: s.type, className: 'dv-popover-item',
+      onClick: () => { onPick(s.type); onClose(); } },
+      React.createElement('div', { className: 'dv-popover-label' }, s.label),
+      React.createElement('div', { className: 'dv-popover-hint' }, s.hint))));
+}
+
+/* ===== Single typed card ===== */
+function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption, onDelOption, onAddNext, onDelete }){
+  const meta = NODE_TYPES[n.type] || NODE_TYPES.question;
+  const cat = CAT_META[meta.cat];
+  const branching = meta.branching;
+  const subtitle = subLabel(n);
+  const style = { gridRow: pos.row + 1, gridColumn: pos.lane + 1, '--c': cat.color, '--cs': cat.soft };
+
+  return React.createElement('div', { className: 'dv-card' + (isSel ? ' is-sel' : ''), style, onClick: onSelect },
+    React.createElement('div', { className: 'dv-card-head' },
+      React.createElement('span', { className: 'dv-card-ic', style: { background: cat.soft, color: cat.color } },
+        React.createElement(Icon, { glyph: meta.glyph, size: 13, color: cat.color })),
+      React.createElement('span', { className: 'dv-card-cat' }, cat.name, subtitle ? React.createElement('span', { className: 'dv-card-sub' }, ' · ', subtitle) : null),
+      !meta.terminal && React.createElement('button', { className: 'dv-card-x', title: 'Delete step',
+        onClick: (e) => { e.stopPropagation(); onDelete(); } },
+        React.createElement(MiniIcon, { name: 'trash', size: 12 }))),
+
+    React.createElement('input', { className: 'dv-card-title', value: n.title || '',
+      placeholder: n.type === 'issue' ? 'Name the issue / trigger' : 'Step title',
+      onChange: (e) => onPatch({ title: e.target.value }),
+      onClick: (e) => e.stopPropagation() }),
+
+    branching && React.createElement('div', { className: 'dv-paths' },
+      (n.options || []).map((o, i) =>
+        React.createElement('div', { className: 'dv-path', key: o.id },
+          React.createElement('span', { className: 'dv-path-l' }, String.fromCharCode(65 + i)),
+          React.createElement('input', { className: 'dv-path-tx', value: o.label || '', placeholder: 'Answer label',
+            onChange: (e) => onSetOption(o.id, { label: e.target.value }),
+            onClick: (e) => e.stopPropagation() }),
+          React.createElement('span', { className: 'dv-path-dot' + (o.target ? ' is-linked' : ''), title: o.target ? 'Linked to next step' : 'No next step yet' }),
+          React.createElement('button', { className: 'dv-path-add', title: 'Add the next step from this answer',
+            onClick: (e) => { e.stopPropagation(); onAddNext(o.id, e.currentTarget.getBoundingClientRect()); } },
+            o.target ? '✓' : '+'),
+          React.createElement('button', { className: 'dv-path-x', title: 'Remove answer',
+            onClick: (e) => { e.stopPropagation(); onDelOption(o.id); } },
+            React.createElement(MiniIcon, { name: 'close', size: 11 })))),
+      React.createElement('button', { className: 'dv-path-newopt',
+        onClick: (e) => { e.stopPropagation(); onAddOption(); } },
+        React.createElement(MiniIcon, { name: 'plus', size: 11 }), ' Add answer')),
+
+    !branching && !meta.terminal && React.createElement('div', { className: 'dv-next-row' },
+      React.createElement('button', { className: 'dv-next-btn',
+        onClick: (e) => { e.stopPropagation(); onAddNext(null, e.currentTarget.getBoundingClientRect()); } },
+        n.next ? '✓ Linked — change next step' : '+ Add next step')),
+
+    meta.terminal && React.createElement('div', { className: 'dv-terminal-row' }, '✓ Flow closes here'));
+}
+
+/* ===== Empty state when there are no nodes ===== */
+function DeltaEmpty({ onAddTrigger }){
+  return React.createElement('div', { className: 'dv-empty' },
+    React.createElement('div', { className: 'dv-empty-eye' }, 'DELTA VIEW'),
+    React.createElement('h2', null, 'Start your flow'),
+    React.createElement('p', null, 'Every diagnostic flow starts with a trigger. Add one to begin laying out the steps top-to-bottom, with branches fanning horizontally.'),
+    React.createElement('button', { className: 'dv-empty-btn', onClick: onAddTrigger }, '+ Add Trigger card'));
+}
+
+/* ===== Main view ===== */
+function DeltaView({ nodes, onNodes, selected, setSelected }){
+  const [popover, setPopover] = React.useState(null); // { anchorRect, afterId, fromOptId } | null
+  const wrapRef = React.useRef(null);
+  const layout = React.useMemo(() => deltaLayout(nodes), [nodes]);
+  const { positions, maxRow, maxLane } = layout;
+  const placedIds = Object.keys(positions);
+
+  /* ----- mutations ----- */
+  const patch = (id, p) => onNodes(Object.assign({}, nodes, { [id]: Object.assign({}, nodes[id], p) }));
+  const setOption = (id, oid, p) => patch(id, { options: (nodes[id].options || []).map(o => o.id === oid ? Object.assign({}, o, p) : o) });
+  const addOption = (id) => patch(id, { options: (nodes[id].options || []).concat([{ id: uid('o'), label: 'New answer', target: null }]) });
+  const delOption = (id, oid) => patch(id, { options: (nodes[id].options || []).filter(o => o.id !== oid) });
+
+  const addTrigger = () => {
+    const nid = uid('issue');
+    onNodes(Object.assign({}, nodes, { [nid]: { id: nid, type: 'issue', title: 'New trigger', detail: '', options: [], next: null, x: 0, y: 0 } }));
+    setSelected(nid);
+  };
+
+  const addStep = (afterId, fromOptId, type) => {
+    const nid = uid(type);
+    const base = Object.assign({ id: nid, type, title: NODE_TYPES[type].label, detail: '', options: [], next: null, x: 0, y: 0 }, defaultSub(type));
+    if (BRANCHING.has(type)) base.options = [
+      { id: uid('o'), label: 'Option A', target: null },
+      { id: uid('o'), label: 'Option B', target: null }
+    ];
+    const copy = Object.assign({}, nodes, { [nid]: base });
+    if (afterId && nodes[afterId]) {
+      const prev = nodes[afterId];
+      if (BRANCHING.has(prev.type) && fromOptId) {
+        copy[afterId] = Object.assign({}, prev, { options: (prev.options || []).map(o => o.id === fromOptId ? Object.assign({}, o, { target: nid }) : o) });
+      } else if (!BRANCHING.has(prev.type) && !NODE_TYPES[prev.type].terminal) {
+        copy[afterId] = Object.assign({}, prev, { next: nid });
+      }
+    }
+    onNodes(copy);
+    setSelected(nid);
+  };
+
+  const delStep = (id) => {
+    if (!confirm('Delete this step? Any incoming connections will be cleared.')) return;
+    const copy = {};
+    Object.values(nodes).forEach(n => {
+      if (n.id === id) return;
+      const c = Object.assign({}, n);
+      if (c.next === id) c.next = null;
+      if (c.options) c.options = c.options.map(o => o.target === id ? Object.assign({}, o, { target: null }) : o);
+      copy[n.id] = c;
+    });
+    onNodes(copy);
+    if (selected === id) setSelected(null);
+  };
+
+  /* ----- popover trigger ----- */
+  const openPopover = (afterId, fromOptId, anchorRect) => setPopover({ afterId, fromOptId, anchorRect });
+  const pickType = (type) => { addStep(popover.afterId, popover.fromOptId, type); setPopover(null); };
+
+  /* ----- empty state ----- */
+  if (placedIds.length === 0) {
+    return React.createElement('div', { className: 'dv-root' },
+      React.createElement(DeltaEmpty, { onAddTrigger: addTrigger }));
+  }
+
+  /* ----- compute connection lines (SVG) ----- */
+  const CELL_W = 320, CELL_H = 220, GAP_X = 32, GAP_Y = 48, PAD = 48;
+  const COLS = maxLane + 1, ROWS = maxRow + 1;
+  const cardX = (lane) => PAD + lane * (CELL_W + GAP_X);
+  const cardY = (row) => PAD + row * (CELL_H + GAP_Y);
+  const stageW = PAD * 2 + COLS * CELL_W + (COLS - 1) * GAP_X;
+  const stageH = PAD * 2 + ROWS * CELL_H + (ROWS - 1) * GAP_Y;
+
+  const edges = [];
+  Object.values(nodes).forEach(n => {
+    if (!positions[n.id]) return;
+    if (BRANCHING.has(n.type)) {
+      (n.options || []).forEach((o, i) => {
+        if (o.target && positions[o.target]) {
+          edges.push({ from: n.id, to: o.target, optIdx: i, optCount: (n.options || []).length, label: o.label });
+        }
+      });
+    } else if (n.next && positions[n.next]) {
+      edges.push({ from: n.id, to: n.next, optIdx: 0, optCount: 1, label: '' });
+    }
+  });
+
+  const stageStyle = { position: 'relative', width: stageW, height: stageH, minHeight: '100%' };
+
+  return React.createElement('div', { className: 'dv-root', ref: wrapRef },
+    React.createElement('div', { className: 'dv-scroll' },
+      React.createElement('div', { className: 'dv-stage', style: stageStyle },
+        React.createElement('svg', { className: 'dv-edges', width: stageW, height: stageH },
+          React.createElement('defs', null,
+            React.createElement('marker', { id: 'dv-arr', markerWidth: 9, markerHeight: 9, refX: 7, refY: 4.5, orient: 'auto' },
+              React.createElement('path', { d: 'M1,1 L7,4.5 L1,8', fill: 'none', stroke: '#b8c0ca', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }))),
+          edges.map((e, i) => {
+            const from = positions[e.from], to = positions[e.to];
+            const fromMeta = NODE_TYPES[nodes[e.from].type];
+            const sx = cardX(from.lane) + (CELL_W / (e.optCount + 1)) * (e.optIdx + 1);
+            const sy = cardY(from.row) + CELL_H;
+            const tx = cardX(to.lane) + CELL_W / 2;
+            const ty = cardY(to.row);
+            const midY = (sy + ty) / 2;
+            const d = `M${sx},${sy} C${sx},${midY} ${tx},${midY} ${tx},${ty}`;
+            const col = colorOf(nodes[e.from].type);
+            return React.createElement('g', { key: i },
+              React.createElement('path', { d, fill: 'none', stroke: col, strokeOpacity: 0.55, strokeWidth: 2, markerEnd: 'url(#dv-arr)' }),
+              e.label && React.createElement('foreignObject', { x: (sx + tx) / 2 - 80, y: midY - 13, width: 160, height: 26, style: { overflow: 'visible' } },
+                React.createElement('div', { className: 'dv-edgelabel' }, e.label)));
+          })),
+        React.createElement('div', { className: 'dv-grid', style: { position: 'relative', display: 'grid',
+          gridTemplateColumns: `repeat(${COLS}, ${CELL_W}px)`,
+          gridAutoRows: `${CELL_H}px`,
+          rowGap: GAP_Y, columnGap: GAP_X, padding: PAD, width: 'max-content' } },
+          placedIds.map(id => React.createElement(DeltaCard, { key: id, n: nodes[id], pos: positions[id],
+            isSel: selected === id,
+            onSelect: () => setSelected(id),
+            onPatch: (p) => patch(id, p),
+            onSetOption: (oid, p) => setOption(id, oid, p),
+            onAddOption: () => addOption(id),
+            onDelOption: (oid) => delOption(id, oid),
+            onAddNext: (optId, rect) => openPopover(id, optId, rect),
+            onDelete: () => delStep(id) }))))),
+    popover && React.createElement(StepPopover, { anchorRect: popover.anchorRect, onPick: pickType, onClose: () => setPopover(null) }));
+}
+
+window.DeltaView = DeltaView;
+</script>
 <script type="text/babel" data-from="js/app.jsx">
 /*__js/app.jsx__*/
 /* App shell — header, mode switcher, shared state + persistence. */
@@ -2638,13 +2988,7 @@ function App(){
           viewMode === 'form' ? (
             <FormView nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />
           ) : viewMode === 'delta' ? (
-            <div className="delta-empty">
-              <div className="delta-empty-inner">
-                <div className="delta-empty-eye">DELTA · COMING SOON</div>
-                <h2>Delta view</h2>
-                <p>A merged vertical + horizontal model. We'll build this together — say the word when you're ready.</p>
-              </div>
-            </div>
+            <DeltaView nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} />
           ) : (
             <React.Fragment>
               {mode === 'canvas' && <FlowCanvas nodes={nodes} onNodes={onNodes} selected={selected} setSelected={setSelected} view={view} setView={setView} />}
