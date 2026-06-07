@@ -218,12 +218,12 @@ input,textarea,select{font-family:inherit;}
 
 /* ---- Bottom connector (line + dot) ---- */
 .dv-conn-wrap{
-  position:absolute;left:50%;bottom:-28px;transform:translateX(-50%);
-  width:18px;height:28px;pointer-events:none;
+  position:absolute;left:50%;bottom:-48px;transform:translateX(-50%);
+  width:18px;height:48px;pointer-events:none;
   display:flex;flex-direction:column;align-items:center;
 }
 .dv-conn-wrap::before{
-  content:'';width:1px;height:10px;border-left:1px dashed var(--dv-ink3);opacity:.45;flex:none;
+  content:'';width:1px;height:30px;border-left:1px dashed var(--dv-ink3);opacity:.45;flex:none;
 }
 .dv-conn-wrap .dv-conn-bottom{pointer-events:auto;margin-top:1px}
 .dv-conn{
@@ -378,6 +378,14 @@ input,textarea,select{font-family:inherit;}
 .dv-card{cursor:grab}
 .dv-card:active{cursor:grabbing}
 
+
+/* ---- Merge card dropdown + tags ---- */
+.dv-merge-sel{width:100%;font:400 11.5px 'Plus Jakarta Sans',sans-serif;border:1px solid var(--dv-line);border-radius:4px;padding:5px 8px;outline:none;color:var(--dv-ink);margin-top:4px}
+.dv-merge-sel:focus{border-color:var(--dv)}
+.dv-merge-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.dv-merge-tag{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:4px;background:var(--dv-soft);border:1px solid var(--dv-mid);font:500 10.5px 'Plus Jakarta Sans',sans-serif;color:var(--dv)}
+.dv-merge-tag-x{border:0;background:transparent;color:var(--dv-ink3);cursor:pointer;font:700 11px sans-serif;padding:0 2px}
+.dv-merge-tag-x:hover{color:#c0473a}
 /* ---- Type-specific card bodies ---- */
 .dv-obs-body{display:flex;flex-direction:column;gap:4px}
 .dv-obs-icons{display:flex;gap:6px;justify-content:flex-end}
@@ -398,8 +406,8 @@ input,textarea,select{font-family:inherit;}
 .dv-yn-label{font:600 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink);padding:3px 12px;border:1px solid var(--dv-line);border-radius:4px;background:#fff}
 .dv-yn-yes .dv-yn-label{border-color:var(--dv-mid);color:var(--dv)}
 .dv-yn-no .dv-yn-label{border-color:#E8B4B8;color:#8B3A3A}
-.dv-conn-wrap-yn{position:relative;bottom:auto;left:auto;transform:none;width:16px;height:24px}
-.dv-conn-wrap-yn::before{height:8px}
+.dv-conn-wrap-yn{position:relative;bottom:auto;left:auto;transform:none;width:16px;height:40px;display:flex;flex-direction:column;align-items:center}
+.dv-conn-wrap-yn::before{content:'';width:1px;height:20px;border-left:1px dashed var(--dv-ink3);opacity:.45;flex:none}
 
 /* Numeric answer card — slider + bands */
 .dv-numeric-body{display:flex;flex-direction:column;gap:6px;padding:4px 0}
@@ -2898,11 +2906,36 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
         }, [1,2,3,4,5,6,7,8].map(v => React.createElement('option', { key: v, value: v }, v)))));
 
   } else if (n.type === 'merge') {
+    // Build list of all cards created BEFORE this merge (by id order) for the dropdown
+    const allCards = Object.values(nodes).filter(nd => nd.id !== n.id && !NODE_TYPES[nd.type].terminal);
+    // Cards already merged in are stored in n.mergedIds (array of node ids)
+    const mergedIds = n.mergedIds || [];
     body = React.createElement('div', { className: 'dv-merge-body' },
       React.createElement('div', { className: 'dv-branch-row' },
         React.createElement('span', null, 'Merge branches')),
-      React.createElement('div', { className: 'dv-merge-count' },
-        React.createElement('b', null, incomingCount || 0), ' incoming'));
+      React.createElement('select', { className: 'dv-merge-sel', value: '',
+        onClick: (e) => e.stopPropagation(),
+        onChange: (e) => {
+          const v = e.target.value; if (!v) return;
+          const already = mergedIds.includes(v); if (already) return;
+          onPatch({ mergedIds: mergedIds.concat([v]) });
+          e.target.value = '';
+        }
+      },
+        React.createElement('option', { value: '' }, '— Select a card to merge —'),
+        allCards.filter(c => !mergedIds.includes(c.id)).map(c =>
+          React.createElement('option', { key: c.id, value: c.id }, (c.title || NODE_TYPES[c.type].label) ))),
+      mergedIds.length > 0 && React.createElement('div', { className: 'dv-merge-tags' },
+        mergedIds.map(mid => {
+          const mc = nodes[mid];
+          if (!mc) return null;
+          const shortLabel = (mc.title || NODE_TYPES[mc.type].label).slice(0, 20);
+          return React.createElement('span', { key: mid, className: 'dv-merge-tag' },
+            shortLabel,
+            React.createElement('button', { className: 'dv-merge-tag-x',
+              onClick: (e) => { e.stopPropagation(); onPatch({ mergedIds: mergedIds.filter(x => x !== mid) }); }
+            }, '×'));
+        })));
 
   } else if (n.type === 'observation' || n.type === 'question') {
     const label = n.type === 'observation' ? 'Observation' : 'Question';
@@ -3049,7 +3082,7 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
     body,
     branchPaths,
     ynBranches,
-    meta.terminal ? null : (n.type === 'branch' ? branchBottomDot : bottomDot));
+    meta.terminal ? null : (n.type === 'branch' ? branchBottomDot : (n.type === 'singleAnswer' && n.aType === 'yesno') ? null : bottomDot));
 }
 
 function DeltaEmpty({ onAddTrigger }){
