@@ -159,11 +159,11 @@ input,textarea,select{font-family:inherit;}
 }
 .dv-root{height:100%;background:var(--dv-bg);overflow:hidden;position:relative;display:flex}
 .dv-root.dv-with-drawer{flex-direction:row}
-.dv-canvas{flex:1;min-width:0;height:100%;background:var(--dv-bg);position:relative;display:flex;flex-direction:column}
-.dv-scroll{flex:1;min-height:0;overflow:auto;padding:0}
+.dv-canvas{flex:1;min-width:0;height:100%;background:var(--dv-bg);position:relative;overflow:auto}
+.dv-scroll{display:none} /* unused — canvas is the scroll container now */
 .dv-stage{margin:0}
 .dv-edges{position:absolute;top:0;left:0;pointer-events:none;z-index:1}
-.dv-grid{position:relative;z-index:2}
+/* grid no longer used — cards are absolute-positioned */
 
 /* ---- Left drawer ---- */
 .dv-drawer{
@@ -176,8 +176,8 @@ input,textarea,select{font-family:inherit;}
   font:700 13px 'Plus Jakarta Sans',sans-serif;letter-spacing:.02em;color:var(--dv-ink);
 }
 .dv-drawer-list{
-  flex:1 1 0%;min-height:0;height:0;overflow-y:auto !important;overflow-x:hidden;padding:0 8px 24px;
-  display:flex;flex-direction:column;gap:2px;
+  flex:1 1 0%;min-height:0;height:0;overflow-y:auto !important;overflow-x:hidden;padding:4px 8px 24px;
+  display:flex;flex-direction:column;gap:3px;
   scrollbar-gutter:stable;
 }
 .dv-drawer-list::-webkit-scrollbar{width:5px}
@@ -192,18 +192,18 @@ input,textarea,select{font-family:inherit;}
 /* Uniform chips — all same height, no colored icon backgrounds */
 .dv-chip{
   display:flex;align-items:center;gap:8px;
-  padding:7px 10px;border-radius:6px;border:1px solid transparent;background:transparent;
+  padding:8px 10px;border-radius:6px;border:1px solid var(--dv-line);background:#fff;
   cursor:grab;transition:.1s;text-align:left;
   font:500 12.5px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink);
-  user-select:none;height:36px;
+  user-select:none;height:38px;width:100%;box-sizing:border-box;
 }
 .dv-chip:hover{background:var(--dv-soft);border-color:var(--dv-mid)}
 .dv-chip:active{cursor:grabbing;background:var(--dv-soft)}
 .dv-chip.is-disabled{opacity:.35;cursor:not-allowed}
-.dv-chip.is-disabled:hover{background:transparent;border-color:transparent}
+.dv-chip.is-disabled:hover{background:#fff;border-color:var(--dv-line)}
 .dv-chip-ic{display:grid;place-items:center;width:20px;height:20px;flex:none;color:var(--dv)}
 .dv-chip-l{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dv-chip-sub{margin-left:6px}
+.dv-chip-sub{margin-left:0}
 
 /* ---- Drag state — connectors pulse ---- */
 .dv-root.is-dragging .dv-conn{
@@ -358,6 +358,25 @@ input,textarea,select{font-family:inherit;}
 .dv-ctx-item:hover{background:var(--dv-soft)}
 .dv-ctx-danger{color:#c0473a}
 .dv-ctx-danger:hover{background:#fee;color:#c0473a}
+
+/* ---- Zoom toolbar ---- */
+.dv-zoom-bar{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:100;
+  display:flex;align-items:center;gap:2px;
+  background:var(--dv-ink);border-radius:999px;padding:4px;
+  box-shadow:0 8px 24px rgba(11,85,167,.25);
+}
+.dv-zoom-btn{
+  display:grid;place-items:center;width:32px;height:32px;border-radius:50%;
+  border:0;background:transparent;color:#fff;cursor:pointer;
+  font:600 14px 'Plus Jakarta Sans',sans-serif;transition:.1s;
+}
+.dv-zoom-btn:hover{background:rgba(255,255,255,.12)}
+.dv-zoom-pct{font:600 11px 'JetBrains Mono',monospace;color:rgba(255,255,255,.7);min-width:40px;text-align:center}
+
+/* Card positions are absolute — make card grabbable */
+.dv-card{cursor:grab}
+.dv-card:active{cursor:grabbing}
 
 /* ---- Type-specific card bodies ---- */
 .dv-obs-body{display:flex;flex-direction:column;gap:4px}
@@ -2041,6 +2060,12 @@ function VerticalTree({ nodes, onNodes, selected, setSelected, images = [], setI
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
   }, []);
+  // ---- Auto-number: returns "Question 1", "Question 2", etc. ----
+  const autoNumber = (type) => {
+    const count = Object.values(nodes).filter(nd => nd.type === type).length + 1;
+    const label = NODE_TYPES[type] ? NODE_TYPES[type].label : type;
+    return label + ' ' + count;
+  };
   // Hit-test for connection drops — expanded by 14px on every side so releasing on a connector
   // dot (which sits 7px outside the card border) still resolves to its parent card.
   const HIT_PAD = 14;
@@ -2813,7 +2838,7 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
   const meta = NODE_TYPES[n.type] || NODE_TYPES.question;
   const cat = CAT_META[meta.cat];
   const branching = meta.branching;
-  const style = { gridRow: pos.row + 1, gridColumn: pos.lane + 1 };
+  const style = {}; // positioning is handled by the parent wrapper div
 
   // Read chip payload helper
   const readChip = (e) => {
@@ -3103,7 +3128,44 @@ function DeltaDrawer({ onChipDragStart, onChipDragEnd, onChipClick, hasTrigger }
 
 /* ===== Main view ===== */
 function DeltaView({ nodes, onNodes, selected, setSelected }){
-  const [ctxMenu, setCtxMenu] = React.useState(null); // { x, y, id } | null
+  const [ctxMenu, setCtxMenu] = React.useState(null);
+  const [cardDrag, setCardDrag] = React.useState(null); // { id, ox, oy } for free-drag
+  const [zoom, setZoom] = React.useState(1);
+  const canvasRef = React.useRef(null);
+
+  // ---- Free-drag cards on the canvas ----
+  React.useEffect(() => {
+    if (!cardDrag) return;
+    const onMove = (e) => {
+      const canvas = canvasRef.current; if (!canvas) return;
+      const r = canvas.getBoundingClientRect();
+      const nx = (e.clientX - r.left + canvas.scrollLeft) / zoom - cardDrag.ox;
+      const ny = (e.clientY - r.top + canvas.scrollTop) / zoom - cardDrag.oy;
+      onNodes(Object.assign({}, nodes, { [cardDrag.id]: Object.assign({}, nodes[cardDrag.id], { x: Math.max(0, nx), y: Math.max(0, ny) }) }));
+    };
+    const onUp = () => setCardDrag(null);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    return () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+  }, [cardDrag, nodes, zoom]);
+
+  // ---- Ctrl/Cmd + wheel zoom ----
+  React.useEffect(() => {
+    const el = canvasRef.current; if (!el) return;
+    const onWheel = (e) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      e.preventDefault();
+      setZoom(z => Math.max(0.3, Math.min(2, z + (e.deltaY < 0 ? 0.08 : -0.08))));
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+  // ---- Auto-number: returns "Question 1", "Question 2", etc. ----
+  const autoNumber = (type) => {
+    const count = Object.values(nodes).filter(nd => nd.type === type).length + 1;
+    const label = NODE_TYPES[type] ? NODE_TYPES[type].label : type;
+    return label + ' ' + count;
+  }; // { x, y, id } | null
   const [dragType, setDragType] = React.useState(null);   // type string currently being dragged
   const [dropHover, setDropHover] = React.useState(null); // { id, optId } | null
   const wrapRef = React.useRef(null);
@@ -3147,11 +3209,25 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
     setSelected(nid);
   };
 
+  // Free-place a card at specific x,y (no wiring to a parent)
+  const addStepAt = (type, variant, x, y) => {
+    const nid = uid(type);
+    const autoTitle = autoNumber(type);
+    const base = Object.assign({ id: nid, type, title: autoTitle, detail: '', options: [], next: null, x: Math.max(0, x - 130), y: Math.max(0, y - 40) }, defaultSub(type));
+    if (variant && variant.length === 2) base[variant[0]] = variant[1];
+    if (type === 'singleAnswer' && variant && variant[1] === 'yesno') {
+      base.options = [{ id: uid('o'), label: 'Yes', target: null }, { id: uid('o'), label: 'No', target: null }];
+    } else if (BRANCHING.has(type)) {
+      if (type === 'branch') base.options = [{ id: uid('o'), label: 'Path 1', target: null }, { id: uid('o'), label: 'Path 2', target: null }];
+      else base.options = [{ id: uid('o'), label: 'Option A', target: null }, { id: uid('o'), label: 'Option B', target: null }];
+    }
+    onNodes(Object.assign({}, nodes, { [nid]: base }));
+    setSelected(nid);
+  };
+
   const addStep = (afterId, fromOptId, type, variant) => {
     const nid = uid(type);
-    // Auto-number: count how many of this type already exist
-    const count = Object.values(nodes).filter(nd => nd.type === type).length + 1;
-    const autoTitle = (type === 'issue' || type === 'done' || type === 'autoresolve' || type === 'skipend' || type === 'merge' || type === 'branch') ? '' : '';
+    const autoTitle = autoNumber(type);
     const base = Object.assign({ id: nid, type, title: autoTitle, detail: '', options: [], next: null, x: 0, y: 0 }, defaultSub(type));
     // Apply the variant chosen in the drawer chip (e.g. ['aType','yesno'], ['taskType','diagnostic'])
     if (variant && variant.length === 2) base[variant[0]] = variant[1];
@@ -3265,18 +3341,21 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
       }),
       React.createElement('div', { className: 'dv-canvas',
         onDragOver: (e) => { e.preventDefault(); },
-        onDrop: (e) => { e.preventDefault(); const t = e.dataTransfer.getData('text/plain'); if (t === 'issue') addTrigger(); }
+        onDrop: (e) => {
+          e.preventDefault();
+          let payload;
+          try { payload = JSON.parse(e.dataTransfer.getData('application/dp-chip')); } catch(_){ const t = e.dataTransfer.getData('text/plain'); if (t) payload = { type: t, variant: null }; }
+          if (!payload) return;
+          if (payload.type === 'issue') { addTrigger(); return; }
+          const r = e.currentTarget.getBoundingClientRect();
+          addStepAt(payload.type, payload.variant, (e.clientX - r.left) / zoom, (e.clientY - r.top) / zoom);
+        }
       },
         React.createElement(DeltaEmpty, { onAddTrigger: addTrigger })));
   }
 
   /* ----- compute connection lines (SVG) ----- */
-  const CELL_W = 260, CELL_H = 160, GAP_X = 20, GAP_Y = 28, PAD = 28;
-  const COLS = maxLane + 1, ROWS = maxRow + 1;
-  const cardX = (lane) => PAD + lane * (CELL_W + GAP_X);
-  const cardY = (row) => PAD + row * (CELL_H + GAP_Y);
-  const stageW = PAD * 2 + COLS * CELL_W + (COLS - 1) * GAP_X;
-  const stageH = PAD * 2 + ROWS * CELL_H + (ROWS - 1) * GAP_Y;
+  const CELL_W = 260;
 
   const edges = [];
   Object.values(nodes).forEach(n => {
@@ -3292,7 +3371,15 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
     }
   });
 
-  const stageStyle = { position: 'relative', width: stageW, height: stageH, minHeight: '100%' };
+  // Compute stage size from actual node positions
+  let maxX = 0, maxY = 0;
+  Object.values(nodes).forEach(nd => {
+    if (typeof nd.x === 'number') maxX = Math.max(maxX, nd.x + 300);
+    if (typeof nd.y === 'number') maxY = Math.max(maxY, nd.y + 200);
+  });
+  const stageW = Math.max(maxX + 200, 2000);
+  const stageH = Math.max(maxY + 200, 2000);
+  const stageStyle = { position: 'relative', width: stageW, height: stageH, minWidth: stageW, minHeight: stageH };
 
   return React.createElement('div', { className: 'dv-root dv-with-drawer' + (dragType ? ' is-dragging' : ''), ref: wrapRef },
     React.createElement(DeltaDrawer, {
@@ -3301,19 +3388,32 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
       onChipDragEnd: () => { setDragType(null); setDropHover(null); },
       onChipClick: onChipClick
     }),
-    React.createElement('div', { className: 'dv-canvas' },
-      React.createElement('div', { className: 'dv-scroll' },
-        React.createElement('div', { className: 'dv-stage', style: stageStyle },
+    React.createElement('div', { className: 'dv-canvas', ref: canvasRef,
+      onDragOver: (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; },
+      onDrop: (e) => {
+        e.preventDefault();
+        let payload;
+        try { payload = JSON.parse(e.dataTransfer.getData('application/dp-chip')); } catch(_){ const t = e.dataTransfer.getData('text/plain'); if (t) payload = { type: t, variant: null }; }
+        if (!payload) return;
+        const r = e.currentTarget.getBoundingClientRect();
+        const x = (e.clientX - r.left + e.currentTarget.scrollLeft) / zoom;
+        const y = (e.clientY - r.top + e.currentTarget.scrollTop) / zoom;
+        if (payload.type === 'issue' && !hasTrigger) { addTrigger(); return; }
+        addStepAt(payload.type, payload.variant, x, y);
+      }
+    },
+      React.createElement('div', { className: 'dv-stage', style: Object.assign({}, stageStyle, { transform: 'scale(' + zoom + ')', transformOrigin: '0 0' }) },
         React.createElement('svg', { className: 'dv-edges', width: stageW, height: stageH },
           React.createElement('defs', null,
             React.createElement('marker', { id: 'dv-arr', markerWidth: 7, markerHeight: 7, refX: 6, refY: 3.5, orient: 'auto' },
               React.createElement('path', { d: 'M1,1 L6,3.5 L1,6', fill: 'none', stroke: '#8694A7', strokeWidth: 1.2, strokeLinecap: 'round', strokeLinejoin: 'round' }))),
           edges.map((e, i) => {
-            const from = positions[e.from], to = positions[e.to];
-            const sx = cardX(from.lane) + (CELL_W / (e.optCount + 1)) * (e.optIdx + 1);
-            const sy = cardY(from.row) + CELL_H;
-            const tx = cardX(to.lane) + CELL_W / 2;
-            const ty = cardY(to.row);
+            const fromN = nodes[e.from], toN = nodes[e.to];
+            if (!fromN || !toN) return null;
+            const sx = (fromN.x || 0) + (CELL_W / (e.optCount + 1)) * (e.optIdx + 1);
+            const sy = (fromN.y || 0) + 140;
+            const tx = (toN.x || 0) + CELL_W / 2;
+            const ty = (toN.y || 0);
             const midY = (sy + ty) / 2;
             const d = `M${sx},${sy} C${sx},${midY} ${tx},${midY} ${tx},${ty}`;
             return React.createElement('g', { key: i },
@@ -3321,28 +3421,44 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
               e.label && React.createElement('foreignObject', { x: (sx + tx) / 2 - 65, y: midY - 11, width: 130, height: 22, style: { overflow: 'visible' } },
                 React.createElement('div', { className: 'dv-edgelabel' }, e.label)));
           })),
-        React.createElement('div', { className: 'dv-grid', style: { position: 'relative', display: 'grid',
-          gridTemplateColumns: `repeat(${COLS}, ${CELL_W}px)`,
-          gridAutoRows: `${CELL_H}px`,
-          rowGap: GAP_Y, columnGap: GAP_X, padding: PAD, width: 'max-content' } },
-          placedIds.map(id => React.createElement(DeltaCard, { key: id, n: nodes[id], pos: positions[id],
-            isSel: selected === id,
-            incomingCount: incomingCount[id] || 0,
-            dropHover,
-            onSelect: () => setSelected(id),
-            onPatch: (p) => patch(id, p),
-            onSetOption: (oid, p) => setOption(id, oid, p),
-            onAddOption: () => addOption(id),
-            onDelOption: (oid) => delOption(id, oid),
-            onDelete: () => delStep(id),
-            onContextMenu: (x, y) => setCtxMenu({ x, y, id }),
-            onDropOnBottom: onDropOnBottom,
-            onDropOnPath: onDropOnPath })))))),
+        Object.keys(nodes).map(id => { const nd = nodes[id]; return React.createElement('div', {
+          key: id,
+          style: { position: 'absolute', left: nd.x || 0, top: nd.y || 0, width: CELL_W },
+          onPointerDown: (e) => {
+            if (e.target.closest('input, select, button, textarea, [contenteditable]')) return;
+            e.preventDefault();
+            const canvas = canvasRef.current; if (!canvas) return;
+            const r = canvas.getBoundingClientRect();
+            setCardDrag({ id, ox: ((e.clientX - r.left + canvas.scrollLeft) / zoom) - (nd.x || 0), oy: ((e.clientY - r.top + canvas.scrollTop) / zoom) - (nd.y || 0) });
+          }
+        }, React.createElement(DeltaCard, {
+          n: nd, pos: { row: 0, lane: 0 },
+          isSel: selected === id,
+          incomingCount: incomingCount[id] || 0,
+          dropHover,
+          onSelect: () => setSelected(id),
+          onPatch: (p) => patch(id, p),
+          onSetOption: (oid, p) => setOption(id, oid, p),
+          onAddOption: () => addOption(id),
+          onDelOption: (oid) => delOption(id, oid),
+          onDelete: () => delStep(id),
+          onContextMenu: (x, y) => setCtxMenu({ x, y, id }),
+          onDropOnBottom: onDropOnBottom,
+          onDropOnPath: onDropOnPath })); })
+      ) /* close dv-stage */
+    ) /* close dv-canvas */,
+    // Zoom toolbar (sibling of dv-canvas, inside dv-root)
+    React.createElement('div', { className: 'dv-zoom-bar' },
+      React.createElement('button', { className: 'dv-zoom-btn', onClick: () => setZoom(z => Math.max(0.3, z - 0.1)) }, '−'),
+      React.createElement('span', { className: 'dv-zoom-pct' }, Math.round(zoom * 100) + '%'),
+      React.createElement('button', { className: 'dv-zoom-btn', onClick: () => setZoom(z => Math.min(2, z + 0.1)) }, '+'),
+      React.createElement('button', { className: 'dv-zoom-btn', onClick: () => setZoom(1) }, 'Reset')),
     ctxMenu && React.createElement('div', { className: 'dv-ctx', style: { left: ctxMenu.x, top: ctxMenu.y } },
       React.createElement('button', { className: 'dv-ctx-item', onClick: () => { dupStep(ctxMenu.id); setCtxMenu(null); } },
         React.createElement(MiniIcon, { name: 'copy', size: 13 }), ' Duplicate step'),
       React.createElement('button', { className: 'dv-ctx-item dv-ctx-danger', onClick: () => { delStep(ctxMenu.id); setCtxMenu(null); } },
-        React.createElement(MiniIcon, { name: 'trash', size: 13 }), ' Delete step')));
+        React.createElement(MiniIcon, { name: 'trash', size: 13 }), ' Delete step'))
+  ); /* close dv-root return */
 }
 
 window.DeltaView = DeltaView;
