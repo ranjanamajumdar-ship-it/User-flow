@@ -2961,6 +2961,10 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
       n.type === 'singleAnswer' ? (n.aType === 'numeric' ? 'ANSWER NUMERIC' : n.aType === 'yes' ? 'ANSWER YES' : n.aType === 'no' ? 'ANSWER NO' : 'ANSWER') :
       n.type === 'autoresolve' ? 'AUTO RESOLVE' :
       n.type === 'task' ? (n.taskType === 'remedial' ? 'REMEDIAL' : 'DIAGNOSTIC') :
+      n.type === 'media' ? (n.mediaType === 'with_rc' ? 'MEDIA UPLOAD + RCA' : 'MEDIA UPLOAD') :
+      n.type === 'done' ? 'TERMINAL STEP' :
+      n.type === 'waiting' ? 'WAIT FOR' :
+      n.type === 'skipend' ? 'SKIP TO THE END' :
       meta.label.toUpperCase()) + (n.autoNum ? ' ' + n.autoNum : '')),
     n.type !== 'issue' && React.createElement('button', { className: 'dv-card-x', title: 'Delete',
       onClick: (e) => { e.stopPropagation(); onDelete(); } }, '×'));
@@ -3043,13 +3047,12 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
 
   } else if (n.type === 'media') {
     const isRCA = n.mediaType === 'with_rc';
-    body = React.createElement('div', { className: 'dv-media-body' },
-      React.createElement('div', { className: 'dv-media-title' }, isRCA ? 'Media Upload + RCA' : 'Media Upload'),
-      isRCA && React.createElement('select', { className: 'dv-media-rca', onClick: (e) => e.stopPropagation() },
+    body = isRCA ? React.createElement('div', { className: 'dv-media-body' },
+      React.createElement('select', { className: 'dv-media-rca', onClick: (e) => e.stopPropagation() },
         React.createElement('option', null, '— Select root cause —'),
         React.createElement('option', null, 'Diffusers are choked'),
         React.createElement('option', null, 'Blower under-performing'),
-        React.createElement('option', null, 'Sensor drift')));
+        React.createElement('option', null, 'Sensor drift'))) : null;
 
   } else if (n.type === 'escalation') {
     body = React.createElement('div', { className: 'dv-esc-body' },
@@ -3063,7 +3066,6 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
 
   } else if (n.type === 'waiting') {
     body = React.createElement('div', { className: 'dv-wait-body' },
-      React.createElement('span', { className: 'dv-wait-label' }, 'Wait for'),
       React.createElement('div', { className: 'dv-wait-inputs' },
         React.createElement('select', { className: 'dv-wait-sel', onClick: (e) => e.stopPropagation() },
           [0,1,2,3,4,5,6,12,24].map(h => React.createElement('option', { key: h, value: h }, h + ' hr'))),
@@ -3071,13 +3073,13 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
           [0,5,10,15,30,45].map(m => React.createElement('option', { key: m, value: m }, m + ' min')))));
 
   } else if (n.type === 'skipend') {
-    body = React.createElement('div', { className: 'dv-simple-label' }, 'Skip to the end');
+    body = null;
 
   } else if (n.type === 'done') {
-    body = React.createElement('div', { className: 'dv-done-label' }, 'Done');
+    body = null;
 
   } else if (n.type === 'autoresolve') {
-    body = React.createElement('div', { className: 'dv-done-label dv-auto-label' }, 'Auto Resolve');
+    body = null;
 
   } else {
     body = React.createElement('input', { className: 'dv-card-title', value: n.title || '',
@@ -3139,7 +3141,7 @@ const DELTA_DRAWER_ENTRIES = [
   { type: 'escalation',                                     label: 'Escalation' },
   { type: 'skipend',                                        label: 'Skip to the end' },
   { type: 'waiting',                                        label: 'Wait' },
-  { type: 'done',                                           label: 'Done' },
+  { type: 'done',                                           label: 'Terminal Step' },
   { type: 'autoresolve',                                    label: 'Auto Resolve' },
 ]
 
