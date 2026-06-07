@@ -359,6 +359,69 @@ input,textarea,select{font-family:inherit;}
 .dv-ctx-danger{color:#c0473a}
 .dv-ctx-danger:hover{background:#fee;color:#c0473a}
 
+/* ---- Type-specific card bodies ---- */
+.dv-obs-body{display:flex;flex-direction:column;gap:4px}
+.dv-obs-icons{display:flex;gap:6px;justify-content:flex-end}
+.dv-obs-ic{width:20px;height:20px;display:grid;place-items:center;border-radius:3px;border:1px solid var(--dv-line);color:var(--dv-ink3);font-size:11px;cursor:pointer;transition:.1s}
+.dv-obs-ic:hover{border-color:var(--dv);color:var(--dv)}
+
+/* Branch body */
+.dv-branch-body{display:flex;flex-direction:column;gap:4px}
+
+/* Merge body */
+.dv-merge-body{display:flex;flex-direction:column;gap:4px}
+.dv-merge-count{font:400 11px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink2);padding:4px 8px;background:var(--dv-soft);border-radius:4px}
+.dv-merge-count b{font-weight:600;color:var(--dv-ink)}
+
+/* Y/N answer card — two sub-branches */
+.dv-yn-branches{display:flex;gap:16px;justify-content:center;margin-top:6px;position:relative}
+.dv-yn-branch{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.dv-yn-label{font:600 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink);padding:3px 12px;border:1px solid var(--dv-line);border-radius:4px;background:#fff}
+.dv-yn-yes .dv-yn-label{border-color:var(--dv-mid);color:var(--dv)}
+.dv-yn-no .dv-yn-label{border-color:#E8B4B8;color:#8B3A3A}
+.dv-conn-wrap-yn{position:relative;bottom:auto;left:auto;transform:none;width:16px;height:24px}
+.dv-conn-wrap-yn::before{height:8px}
+
+/* Numeric answer card — slider + bands */
+.dv-numeric-body{display:flex;flex-direction:column;gap:6px;padding:4px 0}
+.dv-numeric-slider{position:relative}
+.dv-numeric-track{display:flex;height:6px;border-radius:3px;overflow:hidden}
+.dv-numeric-seg{flex:1;height:100%}
+.dv-seg-crit{background:#E8B4B8}
+.dv-seg-norm{background:#B8D4E8}
+.dv-seg-high{background:#E8D4B4}
+.dv-numeric-labels{display:flex;justify-content:space-between;font:400 9px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink3);margin-top:2px}
+.dv-numeric-bands{display:flex;gap:6px;flex-wrap:wrap}
+.dv-band{font:500 10px 'Plus Jakarta Sans',sans-serif;padding:2px 6px;border-radius:3px}
+.dv-band-crit{background:#FCECED;color:#8B3A3A}
+.dv-band-norm{background:var(--dv-soft);color:var(--dv)}
+.dv-band-high{background:#FDF3E8;color:#8B6B3A}
+
+/* Media card */
+.dv-media-body{display:flex;flex-direction:column;gap:4px}
+.dv-media-title{font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink)}
+.dv-media-rca{font:400 11px 'Plus Jakarta Sans',sans-serif;border:1px solid var(--dv-line);border-radius:4px;padding:3px 6px;outline:none;color:var(--dv-ink2)}
+.dv-media-rca:focus{border-color:var(--dv)}
+
+/* Escalation card */
+.dv-esc-body{display:flex;flex-direction:column;gap:4px}
+.dv-esc-sel{font:400 11.5px 'Plus Jakarta Sans',sans-serif;border:1px solid var(--dv-line);border-radius:4px;padding:4px 6px;outline:none;color:var(--dv-ink)}
+.dv-esc-sel:focus{border-color:var(--dv)}
+
+/* Waiting card */
+.dv-wait-body{display:flex;flex-direction:column;gap:4px}
+.dv-wait-label{font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink2)}
+.dv-wait-inputs{display:flex;gap:6px}
+.dv-wait-sel{font:400 11px 'Plus Jakarta Sans',sans-serif;border:1px solid var(--dv-line);border-radius:4px;padding:3px 6px;outline:none;color:var(--dv-ink)}
+.dv-wait-sel:focus{border-color:var(--dv)}
+
+/* Simple label cards (Skip, Done, Auto Resolve) */
+.dv-simple-label{font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink2);text-align:center;padding:4px 0}
+.dv-done-label{font:600 13px 'Plus Jakarta Sans',sans-serif;color:var(--dv);text-align:center;padding:6px 0;background:var(--dv-soft);border-radius:4px}
+.dv-auto-label{color:var(--dv-ink2);background:#F0F0F0}
+
+/* Card numbering — type-specific counters handled in JS via title */
+
 /* Builder / Templates toggle pill (top right) */
 .bt-toggle{display:inline-flex;align-items:center;gap:2px;background:#eef2f6;padding:3px;border-radius:999px;margin-left:8px}
 .bt-tab{
@@ -933,6 +996,7 @@ const NODE_TYPES = {
   merge:        { label: 'Merge branches',      cat: 'control',   glyph: 'step',         branching: false, terminal: false, hint: 'Converge multiple paths back into one' },
   link:         { label: 'Link to next tree',   cat: 'link',      glyph: 'link',         branching: false, terminal: false, hint: 'Hand off to another diagnostic tree' },
   skipend:      { label: 'Skip to the end',     cat: 'terminal',  glyph: 'skip',         branching: false, terminal: true,  hint: 'Short-circuit straight to the end of the flow' },
+  autoresolve:  { label: 'Auto Resolve',       cat: 'terminal',  glyph: 'done',         branching: false, terminal: true,  hint: 'The issue auto-resolved — no operator action needed' },
   done:         { label: 'Done',                cat: 'terminal',  glyph: 'done',         branching: false, terminal: true,  hint: 'Closes the flow — issue resolved' },
 };
 
@@ -1234,7 +1298,7 @@ function verticalLayout(nodes){
 }
 
 /* ---- Store (localStorage) ------------------------------- */
-const STORE_KEY = 'dp_flow_builder_v12_singleanswer';
+const STORE_KEY = 'dp_flow_builder_v13_delta';
 // Map deprecated aType values to the new merged qType values
 const A_TO_Q_TYPE = { single:'single', yesno:'yesno', mcq_single:'mcq', numeric:'numeric', sensor:'sensor', range:'range' };
 
@@ -2851,121 +2915,203 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
   const meta = NODE_TYPES[n.type] || NODE_TYPES.question;
   const cat = CAT_META[meta.cat];
   const branching = meta.branching;
-  const style = { gridRow: pos.row + 1, gridColumn: pos.lane + 1, '--c': cat.color, '--cs': cat.soft };
+  const style = { gridRow: pos.row + 1, gridColumn: pos.lane + 1 };
 
-  // Variant dropdown for cards whose type has a sub-key (Question → Y/N, Action → Diagnostic, etc.)
-  const variantSelector = meta.subKey ? React.createElement('select', {
-    className: 'dv-card-variant', value: n[meta.subKey] || (SUBTYPES[meta.subKey] && SUBTYPES[meta.subKey][0][0]),
-    onChange: (e) => onPatch({ [meta.subKey]: e.target.value }),
-    onClick: (e) => e.stopPropagation()
-  }, (SUBTYPES[meta.subKey] || []).map(s => React.createElement('option', { key: s[0], value: s[0] }, s[1]))) : null;
-
-  const terminalCopy = n.type === 'skipend' ? '↩ Skip — closes the flow here'
-                    : n.type === 'done'    ? '✓ Issue resolved — flow closes'
-                    : meta.terminal ? '✓ Flow closes here' : null;
-
-  // ----- Connectors (drop targets) -----
-  // For branching cards: one connector per option row (right side of the row)
-  // For non-branching, non-terminal cards: a single connector at the bottom-center
-  // Read both type+variant from the chip payload (preferred) or fall back to plain type
+  // Read chip payload helper
   const readChip = (e) => {
-    try {
-      const raw = e.dataTransfer.getData('application/dp-chip');
-      if (raw) return JSON.parse(raw);
-    } catch(_){}
+    try { const raw = e.dataTransfer.getData('application/dp-chip'); if (raw) return JSON.parse(raw); } catch(_){}
     const t = e.dataTransfer.getData('text/plain');
     return t ? { type: t, variant: null } : null;
   };
 
-  const pathDot = (o) => React.createElement('span', {
-      className: 'dv-conn dv-conn-path' + (o.target ? ' is-linked' : '') + (dropHover && dropHover.id === n.id && dropHover.optId === o.id ? ' is-hover' : ''),
-      title: o.target ? 'Linked — drop another step to replace' : 'Drop a step here to wire this answer',
-      onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; onDropOnPath(n.id, o.id, true); },
-      onDragLeave: () => onDropOnPath(null, null, false),
-      onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const p = readChip(e); if (p) onDropOnPath(n.id, o.id, false, p); }
-    });
-
+  // Bottom connector (non-terminal, non-branching)
   const bottomDot = !meta.terminal && !branching ? React.createElement('div', { className: 'dv-conn-wrap' },
     React.createElement('span', {
       className: 'dv-conn dv-conn-bottom' + (n.next ? ' is-linked' : '') + (dropHover && dropHover.id === n.id && !dropHover.optId ? ' is-hover' : ''),
-      title: n.next ? 'Linked — drop another step to replace' : 'Drop a step here to wire the next step',
       onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; onDropOnBottom(n.id, true); },
       onDragLeave: () => onDropOnBottom(null, false),
       onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const p = readChip(e); if (p) onDropOnBottom(n.id, false, p); }
     })) : null;
+
+  // Path connector dots for branching cards
+  const pathDot = (o) => React.createElement('span', {
+    className: 'dv-conn dv-conn-path' + (o.target ? ' is-linked' : '') + (dropHover && dropHover.id === n.id && dropHover.optId === o.id ? ' is-hover' : ''),
+    onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; onDropOnPath(n.id, o.id, true); },
+    onDragLeave: () => onDropOnPath(null, null, false),
+    onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const p = readChip(e); if (p) onDropOnPath(n.id, o.id, false, p); }
+  });
+
+  // ---- Card header ----
+  const header = React.createElement('div', { className: 'dv-card-head' },
+    React.createElement('span', { className: 'dv-card-cat' },
+      n.type === 'branch' ? 'Path' :
+      n.type === 'merge' ? 'Path' :
+      n.type === 'singleAnswer' ? (n.aType === 'numeric' ? 'Answer · Numeric' : 'Answer Y/N') :
+      n.type === 'autoresolve' ? 'Auto Resolve' :
+      meta.label),
+    n.type !== 'issue' && React.createElement('button', { className: 'dv-card-x', title: 'Delete',
+      onClick: (e) => { e.stopPropagation(); onDelete(); } }, '×'));
+
+  // ---- Card body (type-specific) ----
+  let body = null;
+
+  if (n.type === 'issue') {
+    body = React.createElement('input', { className: 'dv-card-title', value: n.title || '',
+      placeholder: 'Name the trigger / issue',
+      onChange: (e) => onPatch({ title: e.target.value }), onClick: (e) => e.stopPropagation() });
+
+  } else if (n.type === 'branch') {
+    body = React.createElement('div', { className: 'dv-branch-body' },
+      React.createElement('div', { className: 'dv-branch-row' },
+        React.createElement('span', null, 'Split into branches'),
+        React.createElement('select', { className: 'dv-branch-n', value: (n.options || []).length,
+          onChange: (e) => {
+            const target = parseInt(e.target.value, 10);
+            const current = (n.options || []).slice();
+            if (target > current.length) { for (let i = current.length; i < target; i++) current.push({ id: uid('o'), label: 'Path ' + (i + 1), target: null }); }
+            else if (target < current.length) { current.length = target; }
+            onPatch({ options: current });
+          }, onClick: (e) => e.stopPropagation()
+        }, [1,2,3,4,5,6,7,8].map(v => React.createElement('option', { key: v, value: v }, v)))));
+
+  } else if (n.type === 'merge') {
+    body = React.createElement('div', { className: 'dv-merge-body' },
+      React.createElement('div', { className: 'dv-branch-row' },
+        React.createElement('span', null, 'Merge branches')),
+      React.createElement('div', { className: 'dv-merge-count' },
+        React.createElement('b', null, incomingCount || 0), ' incoming'));
+
+  } else if (n.type === 'observation' || n.type === 'question') {
+    const label = n.type === 'observation' ? 'Observation' : 'Question';
+    body = React.createElement('div', { className: 'dv-obs-body' },
+      React.createElement('input', { className: 'dv-card-title', value: n.title || '',
+        placeholder: n.type === 'observation' ? 'What does the operator check?' : 'Type the question',
+        onChange: (e) => onPatch({ title: e.target.value }), onClick: (e) => e.stopPropagation() }),
+      React.createElement('div', { className: 'dv-obs-icons' },
+        React.createElement('span', { className: 'dv-obs-ic', title: 'Edit' }, '✎'),
+        React.createElement('span', { className: 'dv-obs-ic', title: 'Select from saved' }, '▾')));
+
+  } else if (n.type === 'singleAnswer' && n.aType === 'numeric') {
+    body = React.createElement('div', { className: 'dv-numeric-body' },
+      React.createElement('div', { className: 'dv-numeric-slider' },
+        React.createElement('div', { className: 'dv-numeric-track' },
+          React.createElement('div', { className: 'dv-numeric-seg dv-seg-crit' }),
+          React.createElement('div', { className: 'dv-numeric-seg dv-seg-norm' }),
+          React.createElement('div', { className: 'dv-numeric-seg dv-seg-high' })),
+        React.createElement('div', { className: 'dv-numeric-labels' },
+          React.createElement('span', null, '0'),
+          React.createElement('span', null, '2.0'),
+          React.createElement('span', null, '4.0'),
+          React.createElement('span', null, '10'))),
+      React.createElement('div', { className: 'dv-numeric-bands' },
+        React.createElement('span', { className: 'dv-band dv-band-crit' }, 'Critical < 2.0'),
+        React.createElement('span', { className: 'dv-band dv-band-norm' }, 'Normal 2.0–4.0'),
+        React.createElement('span', { className: 'dv-band dv-band-high' }, 'High > 4.0')));
+
+  } else if (n.type === 'singleAnswer') {
+    // Y/N — just the header; branching is handled via options rendered below
+    body = null;
+
+  } else if (n.type === 'task') {
+    const label = n.taskType === 'remedial' ? 'Remedial Step' : 'Diagnostic Step';
+    body = React.createElement('div', { className: 'dv-obs-body' },
+      React.createElement('input', { className: 'dv-card-title', value: n.title || '',
+        placeholder: 'Describe the step',
+        onChange: (e) => onPatch({ title: e.target.value }), onClick: (e) => e.stopPropagation() }),
+      React.createElement('div', { className: 'dv-obs-icons' },
+        React.createElement('span', { className: 'dv-obs-ic', title: 'Edit' }, '✎'),
+        React.createElement('span', { className: 'dv-obs-ic', title: 'Select' }, '▾')));
+
+  } else if (n.type === 'media') {
+    const isRCA = n.mediaType === 'with_rc';
+    body = React.createElement('div', { className: 'dv-media-body' },
+      React.createElement('div', { className: 'dv-media-title' }, isRCA ? 'Media Upload + RCA' : 'Media Upload'),
+      isRCA && React.createElement('select', { className: 'dv-media-rca', onClick: (e) => e.stopPropagation() },
+        React.createElement('option', null, '— Select root cause —'),
+        React.createElement('option', null, 'Diffusers are choked'),
+        React.createElement('option', null, 'Blower under-performing'),
+        React.createElement('option', null, 'Sensor drift')));
+
+  } else if (n.type === 'escalation') {
+    body = React.createElement('div', { className: 'dv-esc-body' },
+      React.createElement('select', { className: 'dv-esc-sel', onClick: (e) => e.stopPropagation() },
+        React.createElement('option', null, 'Supervisor'),
+        React.createElement('option', null, 'Site Manager'),
+        React.createElement('option', null, 'SME')),
+      React.createElement('select', { className: 'dv-esc-sel', onClick: (e) => e.stopPropagation() },
+        React.createElement('option', null, 'Notify'),
+        React.createElement('option', null, 'Call')));
+
+  } else if (n.type === 'waiting') {
+    body = React.createElement('div', { className: 'dv-wait-body' },
+      React.createElement('span', { className: 'dv-wait-label' }, 'Wait for'),
+      React.createElement('div', { className: 'dv-wait-inputs' },
+        React.createElement('select', { className: 'dv-wait-sel', onClick: (e) => e.stopPropagation() },
+          [0,1,2,3,4,5,6,12,24].map(h => React.createElement('option', { key: h, value: h }, h + ' hr'))),
+        React.createElement('select', { className: 'dv-wait-sel', onClick: (e) => e.stopPropagation() },
+          [0,5,10,15,30,45].map(m => React.createElement('option', { key: m, value: m }, m + ' min')))));
+
+  } else if (n.type === 'skipend') {
+    body = React.createElement('div', { className: 'dv-simple-label' }, 'Skip to the end');
+
+  } else if (n.type === 'done') {
+    body = React.createElement('div', { className: 'dv-done-label' }, 'Done');
+
+  } else if (n.type === 'autoresolve') {
+    body = React.createElement('div', { className: 'dv-done-label dv-auto-label' }, 'Auto Resolve');
+
+  } else {
+    body = React.createElement('input', { className: 'dv-card-title', value: n.title || '',
+      placeholder: 'Step title', onChange: (e) => onPatch({ title: e.target.value }), onClick: (e) => e.stopPropagation() });
+  }
+
+  // ---- Y/N answer card renders two sub-branches inline ----
+  const ynBranches = (n.type === 'singleAnswer' && n.aType === 'yesno') ? React.createElement('div', { className: 'dv-yn-branches' },
+    React.createElement('div', { className: 'dv-yn-branch dv-yn-yes' },
+      React.createElement('span', { className: 'dv-yn-label' }, 'Yes'),
+      React.createElement('div', { className: 'dv-conn-wrap dv-conn-wrap-yn' },
+        React.createElement('span', {
+          className: 'dv-conn dv-conn-bottom' + ((n.options && n.options[0] && n.options[0].target) ? ' is-linked' : ''),
+          onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; if (n.options && n.options[0]) onDropOnPath(n.id, n.options[0].id, true); },
+          onDragLeave: () => onDropOnPath(null, null, false),
+          onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const p = readChip(e); if (p && n.options && n.options[0]) onDropOnPath(n.id, n.options[0].id, false, p); }
+        }))),
+    React.createElement('div', { className: 'dv-yn-branch dv-yn-no' },
+      React.createElement('span', { className: 'dv-yn-label' }, 'No'),
+      React.createElement('div', { className: 'dv-conn-wrap dv-conn-wrap-yn' },
+        React.createElement('span', {
+          className: 'dv-conn dv-conn-bottom' + ((n.options && n.options[1] && n.options[1].target) ? ' is-linked' : ''),
+          onDragOver: (e) => { e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect = 'copy'; if (n.options && n.options[1]) onDropOnPath(n.id, n.options[1].id, true); },
+          onDragLeave: () => onDropOnPath(null, null, false),
+          onDrop: (e) => { e.preventDefault(); e.stopPropagation(); const p = readChip(e); if (p && n.options && n.options[1]) onDropOnPath(n.id, n.options[1].id, false, p); }
+        }))))
+  : null;
+
+  // ---- Branching paths (for branch, question, rootcause, task) ----
+  const branchPaths = (branching && n.type !== 'singleAnswer') ? React.createElement('div', { className: 'dv-paths' },
+    (n.options || []).map((o, i) =>
+      React.createElement('div', { className: 'dv-path', key: o.id },
+        React.createElement('span', { className: 'dv-path-l' }, String.fromCharCode(65 + i)),
+        React.createElement('input', { className: 'dv-path-tx', value: o.label || '', placeholder: 'Path label',
+          onChange: (e) => onSetOption(o.id, { label: e.target.value }), onClick: (e) => e.stopPropagation() }),
+        pathDot(o),
+        React.createElement('button', { className: 'dv-path-x', onClick: (e) => { e.stopPropagation(); onDelOption(o.id); } }, '×'))),
+    n.type !== 'branch' && React.createElement('button', { className: 'dv-path-newopt',
+      onClick: (e) => { e.stopPropagation(); onAddOption(); } }, '+ Add answer')
+  ) : null;
 
   return React.createElement('div', {
       className: 'dv-card dv-card-' + n.type + (isSel ? ' is-sel' : ''),
       style, onClick: onSelect,
       onContextMenu: (e) => { e.preventDefault(); onContextMenu(e.clientX, e.clientY); }
     },
-    React.createElement('div', { className: 'dv-card-head' },
-      React.createElement('span', { className: 'dv-card-ic', style: { background: cat.soft, color: cat.color } },
-        React.createElement(Icon, { glyph: meta.glyph, size: 13, color: cat.color })),
-      React.createElement('span', { className: 'dv-card-cat' }, cat.name),
-      n.type !== 'issue' && React.createElement('button', { className: 'dv-card-x', title: 'Delete step',
-        onClick: (e) => { e.stopPropagation(); onDelete(); } },
-        React.createElement(MiniIcon, { name: 'trash', size: 12 }))),
-
-    variantSelector && React.createElement('div', { className: 'dv-card-variantrow' }, variantSelector),
-
-    // Branch card: count selector that adjusts the number of paths
-    n.type === 'branch' && React.createElement('div', { className: 'dv-branch-row' },
-      React.createElement('span', { className: 'dv-branch-l' }, 'Split into'),
-      React.createElement('select', { className: 'dv-branch-n', value: (n.options || []).length,
-        onChange: (e) => {
-          const target = parseInt(e.target.value, 10);
-          const current = (n.options || []).slice();
-          if (target > current.length) {
-            for (let i = current.length; i < target; i++) current.push({ id: uid('o'), label: 'Path ' + (i + 1), target: null });
-          } else if (target < current.length) {
-            current.length = target;
-          }
-          onPatch({ options: current });
-        },
-        onClick: (e) => e.stopPropagation()
-      }, [2,3,4,5,6,7,8].map(n => React.createElement('option', { key: n, value: n }, n))),
-      React.createElement('span', { className: 'dv-branch-r' }, 'parallel paths')),
-
-    n.type === 'merge'
-      ? React.createElement('div', { className: 'dv-merge-info' },
-          React.createElement('div', { className: 'dv-merge-count' },
-            React.createElement('b', null, incomingCount || 0),
-            ' incoming ' + ((incomingCount === 1) ? 'branch' : 'branches')),
-          React.createElement('input', { className: 'dv-card-title', value: n.title || '',
-            placeholder: 'Merge label (e.g. "Continue diagnosis")',
-            onChange: (e) => onPatch({ title: e.target.value }),
-            onClick: (e) => e.stopPropagation() }))
-      : React.createElement('input', { className: 'dv-card-title', value: n.title || '',
-          placeholder: n.type === 'issue' ? 'Name the issue / trigger'
-                     : n.type === 'observation' ? 'What does the operator check?'
-                     : n.type === 'waiting'     ? 'What are we waiting for?'
-                     : 'Step title',
-          onChange: (e) => onPatch({ title: e.target.value }),
-          onClick: (e) => e.stopPropagation() }),
-
-    branching && React.createElement('div', { className: 'dv-paths' },
-      React.createElement('div', { className: 'dv-paths-h' }, n.type === 'rootcause' ? 'Possible causes' : 'Answers'),
-      (n.options || []).map((o, i) =>
-        React.createElement('div', { className: 'dv-path', key: o.id },
-          React.createElement('span', { className: 'dv-path-l' }, String.fromCharCode(65 + i)),
-          React.createElement('input', { className: 'dv-path-tx', value: o.label || '', placeholder: 'Answer label',
-            onChange: (e) => onSetOption(o.id, { label: e.target.value }),
-            onClick: (e) => e.stopPropagation() }),
-          pathDot(o),
-          React.createElement('button', { className: 'dv-path-x', title: 'Remove answer',
-            onClick: (e) => { e.stopPropagation(); onDelOption(o.id); } },
-            React.createElement(MiniIcon, { name: 'close', size: 11 })))),
-      React.createElement('button', { className: 'dv-path-newopt',
-        onClick: (e) => { e.stopPropagation(); onAddOption(); } },
-        React.createElement(MiniIcon, { name: 'plus', size: 11 }), ' Add answer')),
-
-    terminalCopy && React.createElement('div', { className: 'dv-terminal-row dv-terminal-' + n.type }, terminalCopy),
-
-    bottomDot);
+    header,
+    body,
+    branchPaths,
+    ynBranches,
+    meta.terminal ? null : bottomDot);
 }
 
-/* ===== Empty state when there are no nodes ===== */
 function DeltaEmpty({ onAddTrigger }){
   return React.createElement('div', { className: 'dv-empty' },
     React.createElement('div', { className: 'dv-empty-eye' }, 'DELTA VIEW'),
@@ -2979,22 +3125,23 @@ function DeltaEmpty({ onAddTrigger }){
    draggable atom. Where a card has variants, each variant is its own chip so the
    user picks the exact card by drag, no extra UI step. */
 const DELTA_DRAWER_ENTRIES = [
-  { type: 'issue',                                  label: 'Trigger / Issue' },
-  { type: 'branch',                                 label: 'Branch',                group: 'Path' },
-  { type: 'merge',                                  label: 'Merge',                 group: 'Path' },
-  { type: 'observation',                            label: 'Observation' },
-  { type: 'question',                               label: 'Question' },
-  { type: 'singleAnswer', variant: ['aType','yesno'],   label: 'Answer · Y/N',     group: 'Answer' },
-  { type: 'singleAnswer', variant: ['aType','numeric'], label: 'Answer · Numeric', group: 'Answer' },
-  { type: 'task', variant: ['taskType','diagnostic'],   label: 'Diagnostic step' },
-  { type: 'task', variant: ['taskType','remedial'],     label: 'Remedial step' },
-  { type: 'media', variant: ['mediaType','with_rc'],    label: 'Media · With root cause',    group: 'Media' },
-  { type: 'media', variant: ['mediaType','without_rc'], label: 'Media · Without root cause', group: 'Media' },
-  { type: 'reassignment',                           label: 'Reassignment' },
-  { type: 'escalation',                             label: 'Escalation' },
-  { type: 'skipend',                                label: 'Skip to the end' },
-  { type: 'waiting',                                label: 'Wait' },
-];
+  { type: 'issue',                                          label: 'Trigger / Issue' },
+  { type: 'branch',                                         label: 'Branch',                  group: 'Path' },
+  { type: 'merge',                                          label: 'Merge',                   group: 'Path' },
+  { type: 'observation',                                    label: 'Observation' },
+  { type: 'question',                                       label: 'Question' },
+  { type: 'singleAnswer', variant: ['aType','yesno'],       label: 'Answer · Y/N',            group: 'Answer' },
+  { type: 'singleAnswer', variant: ['aType','numeric'],     label: 'Answer · Numeric',        group: 'Answer' },
+  { type: 'task', variant: ['taskType','diagnostic'],       label: 'Diagnostic step' },
+  { type: 'task', variant: ['taskType','remedial'],         label: 'Remedial step' },
+  { type: 'media', variant: ['mediaType','without_rc'],     label: 'Media Upload',            group: 'Media' },
+  { type: 'media', variant: ['mediaType','with_rc'],        label: 'Media Upload + RCA',      group: 'Media' },
+  { type: 'escalation',                                     label: 'Escalation' },
+  { type: 'skipend',                                        label: 'Skip to the end' },
+  { type: 'waiting',                                        label: 'Wait' },
+  { type: 'done',                                           label: 'Done' },
+  { type: 'autoresolve',                                    label: 'Auto Resolve' },
+]
 
 function DeltaDrawer({ onChipDragStart, onChipDragEnd, onChipClick, hasTrigger }){
   // Group entries by their `group` field (if any) so we can render "Path (2)", "Answer (2)", "Media (2)" headers
@@ -3087,10 +3234,16 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
 
   const addStep = (afterId, fromOptId, type, variant) => {
     const nid = uid(type);
-    const base = Object.assign({ id: nid, type, title: '', detail: '', options: [], next: null, x: 0, y: 0 }, defaultSub(type));
+    // Auto-number: count how many of this type already exist
+    const count = Object.values(nodes).filter(nd => nd.type === type).length + 1;
+    const autoTitle = (type === 'issue' || type === 'done' || type === 'autoresolve' || type === 'skipend' || type === 'merge' || type === 'branch') ? '' : '';
+    const base = Object.assign({ id: nid, type, title: autoTitle, detail: '', options: [], next: null, x: 0, y: 0 }, defaultSub(type));
     // Apply the variant chosen in the drawer chip (e.g. ['aType','yesno'], ['taskType','diagnostic'])
     if (variant && variant.length === 2) base[variant[0]] = variant[1];
-    if (BRANCHING.has(type)) {
+    // Y/N answer card needs Yes + No options even though singleAnswer isn't in BRANCHING
+    if (type === 'singleAnswer' && variant && variant[1] === 'yesno') {
+      base.options = [{ id: uid('o'), label: 'Yes', target: null }, { id: uid('o'), label: 'No', target: null }];
+    } else if (BRANCHING.has(type)) {
       if (type === 'branch') {
         // Branch starts with 2 paths labeled "Path 1" / "Path 2" — count is adjustable on the card
         base.options = [
