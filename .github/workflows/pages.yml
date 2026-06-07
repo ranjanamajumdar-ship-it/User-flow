@@ -87,6 +87,13 @@ jobs:
           path: delta-view
         continue-on-error: true
 
+
+      - name: Checkout delta-v12-fixes
+        uses: actions/checkout@v4
+        with:
+          ref: delta-v12-fixes
+          path: delta-v12-fixes
+        continue-on-error: true
       - name: Assemble site
         run: |
           mkdir -p dist
@@ -148,6 +155,12 @@ jobs:
             mkdir -p dist/delta-view
             cp -R delta-view/. dist/delta-view/ 2>/dev/null || true
             rm -rf dist/delta-view/.git dist/delta-view/.github
+          fi
+          # /delta-v12-fixes/
+          if [ -d delta-v12-fixes ]; then
+            mkdir -p dist/delta-v12-fixes
+            cp -R delta-v12-fixes/. dist/delta-v12-fixes/ 2>/dev/null || true
+            rm -rf dist/delta-v12-fixes/.git dist/delta-v12-fixes/.github
           fi
           # Simple landing index for the previews dir
           cat > dist/previews.html <<'EOF'
