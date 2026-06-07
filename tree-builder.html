@@ -393,6 +393,43 @@ input,textarea,select{font-family:inherit;}
 .dv-yn-tag-no{background:#FCECED;color:#8B3A3A;border:1px solid #E8B4B8}
 /* ---- Branch / Merge simple labels ---- */
 .dv-branch-label,.dv-merge-label{font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink2);padding:4px 8px;background:var(--dv-soft);border-radius:4px;border:1px solid var(--dv-line);text-align:center}
+
+/* ---- Expandable textarea for obs/question/diagnostic/remedial ---- */
+.dv-card-textarea{
+  width:100%;font:500 13px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink);
+  border:0;background:transparent;padding:2px 0;outline:none;
+  border-bottom:1px solid transparent;transition:.12s;
+  resize:none;overflow:hidden;line-height:1.4;min-height:20px;
+}
+.dv-card-textarea:focus{border-bottom-color:var(--dv)}
+.dv-card-textarea::placeholder{color:var(--dv-ink3)}
+
+/* ---- Dropdown list for saved items ---- */
+.dv-obs-dd{
+  width:100%;border:1px solid var(--dv-line);border-radius:4px;
+  font:400 11px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink);
+  background:#fff;outline:none;margin-top:4px;max-height:100px;
+}
+.dv-obs-dd:focus{border-color:var(--dv)}
+
+/* ---- Interactive numeric card (Pattern D) ---- */
+.dv-numeric-body{display:flex;flex-direction:column;gap:8px;padding:4px 0}
+.dv-num-range-row,.dv-num-safe-row{display:flex;justify-content:space-between;gap:8px}
+.dv-num-range,.dv-num-safe{display:flex;flex-direction:column;align-items:center;gap:2px}
+.dv-num-range-label,.dv-num-safe-label{font:700 8px 'Plus Jakarta Sans',sans-serif;letter-spacing:.08em;color:var(--dv-ink3);text-transform:uppercase}
+.dv-num-input{width:56px;text-align:center;font:600 13px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink);border:1px solid var(--dv-line);border-radius:4px;padding:3px 4px;outline:none;background:#fff}
+.dv-num-input:focus{border-color:var(--dv)}
+.dv-num-bar{display:flex;height:10px;border-radius:5px;overflow:hidden}
+.dv-num-bar-crit{background:#E8B4B8}
+.dv-num-bar-safe{background:#8BC49E}
+.dv-num-bar-high{background:#E8D4B4}
+.dv-num-legend{display:flex;gap:8px;justify-content:center}
+.dv-num-leg{font:500 10px 'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:3px}
+.dv-num-leg::before{content:'';width:8px;height:8px;border-radius:2px}
+.dv-num-leg-crit::before{background:#E8B4B8}
+.dv-num-leg-safe::before{background:#8BC49E}
+.dv-num-leg-high::before{background:#E8D4B4}
+
 /* ---- Type-specific card bodies ---- */
 .dv-obs-body{display:flex;flex-direction:column;gap:4px}
 .dv-obs-icons{display:flex;gap:6px;justify-content:flex-end}
@@ -1026,7 +1063,7 @@ const NODE_TYPES = {
   validation:   { label: 'Validation step',     cat: 'capture',   glyph: 'validation',   branching: false, terminal: false, hint: 'Confirm the fix worked before closing' },
   reassignment: { label: 'Reassignment',        cat: 'people',    glyph: 'reassignment', branching: false, terminal: false, hint: 'Hand off to another role or operator' },
   escalation:   { label: 'Escalation',          cat: 'exception', glyph: 'escalation',   branching: false, terminal: false, subKey: 'escType',   hint: 'Escalate the issue — call the supervisor or an expert' },
-  branch:       { label: 'Branch',              cat: 'control',   glyph: 'decision',     branching: true,  terminal: false, hint: 'Split the flow into N parallel paths' },
+  branch:       { label: 'Branch',              cat: 'control',   glyph: 'decision',     branching: false, terminal: false, hint: 'Split the flow into N parallel paths' },
   merge:        { label: 'Merge branches',      cat: 'control',   glyph: 'step',         branching: false, terminal: false, hint: 'Converge multiple paths back into one' },
   link:         { label: 'Link to next tree',   cat: 'link',      glyph: 'link',         branching: false, terminal: false, hint: 'Hand off to another diagnostic tree' },
   skipend:      { label: 'Skip to the end',     cat: 'terminal',  glyph: 'skip',         branching: false, terminal: true,  hint: 'Short-circuit straight to the end of the flow' },
@@ -2848,6 +2885,42 @@ function StepPopover({ anchorRect, onPick, onClose }){
         React.createElement('div', { className: 'dv-popover-hint' }, s.hint))))));
 }
 
+
+const DUMMY_OBSERVATIONS = [
+  'Check if aeration is equally happening across the tank',
+  'Inspect diffuser membranes for blockage or damage',
+  'Verify blower is running at rated RPM',
+  'Check for dead zones in the aeration tank',
+  'Observe foam / scum on tank surface',
+  'Inspect sludge colour and consistency',
+  'Check DO probe reading against portable meter',
+  'Verify RAS pump is operational',
+];
+const DUMMY_QUESTIONS = [
+  'Is the blower running?',
+  'Are there bubbles visible on the surface?',
+  'Is the DO reading below 2.0 mg/L?',
+  'Is there sludge accumulation at the bottom?',
+  'Has the operator noticed a foul smell?',
+  'Is the clarifier effluent turbid?',
+  'Was a chemical dosing event recorded today?',
+  'Is the flow rate within normal range?',
+];
+const DUMMY_DIAGNOSTICS = [
+  'Check for Low DO in Aeration Tank',
+  'Inspect membrane integrity',
+  'Verify sensor calibration',
+  'Check blower air filter',
+  'Inspect diffuser condition',
+];
+const DUMMY_REMEDIALS = [
+  'Turn on the blower',
+  'Clean / unclog the diffusers',
+  'Replace DO sensor',
+  'Adjust RAS flow rate',
+  'Dose additional chemicals',
+];
+
 /* ===== Single typed card ===== */
 function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption, onDelOption, onDelete, onContextMenu, incomingCount, dropHover, onDropOnPath, onDropOnBottom, onStartConnDrag }){
   const meta = NODE_TYPES[n.type] || NODE_TYPES.question;
@@ -2883,11 +2956,12 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
   // ---- Card header ----
   const header = React.createElement('div', { className: 'dv-card-head' },
     React.createElement('span', { className: 'dv-card-cat' },
-      n.type === 'branch' ? 'Path' :
-      n.type === 'merge' ? 'Path' :
+      (n.type === 'branch' ? 'PATH' :
+      n.type === 'merge' ? 'PATH' :
       n.type === 'singleAnswer' ? (n.aType === 'numeric' ? 'ANSWER NUMERIC' : n.aType === 'yes' ? 'ANSWER YES' : n.aType === 'no' ? 'ANSWER NO' : 'ANSWER') :
-      n.type === 'autoresolve' ? 'Auto Resolve' :
-      meta.label),
+      n.type === 'autoresolve' ? 'AUTO RESOLVE' :
+      n.type === 'task' ? (n.taskType === 'remedial' ? 'REMEDIAL' : 'DIAGNOSTIC') :
+      meta.label.toUpperCase()) + (n.autoNum ? ' ' + n.autoNum : '')),
     n.type !== 'issue' && React.createElement('button', { className: 'dv-card-x', title: 'Delete',
       onClick: (e) => { e.stopPropagation(); onDelete(); } }, '×'));
 
@@ -2908,14 +2982,22 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
       React.createElement('span', { className: 'dv-merge-label' }, 'Merge branches'));
 
   } else if (n.type === 'observation' || n.type === 'question') {
-    const label = n.type === 'observation' ? 'Observation' : 'Question';
+    const dummyList = n.type === 'observation' ? DUMMY_OBSERVATIONS : DUMMY_QUESTIONS;
+    const [showDD, setShowDD] = React.useState(false);
     body = React.createElement('div', { className: 'dv-obs-body' },
-      React.createElement('input', { className: 'dv-card-title', value: n.title || '',
+      React.createElement('textarea', { className: 'dv-card-textarea', value: n.title || '',
         placeholder: n.type === 'observation' ? 'What does the operator check?' : 'Type the question',
-        onChange: (e) => onPatch({ title: e.target.value }), onClick: (e) => e.stopPropagation() }),
+        rows: 1,
+        ref: function(el){ if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } },
+        onChange: function(e){ e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; onPatch({ title: e.target.value }); },
+        onClick: function(e){ e.stopPropagation(); } }),
       React.createElement('div', { className: 'dv-obs-icons' },
-        React.createElement('span', { className: 'dv-obs-ic', title: 'Edit' }, '✎'),
-        React.createElement('span', { className: 'dv-obs-ic', title: 'Select from saved' }, '▾')));
+        React.createElement('span', { className: 'dv-obs-ic', title: 'Edit', onClick: function(e){ e.stopPropagation(); } }, '✎'),
+        React.createElement('span', { className: 'dv-obs-ic', title: 'Select from saved', onClick: function(e){ e.stopPropagation(); setShowDD(!showDD); } }, '▾')),
+      showDD && React.createElement('select', { className: 'dv-obs-dd', size: 4, onClick: function(e){ e.stopPropagation(); },
+        onChange: function(e){ onPatch({ title: e.target.value }); setShowDD(false); } },
+        React.createElement('option', { value: '' }, '— Select —'),
+        dummyList.map(function(d, i){ return React.createElement('option', { key: i, value: d }, d); })));
 
   } else if (n.type === 'singleAnswer' && n.aType === 'numeric') {
     body = React.createElement('div', { className: 'dv-numeric-body' },
@@ -2942,14 +3024,22 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
     body = null;
 
   } else if (n.type === 'task') {
-    const label = n.taskType === 'remedial' ? 'Remedial Step' : 'Diagnostic Step';
+    const dummyList = n.taskType === 'remedial' ? DUMMY_REMEDIALS : DUMMY_DIAGNOSTICS;
+    const [showDD, setShowDD] = React.useState(false);
     body = React.createElement('div', { className: 'dv-obs-body' },
-      React.createElement('input', { className: 'dv-card-title', value: n.title || '',
-        placeholder: 'Describe the step',
-        onChange: (e) => onPatch({ title: e.target.value }), onClick: (e) => e.stopPropagation() }),
+      React.createElement('textarea', { className: 'dv-card-textarea', value: n.title || '',
+        placeholder: n.taskType === 'remedial' ? 'Describe the remedial action' : 'Describe the diagnostic step',
+        rows: 1,
+        ref: function(el){ if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } },
+        onChange: function(e){ e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; onPatch({ title: e.target.value }); },
+        onClick: function(e){ e.stopPropagation(); } }),
       React.createElement('div', { className: 'dv-obs-icons' },
-        React.createElement('span', { className: 'dv-obs-ic', title: 'Edit' }, '✎'),
-        React.createElement('span', { className: 'dv-obs-ic', title: 'Select' }, '▾')));
+        React.createElement('span', { className: 'dv-obs-ic', title: 'Edit', onClick: function(e){ e.stopPropagation(); } }, '✎'),
+        React.createElement('span', { className: 'dv-obs-ic', title: 'Select from saved', onClick: function(e){ e.stopPropagation(); setShowDD(!showDD); } }, '▾')),
+      showDD && React.createElement('select', { className: 'dv-obs-dd', size: 4, onClick: function(e){ e.stopPropagation(); },
+        onChange: function(e){ onPatch({ title: e.target.value }); setShowDD(false); } },
+        React.createElement('option', { value: '' }, '— Select —'),
+        dummyList.map(function(d, i){ return React.createElement('option', { key: i, value: d }, d); })));
 
   } else if (n.type === 'media') {
     const isRCA = n.mediaType === 'with_rc';
@@ -3232,8 +3322,8 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
 
   const addStep = (afterId, fromOptId, type, variant) => {
     const nid = uid(type);
-    const autoTitle = autoNumber(type);
-    const base = Object.assign({ id: nid, type, title: autoTitle, detail: '', options: [], next: null, x: 0, y: 0 }, defaultSub(type));
+    const num = Object.values(nodes).filter(function(nd){ return nd.type === type; }).length + 1;
+    const base = Object.assign({ id: nid, type, title: '', autoNum: num, detail: '', options: [], next: null, x: 0, y: 0 }, defaultSub(type));
     // Apply the variant chosen in the drawer chip (e.g. ['aType','yesno'], ['taskType','diagnostic'])
     if (variant && variant.length === 2) base[variant[0]] = variant[1];
     // Y/N answer card needs Yes + No options even though singleAnswer isn't in BRANCHING
