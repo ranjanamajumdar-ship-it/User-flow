@@ -1057,7 +1057,7 @@ const NODE_TYPES = {
   singleAnswer: { label: 'Answer',              cat: 'answer',    glyph: 'answer',       branching: false, terminal: false, subKey: 'aType',     hint: 'A captured response — Y/N or Numeric' },
   waiting:      { label: 'Waiting',             cat: 'status',    glyph: 'wait',         branching: false, terminal: false, hint: 'Hold / wait for recovery or a process before continuing' },
   rootcause:    { label: 'Root cause selector', cat: 'cause',     glyph: 'root',         branching: true,  terminal: false, hint: 'Operator selects the confirmed cause — each routes to its remedy' },
-  task:         { label: 'Action',              cat: 'task',      glyph: 'task',         branching: true,  terminal: false, subKey: 'taskType', hint: 'A diagnostic or remedial step — each choice routes onward' },
+  task:         { label: 'Action',              cat: 'task',      glyph: 'task',         branching: false, terminal: false, subKey: 'taskType', hint: 'A diagnostic or remedial step' },
   observation:  { label: 'Observation',         cat: 'capture',   glyph: 'step',         branching: false, terminal: false, hint: 'A check or reading the operator performs' },
   media:        { label: 'Media upload',        cat: 'capture',   glyph: 'media',        branching: false, terminal: false, subKey: 'mediaType', hint: 'Capture a photo / video / file as evidence' },
   validation:   { label: 'Validation step',     cat: 'capture',   glyph: 'validation',   branching: false, terminal: false, hint: 'Confirm the fix worked before closing' },
@@ -1267,7 +1267,7 @@ function verticalLayout(nodes){
 }
 
 /* ---- Store (localStorage) ------------------------------- */
-const STORE_KEY = 'dp_flow_builder_v13_delta';
+const STORE_KEY = 'dp_flow_builder_v15_cardfix';
 // Map deprecated aType values to the new merged qType values
 const A_TO_Q_TYPE = { single:'single', yesno:'yesno', mcq_single:'mcq', numeric:'numeric', sensor:'sensor', range:'range' };
 
