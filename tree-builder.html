@@ -3813,9 +3813,14 @@ function App(){
   }, [nodes, images, view, mode, collapsed, flowName, viewMode]);
 
   const clearCanvas = () => {
-    if (!confirm('Clear your edits and reset the canvas to the default flow? Your saved templates and the palette stay intact.')) return;
-    // Re-seed to the original flow so the canvas is never left in an unusable empty state.
-    setNodes(seedTree());
+    if (!confirm('Clear all cards except the Trigger?')) return;
+    // Keep only issue/trigger cards, remove everything else
+    const kept = {};
+    Object.values(nodes).forEach(n => {
+      if (n.type === 'issue') kept[n.id] = Object.assign({}, n, { next: null, connections: [], options: [] });
+    });
+    if (!Object.keys(kept).length) kept['issue'] = { id: 'issue', type: 'issue', title: '', autoNum: 1, detail: '', options: [], next: null, x: 400, y: 40 };
+    setNodes(kept);
     setImages([]);
     setSelected(null);
   };
