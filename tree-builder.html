@@ -1091,7 +1091,7 @@ const NODE_TYPES = {
   branch:       { label: 'Branch',              cat: 'control',   glyph: 'decision',     branching: false, terminal: false, hint: 'Split the flow into N parallel paths' },
   merge:        { label: 'Merge branches',      cat: 'control',   glyph: 'step',         branching: false, terminal: false, hint: 'Converge multiple paths back into one' },
   link:         { label: 'Link to next tree',   cat: 'link',      glyph: 'link',         branching: false, terminal: false, hint: 'Hand off to another diagnostic tree' },
-  skipend:      { label: 'Skip to the end',     cat: 'terminal',  glyph: 'skip',         branching: false, terminal: true,  hint: 'Short-circuit straight to the end of the flow' },
+  skipend:      { label: 'Skip to the end',     cat: 'terminal',  glyph: 'skip',         branching: false, terminal: false, hint: 'Short-circuit straight to the end of the flow' },
   autoresolve:  { label: 'Auto Resolve',       cat: 'terminal',  glyph: 'done',         branching: false, terminal: true,  hint: 'The issue auto-resolved — no operator action needed' },
   done:         { label: 'Done',                cat: 'terminal',  glyph: 'done',         branching: false, terminal: true,  hint: 'Closes the flow — issue resolved' },
 };
