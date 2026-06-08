@@ -159,7 +159,8 @@ input,textarea,select{font-family:inherit;}
 }
 .dv-root{height:100%;background:var(--dv-bg);overflow:hidden;position:relative;display:flex}
 .dv-root.dv-with-drawer{flex-direction:row}
-.dv-canvas{flex:1;min-width:0;height:100%;background:var(--dv-bg);position:relative;overflow:auto}
+.dv-canvas{flex:1;min-width:0;height:100%;background:var(--dv-bg);position:relative;overflow:auto;cursor:grab}
+.dv-canvas:active{cursor:grabbing}
 .dv-scroll{display:none} /* unused — canvas is the scroll container now */
 .dv-stage{margin:0}
 .dv-edges{position:absolute;top:0;left:0;pointer-events:none;z-index:1}
@@ -3353,6 +3354,21 @@ function DeltaDrawer({ onChipDragStart, onChipDragEnd, onChipClick, hasTrigger }
 function DeltaView({ nodes, onNodes, selected, setSelected }){
   const [ctxMenu, setCtxMenu] = React.useState(null);
   const [cardDrag, setCardDrag] = React.useState(null);
+  const [pan, setPan] = React.useState(null); // { startX, startY, scrollL, scrollT }
+
+  // ---- Click-and-drag to pan the canvas ----
+  React.useEffect(function(){
+    if (!pan) return;
+    function onMove(e){
+      var cv = canvasRef.current; if (!cv) return;
+      cv.scrollLeft = pan.scrollL - (e.clientX - pan.startX);
+      cv.scrollTop = pan.scrollT - (e.clientY - pan.startY);
+    }
+    function onUp(){ setPan(null); }
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    return function(){ window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+  }, [pan]);
   const [zoom, setZoom] = React.useState(1);
   const [connDrag, setConnDrag] = React.useState(null); // { fromId, px, py }
   const canvasRef = React.useRef(null);
@@ -3647,6 +3663,13 @@ function DeltaView({ nodes, onNodes, selected, setSelected }){
       onChipClick: onChipClick
     }),
     React.createElement('div', { className: 'dv-canvas', ref: canvasRef,
+      onPointerDown: function(e){
+        // Only pan when clicking directly on the canvas background, not on cards/buttons/inputs
+        if (e.target.closest('.dv-card, .dv-conn, input, select, button, textarea')) return;
+        var cv = canvasRef.current; if (!cv) return;
+        setPan({ startX: e.clientX, startY: e.clientY, scrollL: cv.scrollLeft, scrollT: cv.scrollTop });
+        e.preventDefault();
+      },
       onDragOver: (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; },
       onDrop: (e) => {
         e.preventDefault();
