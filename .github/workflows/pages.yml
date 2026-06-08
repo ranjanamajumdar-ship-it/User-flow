@@ -88,6 +88,13 @@ jobs:
         continue-on-error: true
 
 
+      - name: Checkout delta-v14-final
+        uses: actions/checkout@v4
+        with:
+          ref: delta-v14-final
+          path: delta-v14-final
+        continue-on-error: true
+
       - name: Checkout delta-v13-cleanup
         uses: actions/checkout@v4
         with:
@@ -162,6 +169,12 @@ jobs:
             mkdir -p dist/delta-view
             cp -R delta-view/. dist/delta-view/ 2>/dev/null || true
             rm -rf dist/delta-view/.git dist/delta-view/.github
+          fi
+          # /delta-v14-final/
+          if [ -d delta-v14-final ]; then
+            mkdir -p dist/delta-v14-final
+            cp -R delta-v14-final/. dist/delta-v14-final/ 2>/dev/null || true
+            rm -rf dist/delta-v14-final/.git dist/delta-v14-final/.github
           fi
           # /delta-v13-cleanup/
           if [ -d delta-v13-cleanup ]; then
