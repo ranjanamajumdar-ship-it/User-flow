@@ -1160,8 +1160,105 @@ const opt = (label, target) => ({ id: uid('o'), label, target });
 
 function seedTree(){
   const n = {};
-  // Start with a single Trigger card in the center
-  n['issue'] = { id: 'issue', type: 'issue', title: '', detail: '', options: [], next: null, x: 400, y: 40 };
+  const W = 260, GAP = 40;
+
+  // ===== ROW 0: Trigger =====
+  n['issue'] = { id: 'issue', type: 'issue', title: 'DO Low in Aeration', autoNum: 1, detail: '', options: [], next: 'branch1', x: 500, y: 30 };
+
+  // ===== ROW 1: Branch (split into 3) =====
+  n['branch1'] = { id: 'branch1', type: 'branch', title: '', autoNum: 1, detail: '', options: [], next: null, x: 500, y: 160, connections: ['obs1','obs2','obs3','skipend1'] };
+
+  // ===== ROW 2: Observations (3 lanes) + Skip to end =====
+  n['obs1'] = { id: 'obs1', type: 'observation', title: 'Yes, Bubbles seem normal on the surface', autoNum: 1, detail: '', options: [], next: null, x: 80, y: 300 };
+  n['obs2'] = { id: 'obs2', type: 'observation', title: 'Moderately, Some bubbles are there on the surface', autoNum: 2, detail: '', options: [], next: null, x: 380, y: 300 };
+  n['obs3'] = { id: 'obs3', type: 'observation', title: 'No there are no bubbles on the surface', autoNum: 3, detail: '', options: [], next: null, x: 680, y: 300 };
+  n['skipend1'] = { id: 'skipend1', type: 'skipend', title: '', autoNum: 1, detail: '', options: [], next: 'media_rca1', x: 980, y: 310 };
+
+  // ===== ROW 3: Merge (obs1 + obs2 converge) =====
+  n['merge1'] = { id: 'merge1', type: 'merge', title: '', autoNum: 1, detail: '', options: [], next: 'diag1', x: 230, y: 460 };
+  // obs1 and obs2 connect to merge1
+  n['obs1'].next = 'merge1';
+  n['obs2'].next = 'merge1';
+
+  // Skip path: Media + RCA → Reassignment → Media Upload → Escalation → Done
+  n['media_rca1'] = { id: 'media_rca1', type: 'media', mediaType: 'with_rc', title: '', autoNum: 1, detail: '', options: [], next: 'reassign1', x: 920, y: 440 };
+  n['reassign1'] = { id: 'reassign1', type: 'reassignment', title: '', autoNum: 1, detail: '', options: [], next: 'media2', x: 1120, y: 440 };
+  n['media2'] = { id: 'media2', type: 'media', mediaType: 'without_rc', title: '', autoNum: 2, detail: '', options: [], next: 'esc1', x: 1120, y: 580 };
+  n['esc1'] = { id: 'esc1', type: 'escalation', title: '', autoNum: 1, detail: '', options: [], next: 'done1', x: 920, y: 580 };
+  n['done1'] = { id: 'done1', type: 'done', title: '', autoNum: 1, detail: '', options: [], next: null, x: 920, y: 720 };
+  n['done_skip1'] = { id: 'done_skip1', type: 'done', title: '', autoNum: 2, detail: '', options: [], next: null, x: 1160, y: 720 };
+
+  // ===== ROW 4: Diagnostic step 1 =====
+  n['diag1'] = { id: 'diag1', type: 'task', taskType: 'diagnostic', title: 'Check for Low DO in Aeration Tank', autoNum: 1, detail: '', options: [], next: 'branch2', x: 230, y: 580 };
+
+  // ===== ROW 5: Branch 2 (split into 6) =====
+  n['branch2'] = { id: 'branch2', type: 'branch', title: '', autoNum: 2, detail: '', options: [], next: null, x: 230, y: 720, connections: ['q4','obs5','obs5b','obs6','skipend2','reassign2'] };
+
+  // ===== ROW 6: Observations under branch 2 =====
+  n['q4'] = { id: 'q4', type: 'question', title: 'Is the blower running?', autoNum: 4, detail: '', options: [], next: 'ans_yn1', x: 30, y: 880 };
+  n['obs5'] = { id: 'obs5', type: 'observation', title: 'Dark or black colour waste water', autoNum: 5, detail: '', options: [], next: 'ans_yn2', x: 280, y: 880 };
+  n['obs5b'] = { id: 'obs5b', type: 'observation', title: 'Sludge accumulation at the bottom of certain areas', autoNum: 5, detail: '', options: [], next: 'ans_yn3', x: 530, y: 880 };
+  n['obs6'] = { id: 'obs6', type: 'observation', title: 'Check for uneven DO across the tank', autoNum: 6, detail: '', options: [], next: 'ans_numeric1', x: 780, y: 880 };
+  n['skipend2'] = { id: 'skipend2', type: 'skipend', title: '', autoNum: 2, detail: '', options: [], next: 'media_rca2', x: 1020, y: 890 };
+  n['reassign2'] = { id: 'reassign2', type: 'reassignment', title: '', autoNum: 2, detail: '', options: [], next: 'media3', x: 1180, y: 890 };
+
+  // ===== ROW 7: Answer Y/N cards =====
+  n['ans_yn1'] = { id: 'ans_yn1', type: 'singleAnswer', aType: 'yes', title: '', autoNum: 1, detail: '', options: [], next: 'q5', x: 10, y: 1050 };
+  n['ans_yn1_no'] = { id: 'ans_yn1_no', type: 'singleAnswer', aType: 'no', title: '', autoNum: 1, detail: '', options: [], next: null, x: 130, y: 1050 };
+  n['ans_yn2'] = { id: 'ans_yn2', type: 'singleAnswer', aType: 'yes', title: '', autoNum: 2, detail: '', options: [], next: null, x: 260, y: 1050 };
+  n['ans_yn2_no'] = { id: 'ans_yn2_no', type: 'singleAnswer', aType: 'no', title: '', autoNum: 2, detail: '', options: [], next: null, x: 380, y: 1050 };
+  n['ans_yn3'] = { id: 'ans_yn3', type: 'singleAnswer', aType: 'yes', title: '', autoNum: 3, detail: '', options: [], next: null, x: 510, y: 1050 };
+  n['ans_yn3_no'] = { id: 'ans_yn3_no', type: 'singleAnswer', aType: 'no', title: '', autoNum: 3, detail: '', options: [], next: null, x: 630, y: 1050 };
+
+  // Numeric answer
+  n['ans_numeric1'] = { id: 'ans_numeric1', type: 'singleAnswer', aType: 'numeric', title: '', autoNum: 1, detail: '', options: [], next: null, x: 770, y: 1050, rangeMin: 0, rangeMax: 10, safeMin: 2, safeMax: 4, unit: 'mg/L' };
+
+  // Skip path 2
+  n['media_rca2'] = { id: 'media_rca2', type: 'media', mediaType: 'with_rc', title: '', autoNum: 3, detail: '', options: [], next: null, x: 1020, y: 1050 };
+  n['media3'] = { id: 'media3', type: 'media', mediaType: 'without_rc', title: '', autoNum: 4, detail: '', options: [], next: 'esc2', x: 1180, y: 1050 };
+  n['esc2'] = { id: 'esc2', type: 'escalation', title: '', autoNum: 2, detail: '', options: [], next: 'done3', x: 1180, y: 1200 };
+  n['done3'] = { id: 'done3', type: 'done', title: '', autoNum: 3, detail: '', options: [], next: null, x: 1180, y: 1340 };
+
+  // ===== ROW 8: Question 5 (from Yes 1) =====
+  n['q5'] = { id: 'q5', type: 'question', title: 'Is DO still Low?', autoNum: 5, detail: '', options: [], next: 'branch3', x: 10, y: 1200 };
+
+  // ===== ROW 9: Branch 3 =====
+  n['branch3'] = { id: 'branch3', type: 'branch', title: '', autoNum: 3, detail: '', options: [], next: null, x: 10, y: 1340, connections: ['ans_yn4','ans_yn4_no'] };
+  n['ans_yn4'] = { id: 'ans_yn4', type: 'singleAnswer', aType: 'yes', title: '', autoNum: 4, detail: '', options: [], next: null, x: 10, y: 1470 };
+  n['ans_yn4_no'] = { id: 'ans_yn4_no', type: 'singleAnswer', aType: 'no', title: '', autoNum: 4, detail: '', options: [], next: null, x: 160, y: 1470 };
+
+  // ===== Merge branches (Yes paths) =====
+  n['merge2'] = { id: 'merge2', type: 'merge', title: '', autoNum: 2, detail: '', options: [], next: 'rootcause1', x: 280, y: 1340 };
+  n['merge3'] = { id: 'merge3', type: 'merge', title: '', autoNum: 3, detail: '', options: [], next: 'diag2', x: 430, y: 1340 };
+
+  // ===== Root cause + Diagnostic 2 =====
+  n['rootcause1'] = { id: 'rootcause1', type: 'rootcause', title: 'Diffusers are choked', autoNum: 1, detail: '', options: [], next: 'media_upload1', x: 280, y: 1500 };
+  n['diag2'] = { id: 'diag2', type: 'task', taskType: 'diagnostic', title: 'Check for DO Sensor failure', autoNum: 2, detail: '', options: [], next: null, x: 530, y: 1500 };
+
+  // ===== Media upload → Escalation → Done =====
+  n['media_upload1'] = { id: 'media_upload1', type: 'media', mediaType: 'without_rc', title: '', autoNum: 5, detail: '', options: [], next: 'esc3', x: 280, y: 1650 };
+  n['esc3'] = { id: 'esc3', type: 'escalation', title: '', autoNum: 3, detail: '', options: [], next: 'done4', x: 280, y: 1800 };
+  n['done4'] = { id: 'done4', type: 'done', title: '', autoNum: 4, detail: '', options: [], next: null, x: 280, y: 1950 };
+
+  // ===== Remedial step (from no path / auto resolve path) =====
+  n['remedial1'] = { id: 'remedial1', type: 'task', taskType: 'remedial', title: 'Turn on the Blower', autoNum: 1, detail: '', options: [], next: 'wait1', x: 10, y: 1620 };
+  n['wait1'] = { id: 'wait1', type: 'waiting', title: '', autoNum: 1, detail: '', options: [], next: 'media4', x: 10, y: 1780 };
+  n['media4'] = { id: 'media4', type: 'media', mediaType: 'without_rc', title: '', autoNum: 6, detail: '', options: [], next: 'done5', x: 10, y: 1920 };
+  n['done5'] = { id: 'done5', type: 'done', title: '', autoNum: 5, detail: '', options: [], next: null, x: 10, y: 2060 };
+
+  // Auto resolve
+  n['autoresolve1'] = { id: 'autoresolve1', type: 'autoresolve', title: '', autoNum: 1, detail: '', options: [], next: null, x: 10, y: 1480 };
+
+  // No bubbles path → media + escalation + done
+  n['obs3'].next = 'media_nobub';
+  n['media_nobub'] = { id: 'media_nobub', type: 'media', mediaType: 'without_rc', title: '', autoNum: 7, detail: '', options: [], next: 'esc_nobub', x: 680, y: 460 };
+  n['esc_nobub'] = { id: 'esc_nobub', type: 'escalation', title: '', autoNum: 4, detail: '', options: [], next: 'done_nobub', x: 680, y: 600 };
+  n['done_nobub'] = { id: 'done_nobub', type: 'done', title: '', autoNum: 6, detail: '', options: [], next: null, x: 680, y: 740 };
+
+  // Done for skip path
+  n['done_skip_rca'] = { id: 'done_skip_rca', type: 'done', title: '', autoNum: 7, detail: '', options: [], next: null, x: 1020, y: 1200 };
+  n['media_rca2'].next = 'done_skip_rca';
+
   return n;
 }
 
@@ -1288,7 +1385,7 @@ function verticalLayout(nodes){
 }
 
 /* ---- Store (localStorage) ------------------------------- */
-const STORE_KEY = 'dp_flow_builder_v17_numeric';
+const STORE_KEY = 'dp_flow_builder_v18_fullflow';
 // Map deprecated aType values to the new merged qType values
 const A_TO_Q_TYPE = { single:'single', yesno:'yesno', mcq_single:'mcq', numeric:'numeric', sensor:'sensor', range:'range' };
 
