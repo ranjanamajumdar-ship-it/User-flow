@@ -430,6 +430,28 @@ input,textarea,select{font-family:inherit;}
 .dv-num-leg-safe::before{background:#8BC49E}
 .dv-num-leg-high::before{background:#E8D4B4}
 
+/* ---- Numeric card v2 (interactive Pattern D) ---- */
+.dv-num2{display:flex;flex-direction:column;gap:8px;padding:4px 0}
+.dv-num2-bar{display:flex;height:8px;border-radius:4px;overflow:hidden}
+.dv-num2-seg{height:100%}
+.dv-num2-crit{background:#E8B4B8}
+.dv-num2-safe{background:#8BC49E}
+.dv-num2-high{background:#E8D4B4}
+.dv-num2-axis{display:flex;justify-content:space-between;font:400 9px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink3);margin-top:1px}
+.dv-num2-fields,.dv-num2-meta{display:flex;gap:6px}
+.dv-num2-field{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.dv-num2-flabel{font:600 8px 'Plus Jakarta Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--dv-ink3)}
+.dv-num2-input{width:100%;font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink);border:1px solid var(--dv-line);border-radius:4px;padding:4px 6px;outline:none;background:#fff;box-sizing:border-box}
+.dv-num2-input:focus{border-color:var(--dv)}
+.dv-num2-unit{max-width:60px}
+.dv-num2-range{font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv);padding:4px 6px;background:var(--dv-soft);border-radius:4px;border:1px solid var(--dv-mid);text-align:center}
+.dv-num2-legend{display:flex;gap:10px;justify-content:center}
+.dv-num2-leg{font:400 10px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink2);display:flex;align-items:center;gap:3px}
+.dv-num2-dot{display:inline-block;width:8px;height:8px;border-radius:2px}
+.dv-num2-dot-crit{background:#E8B4B8}
+.dv-num2-dot-safe{background:#8BC49E}
+.dv-num2-dot-high{background:#E8D4B4}
+
 /* ---- Type-specific card bodies ---- */
 .dv-obs-body{display:flex;flex-direction:column;gap:4px}
 .dv-obs-icons{display:flex;gap:6px;justify-content:flex-end}
@@ -476,14 +498,13 @@ input,textarea,select{font-family:inherit;}
 
 /* Escalation card */
 .dv-esc-body{display:flex;flex-direction:column;gap:4px}
-.dv-esc-sel{font:400 11.5px 'Plus Jakarta Sans',sans-serif;border:1px solid var(--dv-line);border-radius:4px;padding:4px 6px;outline:none;color:var(--dv-ink)}
+.dv-esc-sel{font:400 11.5px 'Plus Jakarta Sans',sans-serif;border:1px solid var(--dv-line);border-radius:4px;padding:5px 24px 5px 8px;outline:none;color:var(--dv-ink);-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238694A7'/%3E%3C/svg%3E") no-repeat right 8px center;background-size:10px 6px;cursor:pointer}
 .dv-esc-sel:focus{border-color:var(--dv)}
 
 /* Waiting card */
 .dv-wait-body{display:flex;flex-direction:column;gap:4px}
-.dv-wait-label{font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink2)}
 .dv-wait-inputs{display:flex;gap:6px}
-.dv-wait-sel{font:400 11px 'Plus Jakarta Sans',sans-serif;border:1px solid var(--dv-line);border-radius:4px;padding:3px 6px;outline:none;color:var(--dv-ink)}
+.dv-wait-sel{font:400 11.5px 'Plus Jakarta Sans',sans-serif;border:1px solid var(--dv-line);border-radius:4px;padding:5px 24px 5px 8px;outline:none;color:var(--dv-ink);-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238694A7'/%3E%3C/svg%3E") no-repeat right 8px center;background-size:10px 6px;cursor:pointer}
 .dv-wait-sel:focus{border-color:var(--dv)}
 
 /* Simple label cards (Skip, Done, Auto Resolve) */
@@ -3004,21 +3025,60 @@ function DeltaCard({ n, pos, isSel, onSelect, onPatch, onSetOption, onAddOption,
         dummyList.map(function(d, i){ return React.createElement('option', { key: i, value: d }, d); })));
 
   } else if (n.type === 'singleAnswer' && n.aType === 'numeric') {
-    body = React.createElement('div', { className: 'dv-numeric-body' },
-      React.createElement('div', { className: 'dv-numeric-slider' },
-        React.createElement('div', { className: 'dv-numeric-track' },
-          React.createElement('div', { className: 'dv-numeric-seg dv-seg-crit' }),
-          React.createElement('div', { className: 'dv-numeric-seg dv-seg-norm' }),
-          React.createElement('div', { className: 'dv-numeric-seg dv-seg-high' })),
-        React.createElement('div', { className: 'dv-numeric-labels' },
-          React.createElement('span', null, '0'),
-          React.createElement('span', null, '2.0'),
-          React.createElement('span', null, '4.0'),
-          React.createElement('span', null, '10'))),
-      React.createElement('div', { className: 'dv-numeric-bands' },
-        React.createElement('span', { className: 'dv-band dv-band-crit' }, 'Critical < 2.0'),
-        React.createElement('span', { className: 'dv-band dv-band-norm' }, 'Normal 2.0–4.0'),
-        React.createElement('span', { className: 'dv-band dv-band-high' }, 'High > 4.0')));
+    var rMin = n.rangeMin != null ? n.rangeMin : 0;
+    var rMax = n.rangeMax != null ? n.rangeMax : 10;
+    var sMin = n.safeMin != null ? n.safeMin : 2;
+    var sMax = n.safeMax != null ? n.safeMax : 4;
+    var unit = n.unit || 'mg/L';
+    var span = rMax - rMin || 1;
+    var critPct = Math.max(0, ((sMin - rMin) / span) * 100);
+    var safePct = Math.max(0, ((sMax - sMin) / span) * 100);
+    var highPct = Math.max(0, ((rMax - sMax) / span) * 100);
+    var ev = function(e){ e.stopPropagation(); };
+    body = React.createElement('div', { className: 'dv-num2', onClick: ev },
+      // Visual bar
+      React.createElement('div', { className: 'dv-num2-bar' },
+        React.createElement('div', { className: 'dv-num2-seg dv-num2-crit', style: { width: critPct + '%' } }),
+        React.createElement('div', { className: 'dv-num2-seg dv-num2-safe', style: { width: safePct + '%' } }),
+        React.createElement('div', { className: 'dv-num2-seg dv-num2-high', style: { width: highPct + '%' } })),
+      // Axis labels
+      React.createElement('div', { className: 'dv-num2-axis' },
+        React.createElement('span', null, rMin),
+        React.createElement('span', null, sMin),
+        React.createElement('span', null, sMax),
+        React.createElement('span', null, rMax)),
+      // Input fields row
+      React.createElement('div', { className: 'dv-num2-fields' },
+        React.createElement('div', { className: 'dv-num2-field' },
+          React.createElement('span', { className: 'dv-num2-flabel' }, 'Critical below'),
+          React.createElement('input', { type: 'number', className: 'dv-num2-input', value: sMin, step: 0.1,
+            onChange: function(e){ onPatch({ safeMin: parseFloat(e.target.value) || 0 }); } })),
+        React.createElement('div', { className: 'dv-num2-field' },
+          React.createElement('span', { className: 'dv-num2-flabel' }, 'Safe range'),
+          React.createElement('span', { className: 'dv-num2-range' }, sMin + ' – ' + sMax)),
+        React.createElement('div', { className: 'dv-num2-field' },
+          React.createElement('span', { className: 'dv-num2-flabel' }, 'High above'),
+          React.createElement('input', { type: 'number', className: 'dv-num2-input', value: sMax, step: 0.1,
+            onChange: function(e){ onPatch({ safeMax: parseFloat(e.target.value) || 10 }); } }))),
+      // Unit + range row
+      React.createElement('div', { className: 'dv-num2-meta' },
+        React.createElement('div', { className: 'dv-num2-field' },
+          React.createElement('span', { className: 'dv-num2-flabel' }, 'Unit'),
+          React.createElement('input', { type: 'text', className: 'dv-num2-input dv-num2-unit', value: unit,
+            onChange: function(e){ onPatch({ unit: e.target.value }); } })),
+        React.createElement('div', { className: 'dv-num2-field' },
+          React.createElement('span', { className: 'dv-num2-flabel' }, 'Range min'),
+          React.createElement('input', { type: 'number', className: 'dv-num2-input', value: rMin, step: 0.1,
+            onChange: function(e){ onPatch({ rangeMin: parseFloat(e.target.value) || 0 }); } })),
+        React.createElement('div', { className: 'dv-num2-field' },
+          React.createElement('span', { className: 'dv-num2-flabel' }, 'Range max'),
+          React.createElement('input', { type: 'number', className: 'dv-num2-input', value: rMax, step: 0.1,
+            onChange: function(e){ onPatch({ rangeMax: parseFloat(e.target.value) || 10 }); } }))),
+      // Legend
+      React.createElement('div', { className: 'dv-num2-legend' },
+        React.createElement('span', { className: 'dv-num2-leg' }, React.createElement('i', { className: 'dv-num2-dot dv-num2-dot-crit' }), ' Critical'),
+        React.createElement('span', { className: 'dv-num2-leg' }, React.createElement('i', { className: 'dv-num2-dot dv-num2-dot-safe' }), ' Safe'),
+        React.createElement('span', { className: 'dv-num2-leg' }, React.createElement('i', { className: 'dv-num2-dot dv-num2-dot-high' }), ' High')));
 
   } else if (n.type === 'singleAnswer' && (n.aType === 'yes' || n.aType === 'no')) {
     body = React.createElement('div', { className: 'dv-yn-simple' },
