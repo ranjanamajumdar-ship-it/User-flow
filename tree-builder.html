@@ -362,17 +362,19 @@ input,textarea,select{font-family:inherit;}
 /* ---- Zoom toolbar ---- */
 .dv-zoom-bar{
   position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:100;
-  display:flex;align-items:center;gap:2px;
-  background:var(--dv-ink);border-radius:999px;padding:4px;
+  display:flex;align-items:center;gap:0;
+  background:var(--dv-ink);border-radius:999px;padding:4px 6px;
   box-shadow:0 8px 24px rgba(11,85,167,.25);
+  white-space:nowrap;
 }
 .dv-zoom-btn{
-  display:grid;place-items:center;width:32px;height:32px;border-radius:50%;
+  display:grid;place-items:center;min-width:32px;height:32px;border-radius:50%;
   border:0;background:transparent;color:#fff;cursor:pointer;
-  font:600 14px 'Plus Jakarta Sans',sans-serif;transition:.1s;
+  font:600 13px 'Plus Jakarta Sans',sans-serif;transition:.1s;
+  padding:0 6px;white-space:nowrap;
 }
 .dv-zoom-btn:hover{background:rgba(255,255,255,.12)}
-.dv-zoom-pct{font:600 11px 'JetBrains Mono',monospace;color:rgba(255,255,255,.7);min-width:40px;text-align:center}
+.dv-zoom-pct{font:600 11px 'JetBrains Mono',monospace;color:rgba(255,255,255,.7);min-width:36px;text-align:center;padding:0 4px}
 
 /* Card positions are absolute — make card grabbable */
 .dv-card{cursor:grab}
@@ -431,22 +433,24 @@ input,textarea,select{font-family:inherit;}
 .dv-num-leg-high::before{background:#E8D4B4}
 
 /* ---- Numeric card v2 (interactive Pattern D) ---- */
-.dv-num2{display:flex;flex-direction:column;gap:8px;padding:4px 0}
+.dv-num2{display:flex;flex-direction:column;gap:10px;padding:6px 0}
 .dv-num2-bar{display:flex;height:8px;border-radius:4px;overflow:hidden}
 .dv-num2-seg{height:100%}
 .dv-num2-crit{background:#E8B4B8}
 .dv-num2-safe{background:#8BC49E}
 .dv-num2-high{background:#E8D4B4}
-.dv-num2-axis{display:flex;justify-content:space-between;font:400 9px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink3);margin-top:1px}
-.dv-num2-fields,.dv-num2-meta{display:flex;gap:6px}
-.dv-num2-field{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.dv-num2-axis{display:flex;justify-content:space-between;font:400 9px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink3);margin-top:2px}
+.dv-num2-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.dv-num2-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.dv-num2-field{display:flex;flex-direction:column;gap:3px}
 .dv-num2-flabel{font:600 8px 'Plus Jakarta Sans',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--dv-ink3)}
-.dv-num2-input{width:100%;font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink);border:1px solid var(--dv-line);border-radius:4px;padding:4px 6px;outline:none;background:#fff;box-sizing:border-box}
+.dv-num2-input{width:100%;font:500 11px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink);border:1px solid var(--dv-line);border-radius:4px;padding:5px 6px;outline:none;background:#fff;box-sizing:border-box;-webkit-appearance:none;appearance:none}
 .dv-num2-input:focus{border-color:var(--dv)}
-.dv-num2-unit{max-width:60px}
-.dv-num2-range{font:500 12px 'Plus Jakarta Sans',sans-serif;color:var(--dv);padding:4px 6px;background:var(--dv-soft);border-radius:4px;border:1px solid var(--dv-mid);text-align:center}
-.dv-num2-legend{display:flex;gap:10px;justify-content:center}
-.dv-num2-leg{font:400 10px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink2);display:flex;align-items:center;gap:3px}
+.dv-num2-input[type=number]{-moz-appearance:textfield}
+.dv-num2-input[type=number]::-webkit-inner-spin-button,.dv-num2-input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.dv-num2-range{font:600 11px 'Plus Jakarta Sans',sans-serif;color:var(--dv);padding:5px 6px;background:var(--dv-soft);border-radius:4px;border:1px solid var(--dv-mid);text-align:center}
+.dv-num2-legend{display:flex;gap:12px;justify-content:center;padding-top:2px}
+.dv-num2-leg{font:400 10px 'Plus Jakarta Sans',sans-serif;color:var(--dv-ink2);display:flex;align-items:center;gap:4px}
 .dv-num2-dot{display:inline-block;width:8px;height:8px;border-radius:2px}
 .dv-num2-dot-crit{background:#E8B4B8}
 .dv-num2-dot-safe{background:#8BC49E}
